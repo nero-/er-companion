@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Icon } from "./Icon";
 import type { IconName } from "./Icon";
+import { ART, UnofficialNote } from "./Art";
 import { CommandPalette } from "./CommandPalette";
 import { Ring } from "./ui";
 import { useActiveCharacter, useActiveJourney, useAppState } from "../lib/store";
@@ -45,6 +46,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const journey = useActiveJourney();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [logoFailed, setLogoFailed] = useState(false);
   const routeStats = routeProgress(journey);
   const collection = collectionSummary(character);
   const level = levelFromStats(character.stats);
@@ -53,7 +55,7 @@ export function Shell({ children }: { children: ReactNode }) {
     {
       label: "Play",
       items: [
-        { path: "/", label: "Dashboard", icon: "dashboard" },
+        { path: "/", label: "Dashboard", icon: "grace" },
         { path: "/journey", label: "Journey", icon: "map", count: routeStats.total - routeStats.resolved },
         { path: "/collection", label: "Collection", icon: "bag", count: collection.owned },
       ],
@@ -61,15 +63,15 @@ export function Shell({ children }: { children: ReactNode }) {
     {
       label: "Craft",
       items: [
-        { path: "/builds", label: "Builds", icon: "sword" },
-        { path: "/character", label: "Character", icon: "helmet" },
+        { path: "/builds", label: "Builds", icon: "greatsword" },
+        { path: "/character", label: "Character", icon: "armor" },
         { path: "/bosses", label: "Bosses", icon: "skull" },
       ],
     },
     {
       label: "World",
       items: [
-        { path: "/quests", label: "Quests & NPCs", icon: "users" },
+        { path: "/quests", label: "Quests & NPCs", icon: "quest" },
         { path: "/lore", label: "Lore", icon: "book" },
         { path: "/farms", label: "Farms", icon: "leaf" },
         { path: "/tiers", label: "Tier Lists", icon: "list" },
@@ -78,7 +80,7 @@ export function Shell({ children }: { children: ReactNode }) {
     {
       label: "Journey",
       items: [
-        { path: "/completion", label: "Completion", icon: "trophy" },
+        { path: "/completion", label: "Completion", icon: "achievement" },
         { path: "/patch", label: "Patch & DLC", icon: "spark" },
         { path: "/settings", label: "Settings", icon: "settings" },
       ],
@@ -108,11 +110,22 @@ export function Shell({ children }: { children: ReactNode }) {
     <div className={`app density-${state.settings.density}`}>
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`} aria-label="Primary navigation">
         <div className="sidebar-brand">
-          <div className="brand-mark">
-            <Icon name="flame" size={22} />
+          <div className="brand-mark" aria-hidden="true">
+            <Icon name="flame" size={20} />
           </div>
           <div className="brand-text">
-            <div className="brand-title">Elden Ring</div>
+            {logoFailed ? (
+              <div className="brand-title">Elden Ring</div>
+            ) : (
+              <img
+                className="brand-logo"
+                src={ART.logo}
+                alt="Elden Ring"
+                width={640}
+                height={98}
+                onError={() => setLogoFailed(true)}
+              />
+            )}
             <div className="brand-sub">Definitive Companion</div>
           </div>
         </div>
@@ -167,6 +180,9 @@ export function Shell({ children }: { children: ReactNode }) {
               </div>
             </div>
           </button>
+          <div className="sidebar-disclaimer">
+            <UnofficialNote />
+          </div>
         </div>
       </aside>
 
@@ -193,6 +209,9 @@ export function Shell({ children }: { children: ReactNode }) {
             {initials(character.name)}
           </div>
         </header>
+        <div className="unofficial-strip">
+          <UnofficialNote compact />
+        </div>
         {children}
       </div>
 

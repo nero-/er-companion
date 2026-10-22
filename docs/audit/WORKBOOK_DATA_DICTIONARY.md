@@ -6,6 +6,15 @@ Size: 22,032,045 bytes
 Generated inventory: `docs/audit/WORKBOOK_INVENTORY.csv` (79 sheets)  
 Machine evidence: `docs/audit/DATA_INTEGRITY.json`, `src/data/*.json`, Tarnished Pack overlay in `src/data/game.ts`
 
+## Runtime scope note (2026-10-22)
+
+This dictionary documents **workbook extraction**, not the final runtime catalog. Two boundaries matter:
+
+- **Route Data is superseded.** The workbook's 994 Act I steps are the legacy migration input only. The runtime route is the full Redmaw route in `src/data/route.full.json`: **4,521 steps / 70 sections** (3,303 pre-DLC + 1,126 DLC + 92 endgame), ordered through Maliketh → the entire DLC → Ashen Capital → Endings → NG+ Preparation. See `docs/audit/FULL_GAME_DATA.md`.
+- **Items, encounters, achievements, questlines and NG+ are merged catalogs.** The runtime item catalog is **2,325** (1,787 workbook + 538 Redmaw-only, including 27 pack records); encounters are **237**; achievements **42**; questlines **52 / 587**; NG+ **12 / 68**. The workbook remains the seed for builds, tiers, lore, farms and workbook-world domains, and every workbook ID is preserved.
+
+The workbook facts below are retained because they describe the source artifact and the fields the build/lore/farm domains still use. Runtime counts are called out where they differ.
+
 ## Method and conventions
 
 `scripts/extract_workbook.py` loads the workbook read-only with `openpyxl(..., data_only=True)`. Every worksheet is retained in memory only if it has at least one non-empty row. `WORKBOOK_INVENTORY.csv` reports **non-empty rows including headers, section titles and metadata rows**, so it does not equal record count. Record counts below are post-filter counts from the extraction script.
@@ -15,7 +24,7 @@ Machine evidence: `docs/audit/DATA_INTEGRITY.json`, `src/data/*.json`, Tarnished
 - The hidden `Release Manifest` is older (v11.53, 69 sheets, 16 player tabs) and is treated as historical, not authoritative.
 - `sourceRow` in canonical JSON is the 1-based worksheet row. The sheet name is not repeated inside each record.
 - The extraction never writes to the workbook. No Apps Script or VBA source is included in the `.xlsx` export.
-- The final app appends a non-workbook overlay from `src/data/game.ts`: 27 Tarnished Pack items, 2 Tarnished Pack encounters, and patch/version metadata. Runtime arrays are therefore larger than the workbook extraction counts.
+- The final app appends a non-workbook overlay from `src/data/game.ts`: 27 Tarnished Pack items, 2 Tarnished Pack encounters, and patch/version metadata, and merges the Redmaw research catalogs. Runtime arrays are therefore larger than the workbook extraction counts: 2,325 items and 237 encounters.
 - **Observed:** sheet states, non-empty-row counts, workbook record counts, runtime overlay counts and source fields. **Inferred:** extraction-use labels and domain grouping where a sheet feeds multiple canonical entities.
 
 ## Sheet inventory
@@ -52,7 +61,7 @@ Machine evidence: `docs/audit/DATA_INTEGRITY.json`, `src/data/*.json`, Tarnished
 | Master Collectibles | hidden | 2107 | yes — 1,787 canonical of 2,105 rows |
 | NPC States | hidden | 52 | yes — 51 states |
 | Dialogue Events | hidden | 42 | yes — 41 events |
-| Bosses & Encounters | hidden | 51 | yes — 50 workbook encounters (52 runtime) |
+| Bosses & Encounters | hidden | 51 | yes — 50 workbook encounters (237 runtime after Redmaw + pack merge) |
 | World States | hidden | 154 | yes — 153 states |
 | Traversal | hidden | 65 | yes — 64 routes |
 | Relationships | hidden | 77 | not extracted |
@@ -65,7 +74,7 @@ Machine evidence: `docs/audit/DATA_INTEGRITY.json`, `src/data/*.json`, Tarnished
 | Merchants | hidden | 168 | yes — 167 purchases |
 | Knowledge Database | hidden | 14 | yes — 13 entries |
 | Micro-Objectives | hidden | 72 | yes — 71 micro-objectives |
-| Route Data | hidden | 995 | yes — 994 steps |
+| Route Data | hidden | 995 | yes — 994 legacy Act I steps (superseded by `route.full.json`) |
 | Objectives Data | hidden | 17 | yes — 16 objectives |
 | Progression Matrix | hidden | 86 | not extracted |
 | Dependency Matrix | hidden | 80 | yes — 75 dependencies |
@@ -106,14 +115,14 @@ Machine evidence: `docs/audit/DATA_INTEGRITY.json`, `src/data/*.json`, Tarnished
 
 | Domain | Source sheet(s) and header | Canonical location | Records | Key source fields |
 |---|---|---|---:|---|
-| Route steps | `Route Data` row 1 header, data rows 2–995 | `route.json` → `steps` | 994 | ID, Act, Completion Unit, Objective ID, Objective/Step Order, Step Type, Instruction, Required, Linked IDs, Prerequisites, Warning, Location, Validation, Route Decision, Skip Allowed, Return Window, Lockout Risk, Estimated Time |
+| Route steps (workbook) | `Route Data` row 1 header, data rows 2–995 | `route.json` → `steps`; legacy input to `legacy-step-map.json` | 994 | ID, Act, Completion Unit, Objective ID, Objective/Step Order, Step Type, Instruction, Required, Linked IDs, Prerequisites, Warning, Location, Validation, Route Decision, Skip Allowed, Return Window, Lockout Risk, Estimated Time |
 | Route areas | Derived from `Route Data` plus `Completion Units` | `route.json` → `areas` | 8 (7 route + Tutorial) | Area name, objective IDs, step counts, required counts, description, validation |
 | Objectives | `Objectives Data` | `route.json` → `objectives` | 16 | ID, completion unit, order, name, location, requirement, prerequisite, summary, validation |
 | Micro-objectives | `Micro-Objectives` | `route.json` → `microObjectives` | 71 | ID, objective ID, order, name, location, type, required, prerequisite, route range, completion rule, URL |
 | Completion units | `Completion Units` (header row 2) | `meta.json` → `completionUnits` | 6 | ID, act, name, order, validation, description, objective total |
 | Supplemental actions | `Supplemental Content` (header row 2) | `route.json` → `supplemental`; `chronologyAreas` | 116; 49 areas | ID, journey, area, area order, category, action, trigger, missable, source URL, coverage, future journey, notes, research status |
-| Items | `Master Collectibles` + `Permanent Collection`; runtime overlay `game.ts` | `items.json` → `items` (1,787) + `game.ts` → `TARNISHED_ITEMS` (27) | 1,787 workbook / 1,814 runtime | Permanent ID, category, name, region, location, acquisition type, status, objective link, route link, missable, validation, source URL, notes, game. Pack records use `TP-*` IDs, `game: "Tarnished Pack"`, `sourceRow: 0` |
-| Encounters | `Bosses & Encounters`, `Encounter Metadata`, `Encounter Recommendations`; runtime overlay `game.ts` | `world.json` → `encounters` (50) + `TARNISHED_ENCOUNTERS` (2) | 50 workbook / 52 runtime | ID, name, region, location, type, required, validation, route link, act, boss flags, achievement, quest/missable flags, level/weapon/flask/ash/strategy recommendations. Pack records use `TP-ENC-*` IDs |
+| Items | `Master Collectibles` + `Permanent Collection`; Redmaw research; runtime overlay `game.ts` | `items.full.json` → 2,325 merged records (workbook `items.json` 1,787 + 538 Redmaw-only, including 27 pack records) | 1,787 workbook / 2,325 runtime | Permanent ID, category, name, region, location, acquisition type, status, objective link, route link, missable, validation, source URL, notes, game. Pack records use `TP-*` IDs, `game: "Tarnished Pack"`, `sourceRow: 0` |
+| Encounters | `Bosses & Encounters`, `Encounter Metadata`, `Encounter Recommendations`; Redmaw research; runtime overlay `game.ts` | `bosses.full.json` → 237 merged encounters (50 workbook + 185 Redmaw-only + 2 pack) | 50 workbook / 237 runtime | ID, name, region, location, type, required, validation, route link, act, boss flags, achievement, quest/missable flags, level/weapon/flask/ash/strategy recommendations. Pack records use `TP-ENC-*` IDs |
 | Starting classes | Not a workbook sheet; `src/lib/classes.ts` | `CLASSES` | 12 | ID, name, level, eight stats, blurb. 10 base classes + Idus Knight + Heavy Knight, added from 1.17 sources |
 | NPC states | `NPC States` | `world.json` → `npcStates` | 51 | ID, NPC, region, milestone, route link, validation, warning |
 | Dialogue events | `Dialogue Events` | `world.json` → `dialogueEvents` | 41 | ID, NPC, location, trigger, route link, warning, validation, notes |
@@ -165,18 +174,18 @@ Machine evidence: `docs/audit/DATA_INTEGRITY.json`, `src/data/*.json`, Tarnished
 - `item.group` from category (or supplied by the pack overlay); `item.game` from region prefix or pack constant; `routeStepIds` and `autoStepId`.
 - `itemRegions` (mixed game/geographic labels), `itemGroups`, `bossStrategyTargets`, `routeAreaCounts`.
 - Archetype `familyRole` is source; navigation/search indexes and completion percentages are app-derived.
-- `meta.counts` are workbook extraction counts, not final runtime counts. Runtime `ITEMS` is 1,814 and `ENCOUNTERS` is 52 after the overlay.
+- `meta.counts` are workbook extraction counts, not final runtime counts. Runtime `ITEMS` is 2,325 and `ENCOUNTERS` is 237 after the Redmaw merge and pack overlay.
 
 ## Extraction constraints and coverage limits
 
-1. **Act I route only.** 994 steps in `Route Data`; the completion ledger claims 4,477. No later acts or DLC route sections are present as step records. `Route Guide` (1,172 non-empty rows) is not extracted and appears to be a legacy/duplicated route surface.
-2. **Finite resources are not permanent items.** `Master Collectibles` has 2,105 data rows; 1,787 match permanent IDs and join `Permanent Collection`. The remaining 318 correspond to finite-resource rows and are modeled in `farms.json`. The workbook catalog is 1,787; the final runtime catalog is 1,814 after 27 Tarnished Pack records. It is not 2,105, and it is not directly comparable to the 1,960 workbook denominator.
-3. **Exact acquisition detail is incomplete for workbook items.** 1,467 workbook items (1,074 base, 393 DLC) carry "acquisition detail Phase 26E" placeholders; 320 workbook items have concrete acquisition records. The 27 Tarnished Pack records have exact locations, so the final runtime placeholder count is 1,467 of 1,814.
-4. **Item region is not a geographic key for most rows.** 1,467 workbook rows use a game tag; 320 workbook rows and the 27 pack rows use a location label. Do not treat `counts.itemRegions` as a region completion denominator.
+1. **Route Data is legacy.** The workbook contains 994 Act I steps and its completion ledger claims 4,477. It is retained as the source for `legacy-step-map.json` (62 of 994 map to the new route), but the runtime route is `route.full.json` at 4,521 steps / 70 sections. `Route Guide` (1,172 non-empty rows) is not extracted and appears to be a legacy/duplicated route surface.
+2. **Finite resources are not permanent items.** `Master Collectibles` has 2,105 data rows; 1,787 match permanent IDs and join `Permanent Collection`. The remaining 318 correspond to finite-resource rows and are modeled in `farms.json`. The workbook catalog is 1,787; the merged runtime catalog is 2,325 (1,787 workbook + 538 Redmaw-only, including 27 pack records). It is not 2,105, and the 1,960 workbook category aggregate is not the runtime denominator.
+3. **Acquisition detail was enriched during integration.** The 1,467 workbook `Phase 26E` placeholders no longer appear at runtime. All 1,947 placeholder/slot/catalog locations were replaced: 930 became route-section areas with the step instruction in `acquisitionText`; 1,017 were cleared and are labeled unrecorded. Runtime location quality is 378 exact / 930 area-only / 1,017 unrecorded of 2,325.
+4. **Item region is not a geographic key for many rows.** Workbook rows often use a game tag; merged Redmaw and pack rows use section or location labels. Do not treat `counts.itemRegions` as a region completion denominator.
 5. **Remembrance extraction is complete.** All 25 data rows, including `Elden Remembrance`, are extracted; the test suite asserts the count and presence.
-6. **Trophy denominator mismatch.** The cue section heading says 0/42, but only 12 numbered cue rows exist. Extraction returns 12. The 3 platform ending achievements are a separate sheet field.
+6. **Workbook trophy cues differ from the runtime achievement catalog.** The workbook cue section heading says 0/42, but only 12 numbered cue rows exist. The 3 platform ending achievements on `Endings & Achievements` are a separate workbook field. The runtime achievement catalog is the 42-row Redmaw research set with 4 requirement groups; workbook cue rows are not its denominator.
 7. **Progression loadout fields were corrected during integration.** Talismans read 14–17, spell package reads 18, physick reads 19–20, and upgrade/status/notes align. The runtime record now exposes `spellPackage`, `requiredEquipment`, `upgradePlanId`, and `status`; a test asserts the corrected prompt.
-8. **Category denominators were corrected during integration.** `total` now reads column 2; a test asserts Armor 704 with base 559 + DLC 145. The remaining problem is catalog/denominator taxonomy, not extraction.
+8. **Category denominators were corrected during integration.** `total` now reads column 2; a test asserts Armor 704 with base 559 + DLC 145. The 13-category workbook aggregate (1,960) remains documentation of the workbook taxonomy; the runtime collection scope uses the merged catalog denominator of 2,325.
 9. **Tarnished Pack is outside the workbook denominator.** The 27 items and 2 encounters are appended from official/guide sources and are not part of the workbook's 1,960 aggregate or 50-encounter ledger.
 10. **Linked-ID validation is incomplete.** `DOMAIN_INDEXES` covers only COL, ENC, NPC, DIA, WS, TRV, RES, FRM, MIC, RTE, SUP and OBJ. Route-step links to DEP, MER, KN, LCK and SCB therefore appear unresolved even when the records exist. VAL and REC have no canonical dataset; one FRM token is genuinely missing.
 11. **Range expansion is positional.** `RTE-X:RTE-Y` expands by index order within the canonical domain. It is deterministic but depends on source ordering; no explicit range type or cycle check exists.

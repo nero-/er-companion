@@ -1,0 +1,505 @@
+/* ---------- Dashboard · full three-phase route ---------- */
+
+.dashboard-hero {
+  min-height: 380px;
+}
+
+.dashboard-hero .art-hero-body {
+  width: 100%;
+  max-width: 940px;
+}
+
+.dashboard-hero .art-hero-title {
+  max-width: 920px;
+  overflow-wrap: anywhere;
+  font-size: clamp(23px, 2.7vw, 37px);
+  line-height: 1.14;
+}
+
+.dashboard-hero .art-hero-desc {
+  max-width: 74ch;
+  margin-top: 7px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.dashboard-hero .art-hero-children {
+  margin-top: 14px;
+}
+
+.dashboard-hero-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.dashboard-hero-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 10px;
+  color: var(--fg-soft);
+  font-size: 11.5px;
+}
+
+.dashboard-hero-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.dashboard-hero-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  max-width: 860px;
+  margin-top: 10px;
+  padding: 9px 11px;
+  border-left: 2px solid var(--warning);
+  border-radius: 0 7px 7px 0;
+  background: rgba(12, 9, 6, 0.72);
+  color: #e2c9a3;
+  font-size: 11.5px;
+  line-height: 1.5;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+}
+
+.dashboard-hero-warning.is-danger {
+  border-left-color: var(--danger);
+  background: rgba(80, 28, 20, 0.72);
+  color: #f0c7bc;
+}
+
+.dashboard-hero-warning svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.dashboard-hero-prereq {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  margin-top: 8px;
+  color: var(--faint);
+  font-size: 10.5px;
+}
+
+.dashboard-hero-links {
+  margin-top: 11px;
+}
+
+.dashboard-hero-progress {
+  max-width: 620px;
+  margin-top: 15px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(201, 163, 93, 0.18);
+}
+
+.dashboard-hero-complete {
+  max-width: 700px;
+  margin: 4px 0 0;
+  color: var(--fg-soft);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ---------- Phase cards ---------- */
+
+.dashboard-phase-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.dashboard-phase {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background:
+    radial-gradient(420px 120px at 100% 0, rgba(201, 163, 93, 0.045), transparent 70%),
+    var(--surface);
+  color: var(--fg-soft);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.dashboard-phase:hover {
+  border-color: var(--border-strong);
+  background:
+    radial-gradient(420px 120px at 100% 0, rgba(201, 163, 93, 0.08), transparent 70%),
+    var(--surface-2);
+}
+
+.dashboard-phase.is-current {
+  border-color: rgba(201, 163, 93, 0.44);
+  background:
+    radial-gradient(460px 140px at 100% 0, rgba(201, 163, 93, 0.12), transparent 72%),
+    var(--surface-2);
+}
+
+.dashboard-phase.is-complete {
+  border-color: rgba(143, 172, 118, 0.3);
+}
+
+.dashboard-phase-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.dashboard-phase-index {
+  color: var(--faint);
+  font-family: var(--font-ui);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.dashboard-phase-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 1.22;
+  color: var(--parchment);
+  overflow-wrap: anywhere;
+}
+
+.dashboard-phase-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3px 9px;
+  color: var(--faint);
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.dashboard-phase-missable {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--danger);
+}
+
+.dashboard-phase-missable.is-clear {
+  color: var(--success);
+}
+
+.dashboard-phase .progress-track {
+  height: 5px;
+  margin-top: 2px;
+}
+
+.dashboard-phase-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.dashboard-phase-sections span {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  min-width: 0;
+}
+
+.dashboard-phase-sections svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: var(--faint);
+}
+
+/* ---------- Missables and phase gate ---------- */
+
+.dashboard-alert-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+  align-items: stretch;
+}
+
+.dashboard-alert-grid--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.dashboard-missables {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-color: rgba(205, 112, 89, 0.36);
+  background:
+    radial-gradient(560px 150px at 100% 0, rgba(205, 112, 89, 0.09), transparent 72%),
+    var(--surface);
+}
+
+.dashboard-missables.is-clear {
+  border-color: rgba(143, 172, 118, 0.26);
+  background:
+    radial-gradient(560px 150px at 100% 0, rgba(143, 172, 118, 0.06), transparent 72%),
+    var(--surface);
+}
+
+.dashboard-missables-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.dashboard-missables-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 37px;
+  height: 37px;
+  border: 1px solid rgba(205, 112, 89, 0.36);
+  border-radius: 9px;
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.dashboard-missables.is-clear .dashboard-missables-icon {
+  border-color: rgba(143, 172, 118, 0.35);
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.dashboard-missables-title {
+  margin: 2px 0 0;
+  font-family: var(--font-display);
+  font-size: 17px;
+  line-height: 1.28;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-missables-copy {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.55;
+}
+
+.dashboard-missable-progress .progress-fill {
+  background: linear-gradient(90deg, #8f4433, var(--danger), #e0a090);
+}
+
+.dashboard-missables-actions {
+  margin-top: 2px;
+}
+
+.dashboard-gate {
+  min-height: 0;
+}
+
+.dashboard-gate .art-banner-body {
+  display: block;
+  padding: 15px 17px;
+}
+
+.dashboard-gate .art-banner-title {
+  font-size: 18px;
+}
+
+.dashboard-gate-copy {
+  max-width: 820px;
+  margin: 8px 0 0;
+  color: var(--fg-soft);
+  font-size: 11.5px;
+  line-height: 1.55;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+}
+
+.dashboard-gate-count {
+  margin: 7px 0 0;
+  color: var(--accent-strong);
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.dashboard-gate-actions {
+  margin-top: 10px;
+}
+
+.dashboard-gate--danger {
+  border-color: rgba(205, 112, 89, 0.55);
+  box-shadow: 0 0 0 1px rgba(205, 112, 89, 0.12);
+}
+
+.dashboard-gate--danger .art-banner-caption {
+  color: #e6a08e;
+}
+
+.dashboard-gate--danger .dashboard-gate-count {
+  color: #efb3a4;
+}
+
+.dashboard-gate-next {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+}
+
+.dashboard-gate-next-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.dashboard-gate-next p {
+  margin: 0;
+}
+
+/* ---------- Completion scopes ---------- */
+
+.dashboard-scopes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.dashboard-scope {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  padding: 12px 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--fg-soft);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.dashboard-scope:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
+
+.dashboard-scope.is-complete {
+  border-color: rgba(143, 172, 118, 0.25);
+}
+
+.dashboard-scope-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dashboard-scope-label {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.dashboard-scope-value {
+  color: var(--fg-soft);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  white-space: nowrap;
+}
+
+.dashboard-scope .progress-track {
+  height: 4px;
+}
+
+.dashboard-scope-meta {
+  color: var(--faint);
+  font-size: 10px;
+}
+
+/* ---------- Commands ---------- */
+
+.dashboard-quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1280px) {
+  .dashboard-hero {
+    min-height: 360px;
+  }
+}
+
+@media (max-width: 1080px) {
+  .dashboard-phase-grid,
+  .dashboard-scopes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-alert-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-hero {
+    min-height: 320px;
+  }
+
+  .dashboard-hero .art-hero-title {
+    font-size: clamp(22px, 5.4vw, 30px);
+  }
+
+  .dashboard-phase-grid,
+  .dashboard-scopes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-missables-head {
+    flex-direction: column;
+  }
+
+  .dashboard-gate-actions .btn,
+  .dashboard-missables-actions .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 440px) {
+  .dashboard-hero .art-hero-body {
+    padding: 18px;
+  }
+
+  .dashboard-hero .art-hero-actions .btn,
+  .dashboard-gate-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dashboard-hero-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+}

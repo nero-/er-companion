@@ -11,17 +11,14 @@ import type {
   StepStatus,
 } from "./types";
 import {
+  AUTO_BOSSES_BY_STEP,
   AUTO_ITEMS_BY_STEP,
-  ENCOUNTERS,
-  FINITE_RESOURCES,
-  DIALOGUE_EVENTS,
   ITEMS,
   ITEMS_BY_NAME,
   LOADOUTS_BY_BUILD,
-  NPC_STATES,
-  SCARABS,
   SPELL_PACKAGE_BY_ID,
   STEP_BY_ID,
+  remapStepId,
   LOADOUT_BY_ID,
   PROFILE_BY_ID,
 } from "./data";
@@ -78,6 +75,8 @@ function emptyJourney(index: number, label?: string): JourneyState {
     transitionGates: {},
     remembrances: {},
     zonesRevealed: {},
+    questlineSteps: {},
+    ngplusChecklist: {},
   };
 }
 
@@ -102,6 +101,7 @@ function createCharacter(name = "Tarnished"): Character {
     farmables: {},
     loreRead: {},
     endings: {},
+    achievements: {},
     equipment: {
       ...EMPTY_EQUIPMENT,
       armor: [...EMPTY_EQUIPMENT.armor],
@@ -175,6 +175,27 @@ function bossStatusRecord(value: unknown): Record<string, BossStatus> {
   return output;
 }
 
+function remapLegacySteps(value: unknown): Record<string, unknown> {
+  const source = asObject(value);
+  const output: Record<string, unknown> = {};
+  // Current step IDs and unknown future keys win over legacy remaps.
+  for (const [key, entry] of Object.entries(source)) {
+    if (STEP_BY_ID[key]) output[key] = entry;
+  }
+  for (const [key, entry] of Object.entries(source)) {
+    if (STEP_BY_ID[key]) continue;
+    const remapped = remapStepId(key);
+    if (remapped) {
+      if (output[remapped] === undefined) output[remapped] = entry;
+      continue;
+    }
+    // Only pre-integration RTE-* keys are dropped when no confident mapping
+    // exists. Unknown future keys survive so a newer save is never truncated.
+    if (!key.startsWith("RTE-")) output[key] = entry;
+  }
+  return output;
+}
+
 function statsFrom(value: unknown, fallback: Stats): Stats {
   const source = asObject(value);
   const output = { ...fallback };
@@ -193,7 +214,7 @@ function tuple(value: unknown, length: number, fallback: string[]): string[] {
   });
 }
 
-function normalizeJourney(value: unknown, index: number): JourneyState {
+export function normalizeJourney(value: unknown, index: number): JourneyState {
   const source = asObject(value);
   const id = typeof source.id === "string" ? source.id : newId("journey");
   const label = typeof source.label === "string" ? source.label : `Journey ${index}`;
@@ -203,8 +224,8 @@ function normalizeJourney(value: unknown, index: number): JourneyState {
     index: typeof source.index === "number" ? source.index : index,
     label,
     createdAt,
-    steps: statusRecord(source.steps, ["done", "skipped", "deferred"]),
-    stepNotes: stringRecord(source.stepNotes),
+    steps: statusRecord(remapLegacySteps(source.steps), ["done", "skipped", "deferred"]),
+    stepNotes: stringRecord(remapLegacySteps(source.stepNotes)),
     supplemental: statusRecord(source.supplemental, ["done", "skipped", "deferred"]),
     npcStates: boolRecord(source.npcStates),
     dialogue: boolRecord(source.dialogue),
@@ -219,6 +240,8 @@ function normalizeJourney(value: unknown, index: number): JourneyState {
     transitionGates: boolRecord(source.transitionGates),
     remembrances: asObject(source.remembrances) as JourneyState["remembrances"],
     zonesRevealed: boolRecord(source.zonesRevealed),
+    questlineSteps: boolRecord(source.questlineSteps),
+    ngplusChecklist: boolRecord(source.ngplusChecklist),
   };
 }
 
@@ -263,6 +286,7 @@ function normalizeCharacter(value: unknown): Character | null {
     farmables: numberRecord(source.farmables),
     loreRead: boolRecord(source.loreRead),
     endings: normalizeEndings(source.endings),
+    achievements: boolRecord(source.achievements),
     equipment: {
       mainWeapon: typeof equipmentSource.mainWeapon === "string" ? equipmentSource.mainWeapon : "",
       secondaryWeapon: typeof equipmentSource.secondaryWeapon === "string" ? equipmentSource.secondaryWeapon : "",
@@ -409,57 +433,22 @@ function applyStepCompletion(
   result: StepActionResult,
   sourceItems: Record<string, boolean>,
 ): { items: Record<string, boolean>; journey: JourneyState } {
-  const step = STEP_BY_ID[stepId];
   const items = { ...sourceItems };
-  const acquire = (name: string, id: string) => {
-    if (!items[id]) {
-      items[id] = true;
-      result.acquiredItems.push(name);
+  for (const item of AUTO_ITEMS_BY_STEP[stepId] ?? []) {
+    if (!items[item.id]) {
+      items[item.id] = true;
+      result.acquiredItems.push(item.name);
     }
-  };
-
-  const linked = new Set(step?.linkedIds ?? []);
-  for (const item of AUTO_ITEMS_BY_STEP[stepId] ?? []) linked.add(item.id);
-  for (const item of ITEMS) {
-    if (linked.has(item.id)) acquire(item.name, item.id);
   }
 
   const bosses = { ...journey.bosses };
-  for (const encounter of ENCOUNTERS) {
-    if (linked.has(encounter.id)) {
+  for (const encounter of AUTO_BOSSES_BY_STEP[stepId] ?? []) {
+    if (bosses[encounter.id] !== "defeated") {
       bosses[encounter.id] = "defeated";
       result.defeatedBosses.push(encounter.name);
     }
   }
-  const npcStates = { ...journey.npcStates };
-  for (const npc of NPC_STATES) {
-    if (linked.has(npc.id)) {
-      npcStates[npc.id] = true;
-      result.completedNpcs.push(npc.npc);
-    }
-  }
-  const dialogue = { ...journey.dialogue };
-  for (const event of DIALOGUE_EVENTS) {
-    if (linked.has(event.id)) dialogue[event.id] = true;
-  }
-  const finite = { ...journey.finite };
-  for (const resource of FINITE_RESOURCES) {
-    if (linked.has(resource.id)) {
-      finite[resource.id] = true;
-      result.pickedUpResources.push(resource.name);
-    }
-  }
-  const scarabs = { ...journey.scarabs };
-  for (const scarab of SCARABS) {
-    if (linked.has(scarab.id)) {
-      scarabs[scarab.id] = true;
-      result.scarabs.push(scarab.reward);
-    }
-  }
-  return {
-    items,
-    journey: { ...journey, bosses, npcStates, dialogue, finite, scarabs },
-  };
+  return { items, journey: { ...journey, bosses } };
 }
 
 export function setStepStatus(stepId: string, status: StepStatus | null): StepActionResult {
@@ -666,6 +655,33 @@ export function setLoreRead(id: string, value: boolean): void {
     if (value) loreRead[id] = true;
     else delete loreRead[id];
     return { ...character, loreRead };
+  });
+}
+
+export function setAchievement(id: string, value: boolean): void {
+  updateCharacter((character) => {
+    const achievements = { ...character.achievements };
+    if (value) achievements[id] = true;
+    else delete achievements[id];
+    return { ...character, achievements };
+  });
+}
+
+export function setQuestlineStep(id: string, value: boolean): void {
+  updateJourney((journey) => {
+    const questlineSteps = { ...journey.questlineSteps };
+    if (value) questlineSteps[id] = true;
+    else delete questlineSteps[id];
+    return { ...journey, questlineSteps };
+  });
+}
+
+export function setNgPlusItem(id: string, value: boolean): void {
+  updateJourney((journey) => {
+    const ngplusChecklist = { ...journey.ngplusChecklist };
+    if (value) ngplusChecklist[id] = true;
+    else delete ngplusChecklist[id];
+    return { ...journey, ngplusChecklist };
   });
 }
 

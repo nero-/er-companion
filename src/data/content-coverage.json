@@ -1,0 +1,114 @@
+{
+ "generatedAt": "2026-10-22T18:45:57+00:00",
+ "route": {
+  "sections": 70,
+  "steps": 4521,
+  "baseSteps": 3395,
+  "dlcSteps": 1126,
+  "preDlcSteps": 3303,
+  "endgameSteps": 92,
+  "requiredSteps": 4307,
+  "missableSteps": 206,
+  "missableBaseSteps": 168,
+  "missableDlcSteps": 38,
+  "baseSections": 50,
+  "dlcSections": 20,
+  "preDlcSections": 46,
+  "endgameSections": 4,
+  "firstDlcStepOrder": 3304,
+  "firstEndgameStepOrder": 4433
+ },
+ "items": {
+  "workbook": 1787,
+  "redmawDeduped": 2100,
+  "redmawOnly": 538,
+  "matchedWorkbook": 1562,
+  "unmatchedWorkbook": 225,
+  "tarnishedPack": 27,
+  "tarnishedPackMerged": 27,
+  "final": 2325,
+  "duplicateNameKeys": 68,
+  "linkedToRoute": 1118,
+  "placeholdersReplaced": 1947,
+  "areaDerivedLocations": 930,
+  "clearedLocations": 1017
+ },
+ "achievements": {
+  "achievements": 42,
+  "requirementGroups": 4,
+  "requirementItems": 30,
+  "linkedRequirementItems": 30
+ },
+ "bosses": {
+  "workbookEncounters": 50,
+  "redmaw": 207,
+  "matchedWorkbook": 22,
+  "redmawOnly": 185,
+  "final": 237,
+  "linkedToRoute": 142
+ },
+ "questlines": {
+  "questlines": 52,
+  "steps": 587
+ },
+ "ngplus": {
+  "sections": 12,
+  "items": 68
+ },
+ "links": {
+  "labels": 5290,
+  "resolved": 1502,
+  "unresolved": 3788,
+  "unresolvedUnique": 1429,
+  "relativeResolved": 51
+ },
+ "legacyMap": {
+  "workbookSteps": 994,
+  "mapped": 62
+ },
+ "sources": {
+  "research/route.base.json": {
+   "sha256": "1f711943b58a7f8736275f257941b08a710970db96918ce6e5d34f308e22edfb",
+   "sections": 49,
+   "steps": 3395
+  },
+  "research/route.dlc.json": {
+   "sha256": "a089ae03021d72f9e16b03e2f34d27b2097b37d011873e7a5af617fc5f0445fe",
+   "sections": 20,
+   "steps": 1126
+  },
+  "research/items.json": {
+   "sha256": "0a74ee548f6ccbd44ca8039add41c8bb049c426f3f0f0a59702d8df409369f92",
+   "rawRows": 2116,
+   "deduped": 2100
+  },
+  "research/achievements.json": {
+   "sha256": "fdf971d61da03efa030e9cafe38f85864da2ebdbb608737145dd9b0ae8af4f6c"
+  },
+  "research/bosses.json": {
+   "sha256": "108a215094927ff279b1f44c3a7950c28f39a83a527827e85b4621f97812e161"
+  },
+  "research/questlines.json": {
+   "sha256": "6f8f8f46c5872dd6e27379bdc07ba6d1a1668017730801ef39e3fe8098bcfc47"
+  },
+  "research/ngplus.json": {
+   "sha256": "03b348c4d4a180602f3b14f2ae99d38c09bb5320ffa4c0632cb6e0ec5978b06e"
+  },
+  "src/data/items.json": {
+   "sha256": "5fb527dbf688507fb4ddb181ff352466354df895035f5edcfaacaeae89b20ee2",
+   "items": 1787
+  },
+  "src/data/world.json": {
+   "sha256": "dafc2f773cce09dd4b6f0fbd48eca4b655bb3d905fb0a1a945568f3d85fe53ab",
+   "encounters": 50
+  },
+  "src/data/route.json": {
+   "sha256": "15c7231b8194101cd17dbcbb4230a0233780e10074bb0c4abe0146b9208b5215",
+   "steps": 994
+  },
+  "src/data/game.ts": {
+   "sha256": "67df6a0667cf32e1309cdac9b7ed0f551105c260bbe14813d366d22fe277845e",
+   "packItems": 27
+  }
+ }
+}

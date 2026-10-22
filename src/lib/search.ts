@@ -1,5 +1,6 @@
 import { CLASSES } from "./classes";
 import {
+  ACHIEVEMENTS,
   ARCHETYPES,
   BOSS_NAMES,
   ENCOUNTERS,
@@ -11,6 +12,7 @@ import {
   META,
   NPC_STATES,
   PROFILES,
+  QUESTLINES,
   ROUTE_STEPS,
   SCARABS,
   TIERS,
@@ -51,7 +53,7 @@ for (const step of ROUTE_STEPS) {
       step.id,
       "Route step",
       step.instruction,
-      `${step.area} · ${step.objectiveName} · ${step.type}`,
+      `${step.area}${step.levelRange ? ` · ${step.levelRange}` : ""} · ${step.phase}`,
       `/journey?area=${encodeURIComponent(step.area)}&step=${encodeURIComponent(step.id)}`,
       `${step.location} ${step.warning} ${step.id}`,
     ),
@@ -84,6 +86,32 @@ for (const encounter of ENCOUNTERS) {
       `${encounter.type} · ${encounter.location}`,
       `/bosses?encounter=${encodeURIComponent(encounter.id)}`,
       `${encounter.region} ${encounter.notes}`,
+    ),
+  );
+}
+
+for (const achievement of ACHIEVEMENTS) {
+  INDEX.push(
+    entry(
+      achievement.id,
+      "Achievement",
+      achievement.name,
+      `${achievement.section} · ${achievement.missable ? "Missable" : "Trophy"}`,
+      `/completion?achievement=${encodeURIComponent(achievement.id)}`,
+      `${achievement.description} ${achievement.wikiUrl}`,
+    ),
+  );
+}
+
+for (const questline of QUESTLINES) {
+  INDEX.push(
+    entry(
+      questline.id,
+      "Questline",
+      questline.npc,
+      `${questline.game} · ${questline.stepCount} steps · ${questline.missableCount} missable`,
+      `/quests?questline=${encodeURIComponent(questline.id)}`,
+      questline.steps.map((step) => step.text).join(" "),
     ),
   );
 }
@@ -241,6 +269,7 @@ export const QUICK_LINKS: SearchEntry[] = [
   entry("nav:lore", "Page", "Lore", "Spoiler-controlled journal", "/lore"),
   entry("nav:farms", "Page", "Farms", "Farmables, materials, merchants, scarabs", "/farms"),
   entry("nav:tiers", "Page", "Tier lists", "Weapons, spells, ashes, talismans", "/tiers"),
+  entry("nav:bosses", "Page", "Bosses", "Merged boss ledger and strategy library", "/bosses"),
   entry("nav:completion", "Page", "Completion", "Endings, achievements, NG+ readiness", "/completion"),
   entry("nav:patch", "Page", "Patch & DLC", "Live game version, Tarnished Pack, 1.17 balance changes", "/patch"),
 ];

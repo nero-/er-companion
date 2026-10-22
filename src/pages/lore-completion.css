@@ -245,6 +245,23 @@
   cursor: pointer;
 }
 
+.lore-banner {
+  margin-bottom: 18px;
+}
+
+.lore-banner-note {
+  max-width: 62ch;
+  margin-top: 6px;
+  color: var(--fg-soft);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.lore-game {
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
 /* ---------- Completion: shared ---------- */
 
 .completion-tab {
@@ -781,11 +798,429 @@
   margin-top: 2px;
 }
 
+/* ---------- Completion: 100% scope matrix ---------- */
+
+.completion-banner {
+  margin-bottom: 18px;
+}
+
+.completion-banner-note {
+  max-width: 66ch;
+  margin-top: 6px;
+  color: var(--fg-soft);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.completion-scopes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 18px 0 16px;
+  padding: 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  background:
+    radial-gradient(120% 150% at 0% 0%, rgba(198, 161, 90, 0.07), transparent 62%),
+    var(--surface);
+}
+
+.scope-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.scope-title {
+  font-size: 16px;
+  letter-spacing: 0.02em;
+}
+
+.scope-subtitle {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.scope-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.scope-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.16);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.scope-card:hover,
+.scope-card:focus-visible {
+  border-color: var(--border-strong);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.scope-card.is-complete {
+  border-color: rgba(145, 176, 122, 0.3);
+  background: rgba(145, 176, 122, 0.05);
+}
+
+.scope-card-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: var(--fg-soft);
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.scope-card-head > svg:last-child {
+  margin-left: auto;
+  color: var(--success);
+}
+
+.scope-icon {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--accent);
+}
+
+.scope-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scope-value {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 1.15;
+  color: var(--fg);
+}
+
+.scope-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.scope-track {
+  display: block;
+  height: 4px;
+  margin-top: 2px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.scope-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 220ms ease;
+}
+
+.scope-track.is-complete .scope-fill {
+  background: var(--success);
+}
+
+/* ---------- Completion: achievements ---------- */
+
+.achievement-header-row {
+  align-items: flex-end;
+}
+
+.achievement-header-row .section-title {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.achievement-filter {
+  width: 210px;
+  min-width: 170px;
+}
+
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.achievement-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.achievement-row.is-earned {
+  border-color: rgba(145, 176, 122, 0.26);
+  background: rgba(145, 176, 122, 0.04);
+}
+
+.achievement-row.is-focused {
+  border-color: rgba(198, 161, 90, 0.55);
+  box-shadow: 0 0 0 1px rgba(198, 161, 90, 0.28) inset;
+}
+
+.achievement-row > .check {
+  margin-top: 2px;
+}
+
+.achievement-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.achievement-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.achievement-head .card-title {
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.achievement-badges {
+  justify-content: flex-end;
+}
+
+.achievement-desc {
+  color: var(--fg-soft);
+  font-size: 11.5px;
+  line-height: 1.55;
+}
+
+.achievement-reqs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.req-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.req-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.req-group-head strong {
+  color: var(--accent);
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.req-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.req-items li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.req-items li .lore-inline-link {
+  color: var(--fg-soft);
+  text-align: left;
+}
+
+.req-items li.is-owned .lore-inline-link {
+  color: var(--success);
+}
+
+.req-owned {
+  display: inline-flex;
+  color: var(--success);
+}
+
+.req-wiki {
+  display: inline-flex;
+  color: var(--faint);
+}
+
+.req-wiki:hover {
+  color: var(--accent);
+}
+
+.achievement-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.achievement-foot a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  font-size: 11px;
+}
+
+/* ---------- Completion: NG+ checklist ---------- */
+
+.ngp-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  align-items: start;
+}
+
+.ngp-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--surface);
+}
+
+.ngp-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.ngp-head .card-title {
+  font-size: 13.5px;
+  line-height: 1.3;
+}
+
+.ngp-head > .badge {
+  flex: 0 0 auto;
+}
+
+.ngp-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ngp-step {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 5px 10px;
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+  color: var(--fg-soft);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+.ngp-step:first-child {
+  border-top: 0;
+}
+
+.ngp-step.is-checked {
+  color: var(--muted);
+}
+
+.ngp-step .check {
+  flex: 1 1 100%;
+  align-items: flex-start;
+}
+
+.ngp-step .check > span:last-child {
+  overflow-wrap: anywhere;
+}
+
+.ngp-step-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  padding-left: 22px;
+}
+
+.ngp-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--accent);
+  font-size: 10px;
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 960px) {
   .pulse-grid.completion-pulse-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .scope-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .achievement-grid,
+  .ngp-sections {
+    grid-template-columns: 1fr;
   }
 
   .lore-toolbar {
@@ -803,6 +1238,22 @@
   .endings-grid,
   .remembrance-grid {
     grid-template-columns: 1fr;
+  }
+
+  .scope-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .achievement-header-row {
+    align-items: stretch;
+  }
+
+  .achievement-filter {
+    width: 100%;
+  }
+
+  .completion-scopes {
+    padding: 13px;
   }
 
   .pulse-grid.completion-pulse-grid {
@@ -889,5 +1340,22 @@
 
   .ending-badges {
     justify-content: flex-start;
+  }
+
+  .achievement-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .achievement-badges {
+    justify-content: flex-start;
+  }
+
+  .ngp-step-meta {
+    padding-left: 0;
+  }
+
+  .scope-value {
+    font-size: 18px;
   }
 }

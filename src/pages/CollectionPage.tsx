@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Button,
   Callout,
+  Checkbox,
   EmptyState,
   Modal,
   PageHeader,
@@ -11,18 +12,26 @@ import {
   Stat,
   useToast,
 } from "../components/ui";
+import { ART, ArtBanner } from "../components/Art";
 import { Icon } from "../components/Icon";
-import { ItemDrawer } from "../components/ItemDrawer";
+import {
+  ItemDrawer,
+  isItemMissable,
+  isItemRouteLinked,
+  isItemTimingSensitive,
+  itemLocationKind,
+  itemRegionName,
+} from "../components/ItemDrawer";
 import { bulkSetItems, setItemOwned, useActiveCharacter } from "../lib/store";
 import { collectionSummary } from "../lib/selectors";
-import { ITEM_BY_ID, ITEMS, ITEMS_BY_GROUP, ITEMS_BY_REGION } from "../lib/data";
+import { ITEM_BY_ID, ITEMS, ITEMS_BY_GROUP, ROUTE_STEPS } from "../lib/data";
 import { formatNumber, itemGroupIcon } from "../lib/format";
 import { navigate, useRoute } from "../lib/router";
 import type { Item } from "../lib/types";
 import "./collection.css";
 
 type OwnedFilter = "all" | "owned" | "missing";
-type SortKey = "name" | "group" | "region";
+type SortKey = "name" | "group" | "region" | "game" | "section" | "acquisition";
 type BulkTarget = "owned" | "missing";
 
 const PAGE_SIZE = 120;
@@ -50,6 +59,12 @@ const GROUP_ORDER = [
 
 const GAME_ORDER = ["Base Game", "Shadow of the Erdtree", "Tarnished Pack"];
 
+const GAME_NAMES: Record<string, true> = {
+  "Base Game": true,
+  "Shadow of the Erdtree": true,
+  "Tarnished Pack": true,
+};
+
 const GROUPS = Object.keys(ITEMS_BY_GROUP).sort((a, b) => {
   const indexA = GROUP_ORDER.indexOf(a);
   const indexB = GROUP_ORDER.indexOf(b);
@@ -69,18 +84,89 @@ const GAMES = (() => {
   return ordered;
 })();
 
-const REGIONS = Object.keys(ITEMS_BY_REGION).sort((a, b) => a.localeCompare(b));
+const REGIONS = [...new Set(ITEMS.map((item) => item.region).filter((region) => region && GAME_NAMES[region] !== true))].sort(
+  (a, b) => a.localeCompare(b),
+);
+
+/** Game names left in `region` after the merge — shown honestly, never as a place. */
+const UNRECORDED_REGIONS = GAMES.filter((game) => ITEMS.some((item) => item.region === game));
+
+const REGION_VALUES: Record<string, true> = Object.fromEntries(
+  [...REGIONS, ...UNRECORDED_REGIONS].map((region) => [region, true]),
+);
 
 const SEARCH_INDEX: Record<string, string> = Object.fromEntries(
   ITEMS.map((item) => [
     item.id,
-    [item.name, item.location, item.region, item.category, item.notes].join(" ").toLowerCase(),
+    [
+      item.name,
+      item.location,
+      item.region,
+      item.category,
+      item.group,
+      item.game,
+      item.section ?? "",
+      item.acquisitionType,
+      item.acquisitionText ?? "",
+      item.notes,
+      item.wikiUrl ?? "",
+      item.missable,
+    ]
+      .join(" ")
+      .toLowerCase(),
   ]),
 );
 
 const COLLATOR = new Intl.Collator("en", { sensitivity: "base", numeric: true });
 
+const CATALOG_COUNTS = (() => {
+  let routeLinked = 0;
+  let missable = 0;
+  let missableDlc = 0;
+  let timing = 0;
+  const locations = { exact: 0, area: 0, unrecorded: 0 };
+  for (const item of ITEMS) {
+    if (isItemRouteLinked(item)) routeLinked += 1;
+    if (isItemMissable(item)) {
+      missable += 1;
+      if (item.dlc) missableDlc += 1;
+    } else if (isItemTimingSensitive(item)) {
+      timing += 1;
+    }
+    locations[itemLocationKind(item)] += 1;
+  }
+  return { routeLinked, missable, missableDlc, timing, locations };
+})();
 
+const SORT_KEYS: Record<string, SortKey> = {
+  name: "name",
+  group: "group",
+  region: "region",
+  game: "game",
+  section: "section",
+  acquisition: "acquisition",
+};
+
+function sortLabel(item: Item, key: SortKey): string {
+  if (key === "group") return item.group;
+  if (key === "region") return itemRegionName(item) ?? item.region;
+  if (key === "game") return item.game;
+  if (key === "section") return item.section ?? "";
+  if (key === "acquisition") return item.acquisitionType;
+  return item.name;
+}
+
+interface QueryPatch {
+  group?: string;
+  game?: string;
+  region?: string;
+  owned?: OwnedFilter;
+  missable?: boolean;
+  route?: boolean;
+  q?: string;
+  sort?: SortKey;
+  item?: string;
+}
 
 export function CollectionPage() {
   const route = useRoute();
@@ -90,46 +176,86 @@ export function CollectionPage() {
 
   const groupParam = route.query.get("group");
   const regionParam = route.query.get("region");
+  const gameParam = route.query.get("game");
   const ownedParam = route.query.get("owned");
-  const group =
-    groupParam && Object.prototype.hasOwnProperty.call(ITEMS_BY_GROUP, groupParam) ? groupParam : "all";
-  const region =
-    regionParam && Object.prototype.hasOwnProperty.call(ITEMS_BY_REGION, regionParam) ? regionParam : "all";
-  const ownedFilter: OwnedFilter =
-    ownedParam === "owned" || ownedParam === "missing" ? ownedParam : "all";
+  const missableParam = route.query.get("missable");
+  const routeParam = route.query.get("route");
+  const sortParam = route.query.get("sort");
   const qParam = route.query.get("q");
   const itemParam = route.query.get("item");
+
+  const group =
+    groupParam && Object.prototype.hasOwnProperty.call(ITEMS_BY_GROUP, groupParam) ? groupParam : "all";
+  const region = regionParam && REGION_VALUES[regionParam] === true ? regionParam : "all";
+  const game = gameParam && GAMES.includes(gameParam) ? gameParam : "all";
+  const ownedFilter: OwnedFilter =
+    ownedParam === "owned" || ownedParam === "missing" ? ownedParam : "all";
+  const missableOnly = missableParam === "1" || missableParam === "true";
+  const routeOnly = routeParam === "1" || routeParam === "true";
+  const sort: SortKey =
+    sortParam && Object.prototype.hasOwnProperty.call(SORT_KEYS, sortParam) ? SORT_KEYS[sortParam] : "name";
   const activeItem =
     itemParam && Object.prototype.hasOwnProperty.call(ITEM_BY_ID, itemParam) ? ITEM_BY_ID[itemParam] : null;
 
   const [search, setSearch] = useState(qParam ?? "");
-  const [game, setGame] = useState("all");
-  const [sort, setSort] = useState<SortKey>("name");
   const [page, setPage] = useState(1);
   const [bulkTarget, setBulkTarget] = useState<BulkTarget | null>(null);
+  const lastSyncedQuery = useRef(qParam ?? "");
 
   useEffect(() => {
-    if (qParam !== null) setSearch(qParam);
+    const next = qParam ?? "";
+    if (next === lastSyncedQuery.current) return;
+    lastSyncedQuery.current = next;
+    setSearch(next);
   }, [qParam]);
 
   const summary = collectionSummary(character);
 
-  const gameSummaries = useMemo(() => {
-    const totals: Record<string, { game: string; owned: number; total: number }> = {};
-    for (const item of ITEMS) {
-      const entry = (totals[item.game] ??= { game: item.game, owned: 0, total: 0 });
-      entry.total += 1;
-      if (character.items[item.id]) entry.owned += 1;
-    }
-    const ordered = GAMES.flatMap((name) => (totals[name] ? [totals[name]] : []));
-    for (const name of Object.keys(totals)) {
-      if (!GAMES.includes(name)) ordered.push(totals[name]);
-    }
-    return ordered.map((entry) => ({
-      ...entry,
-      percent: entry.total ? Math.round((entry.owned / entry.total) * 100) : 0,
-    }));
-  }, [character.items]);
+  const collectionPath = (patch: QueryPatch) => {
+    const params = new URLSearchParams();
+    const nextGroup = patch.group ?? group;
+    const nextGame = patch.game ?? game;
+    const nextRegion = patch.region ?? region;
+    const nextOwned = patch.owned ?? ownedFilter;
+    const nextMissable = patch.missable ?? missableOnly;
+    const nextRoute = patch.route ?? routeOnly;
+    const nextSort = patch.sort ?? sort;
+    const nextQuery = (patch.q ?? search).trim();
+    const nextItem = patch.item === undefined ? itemParam ?? "" : patch.item;
+
+    if (nextGroup !== "all") params.set("group", nextGroup);
+    if (nextGame !== "all") params.set("game", nextGame);
+    if (nextRegion !== "all") params.set("region", nextRegion);
+    if (nextOwned !== "all") params.set("owned", nextOwned);
+    if (nextMissable) params.set("missable", "1");
+    if (nextRoute) params.set("route", "1");
+    if (nextSort !== "name") params.set("sort", nextSort);
+    if (nextQuery) params.set("q", nextQuery);
+    if (nextItem) params.set("item", nextItem);
+
+    const query = params.toString();
+    return `/collection${query ? `?${query}` : ""}`;
+  };
+
+  const applyQuery = (patch: QueryPatch) => {
+    navigate(collectionPath(patch));
+  };
+
+  const applyFilter = (patch: QueryPatch) => {
+    setPage(1);
+    applyQuery({ ...patch, item: "" });
+  };
+
+  useEffect(() => {
+    const next = search.trim();
+    if (next === (qParam ?? "")) return;
+    const timer = window.setTimeout(() => {
+      lastSyncedQuery.current = next;
+      navigate(collectionPath({ q: search, item: "" }));
+    }, 220);
+    return () => window.clearTimeout(timer);
+    // collectionPath closes over every filter; the dependency list mirrors that on purpose.
+  }, [search, qParam, group, game, region, ownedFilter, missableOnly, routeOnly, sort, itemParam]);
 
   const filtered = useMemo(() => {
     const pool = group === "all" ? ITEMS : ITEMS_BY_GROUP[group];
@@ -140,25 +266,24 @@ export function CollectionPage() {
       if (game !== "all" && item.game !== game) continue;
       if (ownedFilter === "owned" && character.items[item.id] !== true) continue;
       if (ownedFilter === "missing" && character.items[item.id] === true) continue;
+      if (missableOnly && !isItemMissable(item)) continue;
+      if (routeOnly && !isItemRouteLinked(item)) continue;
       if (needle && !(SEARCH_INDEX[item.id] || "").includes(needle)) continue;
       rows.push(item);
     }
     rows.sort((a, b) => {
-      if (sort === "group") {
-        const byGroup = COLLATOR.compare(a.group, b.group);
-        if (byGroup) return byGroup;
-      } else if (sort === "region") {
-        const byRegion = COLLATOR.compare(a.region, b.region);
-        if (byRegion) return byRegion;
+      if (sort !== "name") {
+        const byKey = COLLATOR.compare(sortLabel(a, sort), sortLabel(b, sort));
+        if (byKey) return byKey;
       }
       return COLLATOR.compare(a.name, b.name) || COLLATOR.compare(a.id, b.id);
     });
     return rows;
-  }, [group, region, game, ownedFilter, search, sort, character.items]);
+  }, [group, game, region, ownedFilter, missableOnly, routeOnly, search, sort, character.items]);
 
   useEffect(() => {
     setPage(1);
-  }, [group, region, game, ownedFilter, search, sort]);
+  }, [group, game, region, ownedFilter, missableOnly, routeOnly, search, sort]);
 
   let filteredOwned = 0;
   for (const item of filtered) {
@@ -177,34 +302,22 @@ export function CollectionPage() {
     group !== "all" ||
     region !== "all" ||
     ownedFilter !== "all" ||
+    missableOnly ||
+    routeOnly ||
     sort !== "name";
 
-  const applyQuery = (patch: {
-    group?: string;
-    region?: string;
-    owned?: OwnedFilter;
-    q?: string;
-    item?: string | null;
-  }) => {
-    const params = new URLSearchParams();
-    const nextGroup = patch.group ?? group;
-    const nextRegion = patch.region ?? region;
-    const nextOwned = patch.owned ?? ownedFilter;
-    const nextQuery = patch.q === undefined ? search.trim() : patch.q.trim();
-    const nextItem = patch.item === undefined ? itemParam : patch.item;
-    if (nextGroup !== "all") params.set("group", nextGroup);
-    if (nextRegion !== "all") params.set("region", nextRegion);
-    if (nextOwned !== "all") params.set("owned", nextOwned);
-    if (nextQuery) params.set("q", nextQuery);
-    if (nextItem) params.set("item", nextItem);
-    const query = params.toString();
-    navigate(`/collection${query ? `?${query}` : ""}`);
-  };
+  const activeFilterCount =
+    (game !== "all" ? 1 : 0) +
+    (group !== "all" ? 1 : 0) +
+    (region !== "all" ? 1 : 0) +
+    (ownedFilter !== "all" ? 1 : 0) +
+    (missableOnly ? 1 : 0) +
+    (routeOnly ? 1 : 0) +
+    (search.trim() ? 1 : 0);
 
   const resetFilters = () => {
     setSearch("");
-    setGame("all");
-    setSort("name");
+    lastSyncedQuery.current = "";
     setPage(1);
     navigate("/collection");
   };
@@ -240,12 +353,15 @@ export function CollectionPage() {
     );
   };
 
+  const gameSummaries = [summary.baseGame, summary.dlc, summary.tarnishedPack];
+  const groupsComplete = summary.byGroup.filter((entry) => entry.owned === entry.total).length;
+
   return (
     <div className="page">
       <PageHeader
         eyebrow="Armory · Whole-game catalogue"
         title="Master collection"
-        description="Every catalogued permanent item in the content pack, with ownership shared by the build and equipment checks. Items with an auto-acquisition route step are added when that step is marked done."
+        description={`Every catalogued permanent item across the base game, Shadow of the Erdtree, and the Tarnished Pack. Ownership is shared with the build and equipment checks; auto-acquisition items are added when their route step is marked done.`}
         actions={
           <>
             <Button icon="map" onClick={() => navigate("/journey")}>
@@ -258,24 +374,61 @@ export function CollectionPage() {
         }
       />
 
+      <ArtBanner
+        className="col-banner"
+        image={ART.erdtreeShots[1]}
+        caption="The Lands Between · armory index"
+        title="One ledger for every acquisition"
+        variant="erdtree"
+      >
+        <p className="col-banner-note">
+          {formatNumber(summary.total)} catalogued items · {formatNumber(CATALOG_COUNTS.routeLinked)} route-linked ·{" "}
+          {formatNumber(CATALOG_COUNTS.missable)} flagged missable
+        </p>
+      </ArtBanner>
+
       <section className="col-stats" aria-label="Collection summary">
         <Stat
-          label="Collection complete"
-          value={`${summary.percent}%`}
-          detail={`${formatNumber(summary.owned)} of ${formatNumber(summary.total)} items owned`}
+          label="Catalogue"
+          value={formatNumber(summary.total)}
+          detail={`${summary.byGroup.length} groups · ${formatNumber(CATALOG_COUNTS.routeLinked)} route-linked`}
+        />
+        <Stat
+          label="Owned"
+          value={formatNumber(summary.owned)}
+          detail={`${summary.percent}% · ${formatNumber(summary.total - summary.owned)} missing`}
         />
         {gameSummaries.map((entry) => (
           <Stat
-            key={entry.game}
-            label={entry.game}
-            value={`${entry.percent}%`}
-            detail={`${formatNumber(entry.owned)} / ${formatNumber(entry.total)} owned`}
+            key={entry.group}
+            label={entry.group}
+            value={formatNumber(entry.owned)}
+            detail={`${entry.percent}% · ${formatNumber(entry.total)} catalogued`}
           />
         ))}
         <Stat
           label="Catalogued groups"
           value={summary.byGroup.length}
-          detail={`${summary.byGroup.filter((entry) => entry.owned === entry.total).length} groups complete`}
+          detail={`${groupsComplete} ${groupsComplete === 1 ? "group" : "groups"} complete`}
+        />
+        <Stat
+          label="Route-linked"
+          value={formatNumber(CATALOG_COUNTS.routeLinked)}
+          detail="Linked to a route step"
+        />
+        <Stat
+          label="Missable"
+          value={formatNumber(CATALOG_COUNTS.missable)}
+          detail={`${formatNumber(CATALOG_COUNTS.missableDlc)} in the DLC · ${formatNumber(
+            CATALOG_COUNTS.timing,
+          )} timing notes`}
+        />
+        <Stat
+          label="Exact locations"
+          value={formatNumber(CATALOG_COUNTS.locations.exact)}
+          detail={`${formatNumber(CATALOG_COUNTS.locations.area)} area-only · ${formatNumber(
+            CATALOG_COUNTS.locations.unrecorded,
+          )} unrecorded`}
         />
       </section>
 
@@ -285,7 +438,7 @@ export function CollectionPage() {
           note={`${summary.byGroup.length} groups · ${formatNumber(summary.total)} items`}
           actions={
             group !== "all" ? (
-              <Button size="sm" variant="ghost" icon="x" onClick={() => applyQuery({ group: "all" })}>
+              <Button size="sm" variant="ghost" icon="x" onClick={() => applyFilter({ group: "all" })}>
                 Clear group
               </Button>
             ) : undefined
@@ -300,7 +453,7 @@ export function CollectionPage() {
                 key={entry.group}
                 className={`col-group${active ? " is-active" : ""}`}
                 aria-pressed={active}
-                onClick={() => applyQuery({ group: active ? "all" : entry.group })}
+                onClick={() => applyFilter({ group: active ? "all" : entry.group })}
               >
                 <span className="row-between">
                   <span className="col-group-name">
@@ -328,10 +481,10 @@ export function CollectionPage() {
             <SearchInput
               value={search}
               onChange={setSearch}
-              placeholder="Name, location, region, category, notes…"
+              placeholder="Name, location, region, category, section, notes, wiki…"
             />
           </div>
-          <Select label="Group" value={group} onChange={(event) => applyQuery({ group: event.target.value })}>
+          <Select label="Group" value={group} onChange={(event) => applyFilter({ group: event.target.value })}>
             <option value="all">All groups</option>
             {GROUPS.map((name) => (
               <option key={name} value={name}>
@@ -339,7 +492,7 @@ export function CollectionPage() {
               </option>
             ))}
           </Select>
-          <Select label="Game" value={game} onChange={(event) => setGame(event.target.value)}>
+          <Select label="Game" value={game} onChange={(event) => applyFilter({ game: event.target.value })}>
             <option value="all">All games</option>
             {GAMES.map((name) => (
               <option key={name} value={name}>
@@ -347,11 +500,16 @@ export function CollectionPage() {
               </option>
             ))}
           </Select>
-          <Select label="Region" value={region} onChange={(event) => applyQuery({ region: event.target.value })}>
+          <Select label="Region" value={region} onChange={(event) => applyFilter({ region: event.target.value })}>
             <option value="all">All regions</option>
             {REGIONS.map((name) => (
               <option key={name} value={name}>
                 {name}
+              </option>
+            ))}
+            {UNRECORDED_REGIONS.map((name) => (
+              <option key={name} value={name}>
+                {name} — region not recorded
               </option>
             ))}
           </Select>
@@ -360,7 +518,7 @@ export function CollectionPage() {
             value={ownedFilter}
             onChange={(event) => {
               const value = event.target.value;
-              applyQuery({ owned: value === "owned" || value === "missing" ? value : "all" });
+              applyFilter({ owned: value === "owned" || value === "missing" ? value : "all" });
             }}
           >
             <option value="all">All items</option>
@@ -371,18 +529,51 @@ export function CollectionPage() {
             label="Sort"
             value={sort}
             onChange={(event) => {
-              const value = event.target.value;
-              setSort(value === "group" ? "group" : value === "region" ? "region" : "name");
+              const value = Object.prototype.hasOwnProperty.call(SORT_KEYS, event.target.value)
+                ? SORT_KEYS[event.target.value]
+                : "name";
+              applyFilter({ sort: value });
             }}
           >
             <option value="name">Name</option>
             <option value="group">Group</option>
             <option value="region">Region</option>
+            <option value="game">Game</option>
+            <option value="section">Section</option>
+            <option value="acquisition">Acquisition type</option>
           </Select>
+        </div>
+        <div className="col-filter-toggles">
+          <Checkbox
+            checked={missableOnly}
+            onChange={(checked) => applyFilter({ missable: checked })}
+            label={
+              <span className="row">
+                Missable only
+                <span className="tiny faint mono">{formatNumber(CATALOG_COUNTS.missable)}</span>
+              </span>
+            }
+          />
+          <Checkbox
+            checked={routeOnly}
+            onChange={(checked) => applyFilter({ route: checked })}
+            label={
+              <span className="row">
+                Route-linked only
+                <span className="tiny faint mono">{formatNumber(CATALOG_COUNTS.routeLinked)}</span>
+              </span>
+            }
+          />
+          <span className="tiny faint">
+            {missableOnly
+              ? "Hard missables only — timing and quest notes stay visible in the cards and drawer."
+              : `Route links resolve against the merged ${formatNumber(ROUTE_STEPS.length)}-step route.`}
+          </span>
         </div>
         <div className="col-filter-foot">
           <span className="small faint">
             {formatNumber(filtered.length)} of {formatNumber(ITEMS.length)} catalogued items match
+            {activeFilterCount ? ` · ${activeFilterCount} active ${activeFilterCount === 1 ? "filter" : "filters"}` : ""}
           </span>
           <Button size="sm" variant="ghost" icon="refresh" onClick={resetFilters} disabled={!hasFilters}>
             Clear search &amp; filters
@@ -422,7 +613,7 @@ export function CollectionPage() {
         {filtered.length === 0 ? (
           <EmptyState
             title="No items match these filters"
-            description="Adjust the search, group, game, region, or owned-state filters to see more of the catalogue."
+            description="Adjust the search, group, game, region, owned-state, missable, or route filter to see more of the catalogue."
             icon="search"
             action={
               <Button variant="primary" icon="refresh" onClick={resetFilters}>
@@ -435,8 +626,16 @@ export function CollectionPage() {
             <div className="item-grid col-item-grid">
               {pageItems.map((item) => {
                 const owned = character.items[item.id] === true;
+                const missable = isItemMissable(item);
+                const timing = !missable && isItemTimingSensitive(item);
+                const routeLinked = isItemRouteLinked(item);
+                const legacyRef = !routeLinked && item.linkedRouteRaw.trim().length > 0;
+                const regionName = itemRegionName(item);
                 return (
-                  <div className={`item-card col-item${owned ? " owned" : ""}`} key={item.id}>
+                  <div
+                    className={`item-card col-item${owned ? " owned" : ""}${missable ? " is-missable" : ""}`}
+                    key={item.id}
+                  >
                     <button
                       type="button"
                       className="col-item-open"
@@ -449,11 +648,52 @@ export function CollectionPage() {
                       <span className="col-item-copy">
                         <span className="item-name">{item.name}</span>
                         <span className="item-sub">
-                          {item.category} · {item.region}
+                          {item.group}
+                          {item.category && item.category !== item.group ? ` · ${item.category}` : ""}
+                        </span>
+                        <span className="col-item-tags">
+                          <span className="col-item-tag">{item.game}</span>
+                          {regionName ? (
+                            <span className="col-item-tag" title={`Region: ${regionName}`}>
+                              <Icon name="map" size={10} />
+                              {regionName}
+                            </span>
+                          ) : (
+                            <span className="col-item-tag is-faint" title="The merged catalogue records the game, not a region.">
+                              Region not recorded
+                            </span>
+                          )}
+                          {missable ? (
+                            <span className="col-item-tag is-missable">
+                              <Icon name="alert" size={10} />
+                              MISSABLE
+                            </span>
+                          ) : timing ? (
+                            <span className="col-item-tag is-timing" title={item.missable}>
+                              <Icon name="clock" size={10} />
+                              Note
+                            </span>
+                          ) : null}
+                          {routeLinked ? (
+                            <span
+                              className="col-item-tag is-route"
+                              title={`Linked to ${Math.max(item.routeStepIds.length, 1)} route ${
+                                Math.max(item.routeStepIds.length, 1) === 1 ? "step" : "steps"
+                              }`}
+                            >
+                              <Icon name="map" size={10} />
+                              {item.autoStepId ? "Auto route" : "Route"}
+                            </span>
+                          ) : legacyRef ? (
+                            <span className="col-item-tag is-legacy" title={`Legacy route reference: ${item.linkedRouteRaw}`}>
+                              <Icon name="clock" size={10} />
+                              Legacy ref
+                            </span>
+                          ) : null}
                         </span>
                         <span className="col-item-foot">
                           <span className="col-item-acq" title={item.acquisitionType}>
-                            {item.acquisitionType || "Acquisition not in content pack"}
+                            {item.acquisitionType || "Acquisition not recorded"}
                           </span>
                           <span className={`col-item-state${owned ? " is-owned" : ""}`}>
                             {owned ? "Owned" : "Missing"}
@@ -482,7 +722,17 @@ export function CollectionPage() {
                 {formatNumber(Math.min(pageStart + PAGE_SIZE, filtered.length))} of{" "}
                 {formatNumber(filtered.length)}
               </span>
-              <div className="row">
+              <div className="row wrap col-pager-actions">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  icon="chevronLeft"
+                  onClick={() => goToPage(1)}
+                  disabled={currentPage <= 1}
+                  aria-label="First page"
+                >
+                  First
+                </Button>
                 <Button
                   size="sm"
                   icon="chevronLeft"
@@ -498,6 +748,16 @@ export function CollectionPage() {
                   disabled={currentPage >= totalPages}
                 >
                   Next
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  iconRight="chevronRight"
+                  onClick={() => goToPage(totalPages)}
+                  disabled={currentPage >= totalPages}
+                  aria-label="Last page"
+                >
+                  Last
                 </Button>
               </div>
             </div>
@@ -527,19 +787,24 @@ export function CollectionPage() {
           of the catalogue is untouched.
         </p>
         <div className="col-confirm-callout">
-          <Callout tone={bulkTarget === "missing" ? "warning" : "success"} icon={bulkTarget === "missing" ? "alert" : "check"}>
+          <Callout
+            tone={bulkTarget === "missing" ? "warning" : "success"}
+            icon={bulkTarget === "missing" ? "alert" : "check"}
+          >
             {bulkTarget === "missing"
-              ? `${formatNumber(filteredOwned)} items in this filtered set are currently owned.`
-              : `${formatNumber(filteredMissing)} items in this filtered set are currently missing.`}
+              ? `${formatNumber(filteredOwned)} items in this filtered set are currently owned and will be marked missing.`
+              : `${formatNumber(filteredMissing)} items in this filtered set are currently missing and will be marked owned.`}
           </Callout>
         </div>
+        {missableOnly || routeOnly ? (
+          <p className="tiny faint">
+            This filtered set is narrowed by{" "}
+            {[missableOnly ? "missable" : "", routeOnly ? "route-linked" : ""].filter(Boolean).join(" and ")} status.
+          </p>
+        ) : null}
       </Modal>
 
-      <ItemDrawer
-        key={activeItem?.id ?? "closed"}
-        item={activeItem}
-        onClose={() => applyQuery({ item: null })}
-      />
+      <ItemDrawer key={activeItem?.id ?? "closed"} item={activeItem} onClose={() => applyQuery({ item: "" })} />
     </div>
   );
 }

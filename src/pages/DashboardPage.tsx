@@ -1,29 +1,130 @@
+import { useMemo } from "react";
 import { Badge, Button, PageHeader, ProgressBar, Ring, SectionTitle, useToast } from "../components/ui";
 import { Icon } from "../components/Icon";
+import { ART, ArtBanner, ArtHero } from "../components/Art";
 import { useActiveCharacter, useActiveJourney, useAppState, setStepStatus } from "../lib/store";
 import {
   areaProgress,
   collectionSummary,
+  completionScopes,
   currentAreaName,
   endingSummary,
-  loreAccess,
   nextRouteStep,
   nextSupplemental,
   routeProgress,
   supplementalProgress,
 } from "../lib/selectors";
+import type { CompletionScope, Progress } from "../lib/selectors";
 import {
+  ENCOUNTER_BY_ID,
   ITEM_BY_ID,
   ITEMS_BY_REGION,
-  LORE,
   LOADOUTS_BY_BUILD,
+  PHASE_GATES,
   PROFILE_BY_ID,
+  QUESTLINES,
   ROUTE_AREAS,
+  ROUTE_CHRONOLOGY,
+  STEPS_BY_AREA,
+  STEPS_BY_PHASE,
 } from "../lib/data";
 import { formatNumber, itemGroupIcon } from "../lib/format";
 import { navigate } from "../lib/router";
 import { levelFromStats } from "../lib/classes";
 import { DATA_BASELINE, GAME_VERSION } from "../data/game";
+import type { Item, PhaseGate, RouteArea, RouteStep, StepStatus } from "../lib/types";
+import "./dashboard.css";
+
+const PHASES = ROUTE_CHRONOLOGY.phases;
+
+interface MissableStats {
+  total: number;
+  remaining: number;
+  resolved: number;
+}
+
+interface PhaseRow {
+  id: string;
+  label: string;
+  index: number;
+  progress: Progress;
+  areas: RouteArea[];
+  currentArea: RouteArea | undefined;
+  nextArea: RouteArea | undefined;
+  missables: MissableStats;
+}
+
+function progressFor(steps: { id: string; required?: boolean }[], statuses: Record<string, StepStatus>): Progress {
+  let total = 0;
+  let required = 0;
+  let done = 0;
+  let skipped = 0;
+  let deferred = 0;
+  let resolved = 0;
+  let requiredResolved = 0;
+  for (const step of steps) {
+    total += 1;
+    const status = statuses[step.id];
+    if (step.required !== false) required += 1;
+    if (status === "done") done += 1;
+    if (status === "skipped") skipped += 1;
+    if (status === "deferred") deferred += 1;
+    if (status === "done" || status === "skipped") {
+      resolved += 1;
+      if (step.required !== false) requiredResolved += 1;
+    }
+  }
+  return {
+    total,
+    required,
+    done,
+    skipped,
+    deferred,
+    resolved,
+    requiredResolved,
+    percent: total ? Math.round((resolved / total) * 100) : 0,
+    requiredPercent: required ? Math.round((requiredResolved / required) * 100) : 100,
+    complete: requiredResolved === required,
+  };
+}
+
+function missableStats(steps: RouteStep[], statuses: Record<string, StepStatus>): MissableStats {
+  let total = 0;
+  let remaining = 0;
+  let resolved = 0;
+  for (const step of steps) {
+    if (!step.missable) continue;
+    total += 1;
+    const status = statuses[step.id];
+    if (status === "done" || status === "skipped") resolved += 1;
+    else remaining += 1;
+  }
+  return { total, remaining, resolved };
+}
+
+function phaseIdForLabel(label: string | undefined): string {
+  return PHASES.find((phase) => phase.label === label)?.id ?? PHASES[0].id;
+}
+
+function gateScopeSteps(gate: PhaseGate): RouteStep[] {
+  if (!gate.filter.sections.length) return STEPS_BY_PHASE[gate.filter.phase] ?? [];
+  const allowed = new Set(
+    ROUTE_AREAS.filter((area) => gate.filter.sections.includes(area.sectionId)).map((area) => area.name),
+  );
+  return (STEPS_BY_PHASE[gate.filter.phase] ?? []).filter((step) => allowed.has(step.area));
+}
+
+const SCOPE_HREF: Record<string, string> = {
+  route: "/journey",
+  collection: "/collection",
+  achievements: "/completion?tab=endings",
+  bosses: "/bosses",
+  quests: "/quests",
+  lore: "/lore",
+  endings: "/completion?tab=endings",
+  remembrances: "/completion?tab=remembrances",
+  ngplus: "/completion?tab=readiness",
+};
 
 export function DashboardPage() {
   const state = useAppState();
@@ -36,36 +137,153 @@ export function DashboardPage() {
   const ending = endingSummary(character);
   const next = nextRouteStep(journey);
   const nextAction = nextSupplemental(journey);
-  const area = currentAreaName(journey);
+  const area = next?.area ?? currentAreaName(journey);
   const level = levelFromStats(character.stats);
   const profile = character.profileId ? PROFILE_BY_ID[character.profileId] : undefined;
   const loadout = profile ? LOADOUTS_BY_BUILD[profile.id]?.find((entry) => entry.type === "Signature") : undefined;
+  const scopes = completionScopes(character, journey);
+  const scopesById = Object.fromEntries(scopes.map((scope) => [scope.id, scope])) as Record<string, CompletionScope>;
   const linkedItems = next
-    ? next.linkedIds.map((id) => ITEM_BY_ID[id]).filter((item): item is NonNullable<typeof item> => Boolean(item)).slice(0, 4)
+    ? next.linkedIds
+        .map((id) => ITEM_BY_ID[id])
+        .filter((item): item is NonNullable<typeof item> => Boolean(item))
+        .slice(0, 4)
     : [];
-  const defeatedBosses = Object.values(journey.bosses).filter((status) => status === "defeated").length;
-  const unlockedLore = LORE.filter((entry) => loreAccess(journey, state.settings, entry).unlocked).length;
-  const areaItems = (ITEMS_BY_REGION[area] ?? []).filter((item) => !character.items[item.id]).slice(0, 6);
+  const linkedBosses = next
+    ? next.linkedIds
+        .map((id) => ENCOUNTER_BY_ID[id])
+        .filter((boss): boss is NonNullable<typeof boss> => Boolean(boss))
+    : [];
+  const otherLinkedCount = next
+    ? next.linkedIds.filter((id) => !ITEM_BY_ID[id] && !ENCOUNTER_BY_ID[id]).length
+    : 0;
+  const areaItems = (() => {
+    const regional = (ITEMS_BY_REGION[area] ?? []).filter((item) => !character.items[item.id]);
+    if (regional.length) return regional.slice(0, 6);
+    const linked = new Map<string, Item>();
+    for (const step of STEPS_BY_AREA[area] ?? []) {
+      for (const id of step.linkedIds) {
+        const item = ITEM_BY_ID[id];
+        if (item) linked.set(item.id, item);
+      }
+    }
+    return [...linked.values()].filter((item) => !character.items[item.id]).slice(0, 6);
+  })();
+
+  const phaseRows = useMemo<PhaseRow[]>(
+    () =>
+      PHASES.map((phase, index) => {
+        const steps = STEPS_BY_PHASE[phase.label] ?? [];
+        const progress = progressFor(steps, journey.steps);
+        const areas = ROUTE_AREAS.filter((entry) => entry.hasRoute && entry.phase === phase.label).sort(
+          (a, b) => a.order - b.order,
+        );
+        const nextAreaHere = next?.phase === phase.label ? areas.find((entry) => entry.name === next.area) : undefined;
+        const firstUnresolvedArea = areas.find((entry) => {
+          const areaStats = areaProgress(journey, entry.name);
+          return areaStats.resolved < areaStats.total;
+        });
+        const currentArea =
+          nextAreaHere ??
+          (progress.complete ? undefined : (firstUnresolvedArea ?? areas.at(-1)));
+        const currentIndex = currentArea ? areas.indexOf(currentArea) : -1;
+        return {
+          id: phase.id,
+          label: phase.label,
+          index,
+          progress,
+          areas,
+          currentArea,
+          nextArea: currentIndex >= 0 ? areas[currentIndex + 1] : undefined,
+          missables: missableStats(steps, journey.steps),
+        };
+      }),
+    [journey, next],
+  );
+
+  const focusPhase = next
+    ? phaseRows.find((phase) => phase.label === next.phase) ?? phaseRows[phaseRows.length - 1]
+    : phaseRows[phaseRows.length - 1];
+  const upcomingGate = next
+    ? PHASE_GATES.find((gate) => gate.order >= next.order && gate.order - next.order <= 180)
+    : undefined;
+  const nextGate = next ? PHASE_GATES.find((gate) => gate.order >= next.order) : undefined;
+  const upcomingGateMissables = upcomingGate
+    ? missableStats(gateScopeSteps(upcomingGate), journey.steps)
+    : undefined;
+  const heroImage = next?.phase === "Shadow of the Erdtree" ? ART.heroSote : ART.heroErdtree;
 
   const completeNext = () => {
     if (!next) return;
     const result = setStepStatus(next.id, "done");
     const parts = ["Step marked done."];
     if (result.acquiredItems.length) parts.push(`${result.acquiredItems.length} item${result.acquiredItems.length === 1 ? "" : "s"} acquired`);
-    if (result.defeatedBosses.length) parts.push(`${result.defeatedBosses.length} boss${result.defeatedBosses.length === 1 ? "" : "s"} recorded`);
+    if (result.defeatedBosses.length) parts.push(`${result.defeatedBosses.length} boss${result.defeatedBosses.length === 1 ? "" : "es"} recorded`);
     if (result.scarabs.length) parts.push(`${result.scarabs.length} scarab${result.scarabs.length === 1 ? "" : "s"} collected`);
     toast.push(parts.join(" · "), "success");
   };
 
+  const openCommandSearch = () => {
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true }));
+  };
+
+  const heroKicker = next ? `Next action · ${next.phase}` : "Full route · complete";
+  const heroTitle = next?.instruction ?? "The full route is closed.";
+  const heroDescription = next
+    ? `${next.sectionTitle} · ${next.game}${next.levelRange ? ` · ${next.levelRange}` : ""}`
+    : `All ${formatNumber(route.total)} route steps are resolved across the base game, Shadow of the Erdtree, and the endgame.`;
+  const heroActions = next ? (
+    <>
+      <Button variant="primary" icon="check" onClick={completeNext}>
+        Mark step done
+      </Button>
+      <Button
+        icon="eye"
+        onClick={() =>
+          navigate(
+            `/journey?phase=${encodeURIComponent(phaseIdForLabel(next.phase))}&area=${encodeURIComponent(
+              next.area,
+            )}&step=${next.id}`,
+          )
+        }
+      >
+        Inspect in journey
+      </Button>
+      {next.missable ? (
+        <Button
+          variant="danger"
+          icon="alert"
+          onClick={() =>
+            navigate(`/journey?phase=${encodeURIComponent(phaseIdForLabel(next.phase))}&missable=1`)
+          }
+        >
+          Review missables
+        </Button>
+      ) : null}
+      <Button variant="ghost" icon="map" onClick={() => navigate("/journey")}>
+        Route details
+      </Button>
+    </>
+  ) : (
+    <>
+      <Button variant="primary" icon="list" onClick={() => navigate("/journey?tab=chronology")}>
+        Companion chronology
+      </Button>
+      <Button icon="trophy" onClick={() => navigate("/completion")}>
+        Completion
+      </Button>
+    </>
+  );
+
   return (
     <div className="page">
       <PageHeader
-        eyebrow={`${journey.label} · Act I route`}
+        eyebrow={`${journey.label} · Three-phase route`}
         title="Continue the journey"
         description={
           <>
-            One next action, the closeout state around it, and the current build. The route is Act I; the companion
-            chronology and all collection/build data span the full game.
+            Base game through Maliketh, the entire Shadow of the Erdtree, then the base-game endgame. The dashboard follows
+            the same canonical order as the {formatNumber(route.total)}-step Journey route.
           </>
         }
         actions={
@@ -73,7 +291,7 @@ export function DashboardPage() {
             <Button variant="primary" icon="map" onClick={() => navigate("/journey")}>
               Open journey
             </Button>
-            <Button variant="ghost" icon="search" onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true }))}>
+            <Button variant="ghost" icon="search" onClick={openCommandSearch}>
               Search
             </Button>
           </>
@@ -81,98 +299,113 @@ export function DashboardPage() {
       />
 
       <div className="hero-grid">
-        <section className="card card-accent hero-next">
-          <div className="row-between wrap">
-            <div className="row" style={{ gap: 7 }}>
-              <Badge tone="accent">{area}</Badge>
-              <Badge>{next?.type ?? "Route"}</Badge>
-              {next?.required ? <Badge tone="warning">Required</Badge> : <Badge>Optional</Badge>}
-            </div>
-            <span className="tiny faint mono">
-              Step {next ? next.order + 1 : route.total} / {route.total}
-            </span>
-          </div>
-
+        <ArtHero
+          image={heroImage}
+          kicker={heroKicker}
+          title={heroTitle}
+          description={heroDescription}
+          actions={heroActions}
+          className="dashboard-hero"
+        >
           {next ? (
             <>
-              <div className="hero-kicker">Next action</div>
-              <h2 className="hero-instruction">{next.instruction}</h2>
-              <div className="hero-meta">
-                <span className="row" style={{ gap: 5 }}>
-                  <Icon name="target" size={13} /> {next.location || next.area}
+              <div className="dashboard-hero-chips">
+                <Badge tone="accent">{next.phase}</Badge>
+                <Badge>{next.game}</Badge>
+                <Badge tone={next.required ? "warning" : "default"}>{next.required ? "Required" : "Optional"}</Badge>
+                {next.missable ? (
+                  <Badge tone="danger">
+                    <Icon name="alert" size={10} /> Missable
+                  </Badge>
+                ) : null}
+                <span className="tiny faint mono">
+                  Step {formatNumber(next.order)} / {formatNumber(route.total)}
                 </span>
-                <span className="row" style={{ gap: 5 }}>
-                  <Icon name="layers" size={13} /> {next.objectiveName}
+              </div>
+
+              <div className="dashboard-hero-meta">
+                <span>
+                  <Icon name="map" size={12} /> {next.sectionTitle}
+                </span>
+                {next.levelRange ? <span>{next.levelRange}</span> : null}
+                <span>
+                  <Icon name="layers" size={12} /> {next.objectiveName}
                 </span>
                 {next.estimatedTime ? (
-                  <span className="row" style={{ gap: 5 }}>
-                    <Icon name="clock" size={13} /> {next.estimatedTime}
+                  <span>
+                    <Icon name="clock" size={12} /> {next.estimatedTime}
                   </span>
                 ) : null}
               </div>
-              {next.warning ? (
-                <div className="callout warning" style={{ marginTop: 14 }}>
-                  <Icon name="alert" size={15} />
-                  <div>{next.warning}</div>
+
+              {next.warning || next.missable ? (
+                <div className={`dashboard-hero-warning${next.missable ? " is-danger" : ""}`}>
+                  <Icon name="alert" size={14} />
+                  <span>
+                    {next.missable ? <strong>MISSABLE. </strong> : null}
+                    {next.warning || "Flagged missable by the route source. Resolve it before the phase gate."}
+                  </span>
                 </div>
               ) : null}
+
               {next.prerequisites ? (
-                <div className="small faint" style={{ marginTop: 10 }}>
-                  Prerequisite: {next.prerequisites}
+                <div className="dashboard-hero-prereq">
+                  <Icon name="lock" size={12} /> Prerequisite: {next.prerequisites}
                 </div>
               ) : null}
-              {linkedItems.length ? (
-                <div className="tag-list" style={{ marginTop: 14 }}>
+
+              {linkedItems.length || linkedBosses.length || otherLinkedCount ? (
+                <div className="tag-list dashboard-hero-links">
                   {linkedItems.map((item) => (
                     <button
                       key={item.id}
+                      type="button"
                       className="chip"
-                      style={{ cursor: "pointer" }}
                       onClick={() => navigate(`/collection?item=${encodeURIComponent(item.id)}`)}
                     >
                       <Icon name={itemGroupIcon(item.group)} size={12} />
                       {item.name}
                     </button>
                   ))}
+                  {linkedBosses.length ? (
+                    <button
+                      type="button"
+                      className="chip"
+                      onClick={() => navigate(`/bosses?encounter=${encodeURIComponent(linkedBosses[0].id)}`)}
+                      title={linkedBosses.map((boss) => boss.name).join(", ")}
+                    >
+                      <Icon name="skull" size={12} />
+                      {linkedBosses.length} boss{linkedBosses.length === 1 ? "" : "es"} linked
+                    </button>
+                  ) : null}
+                  {otherLinkedCount ? (
+                    <span className="chip">
+                      <Icon name="layers" size={12} />
+                      {otherLinkedCount} other record{otherLinkedCount === 1 ? "" : "s"}
+                    </span>
+                  ) : null}
                 </div>
               ) : null}
-              <div className="row wrap" style={{ marginTop: 20 }}>
-                <Button variant="primary" icon="check" onClick={completeNext}>
-                  Mark step done
-                </Button>
-                <Button icon="eye" onClick={() => navigate(`/journey?area=${encodeURIComponent(next.area)}&step=${next.id}`)}>
-                  Inspect in journey
-                </Button>
-                <Button variant="ghost" icon="chevronRight" onClick={() => navigate("/journey")}>
-                  Route details
-                </Button>
+
+              <div className="dashboard-hero-progress">
+                <ProgressBar
+                  value={route.requiredPercent}
+                  label={`${route.requiredResolved} / ${route.required} required steps`}
+                  detail={`${route.done} done · ${route.skipped} skipped · Phase: ${next.phase}`}
+                />
               </div>
             </>
           ) : (
-            <div style={{ padding: "24px 0 10px" }}>
-              <div className="hero-kicker">Act I route complete</div>
-              <h2 className="hero-instruction">The certified Act I route is closed.</h2>
-              <p className="muted" style={{ marginTop: 8 }}>
-                Continue the whole-game companion chronology, close the collection, or prepare the ending sequence.
+            <>
+              <p className="dashboard-hero-complete">
+                The full route is closed. All {formatNumber(route.total)} steps are resolved across the three phases.
               </p>
-              <div className="row wrap" style={{ marginTop: 18 }}>
-                <Button variant="primary" icon="list" onClick={() => navigate("/journey?tab=chronology")}>
-                  Open chronology
-                </Button>
-                <Button icon="trophy" onClick={() => navigate("/completion")}>
-                  Completion
-                </Button>
+              <div className="dashboard-hero-progress">
+                <ProgressBar value={100} label={`${formatNumber(route.total)} of ${formatNumber(route.total)} steps`} />
               </div>
-            </div>
+            </>
           )}
-          <div className="hero-progress">
-            <ProgressBar
-              value={route.requiredPercent}
-              label={`${route.requiredResolved} / ${route.required} required steps`}
-              detail={`${route.done} done · ${route.skipped} skipped`}
-            />
-          </div>
-        </section>
+        </ArtHero>
 
         <section className="card card-pad dashboard-pulse">
           <div className="row-between">
@@ -186,39 +419,52 @@ export function DashboardPage() {
           </div>
           <div className="pulse-grid">
             <div>
-              <div className="stat-label">Collection</div>
-              <div className="pulse-value">{collection.percent}%</div>
-              <div className="tiny faint">{formatNumber(collection.owned)} / {formatNumber(collection.total)}</div>
+              <div className="stat-label">Route</div>
+              <div className="pulse-value">{route.requiredPercent}%</div>
+              <div className="tiny faint">
+                {formatNumber(route.resolved)} / {formatNumber(route.total)} resolved
+              </div>
             </div>
             <div>
-              <div className="stat-label">Chronology</div>
-              <div className="pulse-value">{chronology.percent}%</div>
-              <div className="tiny faint">{chronology.resolved} / {chronology.total} actions</div>
+              <div className="stat-label">Collection</div>
+              <div className="pulse-value">{collection.percent}%</div>
+              <div className="tiny faint">
+                {formatNumber(collection.owned)} / {formatNumber(collection.total)}
+              </div>
             </div>
             <div>
               <div className="stat-label">Bosses</div>
-              <div className="pulse-value">{defeatedBosses}</div>
-              <div className="tiny faint">recorded in this journey</div>
+              <div className="pulse-value">
+                {formatNumber(scopesById.bosses.numerator)}
+              </div>
+              <div className="tiny faint">of {formatNumber(scopesById.bosses.denominator)} recorded</div>
             </div>
             <div>
-              <div className="stat-label">Lore</div>
-              <div className="pulse-value">{unlockedLore}</div>
-              <div className="tiny faint">chapters unlocked</div>
+              <div className="stat-label">Achievements</div>
+              <div className="pulse-value">
+                {formatNumber(scopesById.achievements.numerator)}
+              </div>
+              <div className="tiny faint">of {formatNumber(scopesById.achievements.denominator)} earned</div>
             </div>
           </div>
           <div className="divider" />
           <div className="row-between">
-            <div className="small muted">Next chronology action</div>
+            <div className="small muted">Next companion action</div>
             <Button variant="ghost" size="sm" iconRight="chevronRight" onClick={() => navigate("/journey?tab=chronology")}>
               View
             </Button>
           </div>
           {nextAction ? (
-            <button className="pulse-action" onClick={() => navigate(`/journey?tab=chronology&action=${encodeURIComponent(nextAction.id)}`)}>
+            <button
+              className="pulse-action"
+              onClick={() => navigate(`/journey?tab=chronology&action=${encodeURIComponent(nextAction.id)}`)}
+            >
               <Icon name="list" size={15} />
               <span className="grow">
                 <span className="pulse-action-title">{nextAction.action}</span>
-                <span className="pulse-action-sub">{nextAction.area} · {nextAction.category}</span>
+                <span className="pulse-action-sub">
+                  {nextAction.area} · {nextAction.category}
+                </span>
               </span>
               <Icon name="chevronRight" size={14} />
             </button>
@@ -230,147 +476,328 @@ export function DashboardPage() {
 
       <div className="grid-4" style={{ marginTop: 16 }}>
         <div className="stat">
-          <div className="stat-label">Route completion</div>
+          <div className="stat-label">Full route</div>
           <div className="stat-value">
-            {route.requiredPercent}% <small>required</small>
+            {formatNumber(route.resolved)} <small>/ {formatNumber(route.total)}</small>
           </div>
-          <div className="stat-delta">{route.resolved} of {route.total} steps resolved</div>
+          <div className="stat-delta">
+            {route.requiredPercent}% required · {formatNumber(route.total - route.resolved)} open
+          </div>
         </div>
         <div className="stat">
           <div className="stat-label">Master collection</div>
           <div className="stat-value">
             {formatNumber(collection.owned)} <small>/ {formatNumber(collection.total)}</small>
           </div>
-          <div className="stat-delta">{collection.baseGame.owned} base · {collection.dlc.owned} DLC owned</div>
+          <div className="stat-delta">
+            {collection.baseGame.owned} base · {collection.dlc.owned} DLC owned
+          </div>
         </div>
         <div className="stat">
-          <div className="stat-label">Endings viewed</div>
+          <div className="stat-label">Missables · {focusPhase.label}</div>
           <div className="stat-value">
-            {ending.viewed} <small>/ {ending.total}</small>
+            {formatNumber(focusPhase.missables.remaining)} <small>remaining</small>
           </div>
-          <div className="stat-delta">Permanent: {ending.permanent}</div>
+          <div className="stat-delta">
+            {formatNumber(focusPhase.missables.total)} flagged in this phase
+          </div>
         </div>
         <div className="stat">
-          <div className="stat-label">Character</div>
+          <div className="stat-label">Achievements</div>
           <div className="stat-value">
-            Lv {level} <small>{profile?.archetype ?? "Unassigned"}</small>
+            {formatNumber(scopesById.achievements.numerator)} <small>/ {formatNumber(scopesById.achievements.denominator)}</small>
           </div>
-          <div className="stat-delta">{character.classId} · {character.equipmentMode}</div>
+          <div className="stat-delta">
+            Endings viewed: {ending.viewed} / {ending.total}
+          </div>
         </div>
       </div>
+
+      <section style={{ marginTop: 22 }}>
+        <SectionTitle
+          title="Route phases"
+          note="Canonical order: Maliketh → Shadow of the Erdtree → Ashen Capital"
+          actions={
+            <Button variant="ghost" size="sm" iconRight="chevronRight" onClick={() => navigate("/journey")}>
+              Open route
+            </Button>
+          }
+        />
+        <div className="dashboard-phase-grid">
+          {phaseRows.map((phase) => {
+            const isCurrent = next ? phase.label === next.phase : phase.index === phaseRows.length - 1;
+            return (
+              <button
+                key={phase.id}
+                type="button"
+                className={`dashboard-phase${isCurrent ? " is-current" : ""}${
+                  phase.progress.complete ? " is-complete" : ""
+                }`}
+                onClick={() => navigate(`/journey?phase=${encodeURIComponent(phase.id)}`)}
+              >
+                <span className="dashboard-phase-head">
+                  <span className="dashboard-phase-index">Phase {phase.index + 1}</span>
+                  {phase.progress.complete ? (
+                    <Badge tone="success">Complete</Badge>
+                  ) : isCurrent ? (
+                    <Badge tone="accent">Current</Badge>
+                  ) : (
+                    <Badge>Upcoming</Badge>
+                  )}
+                </span>
+                <span className="dashboard-phase-title">{phase.label}</span>
+                <span className="dashboard-phase-meta">
+                  {phase.areas.length} sections · {formatNumber(phase.progress.total)} steps
+                  {phase.missables.remaining ? (
+                    <span className="dashboard-phase-missable">
+                      <Icon name="alert" size={11} /> {formatNumber(phase.missables.remaining)} missable left
+                    </span>
+                  ) : (
+                    <span className="dashboard-phase-missable is-clear">
+                      <Icon name="check" size={11} /> no missables left
+                    </span>
+                  )}
+                </span>
+                <ProgressBar value={phase.progress.requiredPercent} tone={phase.progress.complete ? "success" : "accent"} />
+                <span className="dashboard-phase-sections">
+                  <span>
+                    <Icon name="target" size={11} /> Now: {phase.currentArea?.name ?? "—"}
+                  </span>
+                  <span>
+                    <Icon name="chevronRight" size={11} /> Next: {phase.nextArea?.name ?? "Phase complete"}
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <div className={`dashboard-alert-grid${upcomingGate ? "" : " dashboard-alert-grid--single"}`}>
+        <section className={`card card-pad dashboard-missables${focusPhase.missables.remaining ? "" : " is-clear"}`}>
+          <div className="row-between wrap">
+            <div className="dashboard-missables-head">
+              <span className="dashboard-missables-icon">
+                <Icon name={focusPhase.missables.remaining ? "alert" : "check"} size={20} />
+              </span>
+              <div>
+                <div className="eyebrow">Missable watch</div>
+                <h3 className="dashboard-missables-title">
+                  {focusPhase.missables.remaining
+                    ? `${formatNumber(focusPhase.missables.remaining)} missable steps remain in ${focusPhase.label}`
+                    : `No unresolved missables in ${focusPhase.label}`}
+                </h3>
+              </div>
+            </div>
+            <Badge tone={focusPhase.missables.remaining ? "danger" : "success"}>
+              {formatNumber(focusPhase.missables.resolved)} / {formatNumber(focusPhase.missables.total)} resolved
+            </Badge>
+          </div>
+          <p className="dashboard-missables-copy">
+            {focusPhase.missables.remaining
+              ? "These steps can be lost permanently. Resolve them or consciously skip them before crossing the phase gate."
+              : "Every flagged missable in this phase is resolved. Continue when the surrounding collection and quest state is ready."}
+          </p>
+          <ProgressBar
+            value={
+              focusPhase.missables.total
+                ? Math.round((focusPhase.missables.resolved / focusPhase.missables.total) * 100)
+                : 100
+            }
+            tone={focusPhase.missables.remaining ? "accent" : "success"}
+            className={focusPhase.missables.remaining ? "dashboard-missable-progress" : undefined}
+          />
+          <div className="row wrap dashboard-missables-actions">
+            <Button
+              variant={focusPhase.missables.remaining ? "danger" : "default"}
+              icon="alert"
+              onClick={() => navigate(`/journey?phase=${encodeURIComponent(focusPhase.id)}&missable=1`)}
+            >
+              Review missables in this phase
+            </Button>
+            {upcomingGate ? (
+              <Button
+                variant="ghost"
+                icon="map"
+                onClick={() =>
+                  navigate(
+                    `/journey?phase=${encodeURIComponent(phaseIdForLabel(upcomingGate.filter.phase))}&missable=1${
+                      upcomingGate.filter.sections.length ? `&gate=${upcomingGate.id}` : ""
+                    }`,
+                  )
+                }
+              >
+                Gate sections
+              </Button>
+            ) : null}
+          </div>
+        </section>
+
+        {upcomingGate ? (
+          <ArtBanner
+            image={upcomingGate.id === "GATE-DLC" ? ART.heroSote : ART.heroErdtree}
+            variant={upcomingGate.id === "GATE-DLC" ? "sote" : "erdtree"}
+            className={`dashboard-gate${upcomingGate.severity === "MISSABLE" ? " dashboard-gate--danger" : ""}`}
+            caption={`Phase gate · ${upcomingGate.severity}`}
+            title={upcomingGate.title}
+          >
+            <p className="dashboard-gate-copy">{upcomingGate.warning}</p>
+            {upcomingGateMissables ? (
+              <p className="dashboard-gate-count">
+                {formatNumber(upcomingGateMissables.remaining)} missable step
+                {upcomingGateMissables.remaining === 1 ? "" : "s"} still unresolved in this gate's scope.
+              </p>
+            ) : null}
+            <div className="row wrap dashboard-gate-actions">
+              <Button
+                variant={upcomingGate.severity === "MISSABLE" ? "danger" : "primary"}
+                icon="alert"
+                onClick={() =>
+                  navigate(
+                    `/journey?phase=${encodeURIComponent(phaseIdForLabel(upcomingGate.filter.phase))}&missable=1${
+                      upcomingGate.filter.sections.length ? `&gate=${upcomingGate.id}` : ""
+                    }`,
+                  )
+                }
+              >
+                Review gate missables
+              </Button>
+            </div>
+          </ArtBanner>
+        ) : nextGate ? (
+          <section className="card card-pad dashboard-gate-next">
+            <div className="eyebrow">Next phase gate</div>
+            <h3 className="dashboard-gate-next-title">{nextGate.title}</h3>
+            <p className="small muted">
+              {next ? `${formatNumber(nextGate.order - next.order)} route steps ahead.` : "Ahead in the route."}{" "}
+              {nextGate.message}
+            </p>
+            <div className="row wrap">
+              <Button
+                variant="ghost"
+                icon="map"
+                onClick={() => navigate(`/journey?phase=${encodeURIComponent(phaseIdForLabel(nextGate.filter.phase))}`)}
+              >
+                Open gate phase
+              </Button>
+            </div>
+          </section>
+        ) : null}
+      </div>
+
+      <section style={{ marginTop: 22 }}>
+        <SectionTitle
+          title="Completion scopes"
+          note="Separate denominators — no blended percentage"
+          actions={
+            <Button variant="ghost" size="sm" iconRight="chevronRight" onClick={() => navigate("/completion")}>
+              Completion
+            </Button>
+          }
+        />
+        <div className="dashboard-scopes">
+          {scopes.map((scope) => (
+            <button
+              key={scope.id}
+              type="button"
+              className={`dashboard-scope${scope.complete ? " is-complete" : ""}`}
+              onClick={() => navigate(SCOPE_HREF[scope.id] ?? "/completion")}
+            >
+              <span className="dashboard-scope-head">
+                <span className="dashboard-scope-label">{scope.label}</span>
+                <span className="dashboard-scope-value">
+                  {formatNumber(scope.numerator)} / {formatNumber(scope.denominator)}
+                </span>
+              </span>
+              <ProgressBar value={scope.percent} tone={scope.complete ? "success" : "accent"} />
+              <span className="dashboard-scope-meta">
+                {scope.percent}%{scope.complete ? " · complete" : ""}
+              </span>
+            </button>
+          ))}
+        </div>
+      </section>
 
       <div className="dashboard-columns" style={{ marginTop: 22 }}>
         <section className="card card-pad">
           <SectionTitle
-            title="Act I areas"
-            note="Route order"
+            title="Build at a glance"
             actions={
-              <Button variant="ghost" size="sm" iconRight="chevronRight" onClick={() => navigate("/journey")}>
-                All steps
+              <Button variant="ghost" size="sm" iconRight="chevronRight" onClick={() => navigate("/builds")}>
+                Builds
               </Button>
             }
           />
-          <div className="area-list">
-            {ROUTE_AREAS.filter((entry) => entry.hasRoute).map((entry) => {
-              const progress = areaProgress(journey, entry.name);
-              const isCurrent = area === entry.name;
-              return (
-                <button
-                  key={entry.name}
-                  className={`area-row ${isCurrent ? "current" : ""}`}
-                  onClick={() => navigate(`/journey?area=${encodeURIComponent(entry.name)}`)}
-                >
-                  <div className="area-row-main">
-                    <div className="row-between">
-                      <span className="area-name">
-                        {entry.name}
-                        {isCurrent ? <span className="badge badge-accent" style={{ marginLeft: 8 }}>Current</span> : null}
-                      </span>
-                      <span className="tiny faint mono">{progress.resolved}/{progress.total}</span>
-                    </div>
-                    <ProgressBar value={progress.requiredPercent} tone={progress.complete ? "success" : "accent"} />
+          {profile ? (
+            <>
+              <div className="row-between">
+                <div>
+                  <div className="card-title">{profile.archetype}</div>
+                  <div className="small muted">
+                    Level {profile.level} · {profile.primaryStat} / {profile.secondaryStat}
                   </div>
-                  <Icon name="chevronRight" size={14} />
-                </button>
-              );
-            })}
-          </div>
+                </div>
+                <Badge tone="accent">{loadout?.type ?? "Certified"}</Badge>
+              </div>
+              <div className="stat-grid" style={{ marginTop: 14 }}>
+                {Object.entries(profile.stats).map(([key, value]) => (
+                  <div className="stat-cell" key={key}>
+                    <div className="k">{key.toUpperCase()}</div>
+                    <div className="v">{value}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 14 }}>
+                <div className="gear-row">
+                  <span className="gear-label">Primary</span>
+                  <span className="gear-value">{loadout?.mainWeapon || "—"}</span>
+                </div>
+                <div className="gear-row">
+                  <span className="gear-label">Secondary</span>
+                  <span className="gear-value">{loadout?.secondaryWeapon || "—"}</span>
+                </div>
+                <div className="gear-row">
+                  <span className="gear-label">Armor</span>
+                  <span className="gear-value">{loadout?.armor.filter(Boolean).join(" · ") || "—"}</span>
+                </div>
+              </div>
+              <div className="row" style={{ marginTop: 14 }}>
+                <Button size="sm" icon="helmet" onClick={() => navigate("/character")}>
+                  Open character
+                </Button>
+                <Button size="sm" variant="ghost" icon="sword" onClick={() => navigate(`/builds?archetype=${profile.archetypeId}`)}>
+                  Build details
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="empty" style={{ padding: "26px 14px" }}>
+              <div>
+                <Icon name="sword" size={24} />
+                <h3>No certified build selected</h3>
+                <p className="small muted">Choose one of the 14 certified parent builds or plan a freeform character.</p>
+                <div style={{ marginTop: 12 }}>
+                  <Button size="sm" variant="primary" icon="sword" onClick={() => navigate("/builds")}>
+                    Browse builds
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </section>
 
         <div className="stack">
           <section className="card card-pad">
             <SectionTitle
-              title="Build at a glance"
-              actions={
-                <Button variant="ghost" size="sm" iconRight="chevronRight" onClick={() => navigate("/builds")}>
-                  Builds
-                </Button>
-              }
-            />
-            {profile ? (
-              <>
-                <div className="row-between">
-                  <div>
-                    <div className="card-title">{profile.archetype}</div>
-                    <div className="small muted">
-                      Level {profile.level} · {profile.primaryStat} / {profile.secondaryStat}
-                    </div>
-                  </div>
-                  <Badge tone="accent">{loadout?.type ?? "Certified"}</Badge>
-                </div>
-                <div className="stat-grid" style={{ marginTop: 14 }}>
-                  {Object.entries(profile.stats).map(([key, value]) => (
-                    <div className="stat-cell" key={key}>
-                      <div className="k">{key.toUpperCase()}</div>
-                      <div className="v">{value}</div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ marginTop: 14 }}>
-                  <div className="gear-row">
-                    <span className="gear-label">Primary</span>
-                    <span className="gear-value">{loadout?.mainWeapon || "—"}</span>
-                  </div>
-                  <div className="gear-row">
-                    <span className="gear-label">Secondary</span>
-                    <span className="gear-value">{loadout?.secondaryWeapon || "—"}</span>
-                  </div>
-                  <div className="gear-row">
-                    <span className="gear-label">Armor</span>
-                    <span className="gear-value">{loadout?.armor.filter(Boolean).join(" · ") || "—"}</span>
-                  </div>
-                </div>
-                <div className="row" style={{ marginTop: 14 }}>
-                  <Button size="sm" icon="helmet" onClick={() => navigate("/character")}>
-                    Open character
-                  </Button>
-                  <Button size="sm" variant="ghost" icon="sword" onClick={() => navigate(`/builds?archetype=${profile.archetypeId}`)}>
-                    Build details
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <div className="empty" style={{ padding: "26px 14px" }}>
-                <div>
-                  <Icon name="sword" size={24} />
-                  <h3>No certified build selected</h3>
-                  <p className="small muted">Choose one of the 14 certified parent builds or plan a freeform character.</p>
-                  <div style={{ marginTop: 12 }}>
-                    <Button size="sm" variant="primary" icon="sword" onClick={() => navigate("/builds")}>
-                      Browse builds
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </section>
-
-          <section className="card card-pad">
-            <SectionTitle
-              title={`Missing in ${area}`}
+              title={`Collection focus · ${area}`}
               note={`${areaItems.length} shown`}
               actions={
-                <Button variant="ghost" size="sm" iconRight="chevronRight" onClick={() => navigate(`/collection?region=${encodeURIComponent(area)}`)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  iconRight="chevronRight"
+                  onClick={() => navigate(`/collection?region=${encodeURIComponent(area)}`)}
+                >
                   Collection
                 </Button>
               }
@@ -399,12 +826,38 @@ export function DashboardPage() {
               <p className="small muted">No catalogued items remain in this area.</p>
             )}
           </section>
+
+          <section className="card card-pad dashboard-command">
+            <SectionTitle title="Command & references" />
+            <div className="dashboard-quick-links">
+              <Button size="sm" icon="search" onClick={openCommandSearch}>
+                Command search
+              </Button>
+              <Button size="sm" icon="map" onClick={() => navigate("/journey")}>
+                Journey
+              </Button>
+              <Button size="sm" icon="bag" onClick={() => navigate("/collection")}>
+                Collection
+              </Button>
+              <Button size="sm" icon="trophy" onClick={() => navigate("/completion")}>
+                Completion
+              </Button>
+            </div>
+            <p className="tiny faint" style={{ marginTop: 10 }}>
+              Ctrl/Cmd + K opens search from anywhere. Character level {level} · {character.classId} ·{" "}
+              {QUESTLINES.length} questlines tracked.
+            </p>
+          </section>
         </div>
       </div>
 
       <p className="tiny faint" style={{ marginTop: 26 }}>
-        {formatNumber(route.total)} Act I route steps · {chronology.total} whole-game chronology actions ·{" "}
-        {formatNumber(collection.total)} catalogued items · game {GAME_VERSION.app}/Reg {GAME_VERSION.regulation} · content baseline {DATA_BASELINE.regulation} ·{" "}
+        {formatNumber(route.total)} route steps · {formatNumber(ROUTE_AREAS.length)} route sections ·{" "}
+        {chronology.total} companion chronology actions · {formatNumber(collection.total)} catalogued items ·{" "}
+        {formatNumber(scopesById.achievements.denominator)} achievements ·{" "}
+        {formatNumber(scopesById.bosses.denominator)} bosses · {QUESTLINES.length} questlines ·{" "}
+        {formatNumber(scopesById.quests.denominator)} quest steps · {formatNumber(scopesById.ngplus.denominator)} NG+
+        items · game {GAME_VERSION.app}/Reg {GAME_VERSION.regulation} · content baseline {DATA_BASELINE.regulation} ·{" "}
         {state.settings.spoilerMode === "strict" ? "spoiler-safe" : "revealed"} mode
       </p>
     </div>

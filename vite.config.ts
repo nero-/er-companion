@@ -12,8 +12,8 @@ export default defineConfig({
         name: "Elden Ring Definitive Companion",
         short_name: "ER Companion",
         description: "Offline-first route, collection, build, quest, and lore companion for Elden Ring.",
-        theme_color: "#0c0b09",
-        background_color: "#0c0b09",
+        theme_color: "#080706",
+        background_color: "#080706",
         display: "standalone",
         start_url: "./",
         scope: "./",
@@ -25,7 +25,7 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,woff2}"],
+        globPatterns: ["**/*.{js,css,html,svg,woff2,jpg,jpeg,png,webp}"],
         maximumFileSizeToCacheInBytes: 16 * 1024 * 1024
       }
     })

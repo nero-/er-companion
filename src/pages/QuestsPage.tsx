@@ -5,27 +5,61 @@ import {
   Callout,
   Checkbox,
   EmptyState,
-  PageHeader,
   ProgressBar,
   SearchInput,
+  SectionTitle,
   Select,
   TabBar,
   useToast,
 } from "../components/ui";
+import { ART, ArtHero } from "../components/Art";
 import { Icon } from "../components/Icon";
-import { DIALOGUE_EVENTS, META, NPC_STATES, STEP_BY_ID } from "../lib/data";
+import {
+  DIALOGUE_EVENTS,
+  ENCOUNTERS,
+  ITEMS_BY_NAME,
+  META,
+  NPC_STATES,
+  QUESTLINES,
+  QUESTLINE_STEPS,
+  STEP_BY_ID,
+} from "../lib/data";
 import worldJson from "../data/world.json";
-import { decisionsResolved } from "../lib/selectors";
+import { decisionsResolved, questlineProgress } from "../lib/selectors";
 import { navigate, queryString, useRoute } from "../lib/router";
-import { setDecision, setDialogue, setNpcState, useActiveJourney } from "../lib/store";
-import type { Decision, Dependency, DialogueEvent, Lockout, NpcState } from "../lib/types";
+import {
+  setDecision,
+  setDialogue,
+  setNpcState,
+  setQuestlineStep,
+  useActiveJourney,
+} from "../lib/store";
+import type {
+  Decision,
+  Dependency,
+  DialogueEvent,
+  Encounter,
+  Link,
+  Lockout,
+  NpcState,
+  Questline,
+  QuestlineStep,
+} from "../lib/types";
 import "./world.css";
 
 const LOCKOUTS: Lockout[] = worldJson.lockouts;
 const DEPENDENCIES: Dependency[] = worldJson.dependencies;
 
-type QuestTab = "npcs" | "decisions" | "lockouts" | "dependencies";
+type QuestTab = "questlines" | "npcs" | "decisions" | "lockouts" | "dependencies";
 type BadgeTone = "default" | "accent" | "success" | "warning" | "danger" | "info";
+
+const QUESTLINE_BY_ID: Record<string, Questline> = Object.fromEntries(
+  QUESTLINES.map((questline) => [questline.id, questline]),
+);
+
+const ENCOUNTER_BY_NAME: Record<string, Encounter> = Object.fromEntries(
+  ENCOUNTERS.map((encounter) => [encounter.name, encounter]),
+);
 
 const SEVERITY_TONE: Record<string, BadgeTone> = {
   Critical: "danger",
@@ -43,6 +77,7 @@ const RISK_TONE: Record<string, BadgeTone> = {
 };
 
 const TABS = [
+  { id: "questlines", label: "Questlines", count: QUESTLINES.length },
   { id: "npcs", label: "NPCs", count: NPC_STATES.length + DIALOGUE_EVENTS.length },
   { id: "decisions", label: "Decisions", count: META.decisions.length },
   { id: "lockouts", label: "Lockouts", count: LOCKOUTS.length },
@@ -50,7 +85,13 @@ const TABS = [
 ];
 
 function isQuestTab(value: string | null): value is QuestTab {
-  return value === "npcs" || value === "decisions" || value === "lockouts" || value === "dependencies";
+  return (
+    value === "questlines" ||
+    value === "npcs" ||
+    value === "decisions" ||
+    value === "lockouts" ||
+    value === "dependencies"
+  );
 }
 
 function RouteStepLinks({ ids }: { ids: string[] }) {
@@ -302,6 +343,111 @@ function DependencyCard({ dependency }: { dependency: Dependency }) {
   );
 }
 
+function QuestlineLinkChip({ link }: { link: Link }) {
+  const items = ITEMS_BY_NAME[link.label] ?? [];
+  const item = items.find((entry) => Boolean(entry.autoStepId) || entry.routeStepIds.length > 0) ?? items[0];
+  const stepId = item?.autoStepId && STEP_BY_ID[item.autoStepId]
+    ? item.autoStepId
+    : item?.routeStepIds[0];
+  const step = stepId ? STEP_BY_ID[stepId] : undefined;
+
+  if (step) {
+    return (
+      <button
+        className="chip quest-route-chip"
+        onClick={() =>
+          navigate(`/journey?area=${encodeURIComponent(step.area)}&step=${encodeURIComponent(step.id)}`)
+        }
+      >
+        <Icon name="map" size={12} /> {link.label} · Step {step.order + 1}
+      </button>
+    );
+  }
+
+  if (item) {
+    return (
+      <button
+        className="chip quest-route-chip"
+        onClick={() => navigate(`/collection?item=${encodeURIComponent(item.id)}`)}
+      >
+        <Icon name="bag" size={12} /> {link.label} · Collection
+      </button>
+    );
+  }
+
+  const encounter = ENCOUNTER_BY_NAME[link.label];
+  if (encounter) {
+    return (
+      <button
+        className="chip quest-route-chip"
+        onClick={() => navigate(`/bosses?encounter=${encodeURIComponent(encounter.id)}`)}
+      >
+        <Icon name="skull" size={12} /> {link.label} · Boss ledger
+      </button>
+    );
+  }
+
+  return (
+    <a className="chip" href={link.url} target="_blank" rel="noreferrer noopener">
+      <Icon name="external" size={12} /> {link.label}
+    </a>
+  );
+}
+
+interface QuestlineStepCardProps {
+  step: QuestlineStep;
+  done: boolean;
+  onToggle: (value: boolean) => void;
+}
+
+function QuestlineStepCard({ step, done, onToggle }: QuestlineStepCardProps) {
+  const extraBadges = step.badges.filter(
+    (badge) => badge !== "Optional" && !badge.toUpperCase().includes("MISSABLE"),
+  );
+  return (
+    <article
+      className={`card card-pad quest-card questline-step ${done ? "is-done" : ""} ${
+        step.missable ? "is-missable" : ""
+      }`.trim()}
+      style={{ marginLeft: Math.min(step.depth, 3) * 10 }}
+    >
+      <div className="row-between wrap" style={{ gap: 6 }}>
+        <div className="row wrap" style={{ gap: 8 }}>
+          <Checkbox
+            checked={done}
+            onChange={onToggle}
+            label={
+              <>
+                Step {step.order}
+                {done ? " · done" : ""}
+                <span className="sr-only"> — {step.npc}</span>
+              </>
+            }
+          />
+          {step.optional ? <Badge>Optional</Badge> : null}
+          {step.missable ? <Badge tone="danger">MISSABLE</Badge> : null}
+          {extraBadges.map((badge, index) => (
+            <Badge key={`${badge}-${index}`} tone={badge === "🏆" ? "success" : "default"}>
+              {badge}
+            </Badge>
+          ))}
+        </div>
+        <span className="tiny faint mono">{step.id}</span>
+      </div>
+
+      <p className="quest-text">{step.text}</p>
+
+      {step.links.length ? (
+        <div className="tag-list">
+          {step.links.map((link) => (
+            <QuestlineLinkChip key={`${link.label}-${link.url}`} link={link} />
+          ))}
+        </div>
+      ) : null}
+    </article>
+  );
+}
+
 export function QuestsPage() {
   const route = useRoute();
   const journey = useActiveJourney();
@@ -310,7 +456,23 @@ export function QuestsPage() {
   const tabParam = route.query.get("tab");
   const npcParam = route.query.get("npc");
   const decisionParam = route.query.get("decision");
-  const tab: QuestTab = isQuestTab(tabParam) ? tabParam : decisionParam ? "decisions" : "npcs";
+  const questlineParam = route.query.get("questline");
+  const validQuestlineParam =
+    questlineParam && QUESTLINE_BY_ID[questlineParam] ? questlineParam : undefined;
+  const questlineNpcMatch = npcParam
+    ? QUESTLINES.find(
+        (questline) =>
+          questline.id === npcParam || questline.npc.toLowerCase() === npcParam.toLowerCase(),
+      )
+    : undefined;
+  const questlineNpcQuery = questlineNpcMatch?.npc ?? npcParam ?? "";
+  const tab: QuestTab = isQuestTab(tabParam)
+    ? tabParam
+    : decisionParam
+      ? "decisions"
+      : validQuestlineParam
+        ? "questlines"
+        : "npcs";
 
   const [npcQuery, setNpcQuery] = useState("");
   const [groupMode, setGroupMode] = useState<"npc" | "region">("npc");
@@ -321,6 +483,18 @@ export function QuestsPage() {
   const [severityFilter, setSeverityFilter] = useState("all");
   const [dependencyQuery, setDependencyQuery] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
+  const [questlineQuery, setQuestlineQuery] = useState(
+    tab === "questlines" ? questlineNpcQuery : "",
+  );
+  const [questlineGameFilter, setQuestlineGameFilter] = useState("all");
+  const [questlineOptionalFilter, setQuestlineOptionalFilter] = useState("all");
+  const [questlineMissableFilter, setQuestlineMissableFilter] = useState("all");
+  const [selectedQuestlineId, setSelectedQuestlineId] = useState(
+    validQuestlineParam ??
+      (tab === "questlines" ? questlineNpcMatch?.id : undefined) ??
+      QUESTLINES[0]?.id ??
+      "",
+  );
 
   const focusedState = NPC_STATES.find((state) => state.id === npcParam || state.npc === npcParam);
   const focusedDialogue = DIALOGUE_EVENTS.find(
@@ -331,6 +505,78 @@ export function QuestsPage() {
   const npcDone = NPC_STATES.filter((state) => journey.npcStates[state.id]).length;
   const dialogueDone = DIALOGUE_EVENTS.filter((event) => journey.dialogue[event.id]).length;
   const resolvedDecisions = decisionsResolved(journey, META.decisions.length);
+  const questsProgress = questlineProgress(journey);
+  const missableStepCount = QUESTLINE_STEPS.filter((step) => step.missable).length;
+  const optionalStepCount = QUESTLINE_STEPS.filter((step) => step.optional).length;
+  const dlcQuestlineCount = QUESTLINES.filter((questline) => questline.dlc).length;
+
+  useEffect(() => {
+    if (tab === "questlines" && questlineNpcMatch) setSelectedQuestlineId(questlineNpcMatch.id);
+  }, [tab, questlineNpcMatch]);
+
+  useEffect(() => {
+    if (validQuestlineParam) setSelectedQuestlineId(validQuestlineParam);
+  }, [validQuestlineParam]);
+
+  useEffect(() => {
+    if (tab === "questlines" && questlineNpcQuery) setQuestlineQuery(questlineNpcQuery);
+  }, [tab, questlineNpcQuery]);
+
+  const filteredQuestlines = useMemo(() => {
+    const q = questlineQuery.trim().toLowerCase();
+    return QUESTLINES.filter((questline) => {
+      if (questlineGameFilter === "dlc" && !questline.dlc) return false;
+      if (questlineGameFilter === "base" && questline.dlc) return false;
+      if (questlineOptionalFilter === "optional" && !questline.steps.some((step) => step.optional)) {
+        return false;
+      }
+      if (questlineOptionalFilter === "required" && questline.steps.every((step) => step.optional)) {
+        return false;
+      }
+      if (
+        questlineMissableFilter === "missable" &&
+        !questline.steps.some((step) => step.missable)
+      ) {
+        return false;
+      }
+      if (!q) return true;
+      return [
+        questline.npc,
+        questline.game,
+        questline.steps.map((step) => step.text).join(" "),
+        questline.steps.flatMap((step) => step.links.map((link) => link.label)).join(" "),
+        questline.steps.flatMap((step) => step.badges).join(" "),
+      ]
+        .join(" ")
+        .toLowerCase()
+        .includes(q);
+    });
+  }, [questlineQuery, questlineGameFilter, questlineOptionalFilter, questlineMissableFilter]);
+
+  const selectedQuestline =
+    filteredQuestlines.find((questline) => questline.id === selectedQuestlineId) ??
+    filteredQuestlines[0];
+
+  useEffect(() => {
+    if (!filteredQuestlines.length) return;
+    if (!filteredQuestlines.some((questline) => questline.id === selectedQuestlineId)) {
+      setSelectedQuestlineId(filteredQuestlines[0].id);
+    }
+  }, [filteredQuestlines, selectedQuestlineId]);
+
+  const visibleQuestlineSteps = useMemo(() => {
+    if (!selectedQuestline) return [];
+    return selectedQuestline.steps.filter((step) => {
+      if (questlineOptionalFilter === "optional" && !step.optional) return false;
+      if (questlineOptionalFilter === "required" && step.optional) return false;
+      if (questlineMissableFilter === "missable" && !step.missable) return false;
+      return true;
+    });
+  }, [selectedQuestline, questlineOptionalFilter, questlineMissableFilter]);
+
+  const selectedQuestlineDone = selectedQuestline
+    ? selectedQuestline.steps.filter((step) => journey.questlineSteps[step.id]).length
+    : 0;
 
   const filteredNpcStates = useMemo(() => {
     const q = npcQuery.trim().toLowerCase();
@@ -476,6 +722,18 @@ export function QuestsPage() {
     navigate(`/quests${queryString({ tab: id === "npcs" ? undefined : id })}`);
   };
 
+  const selectQuestline = (id: string) => {
+    setSelectedQuestlineId(id);
+    navigate(`/quests?tab=questlines&questline=${encodeURIComponent(id)}`);
+  };
+
+  const clearQuestlineFilters = () => {
+    setQuestlineQuery("");
+    setQuestlineGameFilter("all");
+    setQuestlineOptionalFilter("all");
+    setQuestlineMissableFilter("all");
+  };
+
   const chooseDecision = (decision: Decision, value: string) => {
     setDecision(decision.id, value);
     toast.push(
@@ -486,14 +744,17 @@ export function QuestsPage() {
 
   return (
     <div className="page">
-      <PageHeader
-        eyebrow={`${journey.label} · World state`}
+      <ArtHero
+        image={ART.heroSote}
+        kicker={`${journey.label} · Fates and world state`}
         title="Quests"
+        headingLevel={1}
+        size="compact"
         description={
           <>
-            {NPC_STATES.length} NPC milestones and {DIALOGUE_EVENTS.length} dialogue events,{" "}
-            {META.decisions.length} tracked decisions, {LOCKOUTS.length} lockout warnings, and{" "}
-            {DEPENDENCIES.length} dependency chains. Every linked record jumps to its exact Act I route step.
+            {QUESTLINES.length} questlines and {QUESTLINE_STEPS.length} steps, plus {NPC_STATES.length} NPC
+            milestones, {DIALOGUE_EVENTS.length} dialogue events, {META.decisions.length} decisions,{" "}
+            {LOCKOUTS.length} lockouts, and {DEPENDENCIES.length} dependencies.
           </>
         }
         actions={
@@ -506,9 +767,250 @@ export function QuestsPage() {
             </Button>
           </>
         }
-      />
+      >
+        <div className="world-badges">
+          <Badge tone="accent">
+            {questsProgress.done} / {questsProgress.total} quest steps
+          </Badge>
+          <Badge tone="danger">{missableStepCount} MISSABLE</Badge>
+          <Badge tone="info">{dlcQuestlineCount} DLC questlines</Badge>
+          <Badge>{optionalStepCount} optional steps</Badge>
+        </div>
+      </ArtHero>
 
-      <TabBar items={TABS} value={tab} onChange={goTab} />
+      <div style={{ marginTop: 16 }}>
+        <TabBar items={TABS} value={tab} onChange={goTab} />
+      </div>
+
+      {tab === "questlines" ? (
+        <div style={{ marginTop: 16 }}>
+          <section className="card card-pad">
+            <div className="quest-toolbar">
+              <SearchInput
+                className="world-filter-search"
+                value={questlineQuery}
+                onChange={setQuestlineQuery}
+                placeholder="Search NPCs, steps, linked items…"
+              />
+              <Select
+                label="Game"
+                className="world-filter-field"
+                value={questlineGameFilter}
+                onChange={(event) => setQuestlineGameFilter(event.target.value)}
+              >
+                <option value="all">Base + DLC</option>
+                <option value="base">Base game</option>
+                <option value="dlc">Shadow of the Erdtree</option>
+              </Select>
+              <Select
+                label="Step type"
+                className="world-filter-field"
+                value={questlineOptionalFilter}
+                onChange={(event) => setQuestlineOptionalFilter(event.target.value)}
+              >
+                <option value="all">All steps</option>
+                <option value="optional">Optional only</option>
+                <option value="required">Required only</option>
+              </Select>
+              <Select
+                label="Missable"
+                className="world-filter-field"
+                value={questlineMissableFilter}
+                onChange={(event) => setQuestlineMissableFilter(event.target.value)}
+              >
+                <option value="all">All steps</option>
+                <option value="missable">Missable only</option>
+              </Select>
+              <div className="quest-counts">
+                <Badge>
+                  {filteredQuestlines.length} / {QUESTLINES.length}
+                </Badge>
+                <Badge tone="danger">{missableStepCount} missable</Badge>
+              </div>
+            </div>
+
+            <div className="world-summary">
+              <div className="world-summary-cell">
+                <div className="k">Questlines</div>
+                <div className="v">{QUESTLINES.length}</div>
+                <div className="d">{dlcQuestlineCount} in Shadow of the Erdtree</div>
+              </div>
+              <div className="world-summary-cell">
+                <div className="k">Quest steps</div>
+                <div className="v">{QUESTLINE_STEPS.length}</div>
+                <div className="d">{optionalStepCount} optional</div>
+              </div>
+              <div className="world-summary-cell">
+                <div className="k">Missable</div>
+                <div className="v">{missableStepCount}</div>
+                <div className="d">time-sensitive quest beats</div>
+              </div>
+              <div className="world-summary-cell">
+                <div className="k">Completed</div>
+                <div className="v">{questsProgress.done}</div>
+                <div className="d">{questsProgress.percent}% of all quest steps</div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 13 }}>
+              <ProgressBar
+                value={questsProgress.percent}
+                label={`${questsProgress.done} of ${questsProgress.total} quest steps recorded`}
+                detail={`${filteredQuestlines.length} questlines shown`}
+              />
+            </div>
+          </section>
+
+          {filteredQuestlines.length && selectedQuestline ? (
+            <div className="world-split">
+              <aside className="card card-pad">
+                <SectionTitle
+                  title="Questlines"
+                  note={`${filteredQuestlines.length} of ${QUESTLINES.length}`}
+                />
+                <div className="world-roster">
+                  {filteredQuestlines.map((questline) => {
+                    const done = questline.steps.filter((step) => journey.questlineSteps[step.id]).length;
+                    const complete = done === questline.steps.length;
+                    return (
+                      <button
+                        key={questline.id}
+                        className={`world-roster-item ${
+                          questline.id === selectedQuestline.id ? "active" : ""
+                        }`.trim()}
+                        aria-current={questline.id === selectedQuestline.id ? "true" : undefined}
+                        onClick={() => selectQuestline(questline.id)}
+                      >
+                        <span className="grow">
+                          <span className="world-roster-title">{questline.npc}</span>
+                          <span className="world-roster-sub">
+                            {questline.game} · {done}/{questline.steps.length} steps
+                            {questline.steps.some((step) => step.missable)
+                              ? ` · ${questline.steps.filter((step) => step.missable).length} missable`
+                              : ""}
+                          </span>
+                        </span>
+                        <Badge
+                          tone={complete ? "success" : questline.dlc ? "info" : "default"}
+                          className="world-roster-badge"
+                        >
+                          {complete ? "Complete" : questline.dlc ? "DLC" : `${done}/${questline.steps.length}`}
+                        </Badge>
+                      </button>
+                    );
+                  })}
+                </div>
+              </aside>
+
+              <div className="world-boss-panel stack">
+                <section className="card card-pad card-accent">
+                  <div className="world-detail-head">
+                    <div className="grow">
+                      <div className="eyebrow" style={{ marginBottom: 4 }}>
+                        Questline · {selectedQuestline.game}
+                      </div>
+                      <h2 className="world-boss-title">{selectedQuestline.npc}</h2>
+                      <div className="small muted" style={{ marginTop: 4 }}>
+                        {selectedQuestline.steps.length} steps ·{" "}
+                        {selectedQuestline.steps.filter((step) => step.missable).length} missable ·{" "}
+                        {selectedQuestline.steps.filter((step) => step.optional).length} optional
+                      </div>
+                    </div>
+                    <div className="world-badges">
+                      {selectedQuestline.dlc ? <Badge tone="info">DLC</Badge> : null}
+                      <Badge
+                        tone={
+                          selectedQuestlineDone === selectedQuestline.steps.length ? "success" : "accent"
+                        }
+                      >
+                        {selectedQuestlineDone} / {selectedQuestline.steps.length}
+                      </Badge>
+                      <a
+                        className="chip"
+                        href={selectedQuestline.sourceUrl}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
+                        <Icon name="external" size={12} /> Source
+                      </a>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 12 }}>
+                    <ProgressBar
+                      value={
+                        selectedQuestline.steps.length
+                          ? (selectedQuestlineDone / selectedQuestline.steps.length) * 100
+                          : 0
+                      }
+                      label={`${selectedQuestlineDone} of ${selectedQuestline.steps.length} steps recorded`}
+                      detail={`${visibleQuestlineSteps.length} shown`}
+                    />
+                  </div>
+                  {validQuestlineParam === selectedQuestline.id ? (
+                    <div className="quest-focus" style={{ marginTop: 12, marginBottom: 0 }}>
+                      <Badge tone="accent">Deep link</Badge>
+                      <span className="quest-focus-label">{selectedQuestline.npc}</span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        icon="x"
+                        onClick={() => navigate("/quests?tab=questlines")}
+                      >
+                        Clear focus
+                      </Button>
+                    </div>
+                  ) : null}
+                </section>
+
+                {visibleQuestlineSteps.length ? (
+                  <div className="stack" style={{ gap: 8 }}>
+                    {visibleQuestlineSteps.map((step) => (
+                      <QuestlineStepCard
+                        key={step.id}
+                        step={step}
+                        done={Boolean(journey.questlineSteps[step.id])}
+                        onToggle={(value) => {
+                          setQuestlineStep(step.id, value);
+                          toast.push(
+                            value
+                              ? `${selectedQuestline.npc} step ${step.order} marked done.`
+                              : `${selectedQuestline.npc} step ${step.order} reopened.`,
+                            "success",
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState
+                    title="No steps match this filter"
+                    description="Clear the optional or missable step filter to see the full questline."
+                    icon="scroll"
+                    action={
+                      <Button variant="primary" icon="refresh" onClick={clearQuestlineFilters}>
+                        Reset filters
+                      </Button>
+                    }
+                  />
+                )}
+              </div>
+            </div>
+          ) : (
+            <div style={{ marginTop: 14 }}>
+              <EmptyState
+                title="No questlines match"
+                description="Adjust the search, game, optional, or missable filter."
+                icon="scroll"
+                action={
+                  <Button variant="primary" icon="refresh" onClick={clearQuestlineFilters}>
+                    Reset filters
+                  </Button>
+                }
+              />
+            </div>
+          )}
+        </div>
+      ) : null}
 
       {tab === "npcs" ? (
         <div style={{ marginTop: 16 }}>

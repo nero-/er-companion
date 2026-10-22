@@ -1,0 +1,1264 @@
+{
+  "source": {
+    "name": "Redmaw Completion Sheets",
+    "url": "https://eldenring.redmaw.dev/sheets/achievements",
+    "fetchedAt": "2026-10-22T16:41:32Z"
+  },
+  "attribution": "Unofficial fan project. Data transcribed from the Redmaw Completion Sheets (https://eldenring.redmaw.dev), a free community resource. Elden Ring and its content belong to FromSoftware and Bandai Namco Entertainment.",
+  "achievements": [
+    {
+      "id": "roundtable-hold",
+      "name": "Roundtable Hold",
+      "section": "Misc",
+      "sectionId": "misc",
+      "sourceId": "a1-1",
+      "description": "Be invited to Roundtable Hold by Melina, either after defeating Margit or by resting at a grace outside of Limgrave and Weeping Peninsula.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Roundtable_Hold_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Roundtable Hold",
+          "url": "https://eldenring.wiki.gg/wiki/Roundtable_Hold_(Achievement/Trophy)"
+        },
+        {
+          "label": "Melina",
+          "url": "https://eldenring.wiki.gg/wiki/Melina"
+        },
+        {
+          "label": "Margit",
+          "url": "https://eldenring.wiki.gg/wiki/Margit,_the_Fell_Omen"
+        }
+      ]
+    },
+    {
+      "id": "great-rune",
+      "name": "Great Rune",
+      "section": "Misc",
+      "sectionId": "misc",
+      "sourceId": "a1-2",
+      "description": "Restore the power of a Great Rune at the top of its divine tower.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Rune_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Great Rune",
+          "url": "https://eldenring.wiki.gg/wiki/Great_Rune_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "god-slaying-armament",
+      "name": "God-Slaying Armament",
+      "section": "Misc",
+      "sectionId": "misc",
+      "sourceId": "a1-3",
+      "description": "Upgrade any weapon to max level. Somber weapons can be finished sooner by using the Pureblood Knight's Medal to access Mohgwyn's Palace early. Otherwise, you'll likely finish during the Consecrated Snowfields or Farum Azula.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/God-Slaying_Armament_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "God-Slaying Armament",
+          "url": "https://eldenring.wiki.gg/wiki/God-Slaying_Armament_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "erdtree-aflame",
+      "name": "Erdtree Aflame",
+      "section": "Misc",
+      "sectionId": "misc",
+      "sourceId": "a1-4",
+      "description": "Talk to Melina while resting at the Forge of the Giants grace and tell her that you're ready to burn the Erdtree. If you bear the frenzied flame, listen to the sounds of flame.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Erdtree_Aflame_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Erdtree Aflame",
+          "url": "https://eldenring.wiki.gg/wiki/Erdtree_Aflame_(Achievement/Trophy)"
+        },
+        {
+          "label": "Forge of the Giants",
+          "url": "https://mapgenie.io/elden-ring/maps/the-lands-between?locationIds=166544"
+        }
+      ]
+    },
+    {
+      "id": "legendary-armaments",
+      "name": "Legendary Armaments",
+      "section": "Misc",
+      "sectionId": "misc",
+      "sourceId": "a1-5",
+      "description": "Collect all legendary weapons to obtain.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Legendary_Armaments_(Achievement/Trophy)",
+      "badges": [
+        "MISSABLE"
+      ],
+      "missable": true,
+      "requirements": [
+        "legendary-armaments"
+      ],
+      "links": [
+        {
+          "label": "Legendary Armaments",
+          "url": "https://eldenring.wiki.gg/wiki/Legendary_Armaments_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "legendary-ashen-remains",
+      "name": "Legendary Ashen Remains",
+      "section": "Misc",
+      "sectionId": "misc",
+      "sourceId": "a1-6",
+      "description": "Collect all legendary ashes to obtain.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Legendary_Ashen_Remains_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [
+        "legendary-ashen-remains"
+      ],
+      "links": [
+        {
+          "label": "Legendary Ashen Remains",
+          "url": "https://eldenring.wiki.gg/wiki/Legendary_Ashen_Remains_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "legendary-sorceries-and-incantations",
+      "name": "Legendary Sorceries and Incantations",
+      "section": "Misc",
+      "sectionId": "misc",
+      "sourceId": "a1-7",
+      "description": "Collect all legendary spells to obtain.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Legendary_Sorceries_and_Incantations_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [
+        "legendary-sorceries-and-incantations"
+      ],
+      "links": [
+        {
+          "label": "Legendary Sorceries and Incantations",
+          "url": "https://eldenring.wiki.gg/wiki/Legendary_Sorceries_and_Incantations_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "legendary-talismans",
+      "name": "Legendary Talismans",
+      "section": "Misc",
+      "sectionId": "misc",
+      "sourceId": "a1-8",
+      "description": "Collect all legendary talismans to obtain.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Legendary_Talismans_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [
+        "legendary-talismans"
+      ],
+      "links": [
+        {
+          "label": "Legendary Talismans",
+          "url": "https://eldenring.wiki.gg/wiki/Legendary_Talismans_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "elden-ring",
+      "name": "Elden Ring",
+      "section": "Misc",
+      "sectionId": "misc",
+      "sourceId": "a1-9",
+      "description": "Obtain all achievements.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Elden_Ring_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Elden Ring",
+          "url": "https://eldenring.wiki.gg/wiki/Elden_Ring_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "leonine-misbegotten",
+      "name": "Leonine Misbegotten",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-1",
+      "description": "Kill Leonine at the end of Castle Morne.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Leonine_Misbegotten_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Leonine Misbegotten",
+          "url": "https://eldenring.wiki.gg/wiki/Leonine_Misbegotten_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "margit-the-fell-omen",
+      "name": "Margit, the Fell Omen",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-2",
+      "description": "Defeat Margit at the entrance to Stormveil Castle.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Margit,_the_Fell_Omen_(Achievement/Trophy)",
+      "badges": [
+        "MISSABLE"
+      ],
+      "missable": true,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Margit, the Fell Omen",
+          "url": "https://eldenring.wiki.gg/wiki/Margit,_the_Fell_Omen_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "red-wolf-of-radagon",
+      "name": "Red Wolf of Radagon",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-3",
+      "description": "Kill the Red Wolf of Radagon in the Academy of Raya Lucaria.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Red_Wolf_of_Radagon_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Red Wolf of Radagon",
+          "url": "https://eldenring.wiki.gg/wiki/Red_Wolf_of_Radagon_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "rennala-queen-of-the-full-moon",
+      "name": "Rennala, Queen of the Full Moon",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-4",
+      "description": "Defeat Rennala in the Academy of Raya Lucaria.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Rennala,_Queen_of_the_Full_Moon_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Rennala, Queen of the Full Moon",
+          "url": "https://eldenring.wiki.gg/wiki/Rennala,_Queen_of_the_Full_Moon_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "royal-knight-loretta",
+      "name": "Royal Knight Loretta",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-5",
+      "description": "Kill the spirit version of Loretta at the end of Caria Manor.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Royal_Knight_Loretta_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Royal Knight Loretta",
+          "url": "https://eldenring.wiki.gg/wiki/Royal_Knight_Loretta_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "magma-wyrm-makar",
+      "name": "Magma Wyrm Makar",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-6",
+      "description": "Kill Magma Wyrm Makar at the top of the Ruin-Strewn Precipice.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Magma_Wyrm_Makar_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Magma Wyrm Makar",
+          "url": "https://eldenring.wiki.gg/wiki/Magma_Wyrm_Makar_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "dragonkin-soldier-of-nokstella",
+      "name": "Dragonkin Soldier of Nokstella",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-7",
+      "description": "Kill the Dragonkin Soldier in Ainsel River.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragonkin_Soldier_of_Nokstella_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Dragonkin Soldier of Nokstella",
+          "url": "https://eldenring.wiki.gg/wiki/Dragonkin_Soldier_of_Nokstella_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "ancestor-spirit",
+      "name": "Ancestor Spirit",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-8",
+      "description": "Kill the Ancestor Spirit in Siofra River after lighting eight braziers.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancestor_Spirit_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Ancestor Spirit",
+          "url": "https://eldenring.wiki.gg/wiki/Ancestor_Spirit_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "mimic-tear",
+      "name": "Mimic Tear",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-9",
+      "description": "Kill the Mimic Tear in Nokron.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Mimic_Tear_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Mimic Tear",
+          "url": "https://eldenring.wiki.gg/wiki/Mimic_Tear_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "regal-ancestor-spirit",
+      "name": "Regal Ancestor Spirit",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-10",
+      "description": "Kill the Regal Ancestor Spirit in Nokron after lighting six braziers.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Regal_Ancestor_Spirit_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Regal Ancestor Spirit",
+          "url": "https://eldenring.wiki.gg/wiki/Regal_Ancestor_Spirit_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "valiant-gargoyles",
+      "name": "Valiant Gargoyles",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-11",
+      "description": "Kill the Valiant Gargoyles in Siofra Aqueduct.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Valiant_Gargoyles_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Valiant Gargoyles",
+          "url": "https://eldenring.wiki.gg/wiki/Valiant_Gargoyles_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "lichdragon-fortissax",
+      "name": "Lichdragon Fortissax",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-12",
+      "description": "Kill Lichdragon Fortissax in Deeproot Depths after entering the deathbed dream.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Lichdragon_Fortissax_(Achievement/Trophy)",
+      "badges": [
+        "MISSABLE"
+      ],
+      "missable": true,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Lichdragon Fortissax",
+          "url": "https://eldenring.wiki.gg/wiki/Lichdragon_Fortissax_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "astel-naturalborn-of-the-void",
+      "name": "Astel, Naturalborn of the Void",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-13",
+      "description": "Kill Astel after resting in the coffin at the end of the Grand Cloister.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Astel,_Naturalborn_of_the_Void_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Astel, Naturalborn of the Void",
+          "url": "https://eldenring.wiki.gg/wiki/Astel,_Naturalborn_of_the_Void_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "elemer-of-the-briar",
+      "name": "Elemer of the Briar",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-14",
+      "description": "Kill Elemer in The Shaded Castle.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Elemer_of_the_Briar_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Elemer of the Briar",
+          "url": "https://eldenring.wiki.gg/wiki/Elemer_of_the_Briar_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "godskin-noble",
+      "name": "Godskin Noble",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-15",
+      "description": "Kill the Godskin Noble in Volcano Manor.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Godskin_Noble_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Godskin Noble",
+          "url": "https://eldenring.wiki.gg/wiki/Godskin_Noble_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "godfrey-first-elden-lord",
+      "name": "Godfrey, First Elden Lord",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-16",
+      "description": "Defeat the golden phantom of Godfrey in Leyndell, Royal Capital.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Godfrey,_First_Elden_Lord_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Godfrey, First Elden Lord",
+          "url": "https://eldenring.wiki.gg/wiki/Godfrey,_First_Elden_Lord_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "mohg-the-omen",
+      "name": "Mohg, the Omen",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-17",
+      "description": "Kill the sewer variant of Mohg at the bottom of the Subterranean Shunning-Grounds.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Mohg,_the_Omen_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Mohg, the Omen",
+          "url": "https://eldenring.wiki.gg/wiki/Mohg,_the_Omen_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "commander-niall",
+      "name": "Commander Niall",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-18",
+      "description": "Kill Commander Niall at the end of Castle Sol.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Commander_Niall_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Commander Niall",
+          "url": "https://eldenring.wiki.gg/wiki/Commander_Niall_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "fire-giant",
+      "name": "Fire Giant",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-19",
+      "description": "Kill the Fire Giant at the end of Flame Peak.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Fire_Giant_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Fire Giant",
+          "url": "https://eldenring.wiki.gg/wiki/Fire_Giant_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "loretta-knight-of-the-haligtree",
+      "name": "Loretta, Knight of the Haligtree",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-20",
+      "description": "Kill Loretta at the end of Miquella's Haligtree.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Loretta,_Knight_of_the_Haligtree_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Loretta, Knight of the Haligtree",
+          "url": "https://eldenring.wiki.gg/wiki/Loretta,_Knight_of_the_Haligtree_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "godskin-duo",
+      "name": "Godskin Duo",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-21",
+      "description": "Kill the Godskin Duo in Crumbling Farum Azula.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Godskin_Duo_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Godskin Duo",
+          "url": "https://eldenring.wiki.gg/wiki/Godskin_Duo_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "dragonlord-placidusax",
+      "name": "Dragonlord Placidusax",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-22",
+      "description": "Kill Dragonlord Placidusax below Crumbling Farum Azula.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragonlord_Placidusax_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Dragonlord Placidusax",
+          "url": "https://eldenring.wiki.gg/wiki/Dragonlord_Placidusax_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "maliketh-the-black-blade",
+      "name": "Maliketh the Black Blade",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-23",
+      "description": "Kill Maliketh at the end of Crumbling Farum Azula.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Maliketh_the_Black_Blade_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Maliketh the Black Blade",
+          "url": "https://eldenring.wiki.gg/wiki/Maliketh_the_Black_Blade_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "hoarah-loux-warrior",
+      "name": "Hoarah Loux, Warrior",
+      "section": "Bosses",
+      "sectionId": "bosses",
+      "sourceId": "a2-24",
+      "description": "Kill Hoarah Loux at the end of Leyndell, Ashen Capital.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Hoarah_Loux,_Warrior_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Hoarah Loux, Warrior",
+          "url": "https://eldenring.wiki.gg/wiki/Hoarah_Loux,_Warrior_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "shardbearer-godrick",
+      "name": "Shardbearer Godrick",
+      "section": "Shardbearers",
+      "sectionId": "shardbearers",
+      "sourceId": "a3-1",
+      "description": "Kill Godrick at the end of Stormveil Castle.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Shardbearer_Godrick_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Shardbearer Godrick",
+          "url": "https://eldenring.wiki.gg/wiki/Shardbearer_Godrick_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "shardbearer-radahn",
+      "name": "Shardbearer Radahn",
+      "section": "Shardbearers",
+      "sectionId": "shardbearers",
+      "sourceId": "a3-2",
+      "description": "Kill Radahn in the Wailing Dunes (accessible from Redmane Castle).",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Shardbearer_Radahn_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Shardbearer Radahn",
+          "url": "https://eldenring.wiki.gg/wiki/Shardbearer_Radahn_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "shardbearer-morgott",
+      "name": "Shardbearer Morgott",
+      "section": "Shardbearers",
+      "sectionId": "shardbearers",
+      "sourceId": "a3-3",
+      "description": "Kill Morgott at the end of Leyndell, Royal Capital.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Shardbearer_Morgott_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Shardbearer Morgott",
+          "url": "https://eldenring.wiki.gg/wiki/Shardbearer_Morgott_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "shardbearer-rykard",
+      "name": "Shardbearer Rykard",
+      "section": "Shardbearers",
+      "sectionId": "shardbearers",
+      "sourceId": "a3-4",
+      "description": "Kill Rykard in Volcano Manor.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Shardbearer_Rykard_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Shardbearer Rykard",
+          "url": "https://eldenring.wiki.gg/wiki/Shardbearer_Rykard_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "shardbearer-mohg",
+      "name": "Shardbearer Mohg",
+      "section": "Shardbearers",
+      "sectionId": "shardbearers",
+      "sourceId": "a3-5",
+      "description": "Kill Mohg at the top of Mohwgyn Palace.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Shardbearer_Mohg_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Shardbearer Mohg",
+          "url": "https://eldenring.wiki.gg/wiki/Shardbearer_Mohg_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "shardbearer-malenia",
+      "name": "Shardbearer Malenia",
+      "section": "Shardbearers",
+      "sectionId": "shardbearers",
+      "sourceId": "a3-6",
+      "description": "Kill Malenia at the bottom of Elphael.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Shardbearer_Malenia_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Shardbearer Malenia",
+          "url": "https://eldenring.wiki.gg/wiki/Shardbearer_Malenia_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "elden-lord",
+      "name": "Elden Lord",
+      "section": "Endings",
+      "sectionId": "endings",
+      "sourceId": "a4-1",
+      "description": "After beating the final boss, touch the fractured Marika and mend the Elden Ring, or use any of the mending runes.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Elden_Lord_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Elden Lord",
+          "url": "https://eldenring.wiki.gg/wiki/Elden_Lord_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "age-of-the-stars",
+      "name": "Age of the Stars",
+      "section": "Endings",
+      "sectionId": "endings",
+      "sourceId": "a4-2",
+      "description": "Complete Ranni's questline, then use her summon sign after beating the final boss.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Age_of_the_Stars_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Age of the Stars",
+          "url": "https://eldenring.wiki.gg/wiki/Age_of_the_Stars_(Achievement/Trophy)"
+        }
+      ]
+    },
+    {
+      "id": "lord-of-frenzied-flame",
+      "name": "Lord of Frenzied Flame",
+      "section": "Endings",
+      "sectionId": "endings",
+      "sourceId": "a4-3",
+      "description": "Inherit the frenzied flame, then after beating the final boss, simply touch the fractured Marika.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Lord_of_Frenzied_Flame_(Achievement/Trophy)",
+      "badges": [],
+      "missable": false,
+      "requirements": [],
+      "links": [
+        {
+          "label": "Lord of Frenzied Flame",
+          "url": "https://eldenring.wiki.gg/wiki/Lord_of_Frenzied_Flame_(Achievement/Trophy)"
+        }
+      ]
+    }
+  ],
+  "requirementGroups": [
+    {
+      "id": "legendary-armaments",
+      "name": "Legendary Armaments",
+      "kind": "weapon",
+      "section": "Legendary Weapons",
+      "sectionId": "weapons",
+      "achievementId": "legendary-armaments",
+      "items": [
+        {
+          "name": "Grafted Blade Greatsword",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Grafted_Blade_Greatsword",
+          "description": "Kill Leonine Misbegotten at the end of Castle Morne.",
+          "sourceId": "a5-1",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Grafted Blade Greatsword",
+              "url": "https://eldenring.wiki.gg/wiki/Grafted_Blade_Greatsword"
+            }
+          ]
+        },
+        {
+          "name": "Sword of Night and Flame",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Sword_of_Night_and_Flame",
+          "description": "Found in a chest in Caria Manor.",
+          "sourceId": "a5-2",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Sword of Night and Flame",
+              "url": "https://eldenring.wiki.gg/wiki/Sword_of_Night_and_Flame"
+            }
+          ]
+        },
+        {
+          "name": "Ruins Greatsword",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ruins_Greatsword",
+          "description": "Kill the Misbegotten Warrior & Crucible Knight in Redmane Castle.",
+          "sourceId": "a5-3",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Ruins Greatsword",
+              "url": "https://eldenring.wiki.gg/wiki/Ruins_Greatsword"
+            }
+          ]
+        },
+        {
+          "name": "Dark Moon Greatsword",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Dark_Moon_Greatsword",
+          "description": "Awarded upon completing Ranni's questline.",
+          "sourceId": "a5-4",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Dark Moon Greatsword",
+              "url": "https://eldenring.wiki.gg/wiki/Dark_Moon_Greatsword"
+            },
+            {
+              "label": "Ranni",
+              "url": "https://eldenring.redmaw.dev/sheets/questlines#ranni"
+            }
+          ]
+        },
+        {
+          "name": "Marais Executioner's Sword",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Marais_Executioner%27s_Sword",
+          "description": "Kill Elemer of the Briar in The Shaded Castle.",
+          "sourceId": "a5-5",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Marais Executioner's Sword",
+              "url": "https://eldenring.wiki.gg/wiki/Marais_Executioner%27s_Sword"
+            }
+          ]
+        },
+        {
+          "name": "Bolt of Gransax",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt_of_Gransax",
+          "description": "On top of the giant spear in Leyndell.",
+          "sourceId": "a5-6",
+          "badges": [
+            "MISSABLE"
+          ],
+          "missable": true,
+          "links": [
+            {
+              "label": "Bolt of Gransax",
+              "url": "https://eldenring.wiki.gg/wiki/Bolt_of_Gransax"
+            }
+          ]
+        },
+        {
+          "name": "Eclipse Shotel",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Eclipse_Shotel",
+          "description": "Found inside Church of the Eclipse in Castle Sol.",
+          "sourceId": "a5-7",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Eclipse Shotel",
+              "url": "https://eldenring.wiki.gg/wiki/Eclipse_Shotel"
+            }
+          ]
+        },
+        {
+          "name": "Golden Order Greatsword",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Order_Greatsword",
+          "description": "Kill the Misbegotten Crusader in Cave of the Forlorn.",
+          "sourceId": "a5-8",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Golden Order Greatsword",
+              "url": "https://eldenring.wiki.gg/wiki/Golden_Order_Greatsword"
+            }
+          ]
+        },
+        {
+          "name": "Devourer's Scepter",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Devourer%27s_Scepter",
+          "description": "Defeat Bernahl's invasion on a bridge in Crumbling Farum Azula. (It'll also drop if you kill him at Warmaster's Shack, though not recommended.)",
+          "sourceId": "a5-9",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Devourer's Scepter",
+              "url": "https://eldenring.wiki.gg/wiki/Devourer%27s_Scepter"
+            },
+            {
+              "label": "Bernahl",
+              "url": "https://eldenring.wiki.gg/wiki/Knight_Bernahl"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legendary-ashen-remains",
+      "name": "Legendary Ashen Remains",
+      "kind": "ash",
+      "section": "Legendary Ashes",
+      "sectionId": "ashes",
+      "achievementId": "legendary-ashen-remains",
+      "items": [
+        {
+          "name": "Lhutel the Headless",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lhutel_the_Headless",
+          "description": "Kill the Cemetery Shade in Tombsward Catacombs.",
+          "sourceId": "a6-1",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Lhutel the Headless",
+              "url": "https://eldenring.wiki.gg/wiki/Lhutel_the_Headless"
+            }
+          ]
+        },
+        {
+          "name": "Mimic Tear Ashes",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Mimic_Tear_Ashes",
+          "description": "In a chest behind an imp seal in Night's Sacred Ground.",
+          "sourceId": "a6-2",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Mimic Tear Ashes",
+              "url": "https://eldenring.wiki.gg/wiki/Mimic_Tear_Ashes"
+            }
+          ]
+        },
+        {
+          "name": "Black Knife Tiche",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Knife_Tiche",
+          "description": "Kill Black Knife Ringleader Alecto in Ringleader's Evergaol.",
+          "sourceId": "a6-3",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Black Knife Tiche",
+              "url": "https://eldenring.wiki.gg/wiki/Black_Knife_Tiche"
+            }
+          ]
+        },
+        {
+          "name": "Ancient Dragon Knight Kristoff",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancient_Dragon_Knight_Kristoff",
+          "description": "Kill the Ancient Hero of Zamor in Sainted Hero's Grave.",
+          "sourceId": "a6-4",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Ancient Dragon Knight Kristoff",
+              "url": "https://eldenring.wiki.gg/wiki/Ancient_Dragon_Knight_Kristoff"
+            }
+          ]
+        },
+        {
+          "name": "Redmane Knight Ogha",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Redmane_Knight_Ogha",
+          "description": "Kill the Putrid Tree Spirit in War-Dead Catacombs.",
+          "sourceId": "a6-5",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Redmane Knight Ogha",
+              "url": "https://eldenring.wiki.gg/wiki/Redmane_Knight_Ogha"
+            }
+          ]
+        },
+        {
+          "name": "Cleanrot Knight Finlay",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Cleanrot_Knight_Finlay",
+          "description": "Found in a chest near a gazebo in Elphael, Brace of the Haligtree.",
+          "sourceId": "a6-6",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Cleanrot Knight Finlay",
+              "url": "https://eldenring.wiki.gg/wiki/Cleanrot_Knight_Finlay"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legendary-sorceries-and-incantations",
+      "name": "Legendary Sorceries and Incantations",
+      "kind": "spell",
+      "section": "Legendary Spells",
+      "sectionId": "spells",
+      "achievementId": "legendary-sorceries-and-incantations",
+      "items": [
+        {
+          "name": "Flame of the Fell God",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Flame_of_the_Fell_God",
+          "description": "Kill Adan, Thief of fire in Malefactor's Evergaol.",
+          "sourceId": "a7-1",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Flame of the Fell God",
+              "url": "https://eldenring.wiki.gg/wiki/Flame_of_the_Fell_God"
+            }
+          ]
+        },
+        {
+          "name": "Greyoll's Roar",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Greyoll%27s_Roar",
+          "description": "Purchase from the Cathedral of Dragon Communion after slaying Greyoll.",
+          "sourceId": "a7-2",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Greyoll's Roar",
+              "url": "https://eldenring.wiki.gg/wiki/Greyoll%27s_Roar"
+            }
+          ]
+        },
+        {
+          "name": "Elden Stars",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Elden_Stars",
+          "description": "Found at the end of the room with several large-bellied ants in Deeproot Depths.",
+          "sourceId": "a7-3",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Elden Stars",
+              "url": "https://eldenring.wiki.gg/wiki/Elden_Stars"
+            }
+          ]
+        },
+        {
+          "name": "Ranni's Dark Moon",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ranni%27s_Dark_Moon",
+          "description": "In a chest at the top of Chelona's Rise.",
+          "sourceId": "a7-4",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Ranni's Dark Moon",
+              "url": "https://eldenring.wiki.gg/wiki/Ranni%27s_Dark_Moon"
+            }
+          ]
+        },
+        {
+          "name": "Comet Azur",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Comet_Azur",
+          "description": "Interact with Primeval Sorcerer Azur near Hermit Village.",
+          "sourceId": "a7-5",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Comet Azur",
+              "url": "https://eldenring.wiki.gg/wiki/Comet_Azur"
+            }
+          ]
+        },
+        {
+          "name": "Stars of Ruin",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stars_of_Ruin",
+          "description": "Interact with Primeval Sorcerer Lusat in Sellia Hideaway.",
+          "sourceId": "a7-6",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Stars of Ruin",
+              "url": "https://eldenring.wiki.gg/wiki/Stars_of_Ruin"
+            }
+          ]
+        },
+        {
+          "name": "Founding Rain of Stars",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Founding_Rain_of_Stars",
+          "description": "In a chest at the top of Heretical Rise, accessed from an invisible bridge.",
+          "sourceId": "a7-7",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Founding Rain of Stars",
+              "url": "https://eldenring.wiki.gg/wiki/Founding_Rain_of_Stars"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legendary-talismans",
+      "name": "Legendary Talismans",
+      "kind": "talisman",
+      "section": "Legendary Talismans",
+      "sectionId": "talismans",
+      "achievementId": "legendary-talismans",
+      "items": [
+        {
+          "name": "Radagon Icon",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Radagon_Icon",
+          "description": "In a chest on the second floor of Debate Parlor in Academy of Raya Lucaria.",
+          "sourceId": "a8-1",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Radagon Icon",
+              "url": "https://eldenring.wiki.gg/wiki/Radagon_Icon"
+            }
+          ]
+        },
+        {
+          "name": "Radagon's Soreseal",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Radagon%27s_Soreseal",
+          "description": "Found on the innermost corpse in Fort Faroth, past some rats.",
+          "sourceId": "a8-2",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Radagon's Soreseal",
+              "url": "https://eldenring.wiki.gg/wiki/Radagon%27s_Soreseal"
+            }
+          ]
+        },
+        {
+          "name": "Moon of Nokstella",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Moon_of_Nokstella",
+          "description": "In a chest in the top building in Nokstella, Eternal City.",
+          "sourceId": "a8-3",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Moon of Nokstella",
+              "url": "https://eldenring.wiki.gg/wiki/Moon_of_Nokstella"
+            }
+          ]
+        },
+        {
+          "name": "Godfrey Icon",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Godfrey_Icon",
+          "description": "Kill Godefroy in the Golden Lineage Evergaol.",
+          "sourceId": "a8-4",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Godfrey Icon",
+              "url": "https://eldenring.wiki.gg/wiki/Godfrey_Icon"
+            }
+          ]
+        },
+        {
+          "name": "Marika's Soreseal",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Marika%27s_Soreseal",
+          "description": "In a room on the ground section in Elphael.",
+          "sourceId": "a8-5",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Marika's Soreseal",
+              "url": "https://eldenring.wiki.gg/wiki/Marika%27s_Soreseal"
+            }
+          ]
+        },
+        {
+          "name": "Dragoncrest Greatshield Talisman",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragoncrest_Greatshield_Talisman",
+          "description": "In a chest on the upper ledge of a room with multiple Kindreds of Rot in Elphael.",
+          "sourceId": "a8-6",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Dragoncrest Greatshield Talisman",
+              "url": "https://eldenring.wiki.gg/wiki/Dragoncrest_Greatshield_Talisman"
+            }
+          ]
+        },
+        {
+          "name": "Old Lord's Talisman",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Old_Lord%27s_Talisman",
+          "description": "In a chest at the end of the bridge where Bernahl invades you in Crumbling Farum Azula.",
+          "sourceId": "a8-7",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Old Lord's Talisman",
+              "url": "https://eldenring.wiki.gg/wiki/Old_Lord%27s_Talisman"
+            }
+          ]
+        },
+        {
+          "name": "Erdtree's Favor +2",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Erdtree%27s_Favor_%2B2",
+          "description": "On a root guarded by three Ulcerated Tree Spirits in Leyndell, Ashen Capital.",
+          "sourceId": "a8-8",
+          "badges": [],
+          "missable": false,
+          "links": [
+            {
+              "label": "Erdtree's Favor +2",
+              "url": "https://eldenring.wiki.gg/wiki/Erdtree%27s_Favor_%2B2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import {
   Badge,
@@ -16,22 +16,35 @@ import {
   useToast,
 } from "../components/ui";
 import { Icon } from "../components/Icon";
+import { formatNumber } from "../lib/format";
+import { ART, ArtBanner } from "../components/Art";
 import {
+  ACHIEVEMENTS,
+  CONTENT_COVERAGE,
   FARMABLES,
   FINITE_RESOURCES,
+  ITEM_BY_ID,
   ITEMS,
   LORE,
   MATERIALS,
   META,
   MERCHANTS,
+  NGPLUS_SECTIONS,
+  REQUIREMENT_GROUPS,
+  REQUIREMENT_GROUP_BY_ID,
   SCARABS,
   SUPPLEMENTAL,
 } from "../lib/data";
 import {
+  achievementProgress,
+  bossProgress,
   collectionSummary,
+  completionScopes,
   decisionsResolved,
   endingSummary,
   farmSummary,
+  ngplusProgress,
+  questlineProgress,
   routeProgress,
   supplementalProgress,
 } from "../lib/selectors";
@@ -39,8 +52,10 @@ import { navigate, useRoute } from "../lib/router";
 import {
   newJourney,
   resetJourney,
+  setAchievement,
   setCertification,
   setEnding,
+  setNgPlusItem,
   setRemembrance,
   setTransitionGate,
   useActiveCharacter,
@@ -51,14 +66,55 @@ import "./lore-completion.css";
 
 const TABS = [
   { id: "overview", label: "Overview" },
-  { id: "endings", label: "Endings & Achievements" },
+  { id: "achievements", label: "Achievements" },
+  { id: "endings", label: "Endings & Certifications" },
   { id: "remembrances", label: "Remembrances" },
-  { id: "readiness", label: "NG+ Readiness" },
+  { id: "ngplus", label: "NG+ Readiness" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
 
+const ACHIEVEMENT_SECTION_ORDER = ["Misc", "Bosses", "Shardbearers", "Endings"] as const;
+
+const ACHIEVEMENT_SECTION_NOTES: Record<string, string> = {
+  Misc: "Systems, exploration, and legendary collections",
+  Bosses: "Named boss and remembrance trophies",
+  Shardbearers: "Great Rune holders",
+  Endings: "Ending-path trophies",
+};
+
+const SCOPE_LINKS: Record<string, string> = {
+  route: "/journey?tab=route",
+  collection: "/collection",
+  achievements: "/completion?tab=achievements",
+  bosses: "/bosses",
+  quests: "/quests",
+  lore: "/lore",
+  endings: "/completion?tab=endings",
+  remembrances: "/completion?tab=remembrances",
+  ngplus: "/completion?tab=ngplus",
+};
+
+const SCOPE_ICONS = {
+  route: "map",
+  collection: "bag",
+  achievements: "achievement",
+  bosses: "skull",
+  quests: "quest",
+  lore: "book",
+  endings: "flame",
+  remembrances: "grace",
+  ngplus: "refresh",
+} as const;
+
 const REMEMBRANCE_GAMES = Array.from(new Set(META.remembrances.map((remembrance) => remembrance.game)));
+
+const COVERAGE_NOTES = [
+  `Route: ${CONTENT_COVERAGE.route.steps} steps across ${CONTENT_COVERAGE.route.sections} sections — ${CONTENT_COVERAGE.route.preDlcSteps} base-game pre-DLC, ${CONTENT_COVERAGE.route.dlcSteps} Shadow of the Erdtree, ${CONTENT_COVERAGE.route.endgameSteps} endgame. ${CONTENT_COVERAGE.route.missableSteps} steps are missable (${CONTENT_COVERAGE.route.missableBaseSteps} base, ${CONTENT_COVERAGE.route.missableDlcSteps} DLC).`,
+  `Catalog: ${CONTENT_COVERAGE.items.final} merged permanent items; ${CONTENT_COVERAGE.items.linkedToRoute} are linked to route steps and ${CONTENT_COVERAGE.items.placeholdersReplaced} placeholder acquisitions were replaced.`,
+  `Ledgers: ${CONTENT_COVERAGE.achievements.achievements} achievements with ${CONTENT_COVERAGE.achievements.requirementItems} legendary requirement items, ${CONTENT_COVERAGE.bosses.final} bosses, ${CONTENT_COVERAGE.questlines.questlines} questlines across ${CONTENT_COVERAGE.questlines.steps} steps, and ${CONTENT_COVERAGE.ngplus.items} NG+ checklist items.`,
+  "Companion records live in local storage. They are not a platform trophy audit, and no single blended completion percentage is shown.",
+];
 
 const CATALOG_COUNTS = {
   items: ITEMS.length,
@@ -119,18 +175,33 @@ export function CompletionPage() {
   const route = useRoute();
 
   const [gameFilter, setGameFilter] = useState("all");
+  const [achievementFilter, setAchievementFilter] = useState("all");
   const [confirm, setConfirm] = useState<"new-journey" | "reset-journey" | null>(null);
   const [planIndex, setPlanIndex] = useState<number | null>(null);
   const [merchantId, setMerchantId] = useState<string | null>(null);
 
   const tabParam = route.query.get("tab");
-  const activeTab: TabId = isTabId(tabParam) ? tabParam : "overview";
+  const achievementParam = route.query.get("achievement");
+  const activeTab: TabId = achievementParam
+    ? "achievements"
+    : isTabId(tabParam)
+      ? tabParam
+      : "overview";
 
   const routeState = routeProgress(journey);
   const chronology = supplementalProgress(journey);
   const collection = collectionSummary(character);
   const endings = endingSummary(character);
   const farms = farmSummary(character, journey);
+  const achievements = achievementProgress(character);
+  const ngplus = ngplusProgress(journey);
+  const bosses = bossProgress(journey);
+  const quests = questlineProgress(journey);
+  const scopes = completionScopes(character, journey);
+  const scopesComplete = scopes.filter((scopeRow) => scopeRow.complete).length;
+  const ngplusTotal = NGPLUS_SECTIONS.reduce((total, section) => total + section.stepCount, 0);
+  const missableAchievements = ACHIEVEMENTS.filter((achievement) => achievement.missable).length;
+  const achievementItems = REQUIREMENT_GROUPS.reduce((total, group) => total + group.items.length, 0);
 
   const certificationsChecked = META.certifications.filter((certification) => journey.certifications[certification.id]).length;
   const gatesReviewed = META.transitionGates.filter((gate) => journey.transitionGates[gate.id]).length;
@@ -142,17 +213,14 @@ export function CompletionPage() {
     const entry = journey.remembrances[remembrance.id];
     return Boolean(entry && (entry.selectedReward || entry.duplicated || entry.consumed));
   }).length;
-  const achievementNames = Array.from(
-    new Set(META.endings.map((ending) => ending.achievement).filter((achievement) => achievement !== "—")),
-  );
 
   const readinessChecks: ReadinessCheck[] = [
     {
       id: "route",
-      label: "Required Act I route steps resolved",
+      label: "Required route steps resolved",
       ok: routeState.complete,
       detail: `${routeState.requiredResolved} / ${routeState.required} required steps resolved · ${routeState.done} done, ${routeState.skipped} skipped, ${routeState.deferred} deferred`,
-      note: `The content pack contains the ${META.counts.routeSteps}-step Act I route only; later route sections are not in this export.`,
+      note: "Covers the full route: base game through Maliketh, all Shadow of the Erdtree sections, then the Ashen Capital endgame.",
       cta: "Open journey",
       to: "/journey",
     },
@@ -164,6 +232,15 @@ export function CompletionPage() {
       note: `Decisions recorded: ${decisionsDone} / ${META.decisions.length}.`,
       cta: "Open chronology",
       to: "/journey?tab=chronology",
+    },
+    {
+      id: "achievements",
+      label: `All ${ACHIEVEMENTS.length} achievements earned`,
+      ok: achievements.complete,
+      detail: `${achievements.done} / ${achievements.total} achievements earned · ${missableAchievements} flagged MISSABLE · ${achievementItems} legendary requirement items linked`,
+      note: "Earned flags are companion records, not a platform trophy check.",
+      cta: "Review achievements",
+      to: "/completion?tab=achievements",
     },
     {
       id: "endings",
@@ -193,11 +270,20 @@ export function CompletionPage() {
       to: "/completion?tab=overview",
     },
     {
+      id: "ngplus",
+      label: `NG+ checklist resolved (${NGPLUS_SECTIONS.length} sections)`,
+      ok: ngplus.complete,
+      detail: `${ngplus.done} / ${ngplusTotal} NG+ checklist items resolved · ${NGPLUS_SECTIONS.filter((section) => section.game === "Shadow of the Erdtree").length} Shadow of the Erdtree sections`,
+      note: "Checklist state is per journey and resets when a new journey starts.",
+      cta: "Open NG+ checklist",
+      to: "/completion?tab=ngplus",
+    },
+    {
       id: "collection",
       label: "Permanent collection snapshot",
       ok: collection.owned === collection.total,
       detail: `${collection.owned} / ${collection.total} permanent items owned · base ${collection.baseGame.owned}/${collection.baseGame.total} · DLC ${collection.dlc.owned}/${collection.dlc.total}`,
-      note: "Advisory only. The content-pack denominator differs from the workbook's whole-game item total, so this cannot prove complete collection.",
+      note: "Advisory only. The catalog denominator is the merged whole-game item list; it is still not a platform-level proof.",
       cta: "Open collection",
       to: "/collection",
       advisory: true,
@@ -236,19 +322,44 @@ export function CompletionPage() {
   const tabItems = TABS.map((tab) => ({
     ...tab,
     count:
-      tab.id === "endings"
-        ? META.endings.length
-        : tab.id === "remembrances"
-          ? META.remembrances.length
-          : tab.id === "readiness"
-            ? blockers.length || undefined
-            : undefined,
+      tab.id === "achievements"
+        ? ACHIEVEMENTS.length
+        : tab.id === "endings"
+          ? META.endings.length
+          : tab.id === "remembrances"
+            ? META.remembrances.length
+            : tab.id === "ngplus"
+              ? ngplusTotal
+              : undefined,
   }));
+
+  const filteredAchievements = ACHIEVEMENTS.filter((achievement) => {
+    const earned = Boolean(character.achievements[achievement.id]);
+    if (achievementFilter === "earned") return earned;
+    if (achievementFilter === "unearned") return !earned;
+    return true;
+  });
+
+  useEffect(() => {
+    if (!achievementParam) return;
+    const target = document.getElementById(`achievement-${achievementParam}`);
+    target?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [achievementParam]);
 
   const updateEnding = (id: string, patch: Partial<EndingState>) => {
     setEnding(id, patch);
     const name = META.endings.find((ending) => ending.id === id)?.name ?? "Ending";
     toast.push(`${name} state updated.`, "success");
+  };
+
+  const toggleAchievement = (id: string, name: string, value: boolean) => {
+    setAchievement(id, value);
+    toast.push(`${name} ${value ? "marked earned" : "marked unearned"}.`, value ? "success" : "default");
+  };
+
+  const toggleNgPlusItem = (id: string, value: boolean) => {
+    setNgPlusItem(id, value);
+    toast.push(value ? "NG+ checklist item checked." : "NG+ checklist item cleared.");
   };
 
   const confirmAction = () => {
@@ -265,14 +376,27 @@ export function CompletionPage() {
 
   return (
     <div className="page">
+      <ArtBanner
+        image={ART.heroSote}
+        variant="sote"
+        caption={`Shadow of the Erdtree · endgame · ${NGPLUS_SECTIONS.length} NG+ sections`}
+        title="Nine ledgers, one closeout"
+        className="completion-banner"
+      >
+        <p className="completion-banner-note">
+          The route pauses after Maliketh for the whole DLC, then returns for the Ashen Capital, endings, and NG+ prep.
+          Each scope below keeps its own denominator — no blended percentage can hide an unfinished ledger.
+        </p>
+      </ArtBanner>
+
       <PageHeader
         eyebrow={`${journey.label} · Whole-game closeout`}
         title="Completion"
         description={
           <>
-            Ending execution, certifications, remembrance choices, and the real NG+ gate. Progress is computed from
-            stored companion state; the route export covers Act I only and collection denominators come from the content
-            pack, so nothing here claims platform-level completion.
+            Route, collection, achievements, bosses, quests, lore, endings, remembrances, and NG+ each report their own
+            numerator and denominator. Stored companion state drives every row; nothing here claims platform-level
+            completion.
           </>
         }
         actions={
@@ -283,13 +407,59 @@ export function CompletionPage() {
             <Button
               variant={ready ? "primary" : "default"}
               icon="target"
-              onClick={() => navigate("/completion?tab=readiness")}
+              onClick={() => navigate("/completion?tab=ngplus")}
             >
               NG+ readiness
             </Button>
           </>
         }
       />
+
+      <section className="completion-scopes" aria-label="100% completion scopes">
+        <div className="scope-header">
+          <div>
+            <h2 className="scope-title">100% completion</h2>
+            <p className="scope-subtitle">
+              {scopesComplete} / {scopes.length} scopes complete · every scope reports its own real denominator
+            </p>
+          </div>
+          <Badge tone={scopesComplete === scopes.length ? "success" : "accent"}>
+            {scopes.length - scopesComplete} open {scopes.length - scopesComplete === 1 ? "scope" : "scopes"}
+          </Badge>
+        </div>
+        <div className="scope-grid">
+          {scopes.map((scopeRow) => (
+            <button
+              key={scopeRow.id}
+              type="button"
+              className={`scope-card${scopeRow.complete ? " is-complete" : ""}`}
+              onClick={() => navigate(SCOPE_LINKS[scopeRow.id] ?? "/completion")}
+              aria-label={`Open ${scopeRow.label}: ${scopeRow.numerator} of ${scopeRow.denominator}`}
+            >
+              <span className="scope-card-head">
+                <span className="scope-icon" aria-hidden="true">
+                  <Icon
+                    name={SCOPE_ICONS[scopeRow.id as keyof typeof SCOPE_ICONS] ?? "target"}
+                    size={15}
+                  />
+                </span>
+                <span className="scope-label">{scopeRow.label}</span>
+                {scopeRow.complete ? <Icon name="check" size={13} /> : null}
+              </span>
+              <span className="scope-value">
+                {formatNumber(scopeRow.numerator)} <span className="faint">/ {formatNumber(scopeRow.denominator)}</span>
+              </span>
+              <span className="scope-meta">
+                <span>{scopeRow.percent}%</span>
+                <span className="faint">{scopeRow.complete ? "complete" : "in progress"}</span>
+              </span>
+              <span className={`scope-track${scopeRow.complete ? " is-complete" : ""}`} aria-hidden="true">
+                <span className="scope-fill" style={{ width: `${scopeRow.percent}%` }} />
+              </span>
+            </button>
+          ))}
+        </div>
+      </section>
 
       <TabBar
         items={tabItems}
@@ -302,12 +472,12 @@ export function CompletionPage() {
           <SectionTitle title="Closeout pulse" note={`${journey.label} · derived from stored state`} />
           <div className="pulse-grid completion-pulse-grid">
             <PulseCard
-              label="Act I route"
+              label="Full route"
               value={`${routeState.requiredPercent}%`}
               detail={
                 <>
                   {routeState.requiredResolved} / {routeState.required} required · {routeState.done} done ·{" "}
-                  {routeState.skipped} skipped
+                  {routeState.skipped} skipped of {routeState.total} steps
                 </>
               }
               progress={routeState.requiredPercent}
@@ -322,6 +492,17 @@ export function CompletionPage() {
                 </>
               }
               progress={chronology.percent}
+            />
+            <PulseCard
+              label="Achievements"
+              value={`${achievements.done} / ${achievements.total}`}
+              detail={
+                <>
+                  {missableAchievements} flagged MISSABLE · {achievementItems} legendary requirement items ·{" "}
+                  {achievements.total - achievements.done} remaining
+                </>
+              }
+              progress={achievements.percent}
             />
             <PulseCard
               label="Permanent collection"
@@ -356,10 +537,10 @@ export function CompletionPage() {
               progress={(processedRemembrances / META.remembrances.length) * 100}
             />
             <PulseCard
-              label="Farm closeout"
-              value={`${farms.finiteCollected} / ${farms.finiteTotal}`}
-              detail={`Farmables ${farms.farmablesOwned}/${farms.farmablesTotal} · finite ${farms.finiteCollected}/${farms.finiteTotal} · materials ${farms.materialsStocked}/${farms.materialsTotal} · merchants ${farms.merchantsPurchased}/${farms.merchantsTotal} · scarabs ${farms.scarabsCollected}/${farms.scarabsTotal}`}
-              progress={(farms.finiteCollected / farms.finiteTotal) * 100}
+              label="Bosses & quests"
+              value={`${bosses.done} / ${bosses.total}`}
+              detail={`Boss ledger ${bosses.percent}% · questlines ${quests.done} / ${quests.total} steps (${quests.percent}%) · NG+ ${ngplus.done} / ${ngplusTotal}`}
+              progress={bosses.percent}
             />
           </div>
 
@@ -529,9 +710,9 @@ export function CompletionPage() {
           </div>
 
           <div className="completion-section">
-            <SectionTitle title="Coverage & denominator caveats" note="From the content pack" />
+            <SectionTitle title="Coverage & denominator caveats" note="Derived from the merged content pack" />
             <div className="card card-pad coverage-card">
-              {META.coverageNotes.map((note) => (
+              {COVERAGE_NOTES.map((note) => (
                 <div className="coverage-note" key={note}>
                   <Icon name="alert" size={14} />
                   <span>{note}</span>
@@ -552,11 +733,164 @@ export function CompletionPage() {
         </div>
       ) : null}
 
+      {activeTab === "achievements" ? (
+        <div className="completion-tab">
+          <div className="row-between wrap achievement-header-row">
+            <SectionTitle
+              title="Achievements"
+              note={`${achievements.done} / ${ACHIEVEMENTS.length} earned · ${missableAchievements} MISSABLE · ${REQUIREMENT_GROUPS.length} legendary groups (${achievementItems} items)`}
+            />
+            <div className="achievement-filter">
+              <Select
+                label="Earned state"
+                value={achievementFilter}
+                onChange={(event) => setAchievementFilter(event.target.value)}
+              >
+                <option value="all">All ({ACHIEVEMENTS.length})</option>
+                <option value="earned">Earned only ({achievements.done})</option>
+                <option value="unearned">Unearned only ({ACHIEVEMENTS.length - achievements.done})</option>
+              </Select>
+            </div>
+          </div>
+
+          <Callout tone="default" icon="achievement">
+            All {ACHIEVEMENTS.length} achievements, grouped by section. Toggling earned state stores a companion flag on
+            the active character; requirement items open directly in the collection catalog.
+          </Callout>
+
+          {filteredAchievements.length === 0 ? (
+            <EmptyState
+              title="No achievements in this filter"
+              description="Switch back to all achievements to browse the full list."
+              action={
+                <Button icon="refresh" onClick={() => setAchievementFilter("all")}>
+                  Show all achievements
+                </Button>
+              }
+            />
+          ) : (
+            ACHIEVEMENT_SECTION_ORDER.map((section) => {
+              const rows = filteredAchievements.filter((achievement) => achievement.section === section);
+              if (rows.length === 0) return null;
+              const earnedInSection = rows.filter((achievement) => character.achievements[achievement.id]).length;
+              return (
+                <div className="completion-section" key={section}>
+                  <SectionTitle
+                    title={section}
+                    note={`${earnedInSection} / ${rows.length} earned · ${ACHIEVEMENT_SECTION_NOTES[section] ?? "Achievement group"}`}
+                  />
+                  <div className="achievement-grid">
+                    {rows.map((achievement) => {
+                      const earned = Boolean(character.achievements[achievement.id]);
+                      return (
+                        <article
+                          className={`achievement-row${earned ? " is-earned" : ""}${achievement.id === achievementParam ? " is-focused" : ""}`}
+                          key={achievement.id}
+                          id={`achievement-${achievement.id}`}
+                        >
+                          <Checkbox
+                            checked={earned}
+                            onChange={(value) => toggleAchievement(achievement.id, achievement.name, value)}
+                            label={<span className="sr-only">Mark {achievement.name} earned</span>}
+                          />
+                          <div className="grow achievement-body">
+                            <div className="achievement-head">
+                              <h3 className="card-title">{achievement.name}</h3>
+                              <div className="tag-list achievement-badges">
+                                <Badge>{achievement.section}</Badge>
+                                {achievement.missable ? <Badge tone="warning">MISSABLE</Badge> : null}
+                                {achievement.badges
+                                  .filter((badge) => badge.toUpperCase() !== "MISSABLE")
+                                  .map((badge) => (
+                                    <Badge tone="accent" key={badge}>
+                                      {badge}
+                                    </Badge>
+                                  ))}
+                                {earned ? <Badge tone="success">Earned</Badge> : null}
+                              </div>
+                            </div>
+                            <p className="achievement-desc">{achievement.description}</p>
+
+                            {achievement.requirementGroupIds.length > 0 ? (
+                              <div className="achievement-reqs">
+                                {achievement.requirementGroupIds.map((groupId) => {
+                                  const group = REQUIREMENT_GROUP_BY_ID[groupId];
+                                  if (!group) return null;
+                                  return (
+                                    <div className="req-group" key={groupId}>
+                                      <div className="req-group-head">
+                                        <strong>{group.name}</strong>
+                                        <span className="tiny faint">
+                                          {group.items.length} items · {group.kind}
+                                        </span>
+                                      </div>
+                                      <ul className="req-items">
+                                        {group.items.map((item) => {
+                                          const known = Boolean(ITEM_BY_ID[item.itemId]);
+                                          const owned = Boolean(character.items[item.itemId]);
+                                          return (
+                                            <li key={item.itemId} className={owned ? "is-owned" : ""}>
+                                              {known ? (
+                                                <button
+                                                  type="button"
+                                                  className="lore-inline-link"
+                                                  onClick={() => navigate(`/collection?item=${encodeURIComponent(item.itemId)}`)}
+                                                >
+                                                  {item.name}
+                                                </button>
+                                              ) : (
+                                                <span>{item.name}</span>
+                                              )}
+                                              {item.missable ? <Badge tone="warning">MISSABLE</Badge> : null}
+                                              {owned ? (
+                                                <span className="req-owned" title="Owned">
+                                                  <Icon name="check" size={11} />
+                                                </span>
+                                              ) : null}
+                                              <a
+                                                href={item.wikiUrl}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="req-wiki"
+                                                aria-label={`Wiki: ${item.name}`}
+                                              >
+                                                <Icon name="external" size={10} />
+                                              </a>
+                                            </li>
+                                          );
+                                        })}
+                                      </ul>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : null}
+
+                            <div className="achievement-foot">
+                              <a href={achievement.wikiUrl} target="_blank" rel="noreferrer">
+                                Wiki <Icon name="external" size={11} />
+                              </a>
+                              <span className="tiny faint">
+                                {achievement.section} · {achievement.sourceId}
+                              </span>
+                            </div>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      ) : null}
+
       {activeTab === "endings" ? (
         <div className="completion-tab">
           <SectionTitle
             title="Endings"
-            note={`${endingsViewed} / ${META.endings.length} viewed · ${endingsEarned} earned · ${achievementNames.length} unique achievement names`}
+            note={`${endingsViewed} / ${META.endings.length} viewed · ${endingsEarned} earned`}
           />
           <div className="endings-grid">
             {META.endings.map((ending) => {
@@ -613,27 +947,48 @@ export function CompletionPage() {
 
           <div className="completion-section">
             <SectionTitle
-              title="Achievement names"
-              note={`${achievementNames.length} unique names derived from ending rows`}
+              title="Ending achievements"
+              note={`${META.endings.filter((ending) => ending.achievement !== "—").length} ending-path trophies · ${ACHIEVEMENTS.length} tracked in total`}
+              actions={
+                <Button size="sm" variant="ghost" iconRight="arrowRight" onClick={() => navigate("/completion?tab=achievements")}>
+                  All achievements
+                </Button>
+              }
             />
             <div className="card card-pad achievement-card">
               <div className="list">
                 {META.endings
                   .filter((ending) => ending.achievement !== "—")
-                  .map((ending) => (
-                    <div className="list-row" key={ending.id}>
-                      <Icon name="trophy" size={16} />
-                      <div className="grow">
-                        <strong>{ending.achievement}</strong>
-                        <div className="small faint">{ending.name}</div>
+                  .map((ending) => {
+                    const achievement = ACHIEVEMENTS.find((row) => row.name === ending.achievement);
+                    const earned = achievement ? Boolean(character.achievements[achievement.id]) : false;
+                    return (
+                      <div className="list-row" key={ending.id}>
+                        <Icon name="trophy" size={16} />
+                        <div className="grow">
+                          <strong>{ending.achievement}</strong>
+                          <div className="small faint">{ending.name}</div>
+                        </div>
+                        {achievement ? (
+                          <Checkbox
+                            checked={earned}
+                            onChange={(value) => toggleAchievement(achievement.id, achievement.name, value)}
+                            label={
+                              <>
+                                <span className="sr-only">{achievement.name} earned</span>
+                                <span aria-hidden="true">{earned ? "Earned" : "Not earned"}</span>
+                              </>
+                            }
+                          />
+                        ) : null}
+                        <Badge tone="accent">Ending {ending.order}</Badge>
                       </div>
-                      <Badge tone="accent">Ending {ending.order}</Badge>
-                    </div>
-                  ))}
+                    );
+                  })}
               </div>
               <Callout tone="default" icon="alert">
-                The workbook does not independently track platform achievement unlocks. These {achievementNames.length}{" "}
-                names are derived from ending rows and are not a claim that a platform trophy fired.
+                Earned flags are companion records. They are not a claim that a platform trophy fired; ending{" "}
+                <em>viewed</em> state above remains separate from achievement earnings.
               </Callout>
             </div>
           </div>
@@ -841,7 +1196,7 @@ export function CompletionPage() {
         </div>
       ) : null}
 
-      {activeTab === "readiness" ? (
+      {activeTab === "ngplus" ? (
         <div className="completion-tab">
           <SectionTitle
             title="NG+ readiness checklist"
@@ -892,9 +1247,89 @@ export function CompletionPage() {
           </div>
 
           <Callout tone="default" icon="alert">
-            Collection and farm rows are advisory snapshots, not readiness gates. The source workbook's whole-game
-            denominators differ from the extracted counts, so these percentages cannot prove 100% game completion.
+            Collection and farm rows are advisory snapshots, not readiness gates. Each readiness row above counts its
+            own stored state; these snapshots cannot prove 100% game completion on their own.
           </Callout>
+
+          <div className="completion-section">
+            <SectionTitle
+              title="NG+ checklist"
+              note={`${ngplus.done} / ${ngplusTotal} items · ${NGPLUS_SECTIONS.length} sections · ${NGPLUS_SECTIONS.filter((section) => section.game === "Shadow of the Erdtree").length} DLC`}
+            />
+            <Callout tone="default" icon="list">
+              Stockpile these before starting Journey 2. Checklist state is stored on {journey.label} and resets with a
+              new or reset journey.
+            </Callout>
+            <div className="ngp-sections">
+              {NGPLUS_SECTIONS.map((section) => {
+                const sectionDone = section.steps.filter((step) => journey.ngplusChecklist[step.id]).length;
+                const percent = section.steps.length
+                  ? Math.round((sectionDone / section.steps.length) * 100)
+                  : 0;
+                return (
+                  <article className="ngp-section" key={section.id}>
+                    <div className="ngp-head">
+                      <div className="grow">
+                        <h3 className="card-title">{section.title}</h3>
+                        <div className="tiny faint">
+                          {section.game} · {section.steps.length} items
+                          {section.levelRange ? ` · ${section.levelRange}` : ""}
+                        </div>
+                      </div>
+                      <Badge tone={sectionDone === section.steps.length ? "success" : "default"}>
+                        {sectionDone} / {section.steps.length}
+                      </Badge>
+                    </div>
+                    <ProgressBar
+                      value={percent}
+                      tone={sectionDone === section.steps.length ? "success" : "accent"}
+                    />
+                    <ul className="ngp-steps">
+                      {section.steps.map((step) => {
+                        const checked = Boolean(journey.ngplusChecklist[step.id]);
+                        return (
+                          <li className={`ngp-step${checked ? " is-checked" : ""}`} key={step.id}>
+                            <Checkbox
+                              checked={checked}
+                              onChange={(value) => toggleNgPlusItem(step.id, value)}
+                              label={
+                                <>
+                                  <span className="sr-only">NG+ checklist: {step.text}</span>
+                                  <span>{step.text}</span>
+                                </>
+                              }
+                            />
+                            <div className="ngp-step-meta">
+                              {step.optional ? <Badge>Optional</Badge> : null}
+                              {step.badges
+                                .filter((badge) => badge.toUpperCase() !== "OPTIONAL")
+                                .map((badge) => (
+                                  <Badge key={badge} tone="warning">
+                                    {badge}
+                                  </Badge>
+                                ))}
+                              {step.links.slice(0, 2).map((link) => (
+                                <a
+                                  key={`${step.id}-${link.url}`}
+                                  href={link.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="ngp-link"
+                                  aria-label={`${step.text} source: ${link.label}`}
+                                >
+                                  {link.label} <Icon name="external" size={10} />
+                                </a>
+                              ))}
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
 
           <div className="completion-section">
             <SectionTitle title="Journey actions" note="Lifetime records stay on the character" />
@@ -902,9 +1337,9 @@ export function CompletionPage() {
               <div>
                 <h3 className="card-title">Begin the next journey</h3>
                 <p className="small muted">
-                  A new journey resets route, chronology, journey-level farm tracking, certifications,
-                  transition-gate reviews, and remembrance state for the active run. Lifetime item ownership, farmable
-                  quantities, read lore, and ending records are preserved.
+                  A new journey resets route, chronology, boss and questline state, journey-level farm tracking,
+                  certifications, transition-gate reviews, remembrance state, and the NG+ checklist for the active run.
+                  Lifetime item ownership, farmable quantities, read lore, and ending records are preserved.
                 </p>
               </div>
               <div className="row wrap">
@@ -931,7 +1366,7 @@ export function CompletionPage() {
           <div className="completion-section">
             <SectionTitle title="Coverage caveats" note="Read before claiming completion" />
             <div className="card card-pad coverage-card">
-              {META.coverageNotes.map((note) => (
+              {COVERAGE_NOTES.map((note) => (
                 <div className="coverage-note" key={note}>
                   <Icon name="alert" size={14} />
                   <span>{note}</span>
@@ -1022,8 +1457,8 @@ export function CompletionPage() {
           {confirm === "reset-journey" ? (
             <>
               <Callout tone="danger" icon="alert">
-                This clears route steps, chronology actions, boss/quest/journey-level farm tracking, certifications, gate
-                reviews, and remembrance choices for {journey.label}.
+                This clears route steps, chronology actions, boss and questline state, journey-level farm tracking,
+                certifications, gate reviews, remembrance choices, and the NG+ checklist for {journey.label}.
               </Callout>
               <p className="small muted">
                 Lifetime item ownership, farmable quantities, read lore, and ending records stay on the character.
@@ -1033,9 +1468,9 @@ export function CompletionPage() {
           ) : (
             <>
               <Callout tone="warning" icon="alert">
-                A new journey starts empty route, chronology, journey-level farm, certification, gate, and remembrance
-                state for the run. Lifetime collection, farmable quantities, read lore, and ending records are preserved
-                on the character.
+                A new journey starts empty route, chronology, boss and questline, journey-level farm, certification,
+                gate, remembrance, and NG+ checklist state for the run. Lifetime collection, farmable quantities, read
+                lore, and ending records are preserved on the character.
               </Callout>
               {!ready ? (
                 <p className="small muted">

@@ -1,0 +1,4163 @@
+{
+  "source": {
+    "name": "Redmaw Completion Sheets",
+    "url": "https://eldenring.redmaw.dev/sheets/bosses",
+    "fetchedAt": "2026-10-22T16:41:32Z"
+  },
+  "attribution": "Unofficial fan project. Data transcribed from the Redmaw Completion Sheets (https://eldenring.redmaw.dev), a free community resource. Elden Ring and its content belong to FromSoftware and Bandai Namco Entertainment.",
+  "sectionCount": 42,
+  "bosses": [
+    {
+      "id": "limgrave-soldier-of-godrick",
+      "name": "Soldier of Godrick",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Cave of Knowledge",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Godrick_Soldier#Bosses",
+      "dlc": false,
+      "sourceId": "b1-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Soldier of Godrick",
+          "url": "https://eldenring.wiki.gg/wiki/Godrick_Soldier#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-beastman-of-farum-azula",
+      "name": "Beastman of Farum Azula",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Groveside Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Beastman_of_Farum_Azula/Boss_(Groveside_Cave)",
+      "dlc": false,
+      "sourceId": "b1-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Beastman of Farum Azula",
+          "url": "https://eldenring.wiki.gg/wiki/Beastman_of_Farum_Azula/Boss_(Groveside_Cave)"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-demi-human-chiefs-2x",
+      "name": "Demi-Human Chiefs (2x)",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Coastal Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Demi-Human#Bosses",
+      "dlc": false,
+      "sourceId": "b1-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Demi-Human Chiefs",
+          "url": "https://eldenring.wiki.gg/wiki/Demi-Human#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-grave-warden-duelist",
+      "name": "Grave Warden Duelist",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Murkwater Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Warden_Duelist#Bosses",
+      "dlc": false,
+      "sourceId": "b1-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Grave Warden Duelist",
+          "url": "https://eldenring.wiki.gg/wiki/Grave_Warden_Duelist#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-patches",
+      "name": "Patches",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Murkwater Cave (he surrenders after you deal half of his HP)",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Patches",
+      "dlc": false,
+      "sourceId": "b1-5",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Patches",
+          "url": "https://eldenring.wiki.gg/wiki/Patches"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-mad-pumpkin-head",
+      "name": "Mad Pumpkin Head",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Waypoint Ruins",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Mad_Pumpkin_Head#Bosses",
+      "dlc": false,
+      "sourceId": "b1-6",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Mad Pumpkin Head",
+          "url": "https://eldenring.wiki.gg/wiki/Mad_Pumpkin_Head#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-bloodhound-knight-darriwil",
+      "name": "Bloodhound Knight Darriwil",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Forlorn Hound Evergaol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Bloodhound_Knight#Bosses",
+      "dlc": false,
+      "sourceId": "b1-7",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Bloodhound Knight Darriwil",
+          "url": "https://eldenring.wiki.gg/wiki/Bloodhound_Knight#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-flying-dragon-agheel",
+      "name": "Flying Dragon Agheel",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Ambushes you on a small island in Agheel Lake",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragon#Bosses",
+      "dlc": false,
+      "sourceId": "b1-8",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Flying Dragon Agheel",
+          "url": "https://eldenring.wiki.gg/wiki/Dragon#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-stonedigger-troll",
+      "name": "Stonedigger Troll",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Limgrave Tunnels",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Troll#Bosses",
+      "dlc": false,
+      "sourceId": "b1-9",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Stonedigger Troll",
+          "url": "https://eldenring.wiki.gg/wiki/Troll#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-nights-cavalry",
+      "name": "Night's Cavalry",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Patrols the bridge near Agheel Lake at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Bosses",
+      "dlc": false,
+      "sourceId": "b1-10",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Night's Cavalry",
+          "url": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-tree-sentinel",
+      "name": "Tree Sentinel",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Patrols the slope near the Church of Elleh",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Tree_Sentinel#Bosses",
+      "dlc": false,
+      "sourceId": "b1-11",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Tree Sentinel",
+          "url": "https://eldenring.wiki.gg/wiki/Tree_Sentinel#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-erdtree-burial-watchdog",
+      "name": "Erdtree Burial Watchdog",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Stormfoot Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Erdtree_Burial_Watchdog#Bosses",
+      "dlc": false,
+      "sourceId": "b1-12",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Erdtree Burial Watchdog",
+          "url": "https://eldenring.wiki.gg/wiki/Erdtree_Burial_Watchdog#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-crucible-knight",
+      "name": "Crucible Knight",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Stormhill Evergaol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Crucible_Knight#Bosses",
+      "dlc": false,
+      "sourceId": "b1-13",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Crucible Knight",
+          "url": "https://eldenring.wiki.gg/wiki/Crucible_Knight#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-black-knife-assassin",
+      "name": "Black Knife Assassin",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Deathtouched Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Knife_Assassin#Bosses",
+      "dlc": false,
+      "sourceId": "b1-14",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Black Knife Assassin",
+          "url": "https://eldenring.wiki.gg/wiki/Black_Knife_Assassin#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-guardian-golem",
+      "name": "Guardian Golem",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Highroad Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Guardian_Golem#Bosses",
+      "dlc": false,
+      "sourceId": "b1-15",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Guardian Golem",
+          "url": "https://eldenring.wiki.gg/wiki/Guardian_Golem#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-bell-bearing-hunter",
+      "name": "Bell Bearing Hunter",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Encountered in Warmaster's Shack at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Elemer_of_the_Briar#Warmaster's_Shack-0",
+      "dlc": false,
+      "sourceId": "b1-16",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Bell Bearing Hunter",
+          "url": "https://eldenring.wiki.gg/wiki/Elemer_of_the_Briar#Warmaster's_Shack-0"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-deathbird",
+      "name": "Deathbird",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Encountered on the flat ruin east of Warmaster's Shack at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Deathbird#Bosses",
+      "dlc": false,
+      "sourceId": "b1-17",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Deathbird",
+          "url": "https://eldenring.wiki.gg/wiki/Deathbird#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-tibia-mariner",
+      "name": "Tibia Mariner",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Summonwater Village",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Tibia_Mariner#Bosses",
+      "dlc": false,
+      "sourceId": "b1-18",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Tibia Mariner",
+          "url": "https://eldenring.wiki.gg/wiki/Tibia_Mariner#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "limgrave-ulcerated-tree-spirit",
+      "name": "Ulcerated Tree Spirit",
+      "section": "Limgrave",
+      "sectionId": "limgrave",
+      "levelRange": "Levels 1-25",
+      "description": "Fringefolk Hero's Grave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ulcerated_Tree_Spirit#Bosses",
+      "dlc": false,
+      "sourceId": "b1-19",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Ulcerated Tree Spirit",
+          "url": "https://eldenring.wiki.gg/wiki/Ulcerated_Tree_Spirit#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "weeping-peninsula-runebear",
+      "name": "Runebear",
+      "section": "Weeping Peninsula",
+      "sectionId": "weeping-peninsula",
+      "levelRange": "Levels 20-30",
+      "description": "Earthbore Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Runebear#Bosses",
+      "dlc": false,
+      "sourceId": "b2-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Runebear",
+          "url": "https://eldenring.wiki.gg/wiki/Runebear#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "weeping-peninsula-scaly-misbegotten",
+      "name": "Scaly Misbegotten",
+      "section": "Weeping Peninsula",
+      "sectionId": "weeping-peninsula",
+      "levelRange": "Levels 20-30",
+      "description": "Morne Tunnel",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Misbegotten#Bosses",
+      "dlc": false,
+      "sourceId": "b2-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Scaly Misbegotten",
+          "url": "https://eldenring.wiki.gg/wiki/Misbegotten#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "weeping-peninsula-cemetery-shade",
+      "name": "Cemetery Shade",
+      "section": "Weeping Peninsula",
+      "sectionId": "weeping-peninsula",
+      "levelRange": "Levels 20-30",
+      "description": "Tombsward Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Cemetery_Shade#Bosses",
+      "dlc": false,
+      "sourceId": "b2-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Cemetery Shade",
+          "url": "https://eldenring.wiki.gg/wiki/Cemetery_Shade#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "weeping-peninsula-erdtree-avatar",
+      "name": "Erdtree Avatar",
+      "section": "Weeping Peninsula",
+      "sectionId": "weeping-peninsula",
+      "levelRange": "Levels 20-30",
+      "description": "Guards the Minor Erdtree above Tombsward Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Erdtree_Avatar#Bosses",
+      "dlc": false,
+      "sourceId": "b2-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Erdtree Avatar",
+          "url": "https://eldenring.wiki.gg/wiki/Erdtree_Avatar#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "weeping-peninsula-ancient-hero-of-zamor",
+      "name": "Ancient Hero of Zamor",
+      "section": "Weeping Peninsula",
+      "sectionId": "weeping-peninsula",
+      "levelRange": "Levels 20-30",
+      "description": "Weeping Evergaol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancient_Hero_of_Zamor#Bosses",
+      "dlc": false,
+      "sourceId": "b2-5",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Ancient Hero of Zamor",
+          "url": "https://eldenring.wiki.gg/wiki/Ancient_Hero_of_Zamor#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "weeping-peninsula-miranda-the-blighted-bloom",
+      "name": "Miranda the Blighted Bloom",
+      "section": "Weeping Peninsula",
+      "sectionId": "weeping-peninsula",
+      "levelRange": "Levels 20-30",
+      "description": "Tombsward Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Miranda_Blossom#Boss_fight",
+      "dlc": false,
+      "sourceId": "b2-6",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Miranda the Blighted Bloom",
+          "url": "https://eldenring.wiki.gg/wiki/Miranda_Blossom#Boss_fight"
+        }
+      ]
+    },
+    {
+      "id": "weeping-peninsula-erdtree-burial-watchdog",
+      "name": "Erdtree Burial Watchdog",
+      "section": "Weeping Peninsula",
+      "sectionId": "weeping-peninsula",
+      "levelRange": "Levels 20-30",
+      "description": "Impaler's Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Erdtree_Burial_Watchdog#Impaler's_Catacombs-0",
+      "dlc": false,
+      "sourceId": "b2-7",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Erdtree Burial Watchdog",
+          "url": "https://eldenring.wiki.gg/wiki/Erdtree_Burial_Watchdog#Impaler's_Catacombs-0"
+        }
+      ]
+    },
+    {
+      "id": "weeping-peninsula-nights-cavalry",
+      "name": "Night's Cavalry",
+      "section": "Weeping Peninsula",
+      "sectionId": "weeping-peninsula",
+      "levelRange": "Levels 20-30",
+      "description": "Patrols the Castle Morne Rampart at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Weeping_Peninsula-0",
+      "dlc": false,
+      "sourceId": "b2-8",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Night's Cavalry",
+          "url": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Weeping_Peninsula-0"
+        }
+      ]
+    },
+    {
+      "id": "weeping-peninsula-deathbird",
+      "name": "Deathbird",
+      "section": "Weeping Peninsula",
+      "sectionId": "weeping-peninsula",
+      "levelRange": "Levels 20-30",
+      "description": "Behind a large ruin southwest of Castle Morne Rampart at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Deathbird#Weeping_Peninsula-0",
+      "dlc": false,
+      "sourceId": "b2-9",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Deathbird",
+          "url": "https://eldenring.wiki.gg/wiki/Deathbird#Weeping_Peninsula-0"
+        }
+      ]
+    },
+    {
+      "id": "weeping-peninsula-leonine-misbegotten",
+      "name": "Leonine Misbegotten",
+      "section": "Weeping Peninsula",
+      "sectionId": "weeping-peninsula",
+      "levelRange": "Levels 20-30",
+      "description": "Castle Morne",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Misbegotten_Warrior#Bosses",
+      "dlc": false,
+      "sourceId": "b2-10",
+      "badges": [],
+      "missable": false,
+      "achievement": "Leonine Misbegotten",
+      "links": [
+        {
+          "label": "Leonine Misbegotten",
+          "url": "https://eldenring.wiki.gg/wiki/Misbegotten_Warrior#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "stormveil-castle-margit-the-fell-omen",
+      "name": "Margit, the Fell Omen",
+      "section": "Stormveil Castle",
+      "sectionId": "stormveil-castle",
+      "levelRange": "Levels 30-40",
+      "description": "Guards the entrance to the castle",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Margit,_the_Fell_Omen",
+      "dlc": false,
+      "sourceId": "b3-1",
+      "badges": [
+        "MISSABLE"
+      ],
+      "missable": true,
+      "achievement": "Margit, the Fell Omen",
+      "links": [
+        {
+          "label": "Margit, the Fell Omen",
+          "url": "https://eldenring.wiki.gg/wiki/Margit,_the_Fell_Omen"
+        }
+      ]
+    },
+    {
+      "id": "stormveil-castle-godrick-the-grafted",
+      "name": "Godrick the Grafted",
+      "section": "Stormveil Castle",
+      "sectionId": "stormveil-castle",
+      "levelRange": "Levels 30-40",
+      "description": "Encountered at the end of the castle",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Godrick_the_Grafted",
+      "dlc": false,
+      "sourceId": "b3-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "Shardbearer Godrick",
+      "links": [
+        {
+          "label": "Godrick the Grafted",
+          "url": "https://eldenring.wiki.gg/wiki/Godrick_the_Grafted"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-cleanrot-knight",
+      "name": "Cleanrot Knight",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Stillwater Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Cleanrot_Knight#Bosses",
+      "dlc": false,
+      "sourceId": "b4-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Cleanrot Knight",
+          "url": "https://eldenring.wiki.gg/wiki/Cleanrot_Knight#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-adan-thief-of-fire",
+      "name": "Adan, Thief of Fire",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Malefactor's Evergaol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Adan,_Thief_of_Fire",
+      "dlc": false,
+      "sourceId": "b4-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Adan, Thief of Fire",
+          "url": "https://eldenring.wiki.gg/wiki/Adan,_Thief_of_Fire"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-omenkiller",
+      "name": "Omenkiller",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Village of the Albinaurics",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Omenkiller#Bosses",
+      "dlc": false,
+      "sourceId": "b4-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Omenkiller",
+          "url": "https://eldenring.wiki.gg/wiki/Omenkiller#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-bloodhound-knight",
+      "name": "Bloodhound Knight",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Lakeside Crystal Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Bloodhound_Knight#Lakeside_Crystal_Cave-0",
+      "dlc": false,
+      "sourceId": "b4-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Bloodhound Knight",
+          "url": "https://eldenring.wiki.gg/wiki/Bloodhound_Knight#Lakeside_Crystal_Cave-0"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-erdtree-avatar-south-liurnia",
+      "name": "Erdtree Avatar (South Liurnia)",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Guards the Minor Erdtree above Road's End Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Erdtree_Avatar#West_Liurnia-0",
+      "dlc": false,
+      "sourceId": "b4-5",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Erdtree Avatar",
+          "url": "https://eldenring.wiki.gg/wiki/Erdtree_Avatar#West_Liurnia-0"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-spiritcaller-snail",
+      "name": "Spiritcaller Snail",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Road's End Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Spiritcaller_Snail#Bosses",
+      "dlc": false,
+      "sourceId": "b4-6",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Spiritcaller Snail",
+          "url": "https://eldenring.wiki.gg/wiki/Spiritcaller_Snail#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-bols-carian-knight",
+      "name": "Bols, Carian Knight",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Cuckoo's Evergaol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Troll#Bols,_Carian_Knight-0",
+      "dlc": false,
+      "sourceId": "b4-7",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Bols, Carian Knight",
+          "url": "https://eldenring.wiki.gg/wiki/Troll#Bols,_Carian_Knight-0"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-grafted-scion",
+      "name": "Grafted Scion",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Chapel of Anticipation (accessible from the Four Belfries)",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Grafted_Scion#Bosses",
+      "dlc": false,
+      "sourceId": "b4-8",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Grafted Scion",
+          "url": "https://eldenring.wiki.gg/wiki/Grafted_Scion#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-royal-revenant",
+      "name": "Royal Revenant",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Kingsrealm Ruins",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Royal_Revenant#Bosses",
+      "dlc": false,
+      "sourceId": "b4-9",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Royal Revenant",
+          "url": "https://eldenring.wiki.gg/wiki/Royal_Revenant#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-erdtree-burial-watchdog",
+      "name": "Erdtree Burial Watchdog",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Cliffbottom Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Erdtree_Burial_Watchdog#Cliffbottom_Catacombs-0",
+      "dlc": false,
+      "sourceId": "b4-10",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Erdtree Burial Watchdog",
+          "url": "https://eldenring.wiki.gg/wiki/Erdtree_Burial_Watchdog#Cliffbottom_Catacombs-0"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-nights-cavalry-south-liurnia",
+      "name": "Night's Cavalry (South Liurnia)",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Patrols the road near the Gate Town Bridge at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Liurnia_of_the_Lakes_(South)-0",
+      "dlc": false,
+      "sourceId": "b4-11",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Night's Cavalry",
+          "url": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Liurnia_of_the_Lakes_(South)-0"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-tibia-mariner",
+      "name": "Tibia Mariner",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Encountered in a small pond near Carian Study Hall",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Tibia_Mariner#Liurnia_of_the_Lakes_(East)-0",
+      "dlc": false,
+      "sourceId": "b4-12",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Tibia Mariner",
+          "url": "https://eldenring.wiki.gg/wiki/Tibia_Mariner#Liurnia_of_the_Lakes_(East)-0"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-bell-bearing-hunter",
+      "name": "Bell Bearing Hunter",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Encountered in the Church of Vows at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Elemer_of_the_Briar#Church_of_Vows-0",
+      "dlc": false,
+      "sourceId": "b4-13",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Bell Bearing Hunter",
+          "url": "https://eldenring.wiki.gg/wiki/Elemer_of_the_Briar#Church_of_Vows-0"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-erdtree-avatar-east-liurnia",
+      "name": "Erdtree Avatar (East Liurnia)",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Guards the Minor Erdtree near Uld Palace Ruins",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Erdtree_Avatar#East_Liurnia-0",
+      "dlc": false,
+      "sourceId": "b4-14",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Erdtree Avatar",
+          "url": "https://eldenring.wiki.gg/wiki/Erdtree_Avatar#East_Liurnia-0"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-black-knife-assassin",
+      "name": "Black Knife Assassin",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Behind an illusory wall in Black Knife Catacombs (accessible from the top of a cleaver)",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Knife_Assassin#Black_Knife_Catacombs-0",
+      "dlc": false,
+      "sourceId": "b4-15",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Black Knife Assassin",
+          "url": "https://eldenring.wiki.gg/wiki/Black_Knife_Assassin#Black_Knife_Catacombs-0"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-cemetery-shade",
+      "name": "Cemetery Shade",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Black Knife Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Cemetery_Shade#Black_Knife_Catacombs-0",
+      "dlc": false,
+      "sourceId": "b4-16",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Cemetery Shade",
+          "url": "https://eldenring.wiki.gg/wiki/Cemetery_Shade#Black_Knife_Catacombs-0"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-nights-cavalry-north-liurnia",
+      "name": "Night's Cavalry (North Liurnia)",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Patrols the road near the East Raya Lucaria Gate at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Liurnia_of_the_Lakes_(North)-0",
+      "dlc": false,
+      "sourceId": "b4-17",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Night's Cavalry",
+          "url": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Liurnia_of_the_Lakes_(North)-0"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-crystalian",
+      "name": "Crystalian",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Raya Lucaria Crystal Tunnel",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Crystalian#Bosses",
+      "dlc": false,
+      "sourceId": "b4-18",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Crystalian",
+          "url": "https://eldenring.wiki.gg/wiki/Crystalian#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-glintstone-dragon-smarag",
+      "name": "Glintstone Dragon Smarag",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Encountered in the lake, north of Temple Quarter",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragon#Glintstone_Dragon_Smarag-0",
+      "dlc": false,
+      "sourceId": "b4-19",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Glintstone Dragon Smarag",
+          "url": "https://eldenring.wiki.gg/wiki/Dragon#Glintstone_Dragon_Smarag-0"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-crystalians-2x",
+      "name": "Crystalians (2x)",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Academy Crystal Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Crystalian#Academy_Crystal_Cave-0",
+      "dlc": false,
+      "sourceId": "b4-20",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Crystalians",
+          "url": "https://eldenring.wiki.gg/wiki/Crystalian#Academy_Crystal_Cave-0"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-deathbird",
+      "name": "Deathbird",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Encountered in front of a ruin north-northeast of the Scenic Isle at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Deathbird#Liurnia_of_the_Lakes-0",
+      "dlc": false,
+      "sourceId": "b4-21",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Deathbird",
+          "url": "https://eldenring.wiki.gg/wiki/Deathbird#Liurnia_of_the_Lakes-0"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-death-rite-bird",
+      "name": "Death Rite Bird",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Encountered near a ruined building just south of Gate Town North at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Death_Rite_Bird#Bosses",
+      "dlc": false,
+      "sourceId": "b4-22",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Death Rite Bird",
+          "url": "https://eldenring.wiki.gg/wiki/Death_Rite_Bird#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-royal-knight-loretta",
+      "name": "Royal Knight Loretta",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Caria Manor",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Loretta#Bosses",
+      "dlc": false,
+      "sourceId": "b4-23",
+      "badges": [],
+      "missable": false,
+      "achievement": "Royal Knight Loretta",
+      "links": [
+        {
+          "label": "Royal Knight Loretta",
+          "url": "https://eldenring.wiki.gg/wiki/Loretta#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-onyx-lord",
+      "name": "Onyx Lord",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Royal Grave Evergaol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Onyx_Lord#Bosses",
+      "dlc": false,
+      "sourceId": "b4-24",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Onyx Lord",
+          "url": "https://eldenring.wiki.gg/wiki/Onyx_Lord#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "liurnia-magma-wyrm-makar",
+      "name": "Magma Wyrm Makar",
+      "section": "Liurnia of the Lakes",
+      "sectionId": "liurnia",
+      "levelRange": "Levels 40-60",
+      "description": "Ruin-Strewn Precipice",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Magma_Wyrm#Bosses",
+      "dlc": false,
+      "sourceId": "b4-25",
+      "badges": [],
+      "missable": false,
+      "achievement": "Magma Wyrm Makar",
+      "links": [
+        {
+          "label": "Magma Wyrm Makar",
+          "url": "https://eldenring.wiki.gg/wiki/Magma_Wyrm#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "academy-red-wolf-of-radagon",
+      "name": "Red Wolf of Radagon",
+      "section": "Academy of Raya Lucaria",
+      "sectionId": "academy",
+      "levelRange": "Levels 50-60",
+      "description": "Debate Parlor",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Red_Wolf_of_Radagon",
+      "dlc": false,
+      "sourceId": "b5-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "Red Wolf of Radagon",
+      "links": [
+        {
+          "label": "Red Wolf of Radagon",
+          "url": "https://eldenring.wiki.gg/wiki/Red_Wolf_of_Radagon"
+        }
+      ]
+    },
+    {
+      "id": "academy-rennala-queen-of-the-full-moon",
+      "name": "Rennala, Queen of the Full Moon",
+      "section": "Academy of Raya Lucaria",
+      "sectionId": "academy",
+      "levelRange": "Levels 50-60",
+      "description": "Raya Lucaria Grand Library",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Rennala,_Queen_of_the_Full_Moon",
+      "dlc": false,
+      "sourceId": "b5-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "Rennala, Queen of the Full Moon",
+      "links": [
+        {
+          "label": "Rennala, Queen of the Full Moon",
+          "url": "https://eldenring.wiki.gg/wiki/Rennala,_Queen_of_the_Full_Moon"
+        }
+      ]
+    },
+    {
+      "id": "ainsel-dragonkin-soldier-of-nokstella",
+      "name": "Dragonkin Soldier of Nokstella",
+      "section": "Ainsel River",
+      "sectionId": "ainsel",
+      "levelRange": "Levels 60-65",
+      "description": "Follow the river downstream until the end",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragonkin_Soldier#Bosses",
+      "dlc": false,
+      "sourceId": "b6-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "Dragonkin Soldier of Nokstella",
+      "links": [
+        {
+          "label": "Dragonkin Soldier of Nokstella",
+          "url": "https://eldenring.wiki.gg/wiki/Dragonkin_Soldier#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "siofra-dragonkin-soldier",
+      "name": "Dragonkin Soldier",
+      "section": "Siofra River",
+      "sectionId": "siofra",
+      "levelRange": "Levels 60-65",
+      "description": "Encountered in upper Siofra River (accessible from a sending gate in the woods)",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragonkin_Soldier#Siofra_River-0",
+      "dlc": false,
+      "sourceId": "b7-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Dragonkin Soldier",
+          "url": "https://eldenring.wiki.gg/wiki/Dragonkin_Soldier#Siofra_River-0"
+        }
+      ]
+    },
+    {
+      "id": "siofra-ancestor-spirit",
+      "name": "Ancestor Spirit",
+      "section": "Siofra River",
+      "sectionId": "siofra",
+      "levelRange": "Levels 60-65",
+      "description": "Touch the horned remains in the Hallowhorn Grounds after lighting eight braziers",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancestor_Spirit",
+      "dlc": false,
+      "sourceId": "b7-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "Ancestor Spirit",
+      "links": [
+        {
+          "label": "Ancestor Spirit",
+          "url": "https://eldenring.wiki.gg/wiki/Ancestor_Spirit"
+        }
+      ]
+    },
+    {
+      "id": "caelid-putrid-avatar",
+      "name": "Putrid Avatar",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Guards the Minor Erdtree outside the Minor Erdtree Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Erdtree_Avatar#Caelid-0",
+      "dlc": false,
+      "sourceId": "b8-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Putrid Avatar",
+          "url": "https://eldenring.wiki.gg/wiki/Erdtree_Avatar#Caelid-0"
+        }
+      ]
+    },
+    {
+      "id": "caelid-erdtree-burial-watchdogs-2x",
+      "name": "Erdtree Burial Watchdogs (2x)",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Minor Erdtree Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Erdtree_Burial_Watchdog#Minor_Erdtree_Catacombs-0",
+      "dlc": false,
+      "sourceId": "b8-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Erdtree Burial Watchdogs",
+          "url": "https://eldenring.wiki.gg/wiki/Erdtree_Burial_Watchdog#Minor_Erdtree_Catacombs-0"
+        }
+      ]
+    },
+    {
+      "id": "caelid-mad-pumpkin-heads-2x",
+      "name": "Mad Pumpkin Heads (2x)",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Caelem Ruins",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Mad_Pumpkin_Head#Caelem_Ruins-0",
+      "dlc": false,
+      "sourceId": "b8-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Mad Pumpkin Heads",
+          "url": "https://eldenring.wiki.gg/wiki/Mad_Pumpkin_Head#Caelem_Ruins-0"
+        }
+      ]
+    },
+    {
+      "id": "caelid-cleanrot-knights-2x",
+      "name": "Cleanrot Knights (2x)",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Abandoned Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Cleanrot_Knight#Abandoned_Cave-0",
+      "dlc": false,
+      "sourceId": "b8-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Cleanrot Knights",
+          "url": "https://eldenring.wiki.gg/wiki/Cleanrot_Knight#Abandoned_Cave-0"
+        }
+      ]
+    },
+    {
+      "id": "caelid-magma-wyrm",
+      "name": "Magma Wyrm",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Gael Tunnel",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Magma_Wyrm#Gael_Tunnel-0",
+      "dlc": false,
+      "sourceId": "b8-5",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Magma Wyrm",
+          "url": "https://eldenring.wiki.gg/wiki/Magma_Wyrm#Gael_Tunnel-0"
+        }
+      ]
+    },
+    {
+      "id": "caelid-frenzied-duelist",
+      "name": "Frenzied Duelist",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Gaol Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Warden_Duelist#Gaol_Cave-0",
+      "dlc": false,
+      "sourceId": "b8-6",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Frenzied Duelist",
+          "url": "https://eldenring.wiki.gg/wiki/Grave_Warden_Duelist#Gaol_Cave-0"
+        }
+      ]
+    },
+    {
+      "id": "caelid-decaying-ekzykes",
+      "name": "Decaying Ekzykes",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Encountered at the roadside near Caelid Highway South",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragon#Decaying_Ekzykes-0",
+      "dlc": false,
+      "sourceId": "b8-7",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Decaying Ekzykes",
+          "url": "https://eldenring.wiki.gg/wiki/Dragon#Decaying_Ekzykes-0"
+        }
+      ]
+    },
+    {
+      "id": "caelid-nights-cavalry",
+      "name": "Night's Cavalry",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Patrols the road near Caelid Highway South at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Caelid_(South)-0",
+      "dlc": false,
+      "sourceId": "b8-8",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Night's Cavalry",
+          "url": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Caelid_(South)-0"
+        }
+      ]
+    },
+    {
+      "id": "caelid-death-rite-bird",
+      "name": "Death Rite Bird",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Encountered east-southeast of the Southern Aeonia Swamp Bank at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Death_Rite_Bird#Caelid-0",
+      "dlc": false,
+      "sourceId": "b8-9",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Death Rite Bird",
+          "url": "https://eldenring.wiki.gg/wiki/Death_Rite_Bird#Caelid-0"
+        }
+      ]
+    },
+    {
+      "id": "caelid-cemetery-shade",
+      "name": "Cemetery Shade",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Caelid Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Cemetery_Shade#Caelid_Catacombs-0",
+      "dlc": false,
+      "sourceId": "b8-10",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Cemetery Shade",
+          "url": "https://eldenring.wiki.gg/wiki/Cemetery_Shade#Caelid_Catacombs-0"
+        }
+      ]
+    },
+    {
+      "id": "caelid-commander-oneil",
+      "name": "Commander O'Neil",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Heart of Aeonia",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Commander_O%27Neil",
+      "dlc": false,
+      "sourceId": "b8-11",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Commander O'Neil",
+          "url": "https://eldenring.wiki.gg/wiki/Commander_O%27Neil"
+        }
+      ]
+    },
+    {
+      "id": "caelid-fallingstar-beast",
+      "name": "Fallingstar Beast",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Sellia Crystal Tunnel",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Fallingstar_Beast#Sellia_Crystal_Tunnel-0",
+      "dlc": false,
+      "sourceId": "b8-12",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Fallingstar Beast",
+          "url": "https://eldenring.wiki.gg/wiki/Fallingstar_Beast#Sellia_Crystal_Tunnel-0"
+        }
+      ]
+    },
+    {
+      "id": "caelid-nox-swordstress-nox-monk",
+      "name": "Nox Swordstress & Nox Monk",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Behind a sealed barrier in Sellia (light three braziers to access)",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Nox#Bosses",
+      "dlc": false,
+      "sourceId": "b8-13",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Nox Swordstress & Nox Monk",
+          "url": "https://eldenring.wiki.gg/wiki/Nox#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "caelid-putrid-crystalians-3x",
+      "name": "Putrid Crystalians (3x)",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Sellia Hideaway",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Crystalian#Sellia_Hideaway-0",
+      "dlc": false,
+      "sourceId": "b8-14",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Putrid Crystalians",
+          "url": "https://eldenring.wiki.gg/wiki/Crystalian#Sellia_Hideaway-0"
+        }
+      ]
+    },
+    {
+      "id": "caelid-battlemage-hugues",
+      "name": "Battlemage Hugues",
+      "section": "Caelid",
+      "sectionId": "caelid",
+      "levelRange": "Levels 65-70",
+      "description": "Sellia Evergaol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Battlemage#Bosses",
+      "dlc": false,
+      "sourceId": "b8-15",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Battlemage Hugues",
+          "url": "https://eldenring.wiki.gg/wiki/Battlemage#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "redmane-castle-misbegotten-warrior-crucible-knight",
+      "name": "Misbegotten Warrior & Crucible Knight",
+      "section": "Redmane Castle",
+      "sectionId": "redmane-castle",
+      "levelRange": "Levels 70-80",
+      "description": "Encountered in the castle plaza before or after the Radahn festival",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Misbegotten_Warrior#Redmane_Castle-0",
+      "dlc": false,
+      "sourceId": "b9-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Misbegotten Warrior & Crucible Knight",
+          "url": "https://eldenring.wiki.gg/wiki/Misbegotten_Warrior#Redmane_Castle-0"
+        }
+      ]
+    },
+    {
+      "id": "redmane-castle-starscourge-radahn",
+      "name": "Starscourge Radahn",
+      "section": "Redmane Castle",
+      "sectionId": "redmane-castle",
+      "levelRange": "Levels 70-80",
+      "description": "Wailing Dunes (requires the Radahn festival to take place)",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Starscourge_Radahn",
+      "dlc": false,
+      "sourceId": "b9-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "Shardbearer Radahn",
+      "links": [
+        {
+          "label": "Starscourge Radahn",
+          "url": "https://eldenring.wiki.gg/wiki/Starscourge_Radahn"
+        }
+      ]
+    },
+    {
+      "id": "nokron-mimic-tear",
+      "name": "Mimic Tear",
+      "section": "Nokron",
+      "sectionId": "nokron",
+      "levelRange": "Levels 70-75",
+      "description": "Encountered on the bridge high above Siofra River (accessible from a crater in Limgrave)",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Silver_Tear#Bosses",
+      "dlc": false,
+      "sourceId": "b10-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "Mimic Tear",
+      "links": [
+        {
+          "label": "Mimic Tear",
+          "url": "https://eldenring.wiki.gg/wiki/Silver_Tear#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "nokron-regal-ancestor-spirit",
+      "name": "Regal Ancestor Spirit",
+      "section": "Nokron",
+      "sectionId": "nokron",
+      "levelRange": "Levels 70-75",
+      "description": "Touch the horned remains in the Hallowhorn Grounds after lighting six braziers",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Regal_Ancestor_Spirit",
+      "dlc": false,
+      "sourceId": "b10-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "Regal Ancestor Spirit",
+      "links": [
+        {
+          "label": "Regal Ancestor Spirit",
+          "url": "https://eldenring.wiki.gg/wiki/Regal_Ancestor_Spirit"
+        }
+      ]
+    },
+    {
+      "id": "nokron-valiant-gargoyles",
+      "name": "Valiant Gargoyles",
+      "section": "Nokron",
+      "sectionId": "nokron",
+      "levelRange": "Levels 70-75",
+      "description": "Siofra Aqueduct",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Valiant_Gargoyle#Bosses",
+      "dlc": false,
+      "sourceId": "b10-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "Valiant Gargoyles",
+      "links": [
+        {
+          "label": "Valiant Gargoyles",
+          "url": "https://eldenring.wiki.gg/wiki/Valiant_Gargoyle#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "deeproot-depths-crucible-knight-siluria",
+      "name": "Crucible Knight Siluria",
+      "section": "Deeproot Depths",
+      "sectionId": "deeproot-depths",
+      "levelRange": "Levels 80-85",
+      "description": "Guards a massive tree stump northwest of The Nameless Eternal City grace",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Crucible_Knight_Siluria",
+      "dlc": false,
+      "sourceId": "b11-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Crucible Knight Siluria",
+          "url": "https://eldenring.wiki.gg/wiki/Crucible_Knight_Siluria"
+        }
+      ]
+    },
+    {
+      "id": "deeproot-depths-fias-champions",
+      "name": "Fia's Champions",
+      "section": "Deeproot Depths",
+      "sectionId": "deeproot-depths",
+      "levelRange": "Levels 80-85",
+      "description": "Prince of Death's Throne (after Fia leaves Roundtable Hold)",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Fia%27s_Champions",
+      "dlc": false,
+      "sourceId": "b11-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Fia's Champions",
+          "url": "https://eldenring.wiki.gg/wiki/Fia%27s_Champions"
+        }
+      ]
+    },
+    {
+      "id": "deeproot-depths-lichdragon-fortissax",
+      "name": "Lichdragon Fortissax",
+      "section": "Deeproot Depths",
+      "sectionId": "deeproot-depths",
+      "levelRange": "Levels 80-85",
+      "description": "Encountered in the Deathbed Dream after giving Fia the Cursemark of Death",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Lichdragon_Fortissax",
+      "dlc": false,
+      "sourceId": "b11-3",
+      "badges": [
+        "MISSABLE"
+      ],
+      "missable": true,
+      "achievement": "Lichdragon Fortissax",
+      "links": [
+        {
+          "label": "Lichdragon Fortissax",
+          "url": "https://eldenring.wiki.gg/wiki/Lichdragon_Fortissax"
+        }
+      ]
+    },
+    {
+      "id": "lake-of-rot-dragonkin-soldier",
+      "name": "Dragonkin Soldier",
+      "section": "Lake of Rot",
+      "sectionId": "lake-of-rot",
+      "levelRange": "Levels 85-90",
+      "description": "Encountered in the middle of the rot lake",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragonkin_Soldier#Lake_of_Rot-0",
+      "dlc": false,
+      "sourceId": "b12-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Dragonkin Soldier",
+          "url": "https://eldenring.wiki.gg/wiki/Dragonkin_Soldier#Lake_of_Rot-0"
+        }
+      ]
+    },
+    {
+      "id": "lake-of-rot-astel-naturalborn-of-the-void",
+      "name": "Astel, Naturalborn of the Void",
+      "section": "Lake of Rot",
+      "sectionId": "lake-of-rot",
+      "levelRange": "Levels 85-90",
+      "description": "Reach via the coffin in the Grand Cloister",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Astel#Boss_Fight",
+      "dlc": false,
+      "sourceId": "b12-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "Astel, Naturalborn of the Void",
+      "links": [
+        {
+          "label": "Astel, Naturalborn of the Void",
+          "url": "https://eldenring.wiki.gg/wiki/Astel#Boss_Fight"
+        }
+      ]
+    },
+    {
+      "id": "moonlight-altar-glintstone-dragon-adula",
+      "name": "Glintstone Dragon Adula",
+      "section": "Moonlight Altar",
+      "sectionId": "moonlight-altar",
+      "levelRange": "Levels 90-100",
+      "description": "Guards the Cathedral of Manus Celes",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragon#Glintstone_Dragon_Adula-0",
+      "dlc": false,
+      "sourceId": "b13-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Glintstone Dragon Adula",
+          "url": "https://eldenring.wiki.gg/wiki/Dragon#Glintstone_Dragon_Adula-0"
+        }
+      ]
+    },
+    {
+      "id": "moonlight-altar-alecto-black-knife-ringleader",
+      "name": "Alecto, Black Knife Ringleader",
+      "section": "Moonlight Altar",
+      "sectionId": "moonlight-altar",
+      "levelRange": "Levels 90-100",
+      "description": "Ringleader's Evergaol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Knife_Assassin#Alecto,_Black_Knife_Ringleader-0",
+      "dlc": false,
+      "sourceId": "b13-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Alecto, Black Knife Ringleader",
+          "url": "https://eldenring.wiki.gg/wiki/Black_Knife_Assassin#Alecto,_Black_Knife_Ringleader-0"
+        }
+      ]
+    },
+    {
+      "id": "altus-perfumer-tricia-misbegotten-warrior",
+      "name": "Perfumer Tricia & Misbegotten Warrior",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Unsightly Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Perfumer#Bosses",
+      "dlc": false,
+      "sourceId": "b14-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Perfumer Tricia & Misbegotten Warrior",
+          "url": "https://eldenring.wiki.gg/wiki/Perfumer#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "altus-necromancer-garris",
+      "name": "Necromancer Garris",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Sage's Cave (behind two illusory walls)",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Necromancer_Garris",
+      "dlc": false,
+      "sourceId": "b14-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Necromancer Garris",
+          "url": "https://eldenring.wiki.gg/wiki/Necromancer_Garris"
+        }
+      ]
+    },
+    {
+      "id": "altus-black-knife-assassin",
+      "name": "Black Knife Assassin",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Sage's Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Knife_Assassin#Sage's_Cave-0",
+      "dlc": false,
+      "sourceId": "b14-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Black Knife Assassin",
+          "url": "https://eldenring.wiki.gg/wiki/Black_Knife_Assassin#Sage's_Cave-0"
+        }
+      ]
+    },
+    {
+      "id": "altus-demi-human-queen-gilika",
+      "name": "Demi-Human Queen Gilika",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Lux Ruins",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Demi-Human_Queen_Gilika",
+      "dlc": false,
+      "sourceId": "b14-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Demi-Human Queen Gilika",
+          "url": "https://eldenring.wiki.gg/wiki/Demi-Human_Queen_Gilika"
+        }
+      ]
+    },
+    {
+      "id": "altus-godefroy-the-grafted",
+      "name": "Godefroy the Grafted",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Golden Lineage Evergaol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Godefroy_the_Grafted",
+      "dlc": false,
+      "sourceId": "b14-5",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Godefroy the Grafted",
+          "url": "https://eldenring.wiki.gg/wiki/Godefroy_the_Grafted"
+        }
+      ]
+    },
+    {
+      "id": "altus-tibia-mariner",
+      "name": "Tibia Mariner",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Wyndham Ruins",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Tibia_Mariner#Wyndham_Ruins-0",
+      "dlc": false,
+      "sourceId": "b14-6",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Tibia Mariner",
+          "url": "https://eldenring.wiki.gg/wiki/Tibia_Mariner#Wyndham_Ruins-0"
+        }
+      ]
+    },
+    {
+      "id": "altus-erdtree-burial-watchdog",
+      "name": "Erdtree Burial Watchdog",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Wyndham Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Erdtree_Burial_Watchdog#Wyndham_Catacombs-0",
+      "dlc": false,
+      "sourceId": "b14-7",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Erdtree Burial Watchdog",
+          "url": "https://eldenring.wiki.gg/wiki/Erdtree_Burial_Watchdog#Wyndham_Catacombs-0"
+        }
+      ]
+    },
+    {
+      "id": "altus-stonedigger-troll",
+      "name": "Stonedigger Troll",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Old Altus Tunnel",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Troll#Old_Altus_Tunnel-0",
+      "dlc": false,
+      "sourceId": "b14-8",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Stonedigger Troll",
+          "url": "https://eldenring.wiki.gg/wiki/Troll#Old_Altus_Tunnel-0"
+        }
+      ]
+    },
+    {
+      "id": "altus-elemer-of-the-briar",
+      "name": "Elemer of the Briar",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "The Shaded Castle",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Elemer_of_the_Briar",
+      "dlc": false,
+      "sourceId": "b14-9",
+      "badges": [],
+      "missable": false,
+      "achievement": "Elemer of the Briar",
+      "links": [
+        {
+          "label": "Elemer of the Briar",
+          "url": "https://eldenring.wiki.gg/wiki/Elemer_of_the_Briar"
+        }
+      ]
+    },
+    {
+      "id": "altus-nights-cavalry",
+      "name": "Night's Cavalry",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Patrols the road near the Altus Highway Junction at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Altus_Plateau-0",
+      "dlc": false,
+      "sourceId": "b14-10",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Night's Cavalry",
+          "url": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Altus_Plateau-0"
+        }
+      ]
+    },
+    {
+      "id": "altus-fallingstar-beast",
+      "name": "Fallingstar Beast",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Encountered in a crater south of the massive staircase that leads to Capital Outskirts",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Fallingstar_Beast#Bosses",
+      "dlc": false,
+      "sourceId": "b14-11",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Fallingstar Beast",
+          "url": "https://eldenring.wiki.gg/wiki/Fallingstar_Beast#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "altus-omenkiller-miranda-the-blighted-bloom",
+      "name": "Omenkiller & Miranda the Blighted Bloom",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Perfumer's Grotto",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Miranda_the_Blighted_Bloom",
+      "dlc": false,
+      "sourceId": "b14-12",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Omenkiller & Miranda the Blighted Bloom",
+          "url": "https://eldenring.wiki.gg/wiki/Miranda_the_Blighted_Bloom"
+        }
+      ]
+    },
+    {
+      "id": "altus-wormface",
+      "name": "Wormface",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Guards the Minor Erdtree in the Altus Plateau forest",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Wormface#Bosses",
+      "dlc": false,
+      "sourceId": "b14-13",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Wormface",
+          "url": "https://eldenring.wiki.gg/wiki/Wormface#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "altus-crystalians-2x",
+      "name": "Crystalians (2x)",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Altus Tunnel",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Crystalian#Altus_Tunnel-0",
+      "dlc": false,
+      "sourceId": "b14-14",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Crystalians",
+          "url": "https://eldenring.wiki.gg/wiki/Crystalian#Altus_Tunnel-0"
+        }
+      ]
+    },
+    {
+      "id": "altus-godskin-apostle",
+      "name": "Godskin Apostle",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Dominula, Windmill Village",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Godskin_Apostle#Bosses",
+      "dlc": false,
+      "sourceId": "b14-15",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Godskin Apostle",
+          "url": "https://eldenring.wiki.gg/wiki/Godskin_Apostle#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "altus-ancient-dragon-lansseax",
+      "name": "Ancient Dragon Lansseax",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Ambushes you on the hillside south of Rampartside Path",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancient_Dragon",
+      "dlc": false,
+      "sourceId": "b14-16",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Ancient Dragon Lansseax",
+          "url": "https://eldenring.wiki.gg/wiki/Ancient_Dragon"
+        }
+      ]
+    },
+    {
+      "id": "altus-black-knife-assassin-2",
+      "name": "Black Knife Assassin",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Guards the entrance to Sainted Hero's Grave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Knife_Assassin#Outside_Sainted_Hero's_Grave-0",
+      "dlc": false,
+      "sourceId": "b14-17",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Black Knife Assassin",
+          "url": "https://eldenring.wiki.gg/wiki/Black_Knife_Assassin#Outside_Sainted_Hero's_Grave-0"
+        }
+      ]
+    },
+    {
+      "id": "altus-ancient-hero-of-zamor",
+      "name": "Ancient Hero of Zamor",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Sainted Hero's Grave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancient_Hero_of_Zamor#Sainted_Hero's_Grave-0",
+      "dlc": false,
+      "sourceId": "b14-18",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Ancient Hero of Zamor",
+          "url": "https://eldenring.wiki.gg/wiki/Ancient_Hero_of_Zamor#Sainted_Hero's_Grave-0"
+        }
+      ]
+    },
+    {
+      "id": "altus-sanguine-noble",
+      "name": "Sanguine Noble",
+      "section": "Altus Plateau",
+      "sectionId": "altus",
+      "levelRange": "Levels 90-100",
+      "description": "Writheblood Ruins",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Sanguine_Noble",
+      "dlc": false,
+      "sourceId": "b14-19",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Sanguine Noble",
+          "url": "https://eldenring.wiki.gg/wiki/Sanguine_Noble"
+        }
+      ]
+    },
+    {
+      "id": "mt-gelmir-kindreds-of-rot-2x",
+      "name": "Kindreds of Rot (2x)",
+      "section": "Mt. Gelmir",
+      "sectionId": "mt-gelmir",
+      "levelRange": "Levels 100-105",
+      "description": "Seethewater Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Kindred_of_Rot#Bosses",
+      "dlc": false,
+      "sourceId": "b15-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Kindreds of Rot",
+          "url": "https://eldenring.wiki.gg/wiki/Kindred_of_Rot#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "mt-gelmir-magma-wyrm",
+      "name": "Magma Wyrm",
+      "section": "Mt. Gelmir",
+      "sectionId": "mt-gelmir",
+      "levelRange": "Levels 100-105",
+      "description": "Erupts from the lava south of Fort Laiedd",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Magma_Wyrm#Mt._Gelmir-0",
+      "dlc": false,
+      "sourceId": "b15-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Magma Wyrm",
+          "url": "https://eldenring.wiki.gg/wiki/Magma_Wyrm#Mt._Gelmir-0"
+        }
+      ]
+    },
+    {
+      "id": "mt-gelmir-demi-human-queen-maggie",
+      "name": "Demi-Human Queen Maggie",
+      "section": "Mt. Gelmir",
+      "sectionId": "mt-gelmir",
+      "levelRange": "Levels 100-105",
+      "description": "Hermit Village",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Demi-Human_Queen_Maggie",
+      "dlc": false,
+      "sourceId": "b15-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Demi-Human Queen Maggie",
+          "url": "https://eldenring.wiki.gg/wiki/Demi-Human_Queen_Maggie"
+        }
+      ]
+    },
+    {
+      "id": "mt-gelmir-red-wolf-of-the-champion",
+      "name": "Red Wolf of the Champion",
+      "section": "Mt. Gelmir",
+      "sectionId": "mt-gelmir",
+      "levelRange": "Levels 100-105",
+      "description": "Gelmir Hero's Grave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Red_Wolf_of_the_Champion",
+      "dlc": false,
+      "sourceId": "b15-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Red Wolf of the Champion",
+          "url": "https://eldenring.wiki.gg/wiki/Red_Wolf_of_the_Champion"
+        }
+      ]
+    },
+    {
+      "id": "mt-gelmir-demi-human-queen-margot",
+      "name": "Demi-Human Queen Margot",
+      "section": "Mt. Gelmir",
+      "sectionId": "mt-gelmir",
+      "levelRange": "Levels 100-105",
+      "description": "Volcano Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Demi-Human_Queen_Margot",
+      "dlc": false,
+      "sourceId": "b15-5",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Demi-Human Queen Margot",
+          "url": "https://eldenring.wiki.gg/wiki/Demi-Human_Queen_Margot"
+        }
+      ]
+    },
+    {
+      "id": "mt-gelmir-full-grown-fallingstar-beast",
+      "name": "Full-Grown Fallingstar Beast",
+      "section": "Mt. Gelmir",
+      "sectionId": "mt-gelmir",
+      "levelRange": "Levels 100-105",
+      "description": "Encountered in a crater accessible via a ladder or spiritpsring near the Ninth Mt. Gelmir Campsite",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Fallingstar_Beast#Mt._Gelmir-0",
+      "dlc": false,
+      "sourceId": "b15-6",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Full-Grown Fallingstar Beast",
+          "url": "https://eldenring.wiki.gg/wiki/Fallingstar_Beast#Mt._Gelmir-0"
+        }
+      ]
+    },
+    {
+      "id": "mt-gelmir-ulcerated-tree-spirit",
+      "name": "Ulcerated Tree Spirit",
+      "section": "Mt. Gelmir",
+      "sectionId": "mt-gelmir",
+      "levelRange": "Levels 100-105",
+      "description": "Guards the Minor Erdtree near the Road of Iniquity",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ulcerated_Tree_Spirit#Mt._Gelmir-0",
+      "dlc": false,
+      "sourceId": "b15-7",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Ulcerated Tree Spirit",
+          "url": "https://eldenring.wiki.gg/wiki/Ulcerated_Tree_Spirit#Mt._Gelmir-0"
+        }
+      ]
+    },
+    {
+      "id": "volcano-manor-abductor-virgins-2x",
+      "name": "Abductor Virgins (2x)",
+      "section": "Volcano Manor",
+      "sectionId": "volcano-manor",
+      "levelRange": "Levels 100-105",
+      "description": "Subterranean Inquisition Chamber (reach via a lower ledge before the Godskin Noble or be abducted by the Iron Virgin below the academy)",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Abductor_Virgin#Bosses",
+      "dlc": false,
+      "sourceId": "b16-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Abductor Virgins",
+          "url": "https://eldenring.wiki.gg/wiki/Abductor_Virgin#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "volcano-manor-godskin-noble",
+      "name": "Godskin Noble",
+      "section": "Volcano Manor",
+      "sectionId": "volcano-manor",
+      "levelRange": "Levels 100-105",
+      "description": "Temple of Eiglay",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Godskin_Noble#Bosses",
+      "dlc": false,
+      "sourceId": "b16-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "Godskin Noble",
+      "links": [
+        {
+          "label": "Godskin Noble",
+          "url": "https://eldenring.wiki.gg/wiki/Godskin_Noble#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "capital-outskirts-tree-sentinels-2x",
+      "name": "Tree Sentinels (2x)",
+      "section": "Capital Outskirts",
+      "sectionId": "capital-outskirts",
+      "levelRange": "Levels 105-110",
+      "description": "They guard the first entrance to Capital Outskirts",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Tree_Sentinel#Altus_Plateau-0",
+      "dlc": false,
+      "sourceId": "b17-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Tree Sentinels",
+          "url": "https://eldenring.wiki.gg/wiki/Tree_Sentinel#Altus_Plateau-0"
+        }
+      ]
+    },
+    {
+      "id": "capital-outskirts-onyx-lord",
+      "name": "Onyx Lord",
+      "section": "Capital Outskirts",
+      "sectionId": "capital-outskirts",
+      "levelRange": "Levels 105-110",
+      "description": "Sealed Tunnel",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Onyx_Lord#Sealed_Tunnel-0",
+      "dlc": false,
+      "sourceId": "b17-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Onyx Lord",
+          "url": "https://eldenring.wiki.gg/wiki/Onyx_Lord#Sealed_Tunnel-0"
+        }
+      ]
+    },
+    {
+      "id": "capital-outskirts-bell-bearing-hunter",
+      "name": "Bell Bearing Hunter",
+      "section": "Capital Outskirts",
+      "sectionId": "capital-outskirts",
+      "levelRange": "Levels 105-110",
+      "description": "Encountered in the Hermit Merchant's Shack at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Elemer_of_the_Briar#Hermit_Merchant's_Shacks-0",
+      "dlc": false,
+      "sourceId": "b17-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Bell Bearing Hunter",
+          "url": "https://eldenring.wiki.gg/wiki/Elemer_of_the_Briar#Hermit_Merchant's_Shacks-0"
+        }
+      ]
+    },
+    {
+      "id": "capital-outskirts-deathbird",
+      "name": "Deathbird",
+      "section": "Capital Outskirts",
+      "sectionId": "capital-outskirts",
+      "levelRange": "Levels 105-110",
+      "description": "Encountered on the cliff overlooking the Minor Erdtree east of the Hermit Merchant's Shack at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Deathbird#Capital_Outskirts-0",
+      "dlc": false,
+      "sourceId": "b17-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Deathbird",
+          "url": "https://eldenring.wiki.gg/wiki/Deathbird#Capital_Outskirts-0"
+        }
+      ]
+    },
+    {
+      "id": "capital-outskirts-crucible-knights-2x",
+      "name": "Crucible Knights (2x)",
+      "section": "Capital Outskirts",
+      "sectionId": "capital-outskirts",
+      "levelRange": "Levels 105-110",
+      "description": "Auriza Hero's Grave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Crucible_Knight_Ordovis",
+      "dlc": false,
+      "sourceId": "b17-5",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Crucible Knights",
+          "url": "https://eldenring.wiki.gg/wiki/Crucible_Knight_Ordovis"
+        }
+      ]
+    },
+    {
+      "id": "capital-outskirts-grave-warden-duelist",
+      "name": "Grave Warden Duelist",
+      "section": "Capital Outskirts",
+      "sectionId": "capital-outskirts",
+      "levelRange": "Levels 105-110",
+      "description": "Auriza Side Tomb",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Warden_Duelist#Auriza_Side_Tomb-0",
+      "dlc": false,
+      "sourceId": "b17-6",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Grave Warden Duelist",
+          "url": "https://eldenring.wiki.gg/wiki/Grave_Warden_Duelist#Auriza_Side_Tomb-0"
+        }
+      ]
+    },
+    {
+      "id": "capital-outskirts-draconic-tree-sentinel",
+      "name": "Draconic Tree Sentinel",
+      "section": "Capital Outskirts",
+      "sectionId": "capital-outskirts",
+      "levelRange": "Levels 105-110",
+      "description": "Guards the entrance to Leyndell",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Draconic_Tree_Sentinel#Bosses",
+      "dlc": false,
+      "sourceId": "b17-7",
+      "badges": [
+        "MISSABLE"
+      ],
+      "missable": true,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Draconic Tree Sentinel",
+          "url": "https://eldenring.wiki.gg/wiki/Draconic_Tree_Sentinel#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "leyndell-godfrey-first-elden-lord",
+      "name": "Godfrey, First Elden Lord",
+      "section": "Leyndell, Royal Capital",
+      "sectionId": "leyndell",
+      "levelRange": "Levels 110-115",
+      "description": "Erdtree Sanctuary",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Godfrey,_First_Elden_Lord#Boss_fights",
+      "dlc": false,
+      "sourceId": "b18-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "Godfrey, First Elden Lord",
+      "links": [
+        {
+          "label": "Godfrey, First Elden Lord",
+          "url": "https://eldenring.wiki.gg/wiki/Godfrey,_First_Elden_Lord#Boss_fights"
+        }
+      ]
+    },
+    {
+      "id": "leyndell-morgott-the-omen-king",
+      "name": "Morgott, the Omen King",
+      "section": "Leyndell, Royal Capital",
+      "sectionId": "leyndell",
+      "levelRange": "Levels 110-115",
+      "description": "Elden Throne",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Morgott,_the_Omen_King",
+      "dlc": false,
+      "sourceId": "b18-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "Shardbearer Morgott",
+      "links": [
+        {
+          "label": "Morgott, the Omen King",
+          "url": "https://eldenring.wiki.gg/wiki/Morgott,_the_Omen_King"
+        }
+      ]
+    },
+    {
+      "id": "leyndell-fell-twins-2x",
+      "name": "Fell Twins (2x)",
+      "section": "Leyndell, Royal Capital",
+      "sectionId": "leyndell",
+      "levelRange": "Levels 110-115",
+      "description": "They guard the bridge to the Divine Tower of East Altus",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Omen_(Enemy)#Bosses",
+      "dlc": false,
+      "sourceId": "b18-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Fell Twins",
+          "url": "https://eldenring.wiki.gg/wiki/Omen_(Enemy)#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "shunning-grounds-esgar-priest-of-blood",
+      "name": "Esgar, Priest of Blood",
+      "section": "Subterranean Shunning-Grounds",
+      "sectionId": "shunning-grounds",
+      "levelRange": "Levels 110-120",
+      "description": "Leyndell Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Esgar,_Priest_of_Blood",
+      "dlc": false,
+      "sourceId": "b19-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Esgar, Priest of Blood",
+          "url": "https://eldenring.wiki.gg/wiki/Esgar,_Priest_of_Blood"
+        }
+      ]
+    },
+    {
+      "id": "shunning-grounds-mohg-the-omen",
+      "name": "Mohg, the Omen",
+      "section": "Subterranean Shunning-Grounds",
+      "sectionId": "shunning-grounds",
+      "levelRange": "Levels 110-120",
+      "description": "Cathedral of the Forsaken",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Mohg,_Lord_of_Blood#Boss_Fight",
+      "dlc": false,
+      "sourceId": "b19-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "Mohg, the Omen",
+      "links": [
+        {
+          "label": "Mohg, the Omen",
+          "url": "https://eldenring.wiki.gg/wiki/Mohg,_Lord_of_Blood#Boss_Fight"
+        }
+      ]
+    },
+    {
+      "id": "forbidden-lands-nights-cavalry",
+      "name": "Night's Cavalry",
+      "section": "Forbidden Lands",
+      "sectionId": "forbidden-lands",
+      "levelRange": "Levels 115-120",
+      "description": "Encountered on a narrow pass in the Forbidden Lands at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Forbidden_Lands-0",
+      "dlc": false,
+      "sourceId": "b20-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Night's Cavalry",
+          "url": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Forbidden_Lands-0"
+        }
+      ]
+    },
+    {
+      "id": "forbidden-lands-black-blade-kindred",
+      "name": "Black Blade Kindred",
+      "section": "Forbidden Lands",
+      "sectionId": "forbidden-lands",
+      "levelRange": "Levels 115-120",
+      "description": "Guards the Grand Lift of Rold",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Blade_Kindred#Forbidden_Lands-0",
+      "dlc": false,
+      "sourceId": "b20-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Black Blade Kindred",
+          "url": "https://eldenring.wiki.gg/wiki/Black_Blade_Kindred#Forbidden_Lands-0"
+        }
+      ]
+    },
+    {
+      "id": "mountaintops-ulcerated-tree-spirit",
+      "name": "Ulcerated Tree Spirit",
+      "section": "Mountaintops of the Giants",
+      "sectionId": "mountaintops",
+      "levelRange": "Levels 115-130",
+      "description": "Giants' Mountaintop Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ulcerated_Tree_Spirit#Giants'_Mountaintop_Catacombs-0",
+      "dlc": false,
+      "sourceId": "b21-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Ulcerated Tree Spirit",
+          "url": "https://eldenring.wiki.gg/wiki/Ulcerated_Tree_Spirit#Giants'_Mountaintop_Catacombs-0"
+        }
+      ]
+    },
+    {
+      "id": "mountaintops-rykard-lord-of-blasphemy",
+      "name": "Rykard, Lord of Blasphemy",
+      "section": "Mountaintops of the Giants",
+      "sectionId": "mountaintops",
+      "levelRange": "Levels 115-130",
+      "description": "Follow Tanith's questline to reach or use the sending gate at the end of Volcano Manor",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Rykard,_Lord_of_Blasphemy",
+      "dlc": false,
+      "sourceId": "b21-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "Shardbearer Rykard",
+      "links": [
+        {
+          "label": "Rykard, Lord of Blasphemy",
+          "url": "https://eldenring.wiki.gg/wiki/Rykard,_Lord_of_Blasphemy"
+        }
+      ]
+    },
+    {
+      "id": "mountaintops-erdtree-avatar",
+      "name": "Erdtree Avatar",
+      "section": "Mountaintops of the Giants",
+      "sectionId": "mountaintops",
+      "levelRange": "Levels 115-130",
+      "description": "Guards the Minor Erdtree near Snow Valley Ruins Overlook",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Erdtree_Avatar#Mountaintops_of_the_Giants-0",
+      "dlc": false,
+      "sourceId": "b21-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Erdtree Avatar",
+          "url": "https://eldenring.wiki.gg/wiki/Erdtree_Avatar#Mountaintops_of_the_Giants-0"
+        }
+      ]
+    },
+    {
+      "id": "mountaintops-death-rite-bird",
+      "name": "Death Rite Bird",
+      "section": "Mountaintops of the Giants",
+      "sectionId": "mountaintops",
+      "levelRange": "Levels 115-130",
+      "description": "Encountered on the slope leading to Castle Sol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Death_Rite_Bird#Mountaintops_of_the_Giants-0",
+      "dlc": false,
+      "sourceId": "b21-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Death Rite Bird",
+          "url": "https://eldenring.wiki.gg/wiki/Death_Rite_Bird#Mountaintops_of_the_Giants-0"
+        }
+      ]
+    },
+    {
+      "id": "mountaintops-commander-niall",
+      "name": "Commander Niall",
+      "section": "Mountaintops of the Giants",
+      "sectionId": "mountaintops",
+      "levelRange": "Levels 115-130",
+      "description": "Castle Sol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Commander_Niall",
+      "dlc": false,
+      "sourceId": "b21-5",
+      "badges": [],
+      "missable": false,
+      "achievement": "Commander Niall",
+      "links": [
+        {
+          "label": "Commander Niall",
+          "url": "https://eldenring.wiki.gg/wiki/Commander_Niall"
+        }
+      ]
+    },
+    {
+      "id": "mountaintops-borealis-the-freezing-fog",
+      "name": "Borealis the Freezing Fog",
+      "section": "Mountaintops of the Giants",
+      "sectionId": "mountaintops",
+      "levelRange": "Levels 115-130",
+      "description": "Encountered in the frozen lake",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragon#Borealis_the_Freezing_Fog-0",
+      "dlc": false,
+      "sourceId": "b21-6",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Borealis the Freezing Fog",
+          "url": "https://eldenring.wiki.gg/wiki/Dragon#Borealis_the_Freezing_Fog-0"
+        }
+      ]
+    },
+    {
+      "id": "mountaintops-spiritcaller-snail",
+      "name": "Spiritcaller Snail",
+      "section": "Mountaintops of the Giants",
+      "sectionId": "mountaintops",
+      "levelRange": "Levels 115-130",
+      "description": "Spiritcaller Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Spiritcaller_Snail#Spiritcaller_Cave-0",
+      "dlc": false,
+      "sourceId": "b21-7",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Spiritcaller Snail",
+          "url": "https://eldenring.wiki.gg/wiki/Spiritcaller_Snail#Spiritcaller_Cave-0"
+        }
+      ]
+    },
+    {
+      "id": "mountaintops-roundtable-knight-vyke",
+      "name": "Roundtable Knight Vyke",
+      "section": "Mountaintops of the Giants",
+      "sectionId": "mountaintops",
+      "levelRange": "Levels 115-130",
+      "description": "Lord Contender's Evergaol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Vyke",
+      "dlc": false,
+      "sourceId": "b21-8",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Roundtable Knight Vyke",
+          "url": "https://eldenring.wiki.gg/wiki/Vyke"
+        }
+      ]
+    },
+    {
+      "id": "mountaintops-ancient-hero-of-zamor",
+      "name": "Ancient Hero of Zamor",
+      "section": "Mountaintops of the Giants",
+      "sectionId": "mountaintops",
+      "levelRange": "Levels 115-130",
+      "description": "Giant-Conquering Hero's Grave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancient_Hero_of_Zamor#Giant-Conquering_Hero's_Grave-0",
+      "dlc": false,
+      "sourceId": "b21-9",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Ancient Hero of Zamor",
+          "url": "https://eldenring.wiki.gg/wiki/Ancient_Hero_of_Zamor#Giant-Conquering_Hero's_Grave-0"
+        }
+      ]
+    },
+    {
+      "id": "mountaintops-fire-giant",
+      "name": "Fire Giant",
+      "section": "Mountaintops of the Giants",
+      "sectionId": "mountaintops",
+      "levelRange": "Levels 115-130",
+      "description": "Flame Peak",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Fire_Giant",
+      "dlc": false,
+      "sourceId": "b21-10",
+      "badges": [],
+      "missable": false,
+      "achievement": "Fire Giant",
+      "links": [
+        {
+          "label": "Fire Giant",
+          "url": "https://eldenring.wiki.gg/wiki/Fire_Giant"
+        }
+      ]
+    },
+    {
+      "id": "dragonbarrow-black-blade-kindred",
+      "name": "Black Blade Kindred",
+      "section": "Greyoll's Dragonbarrow",
+      "sectionId": "dragonbarrow",
+      "levelRange": "Levels 130-135",
+      "description": "Bestial Sanctum",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Blade_Kindred#Bosses",
+      "dlc": false,
+      "sourceId": "b22-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Black Blade Kindred",
+          "url": "https://eldenring.wiki.gg/wiki/Black_Blade_Kindred#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "dragonbarrow-flying-dragon-greyll",
+      "name": "Flying Dragon Greyll",
+      "section": "Greyoll's Dragonbarrow",
+      "sectionId": "dragonbarrow",
+      "levelRange": "Levels 130-135",
+      "description": "Farum Greatbridge",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragon#Flying_Dragon_Greyll-0",
+      "dlc": false,
+      "sourceId": "b22-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Flying Dragon Greyll",
+          "url": "https://eldenring.wiki.gg/wiki/Dragon#Flying_Dragon_Greyll-0"
+        }
+      ]
+    },
+    {
+      "id": "dragonbarrow-putrid-avatar",
+      "name": "Putrid Avatar",
+      "section": "Greyoll's Dragonbarrow",
+      "sectionId": "dragonbarrow",
+      "levelRange": "Levels 130-135",
+      "description": "Guards the Minor Erdtree past Farum Greatbridge",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Erdtree_Avatar#Greyoll's_Dragonbarrow-0",
+      "dlc": false,
+      "sourceId": "b22-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Putrid Avatar",
+          "url": "https://eldenring.wiki.gg/wiki/Erdtree_Avatar#Greyoll's_Dragonbarrow-0"
+        }
+      ]
+    },
+    {
+      "id": "dragonbarrow-nights-cavalry",
+      "name": "Night's Cavalry",
+      "section": "Greyoll's Dragonbarrow",
+      "sectionId": "dragonbarrow",
+      "levelRange": "Levels 130-135",
+      "description": "Patrols the bridge near Lenne's Rise at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Caelid_(North)-0",
+      "dlc": false,
+      "sourceId": "b22-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Night's Cavalry",
+          "url": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Caelid_(North)-0"
+        }
+      ]
+    },
+    {
+      "id": "dragonbarrow-beastmen-of-farum-azula-2x",
+      "name": "Beastmen of Farum Azula (2x)",
+      "section": "Greyoll's Dragonbarrow",
+      "sectionId": "dragonbarrow",
+      "levelRange": "Levels 130-135",
+      "description": "Dragonbarrow Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Beastman_of_Farum_Azula/Boss_(Dragonbarrow_Cave)",
+      "dlc": false,
+      "sourceId": "b22-5",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Beastmen of Farum Azula",
+          "url": "https://eldenring.wiki.gg/wiki/Beastman_of_Farum_Azula/Boss_(Dragonbarrow_Cave)"
+        }
+      ]
+    },
+    {
+      "id": "dragonbarrow-putrid-tree-spirit",
+      "name": "Putrid Tree Spirit",
+      "section": "Greyoll's Dragonbarrow",
+      "sectionId": "dragonbarrow",
+      "levelRange": "Levels 130-135",
+      "description": "War-Dead Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ulcerated_Tree_Spirit#War-Dead_Catacombs-0",
+      "dlc": false,
+      "sourceId": "b22-6",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Putrid Tree Spirit",
+          "url": "https://eldenring.wiki.gg/wiki/Ulcerated_Tree_Spirit#War-Dead_Catacombs-0"
+        }
+      ]
+    },
+    {
+      "id": "dragonbarrow-godskin-apostle",
+      "name": "Godskin Apostle",
+      "section": "Greyoll's Dragonbarrow",
+      "sectionId": "dragonbarrow",
+      "levelRange": "Levels 130-135",
+      "description": "Divine Tower of Caelid",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Godskin_Apostle#Divine_Tower_of_Caelid-0",
+      "dlc": false,
+      "sourceId": "b22-7",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Godskin Apostle",
+          "url": "https://eldenring.wiki.gg/wiki/Godskin_Apostle#Divine_Tower_of_Caelid-0"
+        }
+      ]
+    },
+    {
+      "id": "dragonbarrow-bell-bearing-hunter",
+      "name": "Bell Bearing Hunter",
+      "section": "Greyoll's Dragonbarrow",
+      "sectionId": "dragonbarrow",
+      "levelRange": "Levels 130-135",
+      "description": "Encountered outside the Isolated Merchant's Shack at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Elemer_of_the_Briar#Isolated_Merchant's_Shacks-0",
+      "dlc": false,
+      "sourceId": "b22-8",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Bell Bearing Hunter",
+          "url": "https://eldenring.wiki.gg/wiki/Elemer_of_the_Briar#Isolated_Merchant's_Shacks-0"
+        }
+      ]
+    },
+    {
+      "id": "snowfield-stray-mimic-tear",
+      "name": "Stray Mimic Tear",
+      "section": "Consecrated Snowfield",
+      "sectionId": "snowfield",
+      "levelRange": "Levels 135-145",
+      "description": "Hidden Path to the Haligtree",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Silver_Tear#Stray_Mimic_Tear-0",
+      "dlc": false,
+      "sourceId": "b23-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Stray Mimic Tear",
+          "url": "https://eldenring.wiki.gg/wiki/Silver_Tear#Stray_Mimic_Tear-0"
+        }
+      ]
+    },
+    {
+      "id": "snowfield-putrid-grave-warden-duelist",
+      "name": "Putrid Grave Warden Duelist",
+      "section": "Consecrated Snowfield",
+      "sectionId": "snowfield",
+      "levelRange": "Levels 135-145",
+      "description": "Consecrated Snowfield Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Warden_Duelist#Consecrated_Snowfield_Catacombs-0",
+      "dlc": false,
+      "sourceId": "b23-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Putrid Grave Warden Duelist",
+          "url": "https://eldenring.wiki.gg/wiki/Grave_Warden_Duelist#Consecrated_Snowfield_Catacombs-0"
+        }
+      ]
+    },
+    {
+      "id": "snowfield-putrid-avatar",
+      "name": "Putrid Avatar",
+      "section": "Consecrated Snowfield",
+      "sectionId": "snowfield",
+      "levelRange": "Levels 135-145",
+      "description": "Encountered uphill from the Minor Erdtree above the Cave of the Forlorn",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Erdtree_Avatar#Consecrated_Snowfield-0",
+      "dlc": false,
+      "sourceId": "b23-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Putrid Avatar",
+          "url": "https://eldenring.wiki.gg/wiki/Erdtree_Avatar#Consecrated_Snowfield-0"
+        }
+      ]
+    },
+    {
+      "id": "snowfield-misbegotten-crusader",
+      "name": "Misbegotten Crusader",
+      "section": "Consecrated Snowfield",
+      "sectionId": "snowfield",
+      "levelRange": "Levels 135-145",
+      "description": "Cave of the Forlorn",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Misbegotten_Warrior#Misbegotten_Crusader-0",
+      "dlc": false,
+      "sourceId": "b23-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Misbegotten Crusader",
+          "url": "https://eldenring.wiki.gg/wiki/Misbegotten_Warrior#Misbegotten_Crusader-0"
+        }
+      ]
+    },
+    {
+      "id": "snowfield-great-wyrm-theodorix",
+      "name": "Great Wyrm Theodorix",
+      "section": "Consecrated Snowfield",
+      "sectionId": "snowfield",
+      "levelRange": "Levels 135-145",
+      "description": "Encountered at the end of the frozen river, outside Cave of the Forlorn",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Magma_Wyrm#Great_Wyrm_Theodorix-0",
+      "dlc": false,
+      "sourceId": "b23-5",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Great Wyrm Theodorix",
+          "url": "https://eldenring.wiki.gg/wiki/Magma_Wyrm#Great_Wyrm_Theodorix-0"
+        }
+      ]
+    },
+    {
+      "id": "snowfield-nights-cavalries-2x",
+      "name": "Night's Cavalries (2x)",
+      "section": "Consecrated Snowfield",
+      "sectionId": "snowfield",
+      "levelRange": "Levels 135-145",
+      "description": "They guard the caravan near the Inner Consecrated Snowfield grace at night",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Consecrated_Snowfield-0",
+      "dlc": false,
+      "sourceId": "b23-6",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Night's Cavalries",
+          "url": "https://eldenring.wiki.gg/wiki/Night%27s_Cavalry#Consecrated_Snowfield-0"
+        }
+      ]
+    },
+    {
+      "id": "snowfield-astel-stars-of-darkness",
+      "name": "Astel, Stars of Darkness",
+      "section": "Consecrated Snowfield",
+      "sectionId": "snowfield",
+      "levelRange": "Levels 135-145",
+      "description": "Yelough Anix Tunnel",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Astel#Astel,_Stars_of_Darkness-0",
+      "dlc": false,
+      "sourceId": "b23-7",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Astel, Stars of Darkness",
+          "url": "https://eldenring.wiki.gg/wiki/Astel#Astel,_Stars_of_Darkness-0"
+        }
+      ]
+    },
+    {
+      "id": "snowfield-death-rite-bird",
+      "name": "Death Rite Bird",
+      "section": "Consecrated Snowfield",
+      "sectionId": "snowfield",
+      "levelRange": "Levels 135-145",
+      "description": "Encountered at the end of the frozen river at night, near the Mausoleum",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Death_Rite_Bird#Consecrated_Snowfields-0",
+      "dlc": false,
+      "sourceId": "b23-8",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Death Rite Bird",
+          "url": "https://eldenring.wiki.gg/wiki/Death_Rite_Bird#Consecrated_Snowfields-0"
+        }
+      ]
+    },
+    {
+      "id": "mohgwyn-palace-mohg-lord-of-blood",
+      "name": "Mohg, Lord of Blood",
+      "section": "Mohgwyn Palace",
+      "sectionId": "mohgwyn-palace",
+      "levelRange": "Levels 145-150",
+      "description": "Encountered at the top of the Dynasty Mausoleum",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Mohg,_Lord_of_Blood",
+      "dlc": false,
+      "sourceId": "b24-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "Shardbearer Mohg",
+      "links": [
+        {
+          "label": "Mohg, Lord of Blood",
+          "url": "https://eldenring.wiki.gg/wiki/Mohg,_Lord_of_Blood"
+        }
+      ]
+    },
+    {
+      "id": "haligtree-loretta-knight-of-the-haligtree",
+      "name": "Loretta, Knight of the Haligtree",
+      "section": "Miquella's Haligtree",
+      "sectionId": "haligtree",
+      "levelRange": "Levels 145-150",
+      "description": "Encountered at the end of Haligtree Town",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Loretta#Loretta,_Knight_of_the_Haligtree-0",
+      "dlc": false,
+      "sourceId": "b25-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "Loretta, Knight of the Haligtree",
+      "links": [
+        {
+          "label": "Loretta, Knight of the Haligtree",
+          "url": "https://eldenring.wiki.gg/wiki/Loretta#Loretta,_Knight_of_the_Haligtree-0"
+        }
+      ]
+    },
+    {
+      "id": "haligtree-malenia-blade-of-miquella",
+      "name": "Malenia, Blade of Miquella",
+      "section": "Miquella's Haligtree",
+      "sectionId": "haligtree",
+      "levelRange": "Levels 145-150",
+      "description": "Encountered at the bottom of Elphael",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Malenia,_Blade_of_Miquella",
+      "dlc": false,
+      "sourceId": "b25-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "Shardbearer Malenia",
+      "links": [
+        {
+          "label": "Malenia, Blade of Miquella",
+          "url": "https://eldenring.wiki.gg/wiki/Malenia,_Blade_of_Miquella"
+        }
+      ]
+    },
+    {
+      "id": "farum-azula-godskin-duo",
+      "name": "Godskin Duo",
+      "section": "Crumbling Farum Azula",
+      "sectionId": "farum-azula",
+      "levelRange": "Levels 155-160",
+      "description": "Dragon Temple Altar",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Godskin_Duo",
+      "dlc": false,
+      "sourceId": "b26-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "Godskin Duo",
+      "links": [
+        {
+          "label": "Godskin Duo",
+          "url": "https://eldenring.wiki.gg/wiki/Godskin_Duo"
+        }
+      ]
+    },
+    {
+      "id": "farum-azula-dragonlord-placidusax",
+      "name": "Dragonlord Placidusax",
+      "section": "Crumbling Farum Azula",
+      "sectionId": "farum-azula",
+      "levelRange": "Levels 155-160",
+      "description": "Reached from outside the church that leads to the great bridge by dropping down the platforms below the cliff.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragonlord_Placidusax",
+      "dlc": false,
+      "sourceId": "b26-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "Dragonlord Placidusax",
+      "links": [
+        {
+          "label": "Dragonlord Placidusax",
+          "url": "https://eldenring.wiki.gg/wiki/Dragonlord_Placidusax"
+        }
+      ]
+    },
+    {
+      "id": "farum-azula-maliketh-the-black-blade",
+      "name": "Maliketh, the Black Blade",
+      "section": "Crumbling Farum Azula",
+      "sectionId": "farum-azula",
+      "levelRange": "Levels 155-160",
+      "description": "Encountered in the large building at the end of the great bridge",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Maliketh,_the_Black_Blade",
+      "dlc": false,
+      "sourceId": "b26-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "Maliketh the Black Blade",
+      "links": [
+        {
+          "label": "Maliketh, the Black Blade",
+          "url": "https://eldenring.wiki.gg/wiki/Maliketh,_the_Black_Blade"
+        }
+      ]
+    },
+    {
+      "id": "ashen-leyndell-sir-gideon-ofnir-the-all-knowing",
+      "name": "Sir Gideon Ofnir, the All-Knowing",
+      "section": "Leyndell, Ashen Capital",
+      "sectionId": "ashen-leyndell",
+      "levelRange": "Levels 160-165",
+      "description": "Erdtree Sanctuary",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Sir_Gideon_Ofnir,_the_All-Knowing",
+      "dlc": false,
+      "sourceId": "b27-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Sir Gideon Ofnir, the All-Knowing",
+          "url": "https://eldenring.wiki.gg/wiki/Sir_Gideon_Ofnir,_the_All-Knowing"
+        }
+      ]
+    },
+    {
+      "id": "ashen-leyndell-godfrey-first-elden-lord",
+      "name": "Godfrey, First Elden Lord",
+      "section": "Leyndell, Ashen Capital",
+      "sectionId": "ashen-leyndell",
+      "levelRange": "Levels 160-165",
+      "description": "Elden Throne",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Godfrey,_First_Elden_Lord",
+      "dlc": false,
+      "sourceId": "b27-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "Hoarah Loux, Warrior",
+      "links": [
+        {
+          "label": "Godfrey, First Elden Lord",
+          "url": "https://eldenring.wiki.gg/wiki/Godfrey,_First_Elden_Lord"
+        }
+      ]
+    },
+    {
+      "id": "ashen-leyndell-radagon-of-the-golden-order-elden-beast",
+      "name": "Radagon of the Golden Order & Elden Beast",
+      "section": "Leyndell, Ashen Capital",
+      "sectionId": "ashen-leyndell",
+      "levelRange": "Levels 160-165",
+      "description": "Encountered inside the Erdtree",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Radagon_of_the_Golden_Order",
+      "dlc": false,
+      "sourceId": "b27-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Radagon of the Golden Order",
+          "url": "https://eldenring.wiki.gg/wiki/Radagon_of_the_Golden_Order"
+        },
+        {
+          "label": "Elden Beast",
+          "url": "https://eldenring.wiki.gg/wiki/Elden_Beast"
+        }
+      ]
+    },
+    {
+      "id": "gravesite-plain-knight-of-the-solitary-gaol",
+      "name": "Knight of the Solitary Gaol",
+      "section": "Gravesite Plain",
+      "sectionId": "gravesite-plain",
+      "levelRange": "Scadu 0-3",
+      "description": "Western Nameless Mausoleum",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Knight_of_the_Solitary_Gaol",
+      "dlc": true,
+      "sourceId": "b28-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Knight of the Solitary Gaol",
+          "url": "https://eldenring.wiki.gg/wiki/Knight_of_the_Solitary_Gaol"
+        }
+      ]
+    },
+    {
+      "id": "gravesite-plain-ghostflame-dragon",
+      "name": "Ghostflame Dragon",
+      "section": "Gravesite Plain",
+      "sectionId": "gravesite-plain",
+      "levelRange": "Scadu 0-3",
+      "description": "Encountered in the lake north-nortwest of Three-Path Cross",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghostflame_Dragon",
+      "dlc": true,
+      "sourceId": "b28-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Ghostflame Dragon",
+          "url": "https://eldenring.wiki.gg/wiki/Ghostflame_Dragon"
+        }
+      ]
+    },
+    {
+      "id": "gravesite-plain-demi-human-swordmaster-onze",
+      "name": "Demi-Human Swordmaster Onze",
+      "section": "Gravesite Plain",
+      "sectionId": "gravesite-plain",
+      "levelRange": "Scadu 0-3",
+      "description": "Belurat Gaol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Demi-Human_Swordmaster_Onze",
+      "dlc": true,
+      "sourceId": "b28-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Demi-Human Swordmaster Onze",
+          "url": "https://eldenring.wiki.gg/wiki/Demi-Human_Swordmaster_Onze"
+        }
+      ]
+    },
+    {
+      "id": "gravesite-plain-death-knight",
+      "name": "Death Knight",
+      "section": "Gravesite Plain",
+      "sectionId": "gravesite-plain",
+      "levelRange": "Scadu 0-3",
+      "description": "Fog Rift Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Death_Knight#Variants_(Boss_Fights)",
+      "dlc": true,
+      "sourceId": "b28-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Death Knight",
+          "url": "https://eldenring.wiki.gg/wiki/Death_Knight#Variants_(Boss_Fights)"
+        }
+      ]
+    },
+    {
+      "id": "gravesite-plain-ancient-dragon-man",
+      "name": "Ancient Dragon-Man",
+      "section": "Gravesite Plain",
+      "sectionId": "gravesite-plain",
+      "levelRange": "Scadu 0-3",
+      "description": "Dragon's Pit",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancient_Dragon-Man",
+      "dlc": true,
+      "sourceId": "b28-5",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Ancient Dragon-Man",
+          "url": "https://eldenring.wiki.gg/wiki/Ancient_Dragon-Man"
+        }
+      ]
+    },
+    {
+      "id": "gravesite-plain-chief-bloodfiend",
+      "name": "Chief Bloodfiend",
+      "section": "Gravesite Plain",
+      "sectionId": "gravesite-plain",
+      "levelRange": "Scadu 0-3",
+      "description": "Rivermouth Cave",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Chief_Bloodfiend",
+      "dlc": true,
+      "sourceId": "b28-6",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Chief Bloodfiend",
+          "url": "https://eldenring.wiki.gg/wiki/Chief_Bloodfiend"
+        }
+      ]
+    },
+    {
+      "id": "belurat-divine-beast-dancing-lion",
+      "name": "Divine Beast Dancing Lion",
+      "section": "Belurat, Tower Settlement",
+      "sectionId": "belurat",
+      "levelRange": "Scadu 3-4",
+      "description": "Encountered at the end of Belurat",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Divine_Beast_Dancing_Lion",
+      "dlc": true,
+      "sourceId": "b29-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Divine Beast Dancing Lion",
+          "url": "https://eldenring.wiki.gg/wiki/Divine_Beast_Dancing_Lion"
+        }
+      ]
+    },
+    {
+      "id": "cerulean-coast-demi-human-queen-marigga",
+      "name": "Demi-Human Queen Marigga",
+      "section": "Cerulean Coast",
+      "sectionId": "cerulean-coast",
+      "levelRange": "Scadu 4-5",
+      "description": "At the end of the ravine near Cerulean Coast West",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Demi-Human_Queen_Marigga",
+      "dlc": true,
+      "sourceId": "b30-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Demi-Human Queen Marigga",
+          "url": "https://eldenring.wiki.gg/wiki/Demi-Human_Queen_Marigga"
+        }
+      ]
+    },
+    {
+      "id": "cerulean-coast-dancer-of-ranah",
+      "name": "Dancer of Ranah",
+      "section": "Cerulean Coast",
+      "sectionId": "cerulean-coast",
+      "levelRange": "Scadu 4-5",
+      "description": "Southern Nameless Mausoleum (reach via the cave below the dead tree near Cerulean Coast West)",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dancer_of_Ranah",
+      "dlc": true,
+      "sourceId": "b30-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Dancer of Ranah",
+          "url": "https://eldenring.wiki.gg/wiki/Dancer_of_Ranah"
+        }
+      ]
+    },
+    {
+      "id": "cerulean-coast-ghostflame-dragon",
+      "name": "Ghostflame Dragon",
+      "section": "Cerulean Coast",
+      "sectionId": "cerulean-coast",
+      "levelRange": "Scadu 4-5",
+      "description": "Ambushes you on one of the islands in the water south of the Cerulean Coast grace",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghostflame_Dragon",
+      "dlc": true,
+      "sourceId": "b30-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Ghostflame Dragon",
+          "url": "https://eldenring.wiki.gg/wiki/Ghostflame_Dragon"
+        }
+      ]
+    },
+    {
+      "id": "charos-grave-death-rite-bird",
+      "name": "Death Rite Bird",
+      "section": "Charo's Hidden Grave",
+      "sectionId": "charos-grave",
+      "levelRange": "Scadu 5-6",
+      "description": "Encountered in the lake past the Charo's Hidden Grave grace",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Death_Rite_Bird#Charo's_Hidden_Grave-0",
+      "dlc": true,
+      "sourceId": "b31-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Death Rite Bird",
+          "url": "https://eldenring.wiki.gg/wiki/Death_Rite_Bird#Charo's_Hidden_Grave-0"
+        }
+      ]
+    },
+    {
+      "id": "charos-grave-lamenter",
+      "name": "Lamenter",
+      "section": "Charo's Hidden Grave",
+      "sectionId": "charos-grave",
+      "levelRange": "Scadu 5-6",
+      "description": "Lamenter's Gaol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Lamenter",
+      "dlc": true,
+      "sourceId": "b31-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Lamenter",
+          "url": "https://eldenring.wiki.gg/wiki/Lamenter"
+        }
+      ]
+    },
+    {
+      "id": "castle-ensis-rellana-twin-moon-knight",
+      "name": "Rellana, Twin Moon Knight",
+      "section": "Castle Ensis",
+      "sectionId": "castle-ensis",
+      "levelRange": "Scadu 6-7",
+      "description": "Encountered at the end of the castle",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Rellana,_Twin_Moon_Knight",
+      "dlc": true,
+      "sourceId": "b32-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Rellana, Twin Moon Knight",
+          "url": "https://eldenring.wiki.gg/wiki/Rellana,_Twin_Moon_Knight"
+        }
+      ]
+    },
+    {
+      "id": "scadu-altus-black-knight-garrew",
+      "name": "Black Knight Garrew",
+      "section": "Scadu Altus",
+      "sectionId": "scadu-altus",
+      "levelRange": "Scadu 7-8",
+      "description": "Fog Rift Fort",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Knight#Black_Knight_Garrew-0",
+      "dlc": true,
+      "sourceId": "b33-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Black Knight Garrew",
+          "url": "https://eldenring.wiki.gg/wiki/Black_Knight#Black_Knight_Garrew-0"
+        }
+      ]
+    },
+    {
+      "id": "scadu-altus-ralva-the-great-red-bear",
+      "name": "Ralva the Great Red Bear",
+      "section": "Scadu Altus",
+      "sectionId": "scadu-altus",
+      "levelRange": "Scadu 7-8",
+      "description": "Encountered in a pond in the bear-infested woods northeast of the Highroad Cross",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ralva_the_Great_Red_Bear",
+      "dlc": true,
+      "sourceId": "b33-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Ralva the Great Red Bear",
+          "url": "https://eldenring.wiki.gg/wiki/Ralva_the_Great_Red_Bear"
+        }
+      ]
+    },
+    {
+      "id": "scadu-altus-dryleaf-dane",
+      "name": "Dryleaf Dane",
+      "section": "Scadu Altus",
+      "sectionId": "scadu-altus",
+      "levelRange": "Scadu 7-8",
+      "description": "Moorth Ruins (use the May the Best Win gesture to challenge him)",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dryleaf_Dane",
+      "dlc": true,
+      "sourceId": "b33-3",
+      "badges": [
+        "MISSABLE"
+      ],
+      "missable": true,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Dryleaf Dane",
+          "url": "https://eldenring.wiki.gg/wiki/Dryleaf_Dane"
+        }
+      ]
+    },
+    {
+      "id": "scadu-altus-ghostflame-dragon",
+      "name": "Ghostflame Dragon",
+      "section": "Scadu Altus",
+      "sectionId": "scadu-altus",
+      "levelRange": "Scadu 7-8",
+      "description": "Encountered fighting multiple soldiers along Moorth Highway",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghostflame_Dragon",
+      "dlc": true,
+      "sourceId": "b33-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Ghostflame Dragon",
+          "url": "https://eldenring.wiki.gg/wiki/Ghostflame_Dragon"
+        }
+      ]
+    },
+    {
+      "id": "scadu-altus-black-knight-edredd",
+      "name": "Black Knight Edredd",
+      "section": "Scadu Altus",
+      "sectionId": "scadu-altus",
+      "levelRange": "Scadu 7-8",
+      "description": "Fort of Reprimand",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Knight#Bosses",
+      "dlc": true,
+      "sourceId": "b33-5",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Black Knight Edredd",
+          "url": "https://eldenring.wiki.gg/wiki/Black_Knight#Bosses"
+        }
+      ]
+    },
+    {
+      "id": "scadu-altus-curseblade-labirith",
+      "name": "Curseblade Labirith",
+      "section": "Scadu Altus",
+      "sectionId": "scadu-altus",
+      "levelRange": "Scadu 7-8",
+      "description": "Bonny Gaol",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Curseblade_Labirith",
+      "dlc": true,
+      "sourceId": "b33-6",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Curseblade Labirith",
+          "url": "https://eldenring.wiki.gg/wiki/Curseblade_Labirith"
+        }
+      ]
+    },
+    {
+      "id": "rauh-base-red-bear",
+      "name": "Red Bear",
+      "section": "Rauh Base",
+      "sectionId": "rauh-base",
+      "levelRange": "Scadu 8-9",
+      "description": "Northern Nameless Mausoleum",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Red_Bear",
+      "dlc": true,
+      "sourceId": "b34-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Red Bear",
+          "url": "https://eldenring.wiki.gg/wiki/Red_Bear"
+        }
+      ]
+    },
+    {
+      "id": "rauh-base-rugalea-the-great-red-bear",
+      "name": "Rugalea the Great Red Bear",
+      "section": "Rauh Base",
+      "sectionId": "rauh-base",
+      "levelRange": "Scadu 8-9",
+      "description": "Encountered in the bear-infested woods past Ravine North",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Rugalea_the_Great_Red_Bear",
+      "dlc": true,
+      "sourceId": "b34-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Rugalea the Great Red Bear",
+          "url": "https://eldenring.wiki.gg/wiki/Rugalea_the_Great_Red_Bear"
+        }
+      ]
+    },
+    {
+      "id": "rauh-base-death-knight",
+      "name": "Death Knight",
+      "section": "Rauh Base",
+      "sectionId": "rauh-base",
+      "levelRange": "Scadu 8-9",
+      "description": "Scorpion River Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Death_Knight#Greataxe_Knight-0",
+      "dlc": true,
+      "sourceId": "b34-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Death Knight",
+          "url": "https://eldenring.wiki.gg/wiki/Death_Knight#Greataxe_Knight-0"
+        }
+      ]
+    },
+    {
+      "id": "fissure-putrescent-knight",
+      "name": "Putrescent Knight",
+      "section": "Stone Coffin Fissure",
+      "sectionId": "fissure",
+      "levelRange": "Scadu 9-10",
+      "description": "Reached by jumping off the final stone coffin into the arena below",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Putrescent_Knight",
+      "dlc": true,
+      "sourceId": "b35-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Putrescent Knight",
+          "url": "https://eldenring.wiki.gg/wiki/Putrescent_Knight"
+        }
+      ]
+    },
+    {
+      "id": "shadow-keep-golden-hippopotamus",
+      "name": "Golden Hippopotamus",
+      "section": "Shadow Keep",
+      "sectionId": "shadow-keep",
+      "levelRange": "Scadu 10-12",
+      "description": "Guards the main entrance to the castle",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Hippopotamus",
+      "dlc": true,
+      "sourceId": "b36-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Golden Hippopotamus",
+          "url": "https://eldenring.wiki.gg/wiki/Golden_Hippopotamus"
+        }
+      ]
+    },
+    {
+      "id": "shadow-keep-scadutree-avatar",
+      "name": "Scadutree Avatar",
+      "section": "Shadow Keep",
+      "sectionId": "shadow-keep",
+      "levelRange": "Scadu 10-12",
+      "description": "Found at the base of the Scadutree via the Church District.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Scadutree_Avatar",
+      "dlc": true,
+      "sourceId": "b36-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Scadutree Avatar",
+          "url": "https://eldenring.wiki.gg/wiki/Scadutree_Avatar"
+        }
+      ]
+    },
+    {
+      "id": "shadow-keep-commander-gaius",
+      "name": "Commander Gaius",
+      "section": "Shadow Keep",
+      "sectionId": "shadow-keep",
+      "levelRange": "Scadu 10-12",
+      "description": "Encountered in Scaduview, accessed via the Storehouse loft.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Commander_Gaius",
+      "dlc": true,
+      "sourceId": "b36-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Commander Gaius",
+          "url": "https://eldenring.wiki.gg/wiki/Commander_Gaius"
+        }
+      ]
+    },
+    {
+      "id": "shadow-keep-messmer-the-impaler",
+      "name": "Messmer the Impaler",
+      "section": "Shadow Keep",
+      "sectionId": "shadow-keep",
+      "levelRange": "Scadu 10-12",
+      "description": "Encountered at the top of the castle.",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Messmer_the_Impaler",
+      "dlc": true,
+      "sourceId": "b36-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Messmer the Impaler",
+          "url": "https://eldenring.wiki.gg/wiki/Messmer_the_Impaler"
+        }
+      ]
+    },
+    {
+      "id": "scaduview-tree-sentinel",
+      "name": "Tree Sentinel",
+      "section": "Scaduview",
+      "sectionId": "scaduview",
+      "levelRange": "Scadu 12-13",
+      "description": "Guards the slope leading up to Shaman Village",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Tree_Sentinel#Scaduview-0",
+      "dlc": true,
+      "sourceId": "b37-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Tree Sentinel",
+          "url": "https://eldenring.wiki.gg/wiki/Tree_Sentinel#Scaduview-0"
+        }
+      ]
+    },
+    {
+      "id": "scaduview-tree-sentinel-2",
+      "name": "Tree Sentinel",
+      "section": "Scaduview",
+      "sectionId": "scaduview",
+      "levelRange": "Scadu 12-13",
+      "description": "Patrols the road near the Hinterland bridge",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Tree_Sentinel#Scaduview-0",
+      "dlc": true,
+      "sourceId": "b37-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Tree Sentinel",
+          "url": "https://eldenring.wiki.gg/wiki/Tree_Sentinel#Scaduview-0"
+        }
+      ]
+    },
+    {
+      "id": "scaduview-fallingstar-beast",
+      "name": "Fallingstar Beast",
+      "section": "Scaduview",
+      "sectionId": "scaduview",
+      "levelRange": "Scadu 12-13",
+      "description": "Encountered in the crater near Fingerstone Hill",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Fallingstar_Beast#Finger_Ruins_of_Dheo-0",
+      "dlc": true,
+      "sourceId": "b37-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Fallingstar Beast",
+          "url": "https://eldenring.wiki.gg/wiki/Fallingstar_Beast#Finger_Ruins_of_Dheo-0"
+        }
+      ]
+    },
+    {
+      "id": "scaduview-metyr-mother-of-fingers",
+      "name": "Metyr, Mother of Fingers",
+      "section": "Scaduview",
+      "sectionId": "scaduview",
+      "levelRange": "Scadu 12-13",
+      "description": "Sound the hanging bell at the Finger Ruins of Miyr",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Metyr,_Mother_of_Fingers",
+      "dlc": true,
+      "sourceId": "b37-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Metyr, Mother of Fingers",
+          "url": "https://eldenring.wiki.gg/wiki/Metyr,_Mother_of_Fingers"
+        }
+      ]
+    },
+    {
+      "id": "scaduview-count-ymir-mother-of-fingers",
+      "name": "Count Ymir, Mother of Fingers",
+      "section": "Scaduview",
+      "sectionId": "scaduview",
+      "levelRange": "Scadu 12-13",
+      "description": "Interact with his chair after killing Metyr",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Count_Ymir",
+      "dlc": true,
+      "sourceId": "b37-5",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Count Ymir, Mother of Fingers",
+          "url": "https://eldenring.wiki.gg/wiki/Count_Ymir"
+        }
+      ]
+    },
+    {
+      "id": "recluses-river-rakshasa",
+      "name": "Rakshasa",
+      "section": "Recluses' River",
+      "sectionId": "recluses-river",
+      "levelRange": "Scadu 13-14",
+      "description": "Eastern Nameless Mausoleum",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Rakshasa",
+      "dlc": true,
+      "sourceId": "b38-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Rakshasa",
+          "url": "https://eldenring.wiki.gg/wiki/Rakshasa"
+        }
+      ]
+    },
+    {
+      "id": "recluses-river-jori-elder-inquisitor",
+      "name": "Jori, Elder Inquisitor",
+      "section": "Recluses' River",
+      "sectionId": "recluses-river",
+      "levelRange": "Scadu 13-14",
+      "description": "Darklight Catacombs",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Jori,_Elder_Inquisitor",
+      "dlc": true,
+      "sourceId": "b38-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Jori, Elder Inquisitor",
+          "url": "https://eldenring.wiki.gg/wiki/Jori,_Elder_Inquisitor"
+        }
+      ]
+    },
+    {
+      "id": "abyssal-woods-midra-lord-of-frenzied-flame",
+      "name": "Midra, Lord of Frenzied Flame",
+      "section": "Abyssal Woods",
+      "sectionId": "abyssal-woods",
+      "levelRange": "Scadu 14-16",
+      "description": "Midra's Manse",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Midra,_Lord_of_Frenzied_Flame",
+      "dlc": true,
+      "sourceId": "b39-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Midra, Lord of Frenzied Flame",
+          "url": "https://eldenring.wiki.gg/wiki/Midra,_Lord_of_Frenzied_Flame"
+        }
+      ]
+    },
+    {
+      "id": "jagged-peak-jagged-peak-drake-bottom",
+      "name": "Jagged Peak Drake (bottom)",
+      "section": "Jagged Peak",
+      "sectionId": "jagged-peak",
+      "levelRange": "Scadu 16-17",
+      "description": "Found sleeping near the path to the Grand Altar of Dragon Communion",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragon#Jagged_Peak_Drake_(bottom)-0",
+      "dlc": true,
+      "sourceId": "b40-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Jagged Peak Drake",
+          "url": "https://eldenring.wiki.gg/wiki/Dragon#Jagged_Peak_Drake_(bottom)-0"
+        }
+      ]
+    },
+    {
+      "id": "jagged-peak-jagged-peak-drake",
+      "name": "Jagged Peak Drake",
+      "section": "Jagged Peak",
+      "sectionId": "jagged-peak",
+      "levelRange": "Scadu 16-17",
+      "description": "Encountered past the Foot of the Jagged Peak grace, fighting another drake",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragon#Jagged_Peak_Drake-0",
+      "dlc": true,
+      "sourceId": "b40-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Jagged Peak Drake",
+          "url": "https://eldenring.wiki.gg/wiki/Dragon#Jagged_Peak_Drake-0"
+        }
+      ]
+    },
+    {
+      "id": "jagged-peak-ancient-dragon-senessax",
+      "name": "Ancient Dragon Senessax",
+      "section": "Jagged Peak",
+      "sectionId": "jagged-peak",
+      "levelRange": "Scadu 16-17",
+      "description": "Found sleeping on the way up the mountain",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancient_Dragon#Ancient_Dragon_Senessax-0",
+      "dlc": true,
+      "sourceId": "b40-3",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Ancient Dragon Senessax",
+          "url": "https://eldenring.wiki.gg/wiki/Ancient_Dragon#Ancient_Dragon_Senessax-0"
+        }
+      ]
+    },
+    {
+      "id": "jagged-peak-bayle-the-dread",
+      "name": "Bayle the Dread",
+      "section": "Jagged Peak",
+      "sectionId": "jagged-peak",
+      "levelRange": "Scadu 16-17",
+      "description": "Encountered at the summit",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Bayle_the_Dread",
+      "dlc": true,
+      "sourceId": "b40-4",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Bayle the Dread",
+          "url": "https://eldenring.wiki.gg/wiki/Bayle_the_Dread"
+        }
+      ]
+    },
+    {
+      "id": "rauh-ruins-divine-beast-dancing-lion",
+      "name": "Divine Beast Dancing Lion",
+      "section": "Ancient Ruins of Rauh",
+      "sectionId": "rauh-ruins",
+      "levelRange": "Scadu 17-18",
+      "description": "Encountered at the end of the Grand Stairway",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Divine_Beast_Dancing_Lion",
+      "dlc": true,
+      "sourceId": "b41-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Divine Beast Dancing Lion",
+          "url": "https://eldenring.wiki.gg/wiki/Divine_Beast_Dancing_Lion"
+        }
+      ]
+    },
+    {
+      "id": "rauh-ruins-romina-saint-of-the-bud",
+      "name": "Romina, Saint of the Bud",
+      "section": "Ancient Ruins of Rauh",
+      "sectionId": "rauh-ruins",
+      "levelRange": "Scadu 17-18",
+      "description": "Church of the Bud",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Romina,_Saint_of_the_Bud",
+      "dlc": true,
+      "sourceId": "b41-2",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Romina, Saint of the Bud",
+          "url": "https://eldenring.wiki.gg/wiki/Romina,_Saint_of_the_Bud"
+        }
+      ]
+    },
+    {
+      "id": "enir-ilim-promised-consort-radahn",
+      "name": "Promised Consort Radahn",
+      "section": "Enir-Ilim",
+      "sectionId": "enir-ilim",
+      "levelRange": "Scadu 18-19",
+      "description": "Encountered at the top of Enir-Ilim",
+      "wikiUrl": "https://eldenring.wiki.gg/wiki/Promised_Consort_Radahn",
+      "dlc": true,
+      "sourceId": "b42-1",
+      "badges": [],
+      "missable": false,
+      "achievement": "",
+      "links": [
+        {
+          "label": "Promised Consort Radahn",
+          "url": "https://eldenring.wiki.gg/wiki/Promised_Consort_Radahn"
+        }
+      ]
+    }
+  ]
+}

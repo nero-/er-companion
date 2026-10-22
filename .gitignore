@@ -5,3 +5,5 @@ dist/
 !data/source/*.xlsx
 .vite/
 coverage/
+__pycache__/
+*.pyc

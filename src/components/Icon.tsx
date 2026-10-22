@@ -43,7 +43,14 @@ export type IconName =
   | "upload"
   | "shieldOff"
   | "flame"
-  | "talisman";
+  | "talisman"
+  | "grace"
+  | "rune"
+  | "greatsword"
+  | "armor"
+  | "spirit"
+  | "achievement"
+  | "quest";
 
 const PATHS: Record<IconName, ReactNode> = {
   dashboard: (
@@ -249,6 +256,58 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="M12 3 8 7l4 3 4-3-4-4Z" />
       <path d="M8 7 5 10l7 11 7-11-3-3" />
       <path d="M12 10v8" />
+    </>
+  ),
+  grace: (
+    <>
+      <path d="M12 21V11" />
+      <path d="M12 11c0-3.2 2.2-5.2 5.2-5.2 0 3.2-2.2 5.2-5.2 5.2Z" />
+      <path d="M12 11c0-3.2-2.2-5.2-5.2-5.2 0 3.2 2.2 5.2 5.2 5.2Z" />
+      <path d="M8.5 21h7M12 6V3.5" />
+      <circle cx="12" cy="2.6" r="0.7" fill="currentColor" stroke="none" />
+    </>
+  ),
+  rune: (
+    <>
+      <circle cx="12" cy="12" r="8.4" />
+      <path d="M12 3.6v16.8M3.6 12h16.8" />
+      <circle cx="12" cy="12" r="3.1" />
+    </>
+  ),
+  greatsword: (
+    <>
+      <path d="M16.6 3.2 20.8 7.4 12 16.2 7.8 12 16.6 3.2Z" />
+      <path d="m7.8 12-3.2 3.2 4.2 4.2L12 16.2" />
+      <path d="m4 20 2.2-2.2M14.2 5.6l4.2 4.2" />
+    </>
+  ),
+  armor: (
+    <>
+      <path d="M8 4 5 6 3 11l3.8 1V20h10.4v-8L21 11l-2-5-3-2-4 2-4-2Z" />
+      <path d="M8 4c0 2 1.6 3.2 4 3.2S16 6 16 4" />
+      <path d="M12 13v4M10 15h4" />
+    </>
+  ),
+  spirit: (
+    <>
+      <path d="M5 20V11a7 7 0 0 1 14 0v9l-2.3-1.6L14.4 20l-2.4-1.6L9.6 20 7.3 18.4 5 20Z" />
+      <circle cx="9.5" cy="10.5" r="0.9" fill="currentColor" stroke="none" />
+      <circle cx="14.5" cy="10.5" r="0.9" fill="currentColor" stroke="none" />
+      <path d="M9.8 14.3c1.4.9 3 .9 4.4 0" />
+    </>
+  ),
+  achievement: (
+    <>
+      <circle cx="12" cy="9" r="5.6" />
+      <path d="m8.4 13.8-2 7.2 5.6-3 5.6 3-2-7.2" />
+      <path d="m12 6.4.9 1.8 2 .3-1.4 1.4.3 2-1.8-1-1.8 1 .3-2-1.4-1.4 2-.3.9-1.8Z" />
+    </>
+  ),
+  quest: (
+    <>
+      <path d="M12 2.6 21.4 12 12 21.4 2.6 12 12 2.6Z" />
+      <path d="M12 7.5v5.2" />
+      <circle cx="12" cy="16.1" r="0.9" fill="currentColor" stroke="none" />
     </>
   ),
 };

@@ -1,17 +1,25 @@
 import metaJson from "../data/meta.json";
-import routeJson from "../data/route.json";
-import itemsJson from "../data/items.json";
+import routeJson from "../data/route.full.json";
+import itemsJson from "../data/items.full.json";
 import worldJson from "../data/world.json";
 import buildsJson from "../data/builds.json";
 import farmsJson from "../data/farms.json";
 import loreJson from "../data/lore.json";
 import tiersJson from "../data/tiers.json";
-import { TARNISHED_ENCOUNTERS, TARNISHED_ITEMS } from "../data/game";
+import achievementsJson from "../data/achievements.json";
+import bossesJson from "../data/bosses.full.json";
+import questlinesJson from "../data/questlines.json";
+import ngplusJson from "../data/ngplus.json";
+import coverageJson from "../data/content-coverage.json";
+import legacyStepMapJson from "../data/legacy-step-map.json";
 import type {
+  Achievement,
+  AchievementRequirementGroup,
   Archetype,
   BossStrategy,
   BuildLoadout,
   BuildProfile,
+  ContentCoverage,
   DialogueEvent,
   Encounter,
   EncounterPreset,
@@ -23,11 +31,17 @@ import type {
   Material,
   MerchantRecord,
   Meta,
+  NgPlusSection,
+  NgPlusStep,
   NpcState,
   Objective,
+  PhaseGate,
   ProgressionLoadout,
+  Questline,
+  QuestlineStep,
   ResourcePreset,
   RouteArea,
+  RouteChronology,
   RouteStep,
   Scarab,
   SpellPackage,
@@ -45,10 +59,18 @@ export const ROUTE_AREAS: RouteArea[] = routeJson.areas;
 export const OBJECTIVES: Objective[] = routeJson.objectives;
 export const SUPPLEMENTAL: Supplemental[] = routeJson.supplemental;
 export const CHRONOLOGY_AREAS = routeJson.chronologyAreas;
-export const ITEMS: Item[] = [...itemsJson.items, ...TARNISHED_ITEMS];
+export const PHASE_GATES: PhaseGate[] = routeJson.phaseGates;
+export const ROUTE_CHRONOLOGY: RouteChronology = routeJson.chronology;
+export const ITEMS: Item[] = itemsJson.items;
 export const LORE: LoreEntry[] = loreJson.entries;
 export const TIERS: TierEntry[] = tiersJson.entries;
-export const ENCOUNTERS: Encounter[] = [...worldJson.encounters, ...TARNISHED_ENCOUNTERS];
+export const ENCOUNTERS: Encounter[] = bossesJson.encounters;
+export const ACHIEVEMENTS: Achievement[] = achievementsJson.achievements;
+export const REQUIREMENT_GROUPS: AchievementRequirementGroup[] = achievementsJson.requirementGroups;
+export const QUESTLINES: Questline[] = questlinesJson.questlines;
+export const NGPLUS_SECTIONS: NgPlusSection[] = ngplusJson.sections;
+export const CONTENT_COVERAGE: ContentCoverage = coverageJson;
+export const LEGACY_STEP_MAP: Record<string, string> = legacyStepMapJson;
 export const NPC_STATES: NpcState[] = worldJson.npcStates;
 export const DIALOGUE_EVENTS: DialogueEvent[] = worldJson.dialogueEvents;
 export const KNOWLEDGE: Knowledge[] = worldJson.knowledge;
@@ -80,6 +102,17 @@ function groupBy<T>(rows: T[], key: (row: T) => string): Record<string, T[]> {
   return grouped;
 }
 
+export function normalizeContentKey(value: string): string {
+  return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
 export const STEP_BY_ID: Record<string, RouteStep> = Object.fromEntries(
   ROUTE_STEPS.map((step) => [step.id, step]),
 );
@@ -87,6 +120,8 @@ export const STEP_INDEX: Record<string, number> = Object.fromEntries(
   ROUTE_STEPS.map((step) => [step.id, step.order]),
 );
 export const STEPS_BY_AREA = groupBy(ROUTE_STEPS, (step) => step.area);
+export const STEPS_BY_SECTION = groupBy(ROUTE_STEPS, (step) => step.sectionId);
+export const STEPS_BY_PHASE = groupBy(ROUTE_STEPS, (step) => step.phase);
 export const STEPS_BY_OBJECTIVE = groupBy(ROUTE_STEPS, (step) => step.objectiveId);
 export const OBJECTIVE_BY_ID: Record<string, Objective> = Object.fromEntries(
   OBJECTIVES.map((objective) => [objective.id, objective]),
@@ -94,10 +129,24 @@ export const OBJECTIVE_BY_ID: Record<string, Objective> = Object.fromEntries(
 export const AREA_BY_NAME: Record<string, RouteArea> = Object.fromEntries(
   ROUTE_AREAS.map((area) => [area.name, area]),
 );
+export const AREA_BY_SECTION_ID: Record<string, RouteArea> = Object.fromEntries(
+  ROUTE_AREAS.map((area) => [area.sectionId, area]),
+);
+export const SECTION_BY_NORMALIZED_TITLE = groupBy(ROUTE_AREAS, (area) =>
+  normalizeContentKey(area.name),
+);
 export const SUPPLEMENTAL_BY_ID: Record<string, Supplemental> = Object.fromEntries(
   SUPPLEMENTAL.map((action) => [action.id, action]),
 );
 export const SUPPLEMENTAL_BY_AREA = groupBy(SUPPLEMENTAL, (action) => action.area);
+export const PHASE_GATE_BY_ID: Record<string, PhaseGate> = Object.fromEntries(
+  PHASE_GATES.map((gate) => [gate.id, gate]),
+);
+
+export function remapStepId(stepId: string): string | null {
+  if (STEP_BY_ID[stepId]) return stepId;
+  return LEGACY_STEP_MAP[stepId] ?? null;
+}
 
 export const ITEM_BY_ID: Record<string, Item> = Object.fromEntries(
   ITEMS.map((item) => [item.id, item]),
@@ -111,13 +160,53 @@ export const ITEMS_BY_STEP = groupBy(
   (item) => item.routeStepIds[0],
 );
 const AUTO_ITEMS_BY_STEP: Record<string, Item[]> = {};
-for (const item of ITEMS) {
-  if (item.autoStepId) (AUTO_ITEMS_BY_STEP[item.autoStepId] ??= []).push(item);
+for (const step of ROUTE_STEPS) {
+  for (const itemId of step.autoAcquireItemIds) {
+    const item = ITEM_BY_ID[itemId];
+    if (item) (AUTO_ITEMS_BY_STEP[step.id] ??= []).push(item);
+  }
 }
 export { AUTO_ITEMS_BY_STEP };
 
+export const ITEM_BY_NORMALIZED_NAME: Record<string, Item> = Object.fromEntries(
+  ITEMS.map((item) => [normalizeContentKey(item.name), item]),
+);
+
 export const ENCOUNTER_BY_ID: Record<string, Encounter> = Object.fromEntries(
   ENCOUNTERS.map((encounter) => [encounter.id, encounter]),
+);
+const AUTO_BOSSES_BY_STEP: Record<string, Encounter[]> = {};
+for (const step of ROUTE_STEPS) {
+  for (const bossId of step.autoAcquireBossIds) {
+    const encounter = ENCOUNTER_BY_ID[bossId];
+    if (encounter) (AUTO_BOSSES_BY_STEP[step.id] ??= []).push(encounter);
+  }
+}
+export { AUTO_BOSSES_BY_STEP };
+
+export const ACHIEVEMENT_BY_ID: Record<string, Achievement> = Object.fromEntries(
+  ACHIEVEMENTS.map((achievement) => [achievement.id, achievement]),
+);
+export const REQUIREMENT_GROUP_BY_ID: Record<string, AchievementRequirementGroup> = Object.fromEntries(
+  REQUIREMENT_GROUPS.map((group) => [group.id, group]),
+);
+export const ACHIEVEMENTS_BY_SECTION = groupBy(ACHIEVEMENTS, (achievement) => achievement.section);
+
+export const QUESTLINE_BY_ID: Record<string, Questline> = Object.fromEntries(
+  QUESTLINES.map((questline) => [questline.id, questline]),
+);
+export const QUESTLINE_STEPS: QuestlineStep[] = QUESTLINES.flatMap((questline) => questline.steps);
+export const QUESTLINE_STEP_BY_ID: Record<string, QuestlineStep> = Object.fromEntries(
+  QUESTLINE_STEPS.map((step) => [step.id, step]),
+);
+export const QUESTLINE_STEPS_BY_QUESTLINE = groupBy(QUESTLINE_STEPS, (step) => step.questlineId);
+
+export const NGPLUS_STEPS: NgPlusStep[] = NGPLUS_SECTIONS.flatMap((section) => section.steps);
+export const NGP_STEP_BY_ID: Record<string, NgPlusStep> = Object.fromEntries(
+  NGPLUS_STEPS.map((step) => [step.id, step]),
+);
+export const NGP_SECTION_BY_ID: Record<string, NgPlusSection> = Object.fromEntries(
+  NGPLUS_SECTIONS.map((section) => [section.id, section]),
 );
 export const NPC_BY_ID: Record<string, NpcState> = Object.fromEntries(
   NPC_STATES.map((state) => [state.id, state]),
@@ -182,7 +271,13 @@ export const LORE_BY_AREA = groupBy(LORE, (entry) => entry.area);
 
 export const ROUTE_STEP_COUNT = ROUTE_STEPS.length;
 export const ROUTE_REQUIRED_COUNT = ROUTE_STEPS.filter((step) => step.required).length;
+export const ROUTE_AREA_COUNT = ROUTE_AREAS.length;
+export const ROUTE_MISSABLE_COUNT = ROUTE_STEPS.filter((step) => step.missable).length;
 export const ITEM_COUNT = ITEMS.length;
 export const SUPPLEMENTAL_COUNT = SUPPLEMENTAL.length;
 export const ENCOUNTER_COUNT = ENCOUNTERS.length;
 export const LORE_COUNT = LORE.length;
+export const ACHIEVEMENT_COUNT = ACHIEVEMENTS.length;
+export const QUESTLINE_COUNT = QUESTLINES.length;
+export const QUESTLINE_STEP_COUNT = QUESTLINE_STEPS.length;
+export const NGPLUS_STEP_COUNT = NGPLUS_STEPS.length;

@@ -17,8 +17,8 @@
 }
 
 .world-filter-field {
-  flex: 1 1 150px;
-  min-width: 140px;
+  width: 100%;
+  min-width: 0;
 }
 
 .world-filters > .field,
@@ -407,6 +407,24 @@
 .quest-card.is-focus {
   border-color: rgba(212, 176, 106, 0.5);
   box-shadow: 0 0 0 1px rgba(212, 176, 106, 0.16);
+}
+
+.questline-step {
+  border-left: 3px solid transparent;
+}
+
+.questline-step.is-missable {
+  border-left-color: var(--danger);
+}
+
+.questline-step.is-missable.is-done {
+  border-left-color: rgba(145, 176, 122, 0.65);
+}
+
+.questline-step .chip {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .quest-card-title {

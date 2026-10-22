@@ -1,8 +1,19 @@
 import { Badge, Button, Callout, PageHeader, SectionTitle } from "../components/ui";
 import { Icon } from "../components/Icon";
+import { ART, ArtBanner } from "../components/Art";
 import { CLASSES, STAT_SHORT, STAT_ORDER } from "../lib/classes";
-import { formatDate } from "../lib/format";
-import { ITEMS_BY_NAME } from "../lib/data";
+import { formatDate, formatNumber } from "../lib/format";
+import {
+  ACHIEVEMENTS,
+  CONTENT_COVERAGE,
+  ENCOUNTERS,
+  ITEMS,
+  ITEMS_BY_NAME,
+  NGPLUS_STEPS,
+  QUESTLINES,
+  ROUTE_AREAS,
+  ROUTE_STEPS,
+} from "../lib/data";
 import { navigate } from "../lib/router";
 import {
   DATA_BASELINE,
@@ -17,6 +28,27 @@ import "./patch.css";
 
 const PACK_CLASS_IDS = ["idus-knight", "heavy-knight"];
 
+const ROUTE_PHASES = [
+  {
+    label: "Base game — through Maliketh",
+    detail: `Sections 1–${CONTENT_COVERAGE.route.preDlcSections} · closes after Maliketh, the Black Blade`,
+    sections: CONTENT_COVERAGE.route.preDlcSections,
+    steps: CONTENT_COVERAGE.route.preDlcSteps,
+  },
+  {
+    label: "Shadow of the Erdtree",
+    detail: `All ${CONTENT_COVERAGE.route.dlcSections} DLC sections, including Enir-Ilim and the finale`,
+    sections: CONTENT_COVERAGE.route.dlcSections,
+    steps: CONTENT_COVERAGE.route.dlcSteps,
+  },
+  {
+    label: "Base game — endgame",
+    detail: "Farum Azula aftermath → Ashen Capital → Endings → NG+ Preparation",
+    sections: CONTENT_COVERAGE.route.endgameSections,
+    steps: CONTENT_COVERAGE.route.endgameSteps,
+  },
+];
+
 export function PatchPage() {
   const packClasses = CLASSES.filter((entry) => PACK_CLASS_IDS.includes(entry.id));
   const packItems = TARNISHED_ITEMS;
@@ -27,13 +59,14 @@ export function PatchPage() {
   return (
     <div className="page">
       <PageHeader
-        eyebrow="Live game status · checked 2026-10-21"
+        eyebrow={`Live game status · checked ${formatDate(GAME_VERSION.checkedAt)}`}
         title="Patch & DLC"
         description={
           <>
-            The live rules are <strong>{GAME_VERSION.app}</strong> / Regulation{" "}
-            <strong>{GAME_VERSION.regulation}</strong>. The workbook was authored against Regulation{" "}
-            {DATA_BASELINE.regulation}, so build and tier recommendations are explicitly marked as baseline data.
+            Route, catalog, quests, bosses, achievements, and NG+ now cover the full game. The live rules are{" "}
+            <strong>{GAME_VERSION.app}</strong> / Regulation <strong>{GAME_VERSION.regulation}</strong>. The workbook
+            was authored against Regulation {DATA_BASELINE.regulation}, so build and tier recommendations are explicitly
+            marked as baseline data.
           </>
         }
         actions={
@@ -47,6 +80,21 @@ export function PatchPage() {
           </>
         }
       />
+
+      <ArtBanner
+        className="patch-art-banner"
+        image={ART.heroSote}
+        variant="sote"
+        caption={`Shadow of the Erdtree · ${CONTENT_COVERAGE.route.dlcSections} sections · ${formatNumber(
+          CONTENT_COVERAGE.route.dlcSteps,
+        )} steps`}
+        title="The expansion sits between Maliketh and the Ashen Capital"
+      >
+        <p className="small muted" style={{ margin: "4px 0 0" }}>
+          The full route pauses after Maliketh, plays every DLC section, then returns to Leyndell, Ashen Capital,
+          endings, and NG+ preparation.
+        </p>
+      </ArtBanner>
 
       <div className="grid-4">
         <div className="stat">
@@ -78,6 +126,124 @@ export function PatchPage() {
           <strong>Data boundary:</strong> {DATA_BASELINE.note} {DATA_BASELINE.trustRule}
         </Callout>
       </div>
+
+      <section className="card card-pad" style={{ marginTop: 18 }}>
+        <SectionTitle
+          title="Full content pack"
+          note={`Generated ${formatDate(CONTENT_COVERAGE.generatedAt)} · Redmaw Completion Sheets + workbook seed`}
+          actions={<Badge tone="accent">{formatNumber(ROUTE_STEPS.length)} route steps</Badge>}
+        />
+        <p className="small muted" style={{ marginBottom: 12 }}>
+          The route and completion denominators cover the whole game: base game through Maliketh, every Shadow of the
+          Erdtree section, then the Ashen Capital endgame. The workbook remains the source for build and tier data.
+        </p>
+
+        <div className="pack-stat-grid">
+          <div className="pack-stat">
+            <div className="pack-stat-label">Route</div>
+            <div className="pack-stat-value">{formatNumber(ROUTE_STEPS.length)}</div>
+            <div className="pack-stat-note">
+              steps · {formatNumber(ROUTE_AREAS.length)} sections ·{" "}
+              {formatNumber(CONTENT_COVERAGE.route.missableSteps)} missable
+            </div>
+          </div>
+          <div className="pack-stat">
+            <div className="pack-stat-label">Catalog</div>
+            <div className="pack-stat-value">{formatNumber(ITEMS.length)}</div>
+            <div className="pack-stat-note">
+              items · {formatNumber(CONTENT_COVERAGE.items.workbook)} workbook +{" "}
+              {formatNumber(CONTENT_COVERAGE.items.redmawOnly)} Redmaw-only
+            </div>
+          </div>
+          <div className="pack-stat">
+            <div className="pack-stat-label">Achievements</div>
+            <div className="pack-stat-value">{formatNumber(ACHIEVEMENTS.length)}</div>
+            <div className="pack-stat-note">
+              {CONTENT_COVERAGE.achievements.requirementGroups} legendary requirement groups
+            </div>
+          </div>
+          <div className="pack-stat">
+            <div className="pack-stat-label">Boss ledger</div>
+            <div className="pack-stat-value">{formatNumber(ENCOUNTERS.length)}</div>
+            <div className="pack-stat-note">
+              encounters · {formatNumber(CONTENT_COVERAGE.bosses.redmawOnly)} Redmaw-only +{" "}
+              {TARNISHED_ENCOUNTERS.length} pack invasions
+            </div>
+          </div>
+          <div className="pack-stat">
+            <div className="pack-stat-label">Questlines</div>
+            <div className="pack-stat-value">{formatNumber(QUESTLINES.length)}</div>
+            <div className="pack-stat-note">
+              {formatNumber(CONTENT_COVERAGE.questlines.steps)} ordered quest steps
+            </div>
+          </div>
+          <div className="pack-stat">
+            <div className="pack-stat-label">NG+ checklist</div>
+            <div className="pack-stat-value">{formatNumber(NGPLUS_STEPS.length)}</div>
+            <div className="pack-stat-note">{CONTENT_COVERAGE.ngplus.sections} sections · duplication and prep</div>
+          </div>
+        </div>
+
+        <div className="divider" />
+
+        <SectionTitle title="Canonical route order" note="Maliketh → DLC → Ashen Capital" />
+        <div className="content-route">
+          {ROUTE_PHASES.map((phase, index) => (
+            <div className="content-route-row" key={phase.label}>
+              <span className="content-route-index">{index + 1}</span>
+              <div className="content-route-body">
+                <div className="card-title" style={{ fontSize: 13.5 }}>
+                  {phase.label}
+                </div>
+                <div className="small muted">{phase.detail}</div>
+              </div>
+              <div className="content-route-count">
+                {formatNumber(phase.steps)}
+                <span>steps</span>
+                <span>{phase.sections} sections</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <Callout tone="warning" icon="alert">
+          <strong>Workbook baseline still applies:</strong> {DATA_BASELINE.note} Route, collection, questline, boss,
+          achievement, and NG+ denominators are current; tier rankings, certified loadouts, encounter presets, and
+          upgrade plans remain Regulation {DATA_BASELINE.regulation} until re-validated.
+        </Callout>
+
+        <p className="tiny faint" style={{ marginTop: 12 }}>
+          Content sources:{" "}
+          <a href="https://eldenring.redmaw.dev/sheets/walkthrough" target="_blank" rel="noreferrer">
+            base walkthrough
+          </a>{" "}
+          ·{" "}
+          <a href="https://eldenring.redmaw.dev/sheets/dlc-walkthrough" target="_blank" rel="noreferrer">
+            DLC walkthrough
+          </a>{" "}
+          ·{" "}
+          <a href="https://eldenring.redmaw.dev/sheets/" target="_blank" rel="noreferrer">
+            item sheets
+          </a>{" "}
+          ·{" "}
+          <a href="https://eldenring.redmaw.dev/sheets/bosses" target="_blank" rel="noreferrer">
+            bosses
+          </a>{" "}
+          ·{" "}
+          <a href="https://eldenring.redmaw.dev/sheets/questlines" target="_blank" rel="noreferrer">
+            questlines
+          </a>{" "}
+          ·{" "}
+          <a href="https://eldenring.redmaw.dev/sheets/achievements" target="_blank" rel="noreferrer">
+            achievements
+          </a>{" "}
+          ·{" "}
+          <a href="https://eldenring.redmaw.dev/sheets/new-game-plus" target="_blank" rel="noreferrer">
+            NG+
+          </a>
+          . Generated {formatDate(CONTENT_COVERAGE.generatedAt)}; hashes and per-input provenance are in Settings.
+        </p>
+      </section>
 
       <section className="card card-pad" style={{ marginTop: 18 }}>
         <SectionTitle
@@ -262,14 +428,33 @@ export function PatchPage() {
       </div>
 
       <section className="card card-pad" style={{ marginTop: 18 }}>
-        <SectionTitle title="Content update checklist" note="What remains before calling build data 1.17-current" />
+        <SectionTitle title="Remaining validation and coverage" note="Honest gaps before calling build data 1.17-current" />
         <div className="upgrade-checklist">
           {[
-            ["Add Tarnished Pack route steps and acquisition anchors", "The workbook route is Act I-only and predates the pack. The pack items are tracked; they are not yet folded into route sequencing."],
-            ["Re-validate tier lists and build loadouts", "The 1.17 weapon/skill/spell changes above can move rankings and encounter presets. Treat 1.16.1 rankings as baseline."],
-            ["Re-check encounter strategies", "Boss strategies and recommended weapons may be affected by buffed skills/spells and shield guard-boost changes."],
-            ["Reconcile completion denominators", "Pack items are appended to the collection and marked as Tarnished Pack; whole-game completion claims remain coverage-qualified."],
-            ["Re-run extraction and update the source hash", "Keep the original workbook immutable and regenerate canonical JSON when a newer certified workbook arrives."],
+            [
+              "Fold Tarnished Pack acquisitions into route sequencing",
+              `The ${TARNISHED_ITEMS.length} pack records and ${TARNISHED_ENCOUNTERS.length} NPC invasions are tracked in the collection and boss ledger, but are not yet inserted as steps in the Redmaw route.`,
+            ],
+            [
+              "Re-validate tier lists and build loadouts",
+              "The 1.17 weapon/skill/spell changes above can move rankings and encounter presets. Treat 1.16.1 rankings as baseline.",
+            ],
+            [
+              "Re-check encounter strategies",
+              "Boss strategies and recommended weapons may be affected by buffed skills/spells and shield guard-boost changes.",
+            ],
+            [
+              "Reconcile coverage edges",
+              `${formatNumber(CONTENT_COVERAGE.links.unresolved)} of ${formatNumber(CONTENT_COVERAGE.links.labels)} route link labels remain unresolved in linkedRaw, and ${formatNumber(CONTENT_COVERAGE.items.unmatchedWorkbook)} workbook records had no Redmaw match. They stay visible but unlinked.`,
+            ],
+            [
+              "Verify legacy progress migration",
+              `${formatNumber(CONTENT_COVERAGE.legacyMap.mapped)} of ${formatNumber(CONTENT_COVERAGE.legacyMap.workbookSteps)} legacy workbook step IDs map to the full route. Unmapped legacy route keys are dropped on load; lifetime collection and endings survive.`,
+            ],
+            [
+              "Re-run extraction and update the source hash",
+              "Keep the original workbook immutable and regenerate the workbook seed plus the merged full-game pack when a newer certified workbook arrives.",
+            ],
           ].map(([title, detail]) => (
             <div className="checklist-row" key={title}>
               <span className="checklist-dot" />

@@ -1,14 +1,19 @@
 import {
+  ACHIEVEMENTS,
   AREA_BY_NAME,
   BOSS_STRATEGIES_BY_BOSS,
   ENCOUNTERS,
   ITEMS,
   ITEMS_BY_NAME,
   LORE,
+  META,
+  NGPLUS_STEPS,
   PROGRESSION_BY_NODE,
   PROFILES_BY_ARCHETYPE,
+  QUESTLINE_STEPS,
   ROUTE_AREAS,
   ROUTE_STEPS,
+  SECTION_BY_NORMALIZED_TITLE,
   STEP_BY_ID,
   STEPS_BY_AREA,
   STEPS_BY_OBJECTIVE,
@@ -20,6 +25,7 @@ import {
   LOADOUTS_BY_BUILD,
   LOADOUT_BY_ID,
   SPELL_PACKAGE_BY_ID,
+  normalizeContentKey,
 } from "./data";
 import type {
   Character,
@@ -263,6 +269,104 @@ export function endingSummary(character: Character): EndingSummary {
   };
 }
 
+export interface CountProgress {
+  done: number;
+  total: number;
+  percent: number;
+  complete: boolean;
+}
+
+function countProgress(done: number, total: number): CountProgress {
+  return {
+    done,
+    total,
+    percent: total ? Math.round((done / total) * 100) : 0,
+    complete: total > 0 && done >= total,
+  };
+}
+
+export function collectionCompletion(character: Character): CountProgress {
+  return countProgress(ITEMS.filter((item) => character.items[item.id]).length, ITEMS.length);
+}
+
+export function achievementProgress(character: Character): CountProgress {
+  return countProgress(
+    ACHIEVEMENTS.filter((achievement) => character.achievements[achievement.id]).length,
+    ACHIEVEMENTS.length,
+  );
+}
+
+export function bossProgress(journey: JourneyState): CountProgress {
+  return countProgress(
+    ENCOUNTERS.filter((encounter) => journey.bosses[encounter.id] === "defeated").length,
+    ENCOUNTERS.length,
+  );
+}
+
+export function questlineProgress(journey: JourneyState): CountProgress {
+  return countProgress(
+    QUESTLINE_STEPS.filter((step) => journey.questlineSteps[step.id]).length,
+    QUESTLINE_STEPS.length,
+  );
+}
+
+export function ngplusProgress(journey: JourneyState): CountProgress {
+  return countProgress(
+    NGPLUS_STEPS.filter((step) => journey.ngplusChecklist[step.id]).length,
+    NGPLUS_STEPS.length,
+  );
+}
+
+export interface CompletionScope {
+  id: string;
+  label: string;
+  numerator: number;
+  denominator: number;
+  percent: number;
+  complete: boolean;
+}
+
+function scope(
+  id: string,
+  label: string,
+  numerator: number,
+  denominator: number,
+): CompletionScope {
+  return {
+    id,
+    label,
+    numerator,
+    denominator,
+    percent: denominator ? Math.round((numerator / denominator) * 100) : 0,
+    complete: denominator > 0 && numerator >= denominator,
+  };
+}
+
+export function completionScopes(character: Character, journey: JourneyState): CompletionScope[] {
+  const route = routeProgress(journey);
+  const collection = collectionCompletion(character);
+  const achievements = achievementProgress(character);
+  const bosses = bossProgress(journey);
+  const quests = questlineProgress(journey);
+  const ngplus = ngplusProgress(journey);
+  const loreRead = LORE.filter((entry) => character.loreRead[entry.id]).length;
+  const endingsViewed = META.endings.filter((ending) => character.endings[ending.id]?.viewed).length;
+  const remembrancesResolved = Object.values(journey.remembrances).filter(
+    (state) => Boolean(state.selectedReward || state.duplicated || state.consumed),
+  ).length;
+  return [
+    scope("route", "Route", route.resolved, route.total),
+    scope("collection", "Collection", collection.done, collection.total),
+    scope("achievements", "Achievements", achievements.done, achievements.total),
+    scope("bosses", "Bosses", bosses.done, bosses.total),
+    scope("quests", "Quests", quests.done, quests.total),
+    scope("lore", "Lore", loreRead, LORE.length),
+    scope("endings", "Endings", endingsViewed, META.endings.length),
+    scope("remembrances", "Remembrances", remembrancesResolved, META.remembrances.length),
+    scope("ngplus", "NG+", ngplus.done, ngplus.total),
+  ];
+}
+
 export function decisionsResolved(journey: JourneyState, total: number): number {
   return Object.values(journey.decisions).filter(Boolean).length;
 }
@@ -273,15 +377,9 @@ export interface LoreAccess {
   progress: Progress | null;
 }
 
-const LORE_ROUTE_RULES: Record<string, { area?: string; objective?: string; maxObjectiveOrder?: number; actOne?: boolean }> = {
-  Tutorial: { objective: "OBJ-A1-WL-001" },
-  "First steps in Limgrave": { area: "West Limgrave", maxObjectiveOrder: 3 },
-  "West Limgrave": { area: "West Limgrave" },
-  "North Limgrave": { area: "Stormhill" },
-  "Weeping Peninsula": { area: "Weeping Peninsula" },
-  "Castle Morne": { area: "Castle Morne" },
-  "Stormveil Castle": { area: "Stormveil Castle" },
-  "Fringefolk Hero's Grave": { actOne: true },
+const LORE_SECTION_ALIASES: Record<string, string> = {
+  tutorial: "Starting Out",
+  "enir ilim and dlc finale": "Enir-Ilim",
 };
 
 export function loreAccess(
@@ -292,38 +390,18 @@ export function loreAccess(
   if (settings.spoilerMode === "reveal-all" || journey.zonesRevealed[entry.area]) {
     return { unlocked: true, reason: "Revealed manually", progress: null };
   }
-  const rule = LORE_ROUTE_RULES[entry.area];
-  if (rule?.objective) {
-    const progress = objectiveProgress(journey, rule.objective);
+  const key = normalizeContentKey(entry.area);
+  const alias = LORE_SECTION_ALIASES[key];
+  const section = alias
+    ? AREA_BY_NAME[alias]
+    : SECTION_BY_NORMALIZED_TITLE[key]?.[0];
+  if (section) {
+    const progress = areaProgress(journey, section.name);
     return {
       unlocked: progress.complete,
-      reason: progress.complete ? "Route section complete" : "Complete this route section",
-      progress,
-    };
-  }
-  if (rule?.area) {
-    const maxObjectiveOrder = rule.maxObjectiveOrder;
-    if (maxObjectiveOrder) {
-      const steps = (STEPS_BY_AREA[rule.area] ?? []).filter((step) => step.objectiveOrder <= maxObjectiveOrder);
-      const progress = progressFrom(journey.steps, steps);
-      return {
-        unlocked: progress.complete,
-        reason: progress.complete ? "Opening route complete" : "Finish the opening route objectives",
-        progress,
-      };
-    }
-    const progress = areaProgress(journey, rule.area);
-    return {
-      unlocked: progress.complete,
-      reason: progress.complete ? "Area complete" : "Complete this area",
-      progress,
-    };
-  }
-  if (rule?.actOne) {
-    const progress = routeProgress(journey);
-    return {
-      unlocked: progress.complete,
-      reason: progress.complete ? "Act I complete" : "Complete Act I",
+      reason: progress.complete
+        ? `Route section complete — ${section.name}`
+        : `Complete the ${section.name} route section`,
       progress,
     };
   }

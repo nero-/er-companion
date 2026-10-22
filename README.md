@@ -1,8 +1,10 @@
 # Elden Ring Definitive Companion
 
-An offline-first companion for **Elden Ring** and **Shadow of the Erdtree**: a guided Act I route, whole-game companion chronology, master collection, certified builds, character planner, quest decisions, spoiler-gated lore, farms, tier lists, endings, and NG+ readiness.
+An offline-first companion for **Elden Ring** and **Shadow of the Erdtree**. It ships one ordered full-game route, a merged permanent catalog, achievements, a boss ledger, questlines, a New Game Plus checklist, builds, character planning, farms, tiers, endings, and spoiler-gated lore.
 
-The app is a **web-first PWA**: React 19 + TypeScript + Vite, static content extracted from the source workbook, and versioned local persistence. It installs for offline use, works at desktop and handheld widths, and is designed so a Tauri/Rust shell can wrap the same UI later without changing the domain model.
+The route follows the game's intended full-content order: **base game through Maliketh → the entire Shadow of the Erdtree → Leyndell, Ashen Capital → endings → NG+ preparation**. It is a complete route, not a partial export.
+
+The app is a **web-first PWA**: React 19 + TypeScript + Vite, static content generated from the workbook and the Redmaw Completion Sheets, and versioned local persistence. It installs for offline use, works at desktop and handheld widths, and makes no runtime API calls, accounts, or telemetry requests.
 
 ## Run
 
@@ -25,79 +27,149 @@ npm run typecheck
 npm run test
 ```
 
-The build is intentionally self-contained. Content is bundled; at runtime there are no API calls, accounts, or telemetry.
+`npm run build` runs `tsc --noEmit` before Vite. Unit tests cover content integrity and the pure selectors in `src/lib/selectors.test.ts`. Evidence-backed audit notes and data integrity reports live in `docs/audit/`.
+
+## Full-game content
+
+Generated on **2026-10-22** from the Redmaw Completion Sheets merged with the certified workbook seed.
+
+| Domain | Coverage |
+| --- | --- |
+| Route | **4,521 steps / 70 sections** |
+| Missable route steps | **206** — 168 in the pre-DLC base game, 38 in the DLC |
+| Permanent catalog | **2,325 items** |
+| Achievements | **42** (plus 4 legendary requirement groups) |
+| Boss ledger | **237 encounters** |
+| Questlines | **52 questlines / 587 steps** |
+| NG+ checklist | **68 items across 12 sections** |
+| Lore | **69 journals** |
+| Remembrances | **25** |
+| Tarnished Pack | **27 owned-content records / 2 NPC invasions** |
+
+### Route order
+
+1. **Base game — through Maliketh**: 46 sections, 3,303 steps. The walkthrough stops at Maliketh, the Black Blade, plus the point-of-no-return warning.
+2. **Shadow of the Erdtree**: all 20 sections, 1,126 steps, including Enir-Ilim and the finale.
+3. **Base game — endgame**: 4 sections, 92 steps. Crumbling Farum Azula aftermath → Leyndell, Ashen Capital → Endings → NG+ Preparation.
+
+Global step order is contiguous 1–4,521. Two phase gates protect the transitions: one before the DLC and one before the Ashen Capital. The second gate deep-links the unresolved missables in Capital Outskirts, Leyndell, and Forbidden Lands.
+
+### Denominators and coverage edges
+
+- The catalog starts from the workbook's permanent records, adds 538 Redmaw-only records, and merges 27 Tarnished Pack records into matching rows. The final denominator is 2,325.
+- 1,502 of 5,290 route link labels resolve to a catalog or boss record. The remaining 3,788 stay in `linkedRaw` and are displayed without inventing a match.
+- 225 workbook records had no Redmaw name match; they remain in the catalog with their workbook acquisition text. Source-enumerated records without an exact location are tracked but not assigned a fabricated location.
+- Same-name records in different groups (for example an Ash of War and the matching sorcery) stay distinct.
+- Boss data merges 50 workbook encounters with 207 Redmaw rows (22 matched) plus 2 Tarnished Pack invasions for a 237-record ledger.
+
+Live counters and source hashes are in `src/data/content-coverage.json` and surfaced in **Settings → Full-game content pack**.
 
 ## Content provenance
 
-The canonical content pack is extracted from:
+### Full-game sources
+
+- Redmaw base-game walkthrough — <https://eldenring.redmaw.dev/sheets/walkthrough>
+- Redmaw Shadow of the Erdtree walkthrough — <https://eldenring.redmaw.dev/sheets/dlc-walkthrough>
+- Redmaw item sheets — <https://eldenring.redmaw.dev/sheets/>
+- Redmaw bosses — <https://eldenring.redmaw.dev/sheets/bosses>
+- Redmaw questlines — <https://eldenring.redmaw.dev/sheets/questlines>
+- Redmaw achievements — <https://eldenring.redmaw.dev/sheets/achievements>
+- Redmaw New Game Plus — <https://eldenring.redmaw.dev/sheets/new-game-plus>
+
+The normalized inputs live in `research/`. Per-input SHA-256 hashes and observed counts are recorded in `src/data/content-coverage.json` and `docs/audit/FULL_GAME_DATA.md`.
+
+### Workbook seed
 
 - `Elden Ring Definitive Companion — v1.1.0 — Production Certified.xlsx`
 - SHA-256: `9167efbd69b026f4ae844600ca3f63f5ab4234f58a0ba1057e4dc9c047897776`
 - 79 worksheets (17 visible, 62 hidden)
+
+The workbook remains the source for certified builds, tier lists, encounter presets, progression plans, and the supplemental whole-game chronology. It is never modified in place. Workbook item and boss records keep their stable IDs through the merge; legacy route IDs map only where a high-confidence match exists.
 
 ### Live game version
 
 Verified against official Bandai Namco sources on **2026-10-21**:
 
 - Live: **App Ver 1.17.2 / Regulation Ver 1.17.3** (released 2026-10-20).
-- **Tarnished Pack** released 2026-08-28 with patch 1.17: Idus Knight and Heavy Knight classes, new weapons/armor, three Spectral Steed attires, and two NPC invasions.
-- The workbook build/tier/encounter data is authored against **Regulation 1.16.1**, so it predates the pack and the 1.17 balance pass.
-- The app appends the 27 Tarnished Pack collection records and both invasion encounters from official/guide sources; build and tier recommendations are explicitly labelled as 1.16.1 baseline in **Patch & DLC**.
+- The **Tarnished Edition** launched 2026-08-28; patch 1.17 (2026-08-27) added the **Tarnished Pack**: Idus Knight and Heavy Knight classes, new weapons and armor, three Spectral Steed attires, and two NPC invasions.
+- The workbook build/tier/encounter data is authored against **Regulation 1.16.1**. It predates the pack and the 1.17 balance pass, so those recommendations are explicitly labelled as baseline in **Patch & DLC**.
 
-The original workbook is never modified. Re-run the extraction with:
+## Content pipeline
 
 ```bash
-npm run extract
+# 1. Optional: refresh the Redmaw research artifacts (network)
+python3 scripts/research/fetch_route.py --refresh
+python3 scripts/research/fetch_items.py --fetch
+python3 scripts/research/fetch_world.py --refresh
+python3 scripts/research/fetch_art.py --refresh
+
+# 2. Rebuild the workbook seed (still workbook-only)
+npm run extract          # = python scripts/extract_workbook.py
+
+# 3. Merge research + workbook into the full-game pack
+python3 scripts/build_full_content.py
+
+# 4. Independently verify research artifacts and write the report
+python3 scripts/research/verify_full_game.py --write-report docs/audit/FULL_GAME_RESEARCH_VERIFICATION.md
 ```
 
-The script writes deterministic JSON to `src/data/` and evidence to `docs/audit/`.
-
-### Coverage boundary
-
-The workbook export contains:
-
-- **994 Act I route steps** with objectives, warnings, prerequisites, linked records, and area ordering.
-- **116 whole-game companion/certification/ending actions** (the chronology), including DLC and NG+ preparation.
-- **1,787 workbook-catalogued permanent items** plus **27 Tarnished Pack records** (1,814 total in the app), **318 farmables**, **107 crafting materials**, **318 finite pickups**, **167 merchant rows**, and **107 reward-bearing scarabs**.
-- **14 certified parent builds** (plus 4 historical redirects), 28 Level-150/200 profiles, 108 loadouts, 123 tech nodes, 171 edges, 95 progression loadouts, 576 weapon configurations, 2,206 encounter presets, and 924 boss-strategy rows.
-- **69 spoiler-gated lore journals**, 27 decisions, 6 endings, 7 certifications, 24 remembrances, 16 transition gates, and 866 tier entries.
-
-The workbook's completion ledger references **4,477** route steps and 69 route sections, but only the **994 Act I steps** are present as structured step records in this export. The app does not fabricate the missing route sections. It exposes the Act I route in full and the whole-game companion chronology separately. See `docs/audit/BASELINE_AUDIT.md` and `docs/audit/DATA_INTEGRITY_REPORT.md`.
-
-Some catalog records are source-enumerated without exact acquisition locations (1,074 base-game and 393 DLC records). They are tracked and displayable, but the app does not invent locations.
+`npm run extract` intentionally does **not** build the full route: it regenerates the workbook JSON seed (`src/data/meta.json`, `items.json`, `route.json`, `world.json`, and related files). Run `scripts/build_full_content.py` afterward to produce `route.full.json`, `items.full.json`, `achievements.json`, `bosses.full.json`, `questlines.json`, `ngplus.json`, `content-coverage.json`, and `legacy-step-map.json`. The research contract, schemas, and expected counts are documented in `research/README.md` and `research/INTEGRATION.md`. Workbook extraction expects the certified `.xlsx` at the repository root and requires Python with `openpyxl`; the research scrapers require `beautifulsoup4` and `lxml`.
 
 ## Architecture
 
 ```text
-src/data/*.json          extracted canonical content (static, versioned by source hash)
-src/lib/types.ts         domain types
-src/lib/data.ts          arrays + indexes (route, items, builds, world, farms, lore, tiers)
-src/lib/selectors.ts     pure progress, collection, lore, equipment, and build selectors
-src/lib/store.ts         versioned localStorage state + actions + import/export
-src/lib/search.ts        global in-memory search index
-src/pages/*              feature modules
-src/components/*         shell, command palette, UI primitives, icons
-scripts/extract_workbook.py  reproducible workbook → canonical JSON pipeline
-docs/audit/*             evidence-backed audit deliverables
+research/*.json              normalized Redmaw inputs + art manifest
+src/data/route.full.json     full 4,521-step route and three phases
+src/data/items.full.json     merged 2,325-item catalog
+src/data/achievements.json   42 achievements + requirement groups
+src/data/bosses.full.json    merged 237-encounter ledger
+src/data/questlines.json     52 questlines / 587 steps
+src/data/ngplus.json         12 NG+ sections / 68 items
+src/data/content-coverage.json  counts, source paths, SHA-256 hashes
+src/data/game.ts             live version, Tarnished Pack, patch timeline
+src/data/*.json              workbook seed (route, items, world, builds, farms, lore, tiers)
+src/lib/types.ts             domain types
+src/lib/data.ts              arrays + indexes (route, items, builds, world, farms, lore, tiers)
+src/lib/selectors.ts         progress, collection, achievement, boss, quest, NG+, lore, equipment selectors
+src/lib/store.ts             versioned localStorage state + actions + import/export + legacy step remap
+src/lib/search.ts            global in-memory search index
+src/pages/*                  feature modules
+src/components/*             shell, command palette, UI primitives, icons, local art library
+public/art                   bundled official store/press artwork
+public/fonts                 Cinzel + EB Garamond WOFF2 subsets and OFL licenses
+scripts/extract_workbook.py  workbook → seed JSON
+scripts/build_full_content.py  research + seed → full-game JSON
+scripts/research/*           Redmaw scrapers, artwork fetch, independent verification
+docs/audit/*                 audit, integrity, and full-game evidence
 ```
 
 ### State model
 
-- **Character** owns lifetime data: collection, farmable quantities, lore reads, endings, equipment, and journeys.
-- **Journey** owns resettable data: route/supplemental status, notes, NPC/dialogue state, decisions, boss results, finite pickups, materials, merchants, scarabs, certifications, transition gates, remembrances, and manually revealed lore zones.
-- Starting a new journey resets journey state while preserving lifetime collection and endings.
-- Completing a route step auto-acquires linked items/bosses/resources where the source links them. Undo does not revoke ownership; collection edits are explicit.
+- **Character** owns lifetime data: item collection, farmable quantities, lore reads, endings, achievements, equipment, and journeys.
+- **Journey** owns resettable data: route and supplemental status, notes, NPC/dialogue state, decisions, boss results, finite pickups, materials, merchants, scarabs, certifications, transition gates, remembrances, questline steps, the NG+ checklist, and manually revealed lore zones.
+- Starting a new journey resets journey state while preserving lifetime collection, farmable quantities, lore reads, achievements, and endings.
+- Completing a route step auto-acquires linked items, bosses, and resources where the source links them. Undo does not revoke ownership; collection edits are explicit.
 
-Persistence is `localStorage` under `er-companion.state.v1`, debounced, with corrupt-state backup to `er-companion.state.corrupt`. Export/import is human-readable JSON in Settings.
+Persistence is `localStorage` under `er-companion.state.v1`, debounced, with corrupt-state backup to `er-companion.state.corrupt`. Export/import is human-readable JSON in Settings. Older saves are normalized on load: new state maps default empty, and legacy `RTE-*` step IDs are remapped when a high-confidence match exists.
+
+## Artwork, fonts, and licensing
+
+- **Artwork** is official Steam store and press art for ELDEN RING (app 1245620) and ELDEN RING Shadow of the Erdtree (app 2778580), optimized and bundled under `public/art`. Nothing is hotlinked at runtime.
+- **Fonts** are Cinzel and EB Garamond WOFF2 latin subsets licensed under the **SIL Open Font License 1.1**, bundled under `public/fonts` with license texts in `public/fonts/licenses/`. The app makes no external font request.
+- Full asset-by-asset dimensions, source URLs, and license notes are in `docs/ART_CREDITS.md`; the fetch and verification contract is in `research/art/manifest.json`.
+
+> **Unofficial fan project.** ELDEN RING and ELDEN RING Shadow of the Erdtree are trademarks of FromSoftware, Inc. and Bandai Namco Entertainment Inc. All game artwork, logos, and screenshots remain the property of their owners. This free, non-commercial project is not affiliated with, endorsed by, or sponsored by FromSoftware, Bandai Namco Entertainment, or Valve/Steam. Rights holders may request removal at any time.
+
+The workbook and Redmaw sheets aggregate guide-derived content and third-party references. Before public distribution, review the rights for route prose, item data, maps, and images. This repository is a local companion build, not a legal clearance for republishing third-party guide content.
 
 ## Design
 
-Dark, gold-accented, serif display type, dense-but-readable data surfaces. No UI framework, icon package, or external font request. The production bundle is roughly 11.8 MB of JS before gzip (about 1.29 MB gzip) because the full content pack is bundled for offline use, plus a PWA service worker precache (~11.6 MiB).
+Dark, gold-accented, serif display type, dense-but-readable data surfaces. No UI framework, icon package, or external font request. The full content pack is bundled for offline use, and the PWA service worker precaches the app shell, artwork, and fonts.
 
-## Licensing / distribution
+## Remaining limitations
 
-The workbook aggregates guide-derived content and third-party references. Before public distribution, review the rights for route prose, item data, maps, and images. The app preserves source links and attribution fields. This repository is a local companion build, not a legal clearance for republishing third-party guide content.
-
-## Status
-
-The UI modules are implemented against the extracted data. Verification is tracked in `docs/audit/PRIORITIZED_BACKLOG.md`; the current build passes typecheck, unit tests, and browser smoke checks.
+- **Build/tier baseline:** certified builds, tier rankings, encounter presets, weapon configurations, and upgrade plans still reflect Regulation 1.16.1. The 1.17 changes in **Patch & DLC** have not been folded back into those rankings.
+- **Tarnished Pack sequencing:** the 27 pack records and 2 invasions are tracked in the collection and boss ledger, but are not yet inserted as route steps.
+- **Progress migration:** only 62 legacy workbook step IDs map to the full route. Unmapped legacy `RTE-*` keys are dropped during normalization; non-legacy keys and lifetime data are preserved.
+- **Coverage edges:** 3,788 route link labels remain unresolved, 225 workbook catalog records had no Redmaw match, and 68 duplicate name keys represent intentionally distinct records. The app does not fabricate links or locations for these.
+- **Licensing:** third-party guide content, artwork, and marks require rights review before redistribution.

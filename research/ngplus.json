@@ -1,0 +1,1021 @@
+{
+  "source": {
+    "name": "Redmaw Completion Sheets",
+    "url": "https://eldenring.redmaw.dev/sheets/new-game-plus",
+    "fetchedAt": "2026-10-22T16:41:32Z"
+  },
+  "attribution": "Unofficial fan project. Data transcribed from the Redmaw Completion Sheets (https://eldenring.redmaw.dev), a free community resource. Elden Ring and its content belong to FromSoftware and Bandai Namco Entertainment.",
+  "game": "ngplus",
+  "sections": [
+    {
+      "id": "duplication",
+      "title": "Remembrance Duplication",
+      "order": 1,
+      "levelRange": "",
+      "steps": [
+        {
+          "id": "p1-1",
+          "order": 1,
+          "text": "Use the Wandering Mausoleum in Weeping Peninsula.",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Weeping Peninsula",
+              "url": "https://mapgenie.io/elden-ring/maps/the-lands-between?locationIds=165336"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p1-2",
+          "order": 2,
+          "text": "Use the Wandering Mausoleum in North Liurnia.",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "North Liurnia",
+              "url": "https://mapgenie.io/elden-ring/maps/the-lands-between?locationIds=166708"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p1-3",
+          "order": 3,
+          "text": "Use the Wandering Mausoleum at the Ruined Labyrinth.",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Ruined Labyrinth",
+              "url": "https://mapgenie.io/elden-ring/maps/the-lands-between?locationIds=166472"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p1-4",
+          "order": 4,
+          "text": "Use the Wandering Mausoleum at the Mausoleum Compound.",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Mausoleum Compound",
+              "url": "https://mapgenie.io/elden-ring/maps/the-lands-between?locationIds=166213"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p1-5",
+          "order": 5,
+          "text": "Use the Wandering Mausoleum in Deeproot Depths.",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Deeproot Depths",
+              "url": "https://mapgenie.io/elden-ring/maps/the-lands-between?locationIds=168419"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p1-6",
+          "order": 6,
+          "text": "Use the Wandering Mausoleum in Mountaintops of the Giants.",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Mountaintops of the Giants",
+              "url": "https://mapgenie.io/elden-ring/maps/the-lands-between?locationIds=167696"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p1-7",
+          "order": 7,
+          "text": "Use the Wandering Mausoleum in Consecrated Snowfield.",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Consecrated Snowfield",
+              "url": "https://mapgenie.io/elden-ring/maps/the-lands-between?locationIds=167157"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p1-8",
+          "order": 8,
+          "text": "Use the coffin in the elevated area before the Finger Ruins of Rhia.",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Finger Ruins of Rhia",
+              "url": "https://mapgenie.io/elden-ring/maps/the-shadow-realm?locationIds=382188"
+            }
+          ],
+          "dlc": true
+        },
+        {
+          "id": "p1-9",
+          "order": 9,
+          "text": "Use the coffin in the water behind the Cathedral of Manus Metyr.",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Cathedral of Manus Metyr",
+              "url": "https://mapgenie.io/elden-ring/maps/the-shadow-realm?locationIds=381270"
+            }
+          ],
+          "dlc": true
+        },
+        {
+          "id": "p1-10",
+          "order": 10,
+          "text": "Use the coffin in the foggy area before the Finger Ruins of Dheo.",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Finger Ruins of Dheo",
+              "url": "https://mapgenie.io/elden-ring/maps/the-shadow-realm?locationIds=382575"
+            }
+          ],
+          "dlc": true
+        }
+      ]
+    },
+    {
+      "id": "smithing-stones",
+      "title": "Ancient Dragon Smithing Stones",
+      "order": 2,
+      "levelRange": "",
+      "steps": [
+        {
+          "id": "p2-1",
+          "order": 1,
+          "text": "Coming soon...",
+          "optional": false,
+          "badges": [],
+          "links": [],
+          "dlc": false
+        }
+      ]
+    },
+    {
+      "id": "somber-stones",
+      "title": "Somber Ancient Dragon Smithing Stones",
+      "order": 3,
+      "levelRange": "",
+      "steps": [
+        {
+          "id": "p3-1",
+          "order": 1,
+          "text": "Coming soon...",
+          "optional": false,
+          "badges": [],
+          "links": [],
+          "dlc": false
+        }
+      ]
+    },
+    {
+      "id": "grave-gloveworts",
+      "title": "Great Grave Gloveworts",
+      "order": 4,
+      "levelRange": "",
+      "steps": [
+        {
+          "id": "p4-1",
+          "order": 1,
+          "text": "Coming soon...",
+          "optional": false,
+          "badges": [],
+          "links": [],
+          "dlc": false
+        }
+      ]
+    },
+    {
+      "id": "ghost-gloveworts",
+      "title": "Great Ghost Gloveworts",
+      "order": 5,
+      "levelRange": "",
+      "steps": [
+        {
+          "id": "p5-1",
+          "order": 1,
+          "text": "Coming soon...",
+          "optional": false,
+          "badges": [],
+          "links": [],
+          "dlc": false
+        }
+      ]
+    },
+    {
+      "id": "dragon-hearts",
+      "title": "Dragon Hearts",
+      "order": 6,
+      "levelRange": "",
+      "steps": [
+        {
+          "id": "p6-1",
+          "order": 1,
+          "text": "Coming soon...",
+          "optional": false,
+          "badges": [],
+          "links": [],
+          "dlc": false
+        }
+      ]
+    },
+    {
+      "id": "lost-ashes",
+      "title": "Lost Ashes of War",
+      "order": 7,
+      "levelRange": "",
+      "steps": [
+        {
+          "id": "p7-1",
+          "order": 1,
+          "text": "Coming soon...",
+          "optional": false,
+          "badges": [],
+          "links": [],
+          "dlc": false
+        }
+      ]
+    },
+    {
+      "id": "celestial-dews",
+      "title": "Celestial Dews",
+      "order": 8,
+      "levelRange": "",
+      "steps": [
+        {
+          "id": "p8-1",
+          "order": 1,
+          "text": "Coming soon...",
+          "optional": false,
+          "badges": [],
+          "links": [],
+          "dlc": false
+        }
+      ]
+    },
+    {
+      "id": "larval-tears",
+      "title": "Larval Tears",
+      "order": 9,
+      "levelRange": "",
+      "steps": [
+        {
+          "id": "p9-1",
+          "order": 1,
+          "text": "Coming soon...",
+          "optional": false,
+          "badges": [],
+          "links": [],
+          "dlc": false
+        }
+      ]
+    },
+    {
+      "id": "bell-bearings",
+      "title": "Bell Bearings",
+      "order": 10,
+      "levelRange": "",
+      "steps": [
+        {
+          "id": "p10-1",
+          "order": 1,
+          "text": "Smithing-Stone Miner's Bell Bearing [1]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Smithing-Stone Miner's Bell Bearing [1]",
+              "url": "https://eldenring.wiki.gg/wiki/Smithing-Stone_Miner%27s_Bell_Bearing_1"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-2",
+          "order": 2,
+          "text": "Smithing-Stone Miner's Bell Bearing [2]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Smithing-Stone Miner's Bell Bearing [2]",
+              "url": "https://eldenring.wiki.gg/wiki/Smithing-Stone_Miner%27s_Bell_Bearing_2"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-3",
+          "order": 3,
+          "text": "Smithing-Stone Miner's Bell Bearing [3]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Smithing-Stone Miner's Bell Bearing [3]",
+              "url": "https://eldenring.wiki.gg/wiki/Smithing-Stone_Miner%27s_Bell_Bearing_3"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-4",
+          "order": 4,
+          "text": "Smithing-Stone Miner's Bell Bearing [4]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Smithing-Stone Miner's Bell Bearing [4]",
+              "url": "https://eldenring.wiki.gg/wiki/Smithing-Stone_Miner%27s_Bell_Bearing_4"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-5",
+          "order": 5,
+          "text": "Somberstone Miner's Bell Bearing [1]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Somberstone Miner's Bell Bearing [1]",
+              "url": "https://eldenring.wiki.gg/wiki/Somberstone_Miner%27s_Bell_Bearing_1"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-6",
+          "order": 6,
+          "text": "Somberstone Miner's Bell Bearing [2]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Somberstone Miner's Bell Bearing [2]",
+              "url": "https://eldenring.wiki.gg/wiki/Somberstone_Miner%27s_Bell_Bearing_2"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-7",
+          "order": 7,
+          "text": "Somberstone Miner's Bell Bearing [3]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Somberstone Miner's Bell Bearing [3]",
+              "url": "https://eldenring.wiki.gg/wiki/Somberstone_Miner%27s_Bell_Bearing_3"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-8",
+          "order": 8,
+          "text": "Somberstone Miner's Bell Bearing [4]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Somberstone Miner's Bell Bearing [4]",
+              "url": "https://eldenring.wiki.gg/wiki/Somberstone_Miner%27s_Bell_Bearing_4"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-9",
+          "order": 9,
+          "text": "Somberstone Miner's Bell Bearing [5]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Somberstone Miner's Bell Bearing [5]",
+              "url": "https://eldenring.wiki.gg/wiki/Somberstone_Miner%27s_Bell_Bearing_5"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-10",
+          "order": 10,
+          "text": "Glovewort Picker's Bell Bearing [1]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Glovewort Picker's Bell Bearing [1]",
+              "url": "https://eldenring.wiki.gg/wiki/Glovewort_Picker%27s_Bell_Bearing_1"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-11",
+          "order": 11,
+          "text": "Glovewort Picker's Bell Bearing [2]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Glovewort Picker's Bell Bearing [2]",
+              "url": "https://eldenring.wiki.gg/wiki/Glovewort_Picker%27s_Bell_Bearing_2"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-12",
+          "order": 12,
+          "text": "Glovewort Picker's Bell Bearing [3]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Glovewort Picker's Bell Bearing [3]",
+              "url": "https://eldenring.wiki.gg/wiki/Glovewort_Picker%27s_Bell_Bearing_3"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-13",
+          "order": 13,
+          "text": "Ghost-Glovewort Picker's Bell Bearing [1]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Ghost-Glovewort Picker's Bell Bearing [1]",
+              "url": "https://eldenring.wiki.gg/wiki/Ghost-Glovewort_Picker%27s_Bell_Bearing_1"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-14",
+          "order": 14,
+          "text": "Ghost-Glovewort Picker's Bell Bearing [2]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Ghost-Glovewort Picker's Bell Bearing [2]",
+              "url": "https://eldenring.wiki.gg/wiki/Ghost-Glovewort_Picker%27s_Bell_Bearing_2"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-15",
+          "order": 15,
+          "text": "Ghost-Glovewort Picker's Bell Bearing [3]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Ghost-Glovewort Picker's Bell Bearing [3]",
+              "url": "https://eldenring.wiki.gg/wiki/Ghost-Glovewort_Picker%27s_Bell_Bearing_3"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-16",
+          "order": 16,
+          "text": "Bone Peddler's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Bone Peddler's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Bone_Peddler%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-17",
+          "order": 17,
+          "text": "Meat Peddler's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Meat Peddler's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Meat_Peddler%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-18",
+          "order": 18,
+          "text": "Medicine Peddler's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Medicine Peddler's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Medicine_Peddler%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-19",
+          "order": 19,
+          "text": "Gravity Stone Peddler's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Gravity Stone Peddler's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Gravity_Stone_Peddler%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p10-20",
+          "order": 20,
+          "text": "Herbalist's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Herbalist's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Herbalist%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": true
+        },
+        {
+          "id": "p10-21",
+          "order": 21,
+          "text": "Mushroom-Seller's Bell Bearing [1]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Mushroom-Seller's Bell Bearing [1]",
+              "url": "https://eldenring.wiki.gg/wiki/Mushroom-Seller%27s_Bell_Bearing_1"
+            }
+          ],
+          "dlc": true
+        },
+        {
+          "id": "p10-22",
+          "order": 22,
+          "text": "Mushroom-Seller's Bell Bearing [2]",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Mushroom-Seller's Bell Bearing [2]",
+              "url": "https://eldenring.wiki.gg/wiki/Mushroom-Seller%27s_Bell_Bearing_2"
+            }
+          ],
+          "dlc": true
+        },
+        {
+          "id": "p10-23",
+          "order": 23,
+          "text": "Moldmonger's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Moldmonger's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Moldmonger%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": true
+        },
+        {
+          "id": "p10-24",
+          "order": 24,
+          "text": "Greasemonger's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Greasemonger's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Greasemonger%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": true
+        },
+        {
+          "id": "p10-25",
+          "order": 25,
+          "text": "String-Seller's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "String-Seller's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/String-Seller%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": true
+        },
+        {
+          "id": "p10-26",
+          "order": 26,
+          "text": "Spellmachinist's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Spellmachinist's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Spellmachinist%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": true
+        }
+      ]
+    },
+    {
+      "id": "npc-bell-bearings",
+      "title": "NPC Bell Bearings",
+      "order": 11,
+      "levelRange": "",
+      "steps": [
+        {
+          "id": "p11-1",
+          "order": 1,
+          "text": "Sellen's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Sellen's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Sellen%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p11-2",
+          "order": 2,
+          "text": "Seluvis's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Seluvis's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Seluvis%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p11-3",
+          "order": 3,
+          "text": "Thops's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Thops's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Thops%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p11-4",
+          "order": 4,
+          "text": "Corhyn's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Corhyn's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Corhyn%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p11-5",
+          "order": 5,
+          "text": "D's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "D's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/D%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p11-6",
+          "order": 6,
+          "text": "Gowry's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Gowry's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Gowry%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p11-7",
+          "order": 7,
+          "text": "Rogier's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Rogier's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Rogier%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p11-8",
+          "order": 8,
+          "text": "Iji's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Iji's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Iji%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p11-9",
+          "order": 9,
+          "text": "Pidia's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Pidia's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Pidia%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p11-10",
+          "order": 10,
+          "text": "Blackguard's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Blackguard's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Blackguard%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p11-11",
+          "order": 11,
+          "text": "Moore's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Moore's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Moore%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": true
+        },
+        {
+          "id": "p11-12",
+          "order": 12,
+          "text": "Ymir's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Ymir's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Ymir%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": true
+        },
+        {
+          "id": "p11-13",
+          "order": 13,
+          "text": "Igon's Bell Bearing",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Igon's Bell Bearing",
+              "url": "https://eldenring.wiki.gg/wiki/Igon%27s_Bell_Bearing"
+            }
+          ],
+          "dlc": true
+        }
+      ]
+    },
+    {
+      "id": "scrolls-prayerbooks",
+      "title": "Scrolls and Prayerbooks",
+      "order": 12,
+      "levelRange": "",
+      "steps": [
+        {
+          "id": "p12-1",
+          "order": 1,
+          "text": "Academy Scroll",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Academy Scroll",
+              "url": "https://eldenring.wiki.gg/wiki/Academy_Scroll"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p12-2",
+          "order": 2,
+          "text": "Conspectus Scroll",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Conspectus Scroll",
+              "url": "https://eldenring.wiki.gg/wiki/Conspectus_Scroll"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p12-3",
+          "order": 3,
+          "text": "Royal House Scroll",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Royal House Scroll",
+              "url": "https://eldenring.wiki.gg/wiki/Royal_House_Scroll"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p12-4",
+          "order": 4,
+          "text": "Two Fingers' Prayerbook: Found on a corpse next to the fireplace in Fortified Manor.",
+          "optional": false,
+          "badges": [
+            "MISSABLE"
+          ],
+          "links": [
+            {
+              "label": "Two Fingers' Prayerbook",
+              "url": "https://eldenring.wiki.gg/wiki/Two_Fingers%27_Prayerbook"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p12-5",
+          "order": 5,
+          "text": "Assassin's Prayerbook",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Assassin's Prayerbook",
+              "url": "https://eldenring.wiki.gg/wiki/Assassin%27s_Prayerbook"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p12-6",
+          "order": 6,
+          "text": "Golden Order Principia",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Golden Order Principia",
+              "url": "https://eldenring.wiki.gg/wiki/Golden_Order_Principia"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p12-7",
+          "order": 7,
+          "text": "Dragon Cult Prayerbook",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Dragon Cult Prayerbook",
+              "url": "https://eldenring.wiki.gg/wiki/Dragon_Cult_Prayerbook"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p12-8",
+          "order": 8,
+          "text": "Ancient Dragon Prayerbook",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Ancient Dragon Prayerbook",
+              "url": "https://eldenring.wiki.gg/wiki/Ancient_Dragon_Prayerbook"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p12-9",
+          "order": 9,
+          "text": "Fire Monks' Prayerbook",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Fire Monks' Prayerbook",
+              "url": "https://eldenring.wiki.gg/wiki/Fire_Monks%27_Prayerbook"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p12-10",
+          "order": 10,
+          "text": "Giant's Prayerbook",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Giant's Prayerbook",
+              "url": "https://eldenring.wiki.gg/wiki/Giant%27s_Prayerbook"
+            }
+          ],
+          "dlc": false
+        },
+        {
+          "id": "p12-11",
+          "order": 11,
+          "text": "Godskin Prayerbook",
+          "optional": false,
+          "badges": [],
+          "links": [
+            {
+              "label": "Godskin Prayerbook",
+              "url": "https://eldenring.wiki.gg/wiki/Godskin_Prayerbook"
+            }
+          ],
+          "dlc": false
+        }
+      ]
+    }
+  ]
+}

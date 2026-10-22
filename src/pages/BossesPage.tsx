@@ -5,7 +5,6 @@ import {
   Callout,
   Drawer,
   EmptyState,
-  PageHeader,
   ProgressBar,
   SearchInput,
   SectionTitle,
@@ -13,15 +12,19 @@ import {
   TabBar,
   useToast,
 } from "../components/ui";
+import { ART, ArtHero } from "../components/Art";
 import { Icon } from "../components/Icon";
-import type { BossStatus, BossStrategy, Encounter } from "../lib/types";
+import type { Achievement, BossStatus, BossStrategy, Encounter } from "../lib/types";
 import { setBossStatus, useActiveJourney } from "../lib/store";
 import { bossStrategyCount } from "../lib/selectors";
 import {
+  ACHIEVEMENTS,
   BOSS_NAMES,
+  BOSS_STRATEGIES,
   BOSS_STRATEGIES_BY_BOSS,
   ENCOUNTERS,
   PROFILE_BY_ID,
+  ROUTE_AREAS,
   STEP_BY_ID,
 } from "../lib/data";
 import { navigate, queryString, useRoute } from "../lib/router";
@@ -48,13 +51,67 @@ interface StrategyFieldProps {
 }
 
 const TABS = [
-  { id: "encounters", label: "Route encounters", count: ENCOUNTERS.length },
+  { id: "encounters", label: "Boss ledger", count: ENCOUNTERS.length },
   { id: "prep", label: "Major boss prep", count: BOSS_NAMES.length },
 ];
 
 const ALL_LEVELS = [
   ...new Set(Object.values(BOSS_STRATEGIES_BY_BOSS).flatMap((rows) => rows.map((row) => row.level))),
 ].sort((a, b) => a - b);
+
+const ENCOUNTER_SECTIONS = [
+  ...new Set(ENCOUNTERS.flatMap((encounter) => (encounter.section ? [encounter.section] : []))),
+].sort((a, b) => a.localeCompare(b));
+
+const SECTION_ALIASES: Record<string, string> = Object.fromEntries([
+  ...ENCOUNTER_SECTIONS.map((section) => [section.toLowerCase(), section] as const),
+  ...ROUTE_AREAS.flatMap((area) => {
+    const name = area.name.toLowerCase();
+    const match =
+      ENCOUNTER_SECTIONS.find((section) => section.toLowerCase() === name) ??
+      ENCOUNTER_SECTIONS.find(
+        (section) =>
+          name.includes(section.toLowerCase()) || section.toLowerCase().includes(name),
+      );
+    return match ? [[area.sectionId.toLowerCase(), match] as const] : [];
+  }),
+]);
+
+const ENCOUNTER_REGIONS = [...new Set(ENCOUNTERS.map((encounter) => encounter.region))].sort((a, b) =>
+  a.localeCompare(b),
+);
+
+const ENCOUNTER_TYPES = [...new Set(ENCOUNTERS.map((encounter) => encounter.type))].sort((a, b) =>
+  a.localeCompare(b),
+);
+
+const PHASE_BASE = "Base Game — through Maliketh";
+const PHASE_DLC = "Shadow of the Erdtree";
+const PHASE_ENDGAME = "Base Game — endgame";
+const PHASE_EXTRA = "Tarnished Pack";
+
+const ENCOUNTER_PHASES = [PHASE_BASE, PHASE_DLC, PHASE_ENDGAME, PHASE_EXTRA];
+
+const ACHIEVEMENT_BY_NAME: Record<string, Achievement> = Object.fromEntries(
+  ACHIEVEMENTS.map((achievement) => [achievement.name, achievement]),
+);
+
+function encounterPhase(encounter: Encounter): string {
+  if (encounter.game === PHASE_EXTRA) return PHASE_EXTRA;
+  if (encounter.dlc || encounter.game === PHASE_DLC) return PHASE_DLC;
+  if ((encounter.section ?? "").toLowerCase().includes("ashen capital")) return PHASE_ENDGAME;
+  return PHASE_BASE;
+}
+
+function encounterAchievement(encounter: Encounter): Achievement | undefined {
+  const name = (encounter.achievement ?? "").trim();
+  if (!name || name.toLowerCase() === "no") return undefined;
+  return ACHIEVEMENT_BY_NAME[name];
+}
+
+function isMissable(encounter: Encounter): boolean {
+  return Boolean(encounter.missable || encounter.badges?.includes("MISSABLE"));
+}
 
 function isRequired(required?: string): boolean {
   return (required ?? "").trim().toLowerCase().startsWith("yes");
@@ -98,12 +155,17 @@ function StrategyField({ label, value, wide = false }: StrategyFieldProps) {
 function EncounterCard({ encounter, status, onOpen, onStatus }: EncounterCardProps) {
   const step = encounter.routeStepIds[0] ? STEP_BY_ID[encounter.routeStepIds[0]] : undefined;
   const required = isRequired(encounter.required);
+  const missable = isMissable(encounter);
+  const achievement = encounterAchievement(encounter);
   return (
     <article className={`card card-pad world-encounter ${status ? `is-${status}` : ""}`.trim()}>
       <div className="row-between wrap" style={{ gap: 6 }}>
         <div className="world-badges">
           <Badge tone="accent">{encounter.type}</Badge>
           <Badge tone={required ? "warning" : "default"}>{required ? "Required" : "Optional"}</Badge>
+          <Badge tone={encounter.dlc ? "info" : "default"}>
+            {encounter.dlc ? "DLC" : encounter.game ?? "Base Game"}
+          </Badge>
           {status ? <Badge tone={statusTone(status)}>{statusLabel(status)}</Badge> : null}
         </div>
         <span className="tiny faint mono">{encounter.id}</span>
@@ -116,22 +178,22 @@ function EncounterCard({ encounter, status, onOpen, onStatus }: EncounterCardPro
       <div className="world-location">
         <Icon name="map" size={12} />
         <span>
-          {encounter.region} · {encounter.location}
+          {encounter.section ?? encounter.region} · {encounter.location}
         </span>
       </div>
 
       <div className="world-badges">
+        <Badge>{encounter.levelRange || encounter.recommendedLevel || "Level unlisted"}</Badge>
+        {missable ? <Badge tone="danger">MISSABLE</Badge> : null}
         {encounter.optional ? <Badge>Optional fight</Badge> : null}
-        {encounter.missable ? <Badge tone="danger">Missable</Badge> : null}
         {encounter.questRelated ? <Badge tone="info">Quest</Badge> : null}
-        {encounter.achievement && encounter.achievement.toLowerCase() !== "no" ? (
-          <Badge tone="success">Achievement</Badge>
-        ) : null}
+        {achievement ? <Badge tone="success">🏆 {achievement.name}</Badge> : null}
         {encounter.difficulty ? <Badge tone="danger">{encounter.difficulty}</Badge> : null}
-        {encounter.recommendedLevel ? <Badge>{encounter.recommendedLevel}</Badge> : null}
       </div>
 
-      <p className="small muted world-clamp">{encounter.strategyNotes || encounter.notes}</p>
+      <p className="small muted world-clamp">
+        {encounter.description || encounter.strategyNotes || encounter.notes}
+      </p>
 
       {encounter.defaultRoute ? (
         <div className="world-note">
@@ -153,6 +215,19 @@ function EncounterCard({ encounter, status, onOpen, onStatus }: EncounterCardPro
         ) : (
           <span className="tiny faint">No route step linked</span>
         )}
+        {achievement ? (
+          <button
+            className="chip quest-route-chip"
+            onClick={() => navigate(`/completion?tab=endings&achievement=${encodeURIComponent(achievement.id)}`)}
+          >
+            <Icon name="trophy" size={12} /> Achievement
+          </button>
+        ) : null}
+        {encounter.wikiUrl ? (
+          <a className="chip" href={encounter.wikiUrl} target="_blank" rel="noreferrer noopener">
+            <Icon name="external" size={12} /> Wiki
+          </a>
+        ) : null}
       </div>
 
       <div className="world-card-actions">
@@ -194,6 +269,7 @@ function EncounterDetail({ encounter, status }: EncounterDetailProps) {
     return step ? [step] : [];
   });
   const tags = encounter.tags ?? [];
+  const achievement = encounterAchievement(encounter);
 
   return (
     <div className="stack" style={{ gap: 12 }}>
@@ -203,9 +279,13 @@ function EncounterDetail({ encounter, status }: EncounterDetailProps) {
           {isRequired(encounter.required) ? "Required" : "Optional"}
         </Badge>
         <Badge tone={statusTone(status)}>{statusLabel(status)}</Badge>
+        <Badge tone={encounter.dlc ? "info" : "default"}>{encounter.dlc ? "DLC" : encounter.game ?? "Base Game"}</Badge>
+        <Badge>{encounterPhase(encounter)}</Badge>
+        {isMissable(encounter) ? <Badge tone="danger">MISSABLE</Badge> : null}
         {encounter.difficulty ? <Badge tone="danger">{encounter.difficulty}</Badge> : null}
-        <Badge>{encounter.act ?? "Act I"}</Badge>
       </div>
+
+      {encounter.description ? <p className="quest-text">{encounter.description}</p> : null}
 
       {encounter.strategyNotes ? (
         <Callout tone="warning" icon="target">
@@ -214,8 +294,11 @@ function EncounterDetail({ encounter, status }: EncounterDetailProps) {
       ) : null}
 
       <dl className="kv">
+        <DetailRow label="Section" value={encounter.section} />
         <DetailRow label="Region" value={encounter.region} />
         <DetailRow label="Location" value={encounter.location} />
+        <DetailRow label="Level range" value={encounter.levelRange} />
+        <DetailRow label="Game" value={encounter.game} />
         <DetailRow label="Requirement" value={encounter.required} />
         <DetailRow
           label="Optional"
@@ -225,7 +308,7 @@ function EncounterDetail({ encounter, status }: EncounterDetailProps) {
           label="Missable"
           value={encounter.missable === undefined ? undefined : encounter.missable ? "Yes" : "No"}
         />
-        <DetailRow label="Achievement" value={encounter.achievement} />
+        <DetailRow label="Achievement" value={achievement?.name ?? encounter.achievement} />
         <DetailRow
           label="Quest related"
           value={encounter.questRelated === undefined ? undefined : encounter.questRelated ? "Yes" : "No"}
@@ -248,6 +331,42 @@ function EncounterDetail({ encounter, status }: EncounterDetailProps) {
         <DetailRow label="Confidence" value={encounter.confidence} />
         <DetailRow label="Validation" value={encounter.validation} />
       </dl>
+
+      {achievement ? (
+        <div>
+          <div className="world-field-label">Achievement cross-reference</div>
+          <button
+            className="chip quest-route-chip"
+            onClick={() => navigate(`/completion?tab=endings&achievement=${encodeURIComponent(achievement.id)}`)}
+          >
+            <Icon name="trophy" size={12} /> {achievement.name} · {achievement.section}
+          </button>
+        </div>
+      ) : null}
+
+      {encounter.wikiUrl || (encounter.links?.length ?? 0) > 0 ? (
+        <div>
+          <div className="world-field-label">References</div>
+          <div className="tag-list">
+            {encounter.wikiUrl ? (
+              <a className="chip" href={encounter.wikiUrl} target="_blank" rel="noreferrer noopener">
+                <Icon name="external" size={12} /> Wiki page
+              </a>
+            ) : null}
+            {(encounter.links ?? []).map((link) => (
+              <a
+                className="chip"
+                key={`${link.label}-${link.url}`}
+                href={link.url}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <Icon name="external" size={12} /> {link.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       {encounter.notes ? (
         <div>
@@ -306,6 +425,9 @@ export function BossesPage() {
   const encounterParam = route.query.get("encounter");
   const bossParam = route.query.get("boss");
   const tabParam = route.query.get("tab");
+  const sectionParam = route.query.get("section");
+  const missableParam = route.query.get("missable");
+  const sectionFromParam = sectionParam ? SECTION_ALIASES[sectionParam.trim().toLowerCase()] : undefined;
   const validBoss = bossParam && BOSS_NAMES.includes(bossParam) ? bossParam : undefined;
   const tab: BossTab =
     tabParam === "prep" || (!tabParam && validBoss && !encounterParam) ? "prep" : "encounters";
@@ -316,8 +438,11 @@ export function BossesPage() {
 
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [sectionFilter, setSectionFilter] = useState(sectionFromParam ?? "all");
   const [regionFilter, setRegionFilter] = useState("all");
-  const [requiredFilter, setRequiredFilter] = useState("all");
+  const [phaseFilter, setPhaseFilter] = useState("all");
+  const [dlcFilter, setDlcFilter] = useState("all");
+  const [missableFilter, setMissableFilter] = useState(missableParam === "1" ? "missable" : "all");
   const [statusFilter, setStatusFilter] = useState("all");
 
   const [bossQuery, setBossQuery] = useState("");
@@ -328,14 +453,13 @@ export function BossesPage() {
   const selectedBoss = validBoss ?? BOSS_NAMES[0];
   const strategies = BOSS_STRATEGIES_BY_BOSS[selectedBoss] ?? [];
 
-  const encounterTypes = useMemo(
-    () => [...new Set(ENCOUNTERS.map((encounter) => encounter.type))].sort((a, b) => a.localeCompare(b)),
-    [],
-  );
-  const encounterRegions = useMemo(
-    () => [...new Set(ENCOUNTERS.map((encounter) => encounter.region))].sort((a, b) => a.localeCompare(b)),
-    [],
-  );
+  useEffect(() => {
+    if (sectionFromParam) setSectionFilter(sectionFromParam);
+  }, [sectionFromParam]);
+
+  useEffect(() => {
+    if (missableParam === "1") setMissableFilter("missable");
+  }, [missableParam]);
 
   const buildOptions = useMemo(() => {
     const map = new Map<string, string>();
@@ -361,9 +485,12 @@ export function BossesPage() {
     const q = query.trim().toLowerCase();
     return ENCOUNTERS.filter((encounter) => {
       if (typeFilter !== "all" && encounter.type !== typeFilter) return false;
+      if (sectionFilter !== "all" && encounter.section !== sectionFilter) return false;
       if (regionFilter !== "all" && encounter.region !== regionFilter) return false;
-      if (requiredFilter === "required" && !isRequired(encounter.required)) return false;
-      if (requiredFilter === "optional" && isRequired(encounter.required)) return false;
+      if (phaseFilter !== "all" && encounterPhase(encounter) !== phaseFilter) return false;
+      if (dlcFilter === "dlc" && !encounter.dlc) return false;
+      if (dlcFilter === "base" && encounter.dlc) return false;
+      if (missableFilter === "missable" && !isMissable(encounter)) return false;
       const status = journey.bosses[encounter.id];
       if (statusFilter === "pending" && status) return false;
       if (statusFilter === "defeated" && status !== "defeated") return false;
@@ -373,18 +500,34 @@ export function BossesPage() {
         encounter.name,
         encounter.type,
         encounter.region,
+        encounter.section,
         encounter.location,
+        encounter.levelRange,
+        encounter.description,
         encounter.notes,
         encounter.notes2,
         encounter.strategyNotes,
         encounter.required,
+        encounter.achievement,
+        encounterPhase(encounter),
+        encounterAchievement(encounter)?.name,
         ...(encounter.tags ?? []),
       ]
         .join(" ")
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [query, typeFilter, regionFilter, requiredFilter, statusFilter, journey.bosses]);
+  }, [
+    query,
+    typeFilter,
+    sectionFilter,
+    regionFilter,
+    phaseFilter,
+    dlcFilter,
+    missableFilter,
+    statusFilter,
+    journey.bosses,
+  ]);
 
   const filteredBosses = useMemo(() => {
     const q = bossQuery.trim().toLowerCase();
@@ -416,7 +559,8 @@ export function BossesPage() {
     (a, b) => a - b,
   );
 
-  const requiredCount = ENCOUNTERS.filter((encounter) => isRequired(encounter.required)).length;
+  const missableCount = ENCOUNTERS.filter((encounter) => isMissable(encounter)).length;
+  const achievementCount = ENCOUNTERS.filter((encounter) => Boolean(encounterAchievement(encounter))).length;
   const defeatedCount = ENCOUNTERS.filter((encounter) => journey.bosses[encounter.id] === "defeated").length;
   const deferredCount = ENCOUNTERS.filter((encounter) => journey.bosses[encounter.id] === "deferred").length;
 
@@ -446,8 +590,11 @@ export function BossesPage() {
   const clearEncounterFilters = () => {
     setQuery("");
     setTypeFilter("all");
+    setSectionFilter("all");
     setRegionFilter("all");
-    setRequiredFilter("all");
+    setPhaseFilter("all");
+    setDlcFilter("all");
+    setMissableFilter("all");
     setStatusFilter("all");
   };
 
@@ -456,15 +603,17 @@ export function BossesPage() {
 
   return (
     <div className="page">
-      <PageHeader
-        eyebrow={`${journey.label} · Encounters and strategy`}
+      <ArtHero
+        image={ART.heroErdtree}
+        kicker={`${journey.label} · Boss ledger`}
         title="Bosses"
+        headingLevel={1}
+        size="compact"
         description={
           <>
-            {ENCOUNTERS.length} catalogued route encounters with readiness notes and persistent outcomes, plus{" "}
-            {BOSS_NAMES.length} major bosses covered by {bossStrategyCount(selectedBoss)} strategies per target at
-            level {ALL_LEVELS.join(" and ")}. Strategy detail follows the selected build; encounter outcomes stay per
-            journey.
+            {ENCOUNTERS.length} catalogued encounters across {ENCOUNTER_SECTIONS.length} sections, with persistent
+            outcomes and wiki references. {BOSS_NAMES.length} major targets carry {BOSS_STRATEGIES.length} strategy
+            rows at level {ALL_LEVELS.join(" / ")}.
           </>
         }
         actions={
@@ -477,9 +626,18 @@ export function BossesPage() {
             </Button>
           </>
         }
-      />
+      >
+        <div className="world-badges">
+          <Badge tone="danger">{missableCount} MISSABLE</Badge>
+          <Badge tone="success">{achievementCount} achievement-linked</Badge>
+          <Badge tone="info">{defeatedCount} defeated</Badge>
+          <Badge tone="warning">{deferredCount} deferred</Badge>
+        </div>
+      </ArtHero>
 
-      <TabBar items={TABS} value={tab} onChange={goTab} />
+      <div style={{ marginTop: 16 }}>
+        <TabBar items={TABS} value={tab} onChange={goTab} />
+      </div>
 
       {tab === "encounters" ? (
         <div style={{ marginTop: 16 }}>
@@ -490,18 +648,18 @@ export function BossesPage() {
                   className="world-filter-search"
                   value={query}
                   onChange={setQuery}
-                  placeholder="Search encounters, tags, notes…"
+                  placeholder="Search bosses, sections, wiki notes…"
                 />
                 <Select
-                  label="Type"
+                  label="Section"
                   className="world-filter-field"
-                  value={typeFilter}
-                  onChange={(event) => setTypeFilter(event.target.value)}
+                  value={sectionFilter}
+                  onChange={(event) => setSectionFilter(event.target.value)}
                 >
-                  <option value="all">All types</option>
-                  {encounterTypes.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
+                  <option value="all">All sections</option>
+                  {ENCOUNTER_SECTIONS.map((section) => (
+                    <option key={section} value={section}>
+                      {section}
                     </option>
                   ))}
                 </Select>
@@ -512,21 +670,43 @@ export function BossesPage() {
                   onChange={(event) => setRegionFilter(event.target.value)}
                 >
                   <option value="all">All regions</option>
-                  {encounterRegions.map((region) => (
+                  {ENCOUNTER_REGIONS.map((region) => (
                     <option key={region} value={region}>
                       {region}
                     </option>
                   ))}
                 </Select>
                 <Select
-                  label="Requirement"
+                  label="Phase / act"
                   className="world-filter-field"
-                  value={requiredFilter}
-                  onChange={(event) => setRequiredFilter(event.target.value)}
+                  value={phaseFilter}
+                  onChange={(event) => setPhaseFilter(event.target.value)}
                 >
-                  <option value="all">Any requirement</option>
-                  <option value="required">Required</option>
-                  <option value="optional">Optional</option>
+                  <option value="all">All phases</option>
+                  {ENCOUNTER_PHASES.map((phase) => (
+                    <option key={phase} value={phase}>
+                      {phase}
+                    </option>
+                  ))}
+                </Select>
+                <Select
+                  label="Game"
+                  className="world-filter-field"
+                  value={dlcFilter}
+                  onChange={(event) => setDlcFilter(event.target.value)}
+                >
+                  <option value="all">Base + DLC</option>
+                  <option value="base">Base game</option>
+                  <option value="dlc">Shadow of the Erdtree</option>
+                </Select>
+                <Select
+                  label="Missable"
+                  className="world-filter-field"
+                  value={missableFilter}
+                  onChange={(event) => setMissableFilter(event.target.value)}
+                >
+                  <option value="all">All encounters</option>
+                  <option value="missable">Missable only</option>
                 </Select>
                 <Select
                   label="Status"
@@ -539,6 +719,19 @@ export function BossesPage() {
                   <option value="defeated">Defeated</option>
                   <option value="deferred">Deferred</option>
                 </Select>
+                <Select
+                  label="Type"
+                  className="world-filter-field"
+                  value={typeFilter}
+                  onChange={(event) => setTypeFilter(event.target.value)}
+                >
+                  <option value="all">All types</option>
+                  {ENCOUNTER_TYPES.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </Select>
               </div>
               <span className="badge">
                 {filteredEncounters.length} / {ENCOUNTERS.length}
@@ -549,22 +742,22 @@ export function BossesPage() {
               <div className="world-summary-cell">
                 <div className="k">Encounters</div>
                 <div className="v">{ENCOUNTERS.length}</div>
-                <div className="d">catalogued route encounters</div>
+                <div className="d">merged across {ENCOUNTER_SECTIONS.length} sections</div>
               </div>
               <div className="world-summary-cell">
-                <div className="k">Required</div>
-                <div className="v">{requiredCount}</div>
-                <div className="d">required or conditionally required</div>
+                <div className="k">Missable</div>
+                <div className="v">{missableCount}</div>
+                <div className="d">time-locked or one-shot fights</div>
+              </div>
+              <div className="world-summary-cell">
+                <div className="k">Achievements</div>
+                <div className="v">{achievementCount}</div>
+                <div className="d">cross-referenced with the ledger</div>
               </div>
               <div className="world-summary-cell">
                 <div className="k">Defeated</div>
                 <div className="v">{defeatedCount}</div>
-                <div className="d">recorded in {journey.label}</div>
-              </div>
-              <div className="world-summary-cell">
-                <div className="k">Deferred</div>
-                <div className="v">{deferredCount}</div>
-                <div className="d">postponed with a return window</div>
+                <div className="d">{deferredCount} deferred in {journey.label}</div>
               </div>
             </div>
 
@@ -593,7 +786,7 @@ export function BossesPage() {
             <div style={{ marginTop: 14 }}>
               <EmptyState
                 title="No encounters match"
-                description="Adjust the search, type, region, requirement, or status filter."
+                description="Adjust the search, section, region, phase, DLC, missable, status, or type filter."
                 icon="skull"
                 action={
                   <Button variant="primary" icon="refresh" onClick={clearEncounterFilters}>
@@ -607,7 +800,10 @@ export function BossesPage() {
       ) : (
         <div className="world-split">
           <aside className="card card-pad">
-            <SectionTitle title="Bosses" note={`${BOSS_NAMES.length} targets`} />
+            <SectionTitle
+              title="Bosses"
+              note={`${BOSS_NAMES.length} targets · ${BOSS_STRATEGIES.length} strategy rows`}
+            />
             <SearchInput value={bossQuery} onChange={setBossQuery} placeholder="Search bosses…" />
             <div className="world-roster">
               {filteredBosses.map((boss) => {
@@ -642,7 +838,7 @@ export function BossesPage() {
               <div className="world-detail-head">
                 <div className="grow">
                   <div className="eyebrow" style={{ marginBottom: 4 }}>
-                    Major boss prep
+                    Major boss prep · {BOSS_NAMES.length} targets / {BOSS_STRATEGIES.length} rows
                   </div>
                   <h2 className="world-boss-title">{selectedBoss}</h2>
                   <div className="small muted" style={{ marginTop: 4 }}>
@@ -673,7 +869,7 @@ export function BossesPage() {
                 </div>
               ) : (
                 <p className="world-note" style={{ marginTop: 8 }}>
-                  No linked route encounter in the catalogued Act I set; strategy rows still apply to the major boss.
+                  No linked encounter row shares this boss name; strategy rows still apply to the target.
                 </p>
               )}
 

@@ -2,6 +2,11 @@ export type StatKey = "vig" | "mnd" | "end" | "str" | "dex" | "int" | "fai" | "a
 
 export type Stats = Record<StatKey, number>;
 
+export interface Link {
+  label: string;
+  url: string;
+}
+
 export interface SourceInfo {
   file: string;
   sha256: string;
@@ -70,7 +75,7 @@ export interface CompletionUnit {
   sourceRow: number;
 }
 
-export interface RouteArea {
+export interface LegacyRouteArea {
   name: string;
   order: number;
   act: string;
@@ -82,11 +87,26 @@ export interface RouteArea {
   validation: string;
 }
 
+export interface RouteArea extends LegacyRouteArea {
+  game: string;
+  phase: string;
+  sectionId: string;
+  levelRange: string;
+  missableCount: number;
+  dlc: boolean;
+}
+
 export interface RouteStep {
   id: string;
   order: number;
   act: string;
+  phase: string;
   area: string;
+  sectionId: string;
+  sectionTitle: string;
+  levelRange: string;
+  game: string;
+  dlc: boolean;
   objectiveId: string;
   objectiveOrder: number;
   stepOrder: number;
@@ -95,8 +115,14 @@ export interface RouteStep {
   required: boolean;
   linkedRaw: string;
   linkedIds: string[];
+  linkedItemNames: string[];
+  autoAcquireItemIds: string[];
+  autoAcquireBossIds: string[];
+  links: Link[];
+  badges: string[];
   prerequisites: string;
   warning: string;
+  missable: boolean;
   location: string;
   validation: string;
   routeDecision: string;
@@ -105,7 +131,42 @@ export interface RouteStep {
   lockoutRisk: string;
   estimatedTime: string;
   sourceRow: number;
+  sourceUrl: string;
+  sourceStepId: string;
   objectiveName: string;
+}
+
+export interface PhaseGateFilter {
+  phase: string;
+  sections: string[];
+  sectionTitles: string[];
+  missableOnly: boolean;
+}
+
+export interface PhaseGate {
+  id: string;
+  order: number;
+  phase: string;
+  game: string;
+  title: string;
+  message: string;
+  warning: string;
+  severity: string;
+  area: string;
+  beforeSectionId: string;
+  filter: PhaseGateFilter;
+}
+
+export interface ChronologyPhase {
+  id: string;
+  label: string;
+  sectionCount: number;
+  stepCount: number;
+}
+
+export interface RouteChronology {
+  rule: string;
+  phases: ChronologyPhase[];
 }
 
 export interface Objective {
@@ -182,6 +243,11 @@ export interface Item {
   sourceRow: number;
   routeStepIds: string[];
   autoStepId: string | null;
+  wikiUrl?: string;
+  dlc?: boolean;
+  section?: string;
+  acquisitionText?: string;
+  slot?: string;
 }
 
 export interface Encounter {
@@ -225,6 +291,171 @@ export interface Encounter {
   game?: string;
   routeStepIds: string[];
   autoStepId: string | null;
+  section?: string;
+  levelRange?: string;
+  wikiUrl?: string;
+  dlc?: boolean;
+  badges?: string[];
+  links?: Link[];
+  sourceId?: string;
+  description?: string;
+}
+
+export interface AchievementRequirementItem {
+  name: string;
+  itemId: string;
+  wikiUrl: string;
+  description: string;
+  sourceId: string;
+  badges: string[];
+  missable: boolean;
+  links: Link[];
+}
+
+export interface AchievementRequirementGroup {
+  id: string;
+  name: string;
+  kind: string;
+  section: string;
+  sectionId: string;
+  achievementId: string;
+  items: AchievementRequirementItem[];
+}
+
+export interface Achievement {
+  id: string;
+  name: string;
+  section: string;
+  sectionId: string;
+  sourceId: string;
+  description: string;
+  wikiUrl: string;
+  badges: string[];
+  missable: boolean;
+  requirements: string[];
+  requirementGroupIds: string[];
+  itemIds: string[];
+  links: Link[];
+}
+
+export interface QuestlineStep {
+  id: string;
+  sourceId: string;
+  questlineId: string;
+  npc: string;
+  order: number;
+  depth: number;
+  text: string;
+  optional: boolean;
+  missable: boolean;
+  badges: string[];
+  links: Link[];
+}
+
+export interface Questline {
+  id: string;
+  npc: string;
+  dlc: boolean;
+  game: string;
+  sourceUrl: string;
+  stepCount: number;
+  missableCount: number;
+  steps: QuestlineStep[];
+}
+
+export interface NgPlusStep {
+  id: string;
+  sectionId: string;
+  sectionTitle: string;
+  order: number;
+  text: string;
+  optional: boolean;
+  badges: string[];
+  links: Link[];
+  dlc: boolean;
+}
+
+export interface NgPlusSection {
+  id: string;
+  title: string;
+  order: number;
+  levelRange: string;
+  game: string;
+  stepCount: number;
+  steps: NgPlusStep[];
+}
+
+export interface ContentCoverageSource {
+  sha256: string;
+  sections?: number;
+  steps?: number;
+  items?: number;
+  encounters?: number;
+  rawRows?: number;
+  deduped?: number;
+  packItems?: number;
+}
+
+export interface ContentCoverage {
+  generatedAt: string;
+  route: {
+    sections: number;
+    steps: number;
+    baseSteps: number;
+    dlcSteps: number;
+    preDlcSteps: number;
+    endgameSteps: number;
+    requiredSteps: number;
+    missableSteps: number;
+    missableBaseSteps: number;
+    missableDlcSteps: number;
+    baseSections: number;
+    dlcSections: number;
+    preDlcSections: number;
+    endgameSections: number;
+    firstDlcStepOrder: number;
+    firstEndgameStepOrder: number;
+  };
+  items: {
+    workbook: number;
+    redmawDeduped: number;
+    redmawOnly: number;
+    matchedWorkbook: number;
+    unmatchedWorkbook: number;
+    tarnishedPack: number;
+    tarnishedPackMerged: number;
+    final: number;
+    duplicateNameKeys: number;
+    linkedToRoute: number;
+    placeholdersReplaced: number;
+    areaDerivedLocations: number;
+    clearedLocations: number;
+  };
+  achievements: {
+    achievements: number;
+    requirementGroups: number;
+    requirementItems: number;
+    linkedRequirementItems: number;
+  };
+  bosses: {
+    workbookEncounters: number;
+    redmaw: number;
+    matchedWorkbook: number;
+    redmawOnly: number;
+    final: number;
+    linkedToRoute: number;
+  };
+  questlines: { questlines: number; steps: number };
+  ngplus: { sections: number; items: number };
+  links: {
+    labels: number;
+    resolved: number;
+    unresolved: number;
+    unresolvedUnique: number;
+    relativeResolved: number;
+  };
+  legacyMap: { workbookSteps: number; mapped: number };
+  sources: Record<string, ContentCoverageSource>;
 }
 
 export interface LinkedRecord {
@@ -492,7 +723,7 @@ export interface Meta {
   categoryDenominators: CategoryDenominator[];
   remembrances: Remembrance[];
   externalResources: ExternalResource[];
-  routeAreas: RouteArea[];
+  routeAreas: LegacyRouteArea[];
   chronologyAreas: ChronologyArea[];
 }
 
@@ -899,6 +1130,7 @@ export interface Warehouse {
     steps: RouteStep[];
     supplemental: Supplemental[];
     chronologyAreas: ChronologyArea[];
+    phaseGates: PhaseGate[];
   };
   items: Item[];
   world: {
@@ -974,6 +1206,8 @@ export interface JourneyState {
   transitionGates: Record<string, boolean>;
   remembrances: Record<string, RemembranceState>;
   zonesRevealed: Record<string, boolean>;
+  questlineSteps: Record<string, boolean>;
+  ngplusChecklist: Record<string, boolean>;
 }
 
 export interface EquipmentState {
@@ -1001,6 +1235,7 @@ export interface Character {
   farmables: Record<string, number>;
   loreRead: Record<string, boolean>;
   endings: Record<string, EndingState>;
+  achievements: Record<string, boolean>;
   equipment: EquipmentState;
   equipmentMode: "signature" | "optimized" | "fashion" | "custom";
 }

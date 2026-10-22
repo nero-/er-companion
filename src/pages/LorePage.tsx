@@ -13,12 +13,18 @@ import {
   useToast,
 } from "../components/ui";
 import { Icon } from "../components/Icon";
-import { LORE } from "../lib/data";
+import { ART, ArtBanner } from "../components/Art";
+import {
+  AREA_BY_NAME,
+  LORE,
+  SECTION_BY_NORMALIZED_TITLE,
+  normalizeContentKey,
+} from "../lib/data";
 import { loreAccess } from "../lib/selectors";
 import type { LoreAccess } from "../lib/selectors";
 import { navigate, queryString, useRoute } from "../lib/router";
 import { revealZone, setLoreRead, useActiveCharacter, useActiveJourney, useAppState } from "../lib/store";
-import type { LoreEntry } from "../lib/types";
+import type { LoreEntry, RouteArea } from "../lib/types";
 import "./lore-completion.css";
 
 type ReadFilter = "all" | "read" | "unread";
@@ -32,6 +38,25 @@ const DETAIL_SECTIONS: { key: keyof Pick<LoreEntry, "rawSummary" | "rawCharacter
   { key: "rawLater", label: "Later Context", spoiler: true },
   { key: "rawChronicle", label: "Character Chronicle" },
 ];
+
+/** Mirrors the gating aliases in `loreAccess` so cards can label the mapped route section. */
+const LORE_SECTION_ALIASES: Record<string, string> = {
+  tutorial: "Starting Out",
+  "enir ilim and dlc finale": "Enir-Ilim",
+};
+
+function sectionForArea(area: string): RouteArea | undefined {
+  const key = normalizeContentKey(area);
+  const alias = LORE_SECTION_ALIASES[key];
+  return alias ? AREA_BY_NAME[alias] : SECTION_BY_NORMALIZED_TITLE[key]?.[0];
+}
+
+function gameForEntry(entry: LoreEntry): string {
+  const section = sectionForArea(entry.area);
+  if (!section) return "Chronology";
+  if (section.dlc) return "Shadow of the Erdtree";
+  return section.phase === "Base Game — endgame" ? "Base Game — endgame" : "Base Game";
+}
 
 function loreHref(entryId?: string, area?: string): string {
   return `/lore${queryString({ entry: entryId, area: area && area !== "all" ? area : undefined })}`;
@@ -65,6 +90,10 @@ export function LorePage() {
   const unlockedCount = orderedLore.filter((entry) => accessById[entry.id]?.unlocked).length;
   const readCount = orderedLore.filter((entry) => character.loreRead[entry.id]).length;
   const strict = state.settings.spoilerMode === "strict";
+  const dlcChapters = useMemo(
+    () => orderedLore.filter((entry) => sectionForArea(entry.area)?.dlc).length,
+    [orderedLore],
+  );
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -96,6 +125,7 @@ export function LorePage() {
 
   const selectedEntry = entryParam ? orderedLore.find((entry) => entry.id === entryParam) : undefined;
   const selectedAccess = selectedEntry ? accessById[selectedEntry.id] : undefined;
+  const selectedSection = selectedEntry ? sectionForArea(selectedEntry.area) : undefined;
   const gateEntry = gateEntryId ? orderedLore.find((entry) => entry.id === gateEntryId) : undefined;
   const gateAccess = gateEntry ? accessById[gateEntry.id] : undefined;
 
@@ -119,14 +149,28 @@ export function LorePage() {
 
   return (
     <div className="page">
+      <ArtBanner
+        image={ART.soteHeader}
+        variant="sote"
+        caption={`Shadow of the Erdtree · ${dlcChapters} of ${LORE.length} chapters`}
+        title="The Shadow's own chapters"
+        className="lore-banner"
+      >
+        <p className="lore-banner-note">
+          The full route now spans the base game, Shadow of the Erdtree, and the Ashen Capital endgame. Chapter gates
+          resolve against the matching route section, so DLC lore stays sealed until its section is complete.
+        </p>
+      </ArtBanner>
+
       <PageHeader
-        eyebrow={`${journey.label} · Lore archive`}
+        eyebrow={`${journey.label} · Full-game lore archive`}
         title="Lore"
         description={
           <>
-            {LORE.length} area chapters tied to the route and whole-game chronology. Strict mode withholds raw summaries,
-            characters, evidence, questions, later context, and chronicles until the matching section is resolved or you
-            deliberately reveal the area.
+            {LORE.length} area chapters tied to the full route — base game through Maliketh, all{" "}
+            {dlcChapters} Shadow of the Erdtree chapters, then the Ashen Capital endgame. Strict mode withholds raw
+            summaries, characters, evidence, questions, later context, and chronicles until the matching section is
+            resolved or you deliberately reveal the area.
           </>
         }
         actions={
@@ -155,18 +199,18 @@ export function LorePage() {
           </strong>
         </div>
         <div className="lore-summary-cell">
-          <span className="stat-label">Spoiler mode</span>
-          <strong>{strict ? "Strict" : "Reveal all"}</strong>
+          <span className="stat-label">SotE chapters</span>
+          <strong>{dlcChapters}</strong>
         </div>
         <div className="lore-summary-cell">
-          <span className="stat-label">Lore scope</span>
-          <strong>{orderedLore[0]?.journey ?? "Not recorded"}</strong>
+          <span className="stat-label">Spoiler mode</span>
+          <strong>{strict ? "Strict" : "Reveal all"}</strong>
         </div>
         <div className="lore-summary-note">
           <Icon name="lock" size={14} />
           <span>
-            Unlocking is derived from route and chronology completion. Manual reveals bypass that gating for this
-            journey only.
+            Unlocking is derived from full-route section and chronology completion. Manual reveals bypass that gating
+            for this journey only and never expose raw text on locked cards.
           </span>
         </div>
       </div>
@@ -182,6 +226,7 @@ export function LorePage() {
           {orderedLore.map((entry) => (
             <option key={entry.id} value={entry.area}>
               {String(entry.areaOrder).padStart(2, "0")} · {entry.area}
+              {sectionForArea(entry.area)?.dlc ? " · Shadow of the Erdtree" : ""}
             </option>
           ))}
         </Select>
@@ -243,6 +288,10 @@ export function LorePage() {
             const access = accessById[entry.id];
             const unlocked = Boolean(access?.unlocked);
             const read = Boolean(character.loreRead[entry.id]);
+            const mappedSection = sectionForArea(entry.area);
+            const sectionDiffers =
+              mappedSection !== undefined &&
+              normalizeContentKey(mappedSection.name) !== normalizeContentKey(entry.area);
             return (
               <article
                 key={entry.id}
@@ -255,9 +304,15 @@ export function LorePage() {
                   <div className="grow">
                     <h3 className="lore-area">{entry.area}</h3>
                     <div className="lore-meta">
-                      <span>{entry.journey}</span>
+                      <span className="lore-game">{gameForEntry(entry)}</span>
                       <span aria-hidden="true">·</span>
                       <span>Area order {entry.areaOrder}</span>
+                      {mappedSection && sectionDiffers ? (
+                        <>
+                          <span aria-hidden="true">·</span>
+                          <span>{mappedSection.name}</span>
+                        </>
+                      ) : null}
                     </div>
                   </div>
                   <div className="tag-list lore-badges">
@@ -354,7 +409,7 @@ export function LorePage() {
         title={selectedEntry?.area ?? "Lore chapter"}
         subtitle={
           selectedEntry
-            ? `${selectedEntry.journey} · Area order ${selectedEntry.areaOrder} · ${selectedAccess?.unlocked ? "unlocked" : "locked"}`
+            ? `${gameForEntry(selectedEntry)} · Area order ${selectedEntry.areaOrder} · ${selectedAccess?.unlocked ? "unlocked" : "locked"}`
             : undefined
         }
         onClose={() => navigate(loreHref(undefined, areaParam))}
@@ -385,11 +440,28 @@ export function LorePage() {
       >
         {selectedEntry && selectedAccess?.unlocked ? (
           <>
-            <div className="tag-list" style={{ marginBottom: 16 }}>
+            <div className="tag-list" style={{ marginBottom: 10 }}>
               <Badge tone="accent">Area {selectedEntry.areaOrder}</Badge>
               {character.loreRead[selectedEntry.id] ? <Badge tone="success">Read</Badge> : <Badge>Unread</Badge>}
-              <Badge>{selectedEntry.journey}</Badge>
+              <Badge tone={selectedSection?.dlc ? "warning" : "default"}>
+                {gameForEntry(selectedEntry)}
+              </Badge>
             </div>
+            {selectedSection ? (
+              <p className="small muted" style={{ marginBottom: 16 }}>
+                Mapped route section:{" "}
+                <button
+                  className="lore-inline-link"
+                  onClick={() => navigate(`/journey?area=${encodeURIComponent(selectedSection.name)}`)}
+                >
+                  {selectedSection.name}
+                </button>
+              </p>
+            ) : (
+              <p className="small faint" style={{ marginBottom: 16 }}>
+                No route section in this content set — reveal manually when reached in game.
+              </p>
+            )}
             <div className="lore-detail-sections">
               {DETAIL_SECTIONS.map((section) => {
                 const value = selectedEntry[section.key];
@@ -433,6 +505,10 @@ export function LorePage() {
             <dl className="kv">
               <dt>Area</dt>
               <dd>{selectedEntry.area}</dd>
+              <dt>Game</dt>
+              <dd>{gameForEntry(selectedEntry)}</dd>
+              <dt>Route section</dt>
+              <dd>{selectedSection?.name ?? "Chronology fallback"}</dd>
               <dt>Unlock condition</dt>
               <dd>{selectedEntry.unlockCondition}</dd>
               <dt>Current gate</dt>
