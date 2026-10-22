@@ -163,6 +163,7 @@ export interface CollectionSummary {
   byGroup: CollectionGroupSummary[];
   baseGame: CollectionGroupSummary;
   dlc: CollectionGroupSummary;
+  tarnishedPack: CollectionGroupSummary;
 }
 
 export function collectionSummary(character: Character): CollectionSummary {
@@ -183,6 +184,7 @@ export function collectionSummary(character: Character): CollectionSummary {
     .sort((a, b) => b.total - a.total);
   const baseItems = ITEMS.filter((item) => item.game === "Base Game");
   const dlcItems = ITEMS.filter((item) => item.game === "Shadow of the Erdtree");
+  const packItems = ITEMS.filter((item) => item.game === "Tarnished Pack");
   return {
     total,
     owned: ownedCount,
@@ -202,6 +204,14 @@ export function collectionSummary(character: Character): CollectionSummary {
       owned: dlcItems.filter((item) => owned[item.id]).length,
       percent: dlcItems.length
         ? Math.round((dlcItems.filter((item) => owned[item.id]).length / dlcItems.length) * 100)
+        : 0,
+    },
+    tarnishedPack: {
+      group: "Tarnished Pack",
+      total: packItems.length,
+      owned: packItems.filter((item) => owned[item.id]).length,
+      percent: packItems.length
+        ? Math.round((packItems.filter((item) => owned[item.id]).length / packItems.length) * 100)
         : 0,
     },
   };

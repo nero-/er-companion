@@ -222,6 +222,7 @@ export interface Encounter {
   runeRisk?: string;
   scadutree?: string;
   confidence?: string;
+  game?: string;
   routeStepIds: string[];
   autoStepId: string | null;
 }
@@ -703,10 +704,21 @@ export interface ProgressionLoadout {
   catalyst: string;
   armor: string[];
   talismans: string[];
+  spellPackage: string;
   spells: string[];
   physick: string[];
+  requiredEquipment: string;
+  optionalEquipment: string;
+  acquisitionRequirements: string;
+  upgradePlanId: string;
+  survivalClass: string;
+  preferredLanding: string;
+  sourceClass: string;
+  status: string;
   flask: string;
   notes: string;
+  schemaVersion: string;
+  loadoutKey: string;
   sourceRow: number;
 }
 

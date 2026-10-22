@@ -20,6 +20,7 @@ import {
 } from "../lib/store";
 import { CLASSES, STAT_LABELS, STAT_ORDER, levelFromStats } from "../lib/classes";
 import { META } from "../lib/data";
+import { DATA_BASELINE, GAME_VERSION } from "../data/game";
 import { formatDate, formatNumber } from "../lib/format";
 
 type ConfirmKind = "new-journey" | "reset-journey" | "reset-all" | null;
@@ -310,6 +311,14 @@ export function SettingsPage() {
             <div className="kv">
               <dt>Schema</dt>
               <dd>v{state.schemaVersion} · updated {formatDate(state.updatedAt)}</dd>
+              <dt>Live game</dt>
+              <dd>
+                App {GAME_VERSION.app} · Regulation {GAME_VERSION.regulation} · checked {formatDate(GAME_VERSION.checkedAt)}
+              </dd>
+              <dt>Content baseline</dt>
+              <dd>
+                Regulation {DATA_BASELINE.regulation} (workbook v{DATA_BASELINE.workbookVersion})
+              </dd>
               <dt>Source pack</dt>
               <dd className="mono tiny" style={{ wordBreak: "break-all" }}>
                 {META.source.file}
@@ -333,6 +342,12 @@ export function SettingsPage() {
 
       <section className="card card-pad" style={{ marginTop: 16 }}>
         <SectionTitle title="Content coverage" note="Observed from the source workbook" />
+        <Callout tone="warning" icon="alert">
+          Live rules are {GAME_VERSION.app} / Regulation {GAME_VERSION.regulation}. The workbook build/tier data is
+          authored against Regulation {DATA_BASELINE.regulation}; Tarnished Pack equipment and classes are appended from
+          patch 1.17 sources. See <button className="btn btn-sm btn-ghost" style={{ verticalAlign: "baseline" }} onClick={() => { window.location.hash = "#/patch"; }}>Patch &amp; DLC</button>.
+        </Callout>
+        <div style={{ height: 14 }} />
         <div className="grid-3">
           <div>
             <div className="stat-label">Route</div>

@@ -1,3 +1,4 @@
+import { CLASSES } from "./classes";
 import {
   ARCHETYPES,
   BOSS_NAMES,
@@ -83,6 +84,19 @@ for (const encounter of ENCOUNTERS) {
       `${encounter.type} · ${encounter.location}`,
       `/bosses?encounter=${encodeURIComponent(encounter.id)}`,
       `${encounter.region} ${encounter.notes}`,
+    ),
+  );
+}
+
+for (const classEntry of CLASSES) {
+  INDEX.push(
+    entry(
+      `class:${classEntry.id}`,
+      "Class",
+      classEntry.name,
+      `Starting class · Level ${classEntry.level}`,
+      "/character",
+      classEntry.blurb,
     ),
   );
 }
@@ -228,6 +242,7 @@ export const QUICK_LINKS: SearchEntry[] = [
   entry("nav:farms", "Page", "Farms", "Farmables, materials, merchants, scarabs", "/farms"),
   entry("nav:tiers", "Page", "Tier lists", "Weapons, spells, ashes, talismans", "/tiers"),
   entry("nav:completion", "Page", "Completion", "Endings, achievements, NG+ readiness", "/completion"),
+  entry("nav:patch", "Page", "Patch & DLC", "Live game version, Tarnished Pack, 1.17 balance changes", "/patch"),
 ];
 
 export function searchEntries(query: string, limit = 30): SearchEntry[] {

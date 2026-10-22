@@ -403,6 +403,65 @@ export interface StepActionResult {
   scarabs: string[];
 }
 
+function applyStepCompletion(
+  journey: JourneyState,
+  stepId: string,
+  result: StepActionResult,
+  sourceItems: Record<string, boolean>,
+): { items: Record<string, boolean>; journey: JourneyState } {
+  const step = STEP_BY_ID[stepId];
+  const items = { ...sourceItems };
+  const acquire = (name: string, id: string) => {
+    if (!items[id]) {
+      items[id] = true;
+      result.acquiredItems.push(name);
+    }
+  };
+
+  const linked = new Set(step?.linkedIds ?? []);
+  for (const item of AUTO_ITEMS_BY_STEP[stepId] ?? []) linked.add(item.id);
+  for (const item of ITEMS) {
+    if (linked.has(item.id)) acquire(item.name, item.id);
+  }
+
+  const bosses = { ...journey.bosses };
+  for (const encounter of ENCOUNTERS) {
+    if (linked.has(encounter.id)) {
+      bosses[encounter.id] = "defeated";
+      result.defeatedBosses.push(encounter.name);
+    }
+  }
+  const npcStates = { ...journey.npcStates };
+  for (const npc of NPC_STATES) {
+    if (linked.has(npc.id)) {
+      npcStates[npc.id] = true;
+      result.completedNpcs.push(npc.npc);
+    }
+  }
+  const dialogue = { ...journey.dialogue };
+  for (const event of DIALOGUE_EVENTS) {
+    if (linked.has(event.id)) dialogue[event.id] = true;
+  }
+  const finite = { ...journey.finite };
+  for (const resource of FINITE_RESOURCES) {
+    if (linked.has(resource.id)) {
+      finite[resource.id] = true;
+      result.pickedUpResources.push(resource.name);
+    }
+  }
+  const scarabs = { ...journey.scarabs };
+  for (const scarab of SCARABS) {
+    if (linked.has(scarab.id)) {
+      scarabs[scarab.id] = true;
+      result.scarabs.push(scarab.reward);
+    }
+  }
+  return {
+    items,
+    journey: { ...journey, bosses, npcStates, dialogue, finite, scarabs },
+  };
+}
+
 export function setStepStatus(stepId: string, status: StepStatus | null): StepActionResult {
   const result: StepActionResult = {
     acquiredItems: [],
@@ -412,76 +471,22 @@ export function setStepStatus(stepId: string, status: StepStatus | null): StepAc
     scarabs: [],
   };
   updateCharacter((character) => {
-    const journey = character.journeys.find((entry) => entry.id === character.journeyId);
-    if (!journey) return character;
-    const steps = { ...journey.steps };
+    const current = character.journeys.find((entry) => entry.id === character.journeyId);
+    if (!current) return character;
+    const steps = { ...current.steps };
     if (status === null) delete steps[stepId];
     else steps[stepId] = status;
-
-    if (status !== "done") {
-      return {
-        ...character,
-        journeys: character.journeys.map((entry) =>
-          entry.id === journey.id ? { ...entry, steps } : entry,
-        ),
-      };
-    }
-
-    const step = STEP_BY_ID[stepId];
-    const items = { ...character.items };
-    const acquire = (name: string, id: string) => {
-      if (!items[id]) {
-        items[id] = true;
-        result.acquiredItems.push(name);
-      }
-    };
-
-    const linked = new Set(step?.linkedIds ?? []);
-    for (const item of AUTO_ITEMS_BY_STEP[stepId] ?? []) linked.add(item.id);
-    for (const item of ITEMS) {
-      if (linked.has(item.id)) acquire(item.name, item.id);
-    }
-
-    const bosses = { ...journey.bosses };
-    for (const encounter of ENCOUNTERS) {
-      if (linked.has(encounter.id)) {
-        bosses[encounter.id] = "defeated";
-        result.defeatedBosses.push(encounter.name);
-      }
-    }
-    const npcStates = { ...journey.npcStates };
-    for (const npc of NPC_STATES) {
-      if (linked.has(npc.id)) {
-        npcStates[npc.id] = true;
-        result.completedNpcs.push(npc.npc);
-      }
-    }
-    const dialogue = { ...journey.dialogue };
-    for (const event of DIALOGUE_EVENTS) {
-      if (linked.has(event.id)) dialogue[event.id] = true;
-    }
-    const finite = { ...journey.finite };
-    for (const resource of FINITE_RESOURCES) {
-      if (linked.has(resource.id)) {
-        finite[resource.id] = true;
-        result.pickedUpResources.push(resource.name);
-      }
-    }
-    const scarabs = { ...journey.scarabs };
-    for (const scarab of SCARABS) {
-      if (linked.has(scarab.id)) {
-        scarabs[scarab.id] = true;
-        result.scarabs.push(scarab.reward);
-      }
+    let journey = { ...current, steps };
+    let items = character.items;
+    if (status === "done") {
+      const completion = applyStepCompletion(journey, stepId, result, items);
+      journey = completion.journey;
+      items = completion.items;
     }
     return {
       ...character,
       items,
-      journeys: character.journeys.map((entry) =>
-        entry.id === journey.id
-          ? { ...entry, steps, bosses, npcStates, dialogue, finite, scarabs }
-          : entry,
-      ),
+      journeys: character.journeys.map((entry) => (entry.id === journey.id ? journey : entry)),
     };
   });
   return result;
@@ -505,14 +510,35 @@ export function setStepNote(stepId: string, note: string): void {
   });
 }
 
-export function resolveArea(area: string): void {
-  updateJourney((journey) => {
-    const steps = { ...journey.steps };
+export function resolveArea(area: string): StepActionResult {
+  const result: StepActionResult = {
+    acquiredItems: [],
+    defeatedBosses: [],
+    completedNpcs: [],
+    pickedUpResources: [],
+    scarabs: [],
+  };
+  updateCharacter((character) => {
+    const current = character.journeys.find((entry) => entry.id === character.journeyId);
+    if (!current) return character;
+    const steps = { ...current.steps };
+    let journey = current;
+    let items = character.items;
     for (const step of Object.values(STEP_BY_ID)) {
-      if (step.area === area) steps[step.id] = "done";
+      if (step.area !== area) continue;
+      steps[step.id] = "done";
+      const completion = applyStepCompletion(journey, step.id, result, items);
+      journey = completion.journey;
+      items = completion.items;
     }
-    return { ...journey, steps };
+    journey = { ...journey, steps };
+    return {
+      ...character,
+      items,
+      journeys: character.journeys.map((entry) => (entry.id === journey.id ? journey : entry)),
+    };
   });
+  return result;
 }
 
 export function setNpcState(id: string, value: boolean): void {

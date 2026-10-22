@@ -103,7 +103,6 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                       onClose();
                     }}
                   >
-                    <span className="command-type">{entry.type}</span>
                     <span className="grow">
                       <span className="command-title">{entry.title}</span>
                       <span className="command-sub" style={{ display: "block" }}>

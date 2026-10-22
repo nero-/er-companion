@@ -692,7 +692,8 @@ for source_row, header, row in rowdicts("Six Futures", 2):
 REMEMBRANCES = []
 for source_row, header, row in rowdicts("Remembrance Planner", 2):
     name = clean(cell(row, 0))
-    if not name or not name.startswith("Remembrance") or name == "Remembrance" or clean(cell(row, 1)) == "Boss":
+    is_remembrance = name.startswith("Remembrance") or name == "Elden Remembrance"
+    if not name or not is_remembrance or name == "Remembrance" or clean(cell(row, 1)) == "Boss":
         continue
     REMEMBRANCES.append({
         "id": re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-"),
@@ -761,7 +762,7 @@ for source_row, header, row in rowdicts("Master Completion", 0):
         if clean(cell(row, 1)) and num(cell(row, 1)) is not None and clean(cell(row, 2)) and num(cell(row, 2)) is not None and clean(cell(row, 8)).startswith(("TRUE", "COVERAGE", "KNOWN")):
             CATEGORY_DENOMINATORS.append({
                 "category": first,
-                "total": intval(cell(row, 1)),
+                "total": intval(cell(row, 2)),
                 "baseGame": intval(cell(row, 5)),
                 "dlc": intval(cell(row, 6)),
                 "state": clean(cell(row, 7)),
@@ -1026,10 +1027,21 @@ for source_row, header, row in rowdicts("Build Progression Loadouts", 3):
         "catalyst": clean(cell(row, 9)),
         "armor": [clean(cell(row, i)) for i in (10, 11, 12, 13)],
         "talismans": [clean(cell(row, i)) for i in (14, 15, 16, 17)],
-        "spells": [clean(cell(row, i)) for i in (18, 19, 20, 21, 22, 23, 24, 25)],
-        "physick": [clean(cell(row, i)) for i in (26, 27)],
-        "flask": clean(cell(row, 28)),
+        "spellPackage": clean(cell(row, 18)),
+        "spells": [clean(cell(row, 18))] if clean(cell(row, 18)) else [],
+        "physick": [clean(cell(row, 19)), clean(cell(row, 20))],
+        "requiredEquipment": clean(cell(row, 21)),
+        "optionalEquipment": clean(cell(row, 22)),
+        "acquisitionRequirements": clean(cell(row, 23)),
+        "upgradePlanId": clean(cell(row, 24)),
+        "survivalClass": clean(cell(row, 25)),
+        "preferredLanding": clean(cell(row, 26)),
+        "sourceClass": clean(cell(row, 27)),
+        "status": clean(cell(row, 28)),
+        "flask": "",
         "notes": clean(cell(row, 29)),
+        "schemaVersion": clean(cell(row, 30)),
+        "loadoutKey": clean(cell(row, 31)),
         "sourceRow": source_row,
     })
 

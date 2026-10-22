@@ -1,12 +1,928 @@
-import { PageHeader } from "../components/ui";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Badge,
+  Button,
+  Callout,
+  Drawer,
+  EmptyState,
+  PageHeader,
+  ProgressBar,
+  SearchInput,
+  SectionTitle,
+  Select,
+  TabBar,
+  useToast,
+} from "../components/ui";
+import { Icon } from "../components/Icon";
+import type { BossStatus, BossStrategy, Encounter } from "../lib/types";
+import { setBossStatus, useActiveJourney } from "../lib/store";
+import { bossStrategyCount } from "../lib/selectors";
+import {
+  BOSS_NAMES,
+  BOSS_STRATEGIES_BY_BOSS,
+  ENCOUNTERS,
+  PROFILE_BY_ID,
+  STEP_BY_ID,
+} from "../lib/data";
+import { navigate, queryString, useRoute } from "../lib/router";
+import "./world.css";
+
+type BossTab = "encounters" | "prep";
+
+interface EncounterCardProps {
+  encounter: Encounter;
+  status?: BossStatus;
+  onOpen: () => void;
+  onStatus: (status: BossStatus | null) => void;
+}
+
+interface EncounterDetailProps {
+  encounter: Encounter;
+  status?: BossStatus;
+}
+
+interface StrategyFieldProps {
+  label: string;
+  value: string;
+  wide?: boolean;
+}
+
+const TABS = [
+  { id: "encounters", label: "Route encounters", count: ENCOUNTERS.length },
+  { id: "prep", label: "Major boss prep", count: BOSS_NAMES.length },
+];
+
+const ALL_LEVELS = [
+  ...new Set(Object.values(BOSS_STRATEGIES_BY_BOSS).flatMap((rows) => rows.map((row) => row.level))),
+].sort((a, b) => a - b);
+
+function isRequired(required?: string): boolean {
+  return (required ?? "").trim().toLowerCase().startsWith("yes");
+}
+
+function statusTone(status: BossStatus | undefined): "success" | "warning" | "default" {
+  return status === "defeated" ? "success" : status === "deferred" ? "warning" : "default";
+}
+
+function statusLabel(status: BossStatus | undefined): string {
+  return status === "defeated" ? "Defeated" : status === "deferred" ? "Deferred" : "Pending";
+}
+
+function linkedEncounterStatus(boss: string, bosses: Record<string, BossStatus>): BossStatus | undefined {
+  const linked = ENCOUNTERS.filter((encounter) => encounter.name === boss);
+  if (linked.some((encounter) => bosses[encounter.id] === "defeated")) return "defeated";
+  if (linked.some((encounter) => bosses[encounter.id] === "deferred")) return "deferred";
+  return undefined;
+}
+
+function DetailRow({ label, value }: { label: string; value?: string | number }) {
+  if (value === undefined || value === null || value === "") return null;
+  return (
+    <>
+      <dt>{label}</dt>
+      <dd>{value}</dd>
+    </>
+  );
+}
+
+function StrategyField({ label, value, wide = false }: StrategyFieldProps) {
+  if (!value) return null;
+  return (
+    <div className={`world-strategy-field ${wide ? "wide" : ""}`.trim()}>
+      <div className="world-field-label">{label}</div>
+      <p className="world-strategy-text">{value}</p>
+    </div>
+  );
+}
+
+function EncounterCard({ encounter, status, onOpen, onStatus }: EncounterCardProps) {
+  const step = encounter.routeStepIds[0] ? STEP_BY_ID[encounter.routeStepIds[0]] : undefined;
+  const required = isRequired(encounter.required);
+  return (
+    <article className={`card card-pad world-encounter ${status ? `is-${status}` : ""}`.trim()}>
+      <div className="row-between wrap" style={{ gap: 6 }}>
+        <div className="world-badges">
+          <Badge tone="accent">{encounter.type}</Badge>
+          <Badge tone={required ? "warning" : "default"}>{required ? "Required" : "Optional"}</Badge>
+          {status ? <Badge tone={statusTone(status)}>{statusLabel(status)}</Badge> : null}
+        </div>
+        <span className="tiny faint mono">{encounter.id}</span>
+      </div>
+
+      <button className="world-title-btn" onClick={onOpen}>
+        {encounter.name}
+      </button>
+
+      <div className="world-location">
+        <Icon name="map" size={12} />
+        <span>
+          {encounter.region} · {encounter.location}
+        </span>
+      </div>
+
+      <div className="world-badges">
+        {encounter.optional ? <Badge>Optional fight</Badge> : null}
+        {encounter.missable ? <Badge tone="danger">Missable</Badge> : null}
+        {encounter.questRelated ? <Badge tone="info">Quest</Badge> : null}
+        {encounter.achievement && encounter.achievement.toLowerCase() !== "no" ? (
+          <Badge tone="success">Achievement</Badge>
+        ) : null}
+        {encounter.difficulty ? <Badge tone="danger">{encounter.difficulty}</Badge> : null}
+        {encounter.recommendedLevel ? <Badge>{encounter.recommendedLevel}</Badge> : null}
+      </div>
+
+      <p className="small muted world-clamp">{encounter.strategyNotes || encounter.notes}</p>
+
+      {encounter.defaultRoute ? (
+        <div className="world-note">
+          Plan: {encounter.defaultRoute}
+          {encounter.returnObjective ? ` · Return: ${encounter.returnObjective}` : ""}
+        </div>
+      ) : null}
+
+      <div className="world-badges">
+        {step ? (
+          <button
+            className="chip quest-route-chip"
+            onClick={() =>
+              navigate(`/journey?area=${encodeURIComponent(step.area)}&step=${encodeURIComponent(step.id)}`)
+            }
+          >
+            <Icon name="map" size={12} /> Step {step.order + 1} · {step.area}
+          </button>
+        ) : (
+          <span className="tiny faint">No route step linked</span>
+        )}
+      </div>
+
+      <div className="world-card-actions">
+        <Button
+          size="sm"
+          variant={status === "defeated" ? "primary" : "default"}
+          icon="trophy"
+          aria-label={`Mark ${encounter.name} defeated`}
+          onClick={() => onStatus(status === "defeated" ? null : "defeated")}
+        >
+          Defeated
+        </Button>
+        <Button
+          size="sm"
+          variant={status === "deferred" ? "primary" : "default"}
+          icon="clock"
+          aria-label={`Defer ${encounter.name}`}
+          onClick={() => onStatus(status === "deferred" ? null : "deferred")}
+        >
+          Defer
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          iconRight="chevronRight"
+          aria-label={`Open details for ${encounter.name}`}
+          onClick={onOpen}
+        >
+          Details
+        </Button>
+      </div>
+    </article>
+  );
+}
+
+function EncounterDetail({ encounter, status }: EncounterDetailProps) {
+  const steps = encounter.routeStepIds.flatMap((id) => {
+    const step = STEP_BY_ID[id];
+    return step ? [step] : [];
+  });
+  const tags = encounter.tags ?? [];
+
+  return (
+    <div className="stack" style={{ gap: 12 }}>
+      <div className="world-badges">
+        <Badge tone="accent">{encounter.type}</Badge>
+        <Badge tone={isRequired(encounter.required) ? "warning" : "default"}>
+          {isRequired(encounter.required) ? "Required" : "Optional"}
+        </Badge>
+        <Badge tone={statusTone(status)}>{statusLabel(status)}</Badge>
+        {encounter.difficulty ? <Badge tone="danger">{encounter.difficulty}</Badge> : null}
+        <Badge>{encounter.act ?? "Act I"}</Badge>
+      </div>
+
+      {encounter.strategyNotes ? (
+        <Callout tone="warning" icon="target">
+          {encounter.strategyNotes}
+        </Callout>
+      ) : null}
+
+      <dl className="kv">
+        <DetailRow label="Region" value={encounter.region} />
+        <DetailRow label="Location" value={encounter.location} />
+        <DetailRow label="Requirement" value={encounter.required} />
+        <DetailRow
+          label="Optional"
+          value={encounter.optional === undefined ? undefined : encounter.optional ? "Yes" : "No"}
+        />
+        <DetailRow
+          label="Missable"
+          value={encounter.missable === undefined ? undefined : encounter.missable ? "Yes" : "No"}
+        />
+        <DetailRow label="Achievement" value={encounter.achievement} />
+        <DetailRow
+          label="Quest related"
+          value={encounter.questRelated === undefined ? undefined : encounter.questRelated ? "Yes" : "No"}
+        />
+        <DetailRow label="Recommended level" value={encounter.recommendedLevel} />
+        <DetailRow label="Standard weapon" value={encounter.standardWeapon} />
+        <DetailRow label="Somber weapon" value={encounter.somberWeapon} />
+        <DetailRow label="Flask charges" value={encounter.flaskCharges} />
+        <DetailRow label="Flask allocation" value={encounter.flaskDistribution} />
+        <DetailRow label="Spirit ash" value={encounter.spiritAsh} />
+        <DetailRow label="NPC summon" value={encounter.npcSummon} />
+        <DetailRow label="Consumables" value={encounter.consumables} />
+        <DetailRow label="Default route" value={encounter.defaultRoute} />
+        <DetailRow label="Return objective" value={encounter.returnObjective} />
+        <DetailRow label="Rune risk" value={encounter.runeRisk} />
+        <DetailRow label="Scadutree" value={encounter.scadutree} />
+        <DetailRow label="Multiplayer" value={encounter.multiplayer} />
+        <DetailRow label="Time lock" value={encounter.timeLock} />
+        <DetailRow label="Completion unit" value={encounter.completionUnit} />
+        <DetailRow label="Confidence" value={encounter.confidence} />
+        <DetailRow label="Validation" value={encounter.validation} />
+      </dl>
+
+      {encounter.notes ? (
+        <div>
+          <div className="world-field-label">Notes</div>
+          <p className="quest-text">{encounter.notes}</p>
+        </div>
+      ) : null}
+
+      {encounter.notes2 ? (
+        <div>
+          <div className="world-field-label">Route note</div>
+          <p className="quest-text">{encounter.notes2}</p>
+        </div>
+      ) : null}
+
+      {tags.length ? (
+        <div>
+          <div className="world-field-label">Tags</div>
+          <div className="tag-list">
+            {tags.map((tag) => (
+              <span className="chip" key={tag}>
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {steps.length ? (
+        <div>
+          <div className="world-field-label">Linked route steps</div>
+          <div className="tag-list">
+            {steps.map((step) => (
+              <button
+                key={step.id}
+                className="chip quest-route-chip"
+                onClick={() =>
+                  navigate(`/journey?area=${encodeURIComponent(step.area)}&step=${encodeURIComponent(step.id)}`)
+                }
+              >
+                <Icon name="map" size={12} /> Step {step.order + 1} · {step.area}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 export function BossesPage() {
+  const route = useRoute();
+  const journey = useActiveJourney();
+  const toast = useToast();
+
+  const encounterParam = route.query.get("encounter");
+  const bossParam = route.query.get("boss");
+  const tabParam = route.query.get("tab");
+  const validBoss = bossParam && BOSS_NAMES.includes(bossParam) ? bossParam : undefined;
+  const tab: BossTab =
+    tabParam === "prep" || (!tabParam && validBoss && !encounterParam) ? "prep" : "encounters";
+
+  const selectedEncounter = encounterParam
+    ? ENCOUNTERS.find((encounter) => encounter.id === encounterParam)
+    : undefined;
+
+  const [query, setQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [regionFilter, setRegionFilter] = useState("all");
+  const [requiredFilter, setRequiredFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const [bossQuery, setBossQuery] = useState("");
+  const [buildFilter, setBuildFilter] = useState("all");
+  const [levelFilter, setLevelFilter] = useState("all");
+  const [strategyId, setStrategyId] = useState<string | null>(null);
+
+  const selectedBoss = validBoss ?? BOSS_NAMES[0];
+  const strategies = BOSS_STRATEGIES_BY_BOSS[selectedBoss] ?? [];
+
+  const encounterTypes = useMemo(
+    () => [...new Set(ENCOUNTERS.map((encounter) => encounter.type))].sort((a, b) => a.localeCompare(b)),
+    [],
+  );
+  const encounterRegions = useMemo(
+    () => [...new Set(ENCOUNTERS.map((encounter) => encounter.region))].sort((a, b) => a.localeCompare(b)),
+    [],
+  );
+
+  const buildOptions = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const strategy of strategies) {
+      const profile = PROFILE_BY_ID[strategy.buildId];
+      if (profile) map.set(profile.archetypeId, profile.archetype);
+    }
+    return [...map.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+  }, [strategies]);
+
+  const levelOptions = useMemo(
+    () => [...new Set(strategies.map((strategy) => strategy.level))].sort((a, b) => a - b),
+    [strategies],
+  );
+
+  useEffect(() => {
+    setBuildFilter("all");
+    setLevelFilter("all");
+    setStrategyId(null);
+  }, [selectedBoss]);
+
+  const filteredEncounters = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return ENCOUNTERS.filter((encounter) => {
+      if (typeFilter !== "all" && encounter.type !== typeFilter) return false;
+      if (regionFilter !== "all" && encounter.region !== regionFilter) return false;
+      if (requiredFilter === "required" && !isRequired(encounter.required)) return false;
+      if (requiredFilter === "optional" && isRequired(encounter.required)) return false;
+      const status = journey.bosses[encounter.id];
+      if (statusFilter === "pending" && status) return false;
+      if (statusFilter === "defeated" && status !== "defeated") return false;
+      if (statusFilter === "deferred" && status !== "deferred") return false;
+      if (!q) return true;
+      const haystack = [
+        encounter.name,
+        encounter.type,
+        encounter.region,
+        encounter.location,
+        encounter.notes,
+        encounter.notes2,
+        encounter.strategyNotes,
+        encounter.required,
+        ...(encounter.tags ?? []),
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [query, typeFilter, regionFilter, requiredFilter, statusFilter, journey.bosses]);
+
+  const filteredBosses = useMemo(() => {
+    const q = bossQuery.trim().toLowerCase();
+    if (!q) return BOSS_NAMES;
+    return BOSS_NAMES.filter((boss) => boss.toLowerCase().includes(q));
+  }, [bossQuery]);
+
+  const filteredStrategies = useMemo(
+    () =>
+      strategies
+        .filter((strategy) => {
+          const profile = PROFILE_BY_ID[strategy.buildId];
+          if (buildFilter !== "all" && profile?.archetypeId !== buildFilter) return false;
+          if (levelFilter !== "all" && String(strategy.level) !== levelFilter) return false;
+          return true;
+        })
+        .sort((a, b) => {
+          if (a.level !== b.level) return a.level - b.level;
+          const nameA = PROFILE_BY_ID[a.buildId]?.archetype ?? a.buildId;
+          const nameB = PROFILE_BY_ID[b.buildId]?.archetype ?? b.buildId;
+          return nameA.localeCompare(nameB);
+        }),
+    [strategies, buildFilter, levelFilter],
+  );
+
+  const activeStrategy: BossStrategy | undefined =
+    filteredStrategies.find((strategy) => strategy.id === strategyId) ?? filteredStrategies[0];
+  const strategyLevels = [...new Set(filteredStrategies.map((strategy) => strategy.level))].sort(
+    (a, b) => a - b,
+  );
+
+  const requiredCount = ENCOUNTERS.filter((encounter) => isRequired(encounter.required)).length;
+  const defeatedCount = ENCOUNTERS.filter((encounter) => journey.bosses[encounter.id] === "defeated").length;
+  const deferredCount = ENCOUNTERS.filter((encounter) => journey.bosses[encounter.id] === "deferred").length;
+
+  const goTab = (id: string) => {
+    const next = id === "prep" ? "prep" : "encounters";
+    navigate(
+      `/bosses${queryString({ tab: next === "prep" ? "prep" : undefined, boss: next === "prep" ? selectedBoss : undefined })}`,
+    );
+  };
+
+  const selectBoss = (boss: string) => {
+    navigate(`/bosses?tab=prep&boss=${encodeURIComponent(boss)}`);
+  };
+
+  const openEncounter = (id: string) => {
+    navigate(`/bosses?encounter=${encodeURIComponent(id)}`);
+  };
+
+  const applyStatus = (encounter: Encounter, status: BossStatus | null) => {
+    setBossStatus(encounter.id, status);
+    toast.push(
+      status ? `${encounter.name} marked ${status}.` : `${encounter.name} status cleared.`,
+      "success",
+    );
+  };
+
+  const clearEncounterFilters = () => {
+    setQuery("");
+    setTypeFilter("all");
+    setRegionFilter("all");
+    setRequiredFilter("all");
+    setStatusFilter("all");
+  };
+
+  const linkedEncounter = ENCOUNTERS.find((encounter) => encounter.name === selectedBoss);
+  const bossStatus = linkedEncounterStatus(selectedBoss, journey.bosses);
+
   return (
     <div className="page">
-      <PageHeader eyebrow="Companion" title="Bosses" description="This module is being wired to the canonical content model." />
-      <div className="card card-pad">
-        <p className="muted">Canonical data is loaded. The interactive module is the next implementation slice.</p>
-      </div>
+      <PageHeader
+        eyebrow={`${journey.label} · Encounters and strategy`}
+        title="Bosses"
+        description={
+          <>
+            {ENCOUNTERS.length} catalogued route encounters with readiness notes and persistent outcomes, plus{" "}
+            {BOSS_NAMES.length} major bosses covered by {bossStrategyCount(selectedBoss)} strategies per target at
+            level {ALL_LEVELS.join(" and ")}. Strategy detail follows the selected build; encounter outcomes stay per
+            journey.
+          </>
+        }
+        actions={
+          <>
+            <Button icon="map" onClick={() => navigate("/journey")}>
+              Open journey
+            </Button>
+            <Button variant="ghost" icon="sword" onClick={() => navigate("/builds")}>
+              Build details
+            </Button>
+          </>
+        }
+      />
+
+      <TabBar items={TABS} value={tab} onChange={goTab} />
+
+      {tab === "encounters" ? (
+        <div style={{ marginTop: 16 }}>
+          <section className="card card-pad">
+            <div className="world-toolbar">
+              <div className="world-filters">
+                <SearchInput
+                  className="world-filter-search"
+                  value={query}
+                  onChange={setQuery}
+                  placeholder="Search encounters, tags, notes…"
+                />
+                <Select
+                  label="Type"
+                  className="world-filter-field"
+                  value={typeFilter}
+                  onChange={(event) => setTypeFilter(event.target.value)}
+                >
+                  <option value="all">All types</option>
+                  {encounterTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </Select>
+                <Select
+                  label="Region"
+                  className="world-filter-field"
+                  value={regionFilter}
+                  onChange={(event) => setRegionFilter(event.target.value)}
+                >
+                  <option value="all">All regions</option>
+                  {encounterRegions.map((region) => (
+                    <option key={region} value={region}>
+                      {region}
+                    </option>
+                  ))}
+                </Select>
+                <Select
+                  label="Requirement"
+                  className="world-filter-field"
+                  value={requiredFilter}
+                  onChange={(event) => setRequiredFilter(event.target.value)}
+                >
+                  <option value="all">Any requirement</option>
+                  <option value="required">Required</option>
+                  <option value="optional">Optional</option>
+                </Select>
+                <Select
+                  label="Status"
+                  className="world-filter-field"
+                  value={statusFilter}
+                  onChange={(event) => setStatusFilter(event.target.value)}
+                >
+                  <option value="all">Any status</option>
+                  <option value="pending">Pending</option>
+                  <option value="defeated">Defeated</option>
+                  <option value="deferred">Deferred</option>
+                </Select>
+              </div>
+              <span className="badge">
+                {filteredEncounters.length} / {ENCOUNTERS.length}
+              </span>
+            </div>
+
+            <div className="world-summary">
+              <div className="world-summary-cell">
+                <div className="k">Encounters</div>
+                <div className="v">{ENCOUNTERS.length}</div>
+                <div className="d">catalogued route encounters</div>
+              </div>
+              <div className="world-summary-cell">
+                <div className="k">Required</div>
+                <div className="v">{requiredCount}</div>
+                <div className="d">required or conditionally required</div>
+              </div>
+              <div className="world-summary-cell">
+                <div className="k">Defeated</div>
+                <div className="v">{defeatedCount}</div>
+                <div className="d">recorded in {journey.label}</div>
+              </div>
+              <div className="world-summary-cell">
+                <div className="k">Deferred</div>
+                <div className="v">{deferredCount}</div>
+                <div className="d">postponed with a return window</div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 14 }}>
+              <ProgressBar
+                value={ENCOUNTERS.length ? (defeatedCount / ENCOUNTERS.length) * 100 : 0}
+                label={`${defeatedCount} of ${ENCOUNTERS.length} encounters recorded as defeated`}
+                detail={`${deferredCount} deferred`}
+              />
+            </div>
+          </section>
+
+          {filteredEncounters.length ? (
+            <div className="world-encounter-grid">
+              {filteredEncounters.map((encounter) => (
+                <EncounterCard
+                  key={encounter.id}
+                  encounter={encounter}
+                  status={journey.bosses[encounter.id]}
+                  onOpen={() => openEncounter(encounter.id)}
+                  onStatus={(status) => applyStatus(encounter, status)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div style={{ marginTop: 14 }}>
+              <EmptyState
+                title="No encounters match"
+                description="Adjust the search, type, region, requirement, or status filter."
+                icon="skull"
+                action={
+                  <Button variant="primary" icon="refresh" onClick={clearEncounterFilters}>
+                    Reset filters
+                  </Button>
+                }
+              />
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="world-split">
+          <aside className="card card-pad">
+            <SectionTitle title="Bosses" note={`${BOSS_NAMES.length} targets`} />
+            <SearchInput value={bossQuery} onChange={setBossQuery} placeholder="Search bosses…" />
+            <div className="world-roster">
+              {filteredBosses.map((boss) => {
+                const linked = linkedEncounterStatus(boss, journey.bosses);
+                return (
+                  <button
+                    key={boss}
+                    className={`world-roster-item ${boss === selectedBoss ? "active" : ""}`.trim()}
+                    aria-current={boss === selectedBoss ? "true" : undefined}
+                    onClick={() => selectBoss(boss)}
+                  >
+                    <span className="grow">
+                      <span className="world-roster-title">{boss}</span>
+                      <span className="world-roster-sub">
+                        {bossStrategyCount(boss)} strategies · levels {ALL_LEVELS.join(" / ")}
+                      </span>
+                    </span>
+                    {linked ? (
+                      <Badge tone={statusTone(linked)} className="world-roster-badge">
+                        {linked === "defeated" ? "Defeated" : "Deferred"}
+                      </Badge>
+                    ) : null}
+                  </button>
+                );
+              })}
+              {filteredBosses.length === 0 ? <p className="small faint">No boss matches this search.</p> : null}
+            </div>
+          </aside>
+
+          <div className="world-boss-panel stack">
+            <section className="card card-pad card-accent">
+              <div className="world-detail-head">
+                <div className="grow">
+                  <div className="eyebrow" style={{ marginBottom: 4 }}>
+                    Major boss prep
+                  </div>
+                  <h2 className="world-boss-title">{selectedBoss}</h2>
+                  <div className="small muted" style={{ marginTop: 4 }}>
+                    {bossStrategyCount(selectedBoss)} strategy rows · {buildOptions.length} builds · levels{" "}
+                    {levelOptions.join(" / ")}
+                  </div>
+                </div>
+                <div className="world-badges">
+                  <Badge tone="accent">{filteredStrategies.length} shown</Badge>
+                  {linkedEncounter ? (
+                    <Badge tone={statusTone(bossStatus)}>{statusLabel(bossStatus)}</Badge>
+                  ) : null}
+                </div>
+              </div>
+
+              {linkedEncounter ? (
+                <div className="row wrap" style={{ marginTop: 10 }}>
+                  <Badge tone="info">{linkedEncounter.type}</Badge>
+                  <Badge>{linkedEncounter.region}</Badge>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    icon="skull"
+                    onClick={() => openEncounter(linkedEncounter.id)}
+                  >
+                    Open encounter record
+                  </Button>
+                </div>
+              ) : (
+                <p className="world-note" style={{ marginTop: 8 }}>
+                  No linked route encounter in the catalogued Act I set; strategy rows still apply to the major boss.
+                </p>
+              )}
+
+              <div className="world-filters" style={{ marginTop: 14 }}>
+                <Select
+                  label="Build"
+                  className="world-filter-field"
+                  value={buildFilter}
+                  onChange={(event) => setBuildFilter(event.target.value)}
+                >
+                  <option value="all">All builds</option>
+                  {buildOptions.map(([id, name]) => (
+                    <option key={id} value={id}>
+                      {name}
+                    </option>
+                  ))}
+                </Select>
+                <Select
+                  label="Level"
+                  className="world-filter-field"
+                  value={levelFilter}
+                  onChange={(event) => setLevelFilter(event.target.value)}
+                >
+                  <option value="all">Both levels</option>
+                  {levelOptions.map((level) => (
+                    <option key={level} value={String(level)}>
+                      Level {level}
+                    </option>
+                  ))}
+                </Select>
+                <Button
+                  variant="ghost"
+                  icon="refresh"
+                  onClick={() => {
+                    setBuildFilter("all");
+                    setLevelFilter("all");
+                    setStrategyId(null);
+                  }}
+                >
+                  Reset
+                </Button>
+              </div>
+            </section>
+
+            {filteredStrategies.length ? (
+              <>
+                <section className="card card-pad">
+                  <SectionTitle
+                    title="Build roster"
+                    note={`${filteredStrategies.length} rows grouped by level`}
+                  />
+                  {strategyLevels.map((level) => (
+                    <div className="world-level-block" key={level}>
+                      <div className="world-level-label">
+                        Level {level}
+                        <span className="faint">
+                          {filteredStrategies.filter((strategy) => strategy.level === level).length} builds
+                        </span>
+                      </div>
+                      <div className="world-build-grid">
+                        {filteredStrategies
+                          .filter((strategy) => strategy.level === level)
+                          .map((strategy) => {
+                            const profile = PROFILE_BY_ID[strategy.buildId];
+                            return (
+                              <button
+                                key={strategy.id}
+                                className={`world-build-chip ${
+                                  activeStrategy?.id === strategy.id ? "active" : ""
+                                }`.trim()}
+                                aria-pressed={activeStrategy?.id === strategy.id}
+                                onClick={() => setStrategyId(strategy.id)}
+                              >
+                                <span className="world-build-name">
+                                  {profile?.archetype ?? strategy.buildId}
+                                </span>
+                                <span className="world-build-sub">
+                                  {strategy.buildId} · {strategy.loadout}
+                                </span>
+                              </button>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  ))}
+                </section>
+
+                {activeStrategy ? (
+                  <section className="card card-pad">
+                    <div className="world-detail-head">
+                      <div className="grow">
+                        <div className="row wrap" style={{ gap: 7 }}>
+                          <Badge tone="accent">{activeStrategy.buildId}</Badge>
+                          <Badge>Level {activeStrategy.level}</Badge>
+                          <Badge tone="info">{activeStrategy.loadout}</Badge>
+                        </div>
+                        <h3 style={{ fontSize: 21, marginTop: 6 }}>
+                          {PROFILE_BY_ID[activeStrategy.buildId]?.archetype ?? activeStrategy.buildId}
+                        </h3>
+                        <div className="small muted" style={{ marginTop: 3 }}>
+                          {activeStrategy.location}
+                        </div>
+                      </div>
+                      <div className="row wrap">
+                        {PROFILE_BY_ID[activeStrategy.buildId] ? (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            icon="sword"
+                            onClick={() =>
+                              navigate(
+                                `/builds?archetype=${encodeURIComponent(
+                                  PROFILE_BY_ID[activeStrategy.buildId].archetypeId,
+                                )}`,
+                              )
+                            }
+                          >
+                            Open build
+                          </Button>
+                        ) : null}
+                        {linkedEncounter ? (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            icon="map"
+                            onClick={() =>
+                              navigate(`/bosses?encounter=${encodeURIComponent(linkedEncounter.id)}`)
+                            }
+                          >
+                            Encounter record
+                          </Button>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: 12 }}>
+                      <div className="gear-row">
+                        <span className="gear-label">Main weapon</span>
+                        <span className="gear-value">{activeStrategy.mainWeapon}</span>
+                      </div>
+                      <div className="gear-row">
+                        <span className="gear-label">Skill</span>
+                        <span className="gear-value">{activeStrategy.skill}</span>
+                      </div>
+                      <div className="gear-row">
+                        <span className="gear-label">Talismans</span>
+                        <span className="gear-value">{activeStrategy.talismans}</span>
+                      </div>
+                      <div className="gear-row">
+                        <span className="gear-label">Physick</span>
+                        <span className="gear-value">{activeStrategy.physick}</span>
+                      </div>
+                      <div className="gear-row">
+                        <span className="gear-label">Flask</span>
+                        <span className="gear-value">{activeStrategy.flask}</span>
+                      </div>
+                      <div className="gear-row">
+                        <span className="gear-label">Buffs</span>
+                        <span className="gear-value">{activeStrategy.buffs}</span>
+                      </div>
+                    </div>
+
+                    <div className="world-strategy-grid">
+                      <StrategyField label="Opening" value={activeStrategy.opening} wide />
+                      <StrategyField label="Phase 1" value={activeStrategy.phase1} wide />
+                      <StrategyField label="Phase 2" value={activeStrategy.phase2} wide />
+                      <StrategyField label="Safe first clear" value={activeStrategy.safeClear} wide />
+                      <StrategyField label="Max-damage plan" value={activeStrategy.maxDamage} wide />
+                      <StrategyField label="Boss-specific tool" value={activeStrategy.tool} />
+                      <StrategyField label="Avoid / failure points" value={activeStrategy.avoid} wide />
+                    </div>
+                  </section>
+                ) : null}
+              </>
+            ) : (
+              <EmptyState
+                title="No strategy rows for this filter"
+                description="Pick another build or level for this boss."
+                icon="sword"
+                action={
+                  <Button
+                    variant="primary"
+                    icon="refresh"
+                    onClick={() => {
+                      setBuildFilter("all");
+                      setLevelFilter("all");
+                    }}
+                  >
+                    Clear filters
+                  </Button>
+                }
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      <Drawer
+        open={Boolean(selectedEncounter)}
+        title={selectedEncounter?.name ?? "Encounter"}
+        subtitle={
+          selectedEncounter ? `${selectedEncounter.region} · ${selectedEncounter.location}` : undefined
+        }
+        onClose={() => navigate("/bosses")}
+        footer={
+          selectedEncounter ? (
+            <div className="row-between wrap">
+              <div className="row wrap">
+                <Button
+                  size="sm"
+                  variant={journey.bosses[selectedEncounter.id] === "defeated" ? "primary" : "default"}
+                  icon="trophy"
+                  aria-label={`Mark ${selectedEncounter.name} defeated`}
+                  onClick={() =>
+                    applyStatus(
+                      selectedEncounter,
+                      journey.bosses[selectedEncounter.id] === "defeated" ? null : "defeated",
+                    )
+                  }
+                >
+                  Defeated
+                </Button>
+                <Button
+                  size="sm"
+                  variant={journey.bosses[selectedEncounter.id] === "deferred" ? "primary" : "default"}
+                  icon="clock"
+                  aria-label={`Defer ${selectedEncounter.name}`}
+                  onClick={() =>
+                    applyStatus(
+                      selectedEncounter,
+                      journey.bosses[selectedEncounter.id] === "deferred" ? null : "deferred",
+                    )
+                  }
+                >
+                  Defer
+                </Button>
+              </div>
+              <span className="tiny faint">{selectedEncounter.id}</span>
+            </div>
+          ) : null
+        }
+      >
+        {selectedEncounter ? (
+          <EncounterDetail
+            encounter={selectedEncounter}
+            status={journey.bosses[selectedEncounter.id]}
+          />
+        ) : null}
+      </Drawer>
     </div>
   );
 }

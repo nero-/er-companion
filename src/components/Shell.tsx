@@ -34,6 +34,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/farms": "Farms",
   "/tiers": "Tier Lists",
   "/completion": "Completion",
+  "/patch": "Patch & DLC",
   "/settings": "Settings",
 };
 
@@ -78,6 +79,7 @@ export function Shell({ children }: { children: ReactNode }) {
       label: "Journey",
       items: [
         { path: "/completion", label: "Completion", icon: "trophy" },
+        { path: "/patch", label: "Patch & DLC", icon: "spark" },
         { path: "/settings", label: "Settings", icon: "settings" },
       ],
     },
@@ -143,7 +145,7 @@ export function Shell({ children }: { children: ReactNode }) {
             style={{ width: "100%", textAlign: "left", cursor: "pointer" }}
             onClick={() => navigate("/settings")}
           >
-            <div className="part-row row-between">
+            <div className="row-between">
               <div className="party-name">
                 <span className="truncate">{character.name}</span>
                 <span className="badge badge-accent">Lv {level}</span>

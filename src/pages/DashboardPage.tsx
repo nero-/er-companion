@@ -23,6 +23,7 @@ import {
 import { formatNumber, itemGroupIcon } from "../lib/format";
 import { navigate } from "../lib/router";
 import { levelFromStats } from "../lib/classes";
+import { DATA_BASELINE, GAME_VERSION } from "../data/game";
 
 export function DashboardPage() {
   const state = useAppState();
@@ -403,7 +404,8 @@ export function DashboardPage() {
 
       <p className="tiny faint" style={{ marginTop: 26 }}>
         {formatNumber(route.total)} Act I route steps · {chronology.total} whole-game chronology actions ·{" "}
-        {formatNumber(collection.total)} catalogued items · source workbook {state.settings.spoilerMode === "strict" ? "spoiler-safe" : "revealed"} mode
+        {formatNumber(collection.total)} catalogued items · game {GAME_VERSION.app}/Reg {GAME_VERSION.regulation} · content baseline {DATA_BASELINE.regulation} ·{" "}
+        {state.settings.spoilerMode === "strict" ? "spoiler-safe" : "revealed"} mode
       </p>
     </div>
   );

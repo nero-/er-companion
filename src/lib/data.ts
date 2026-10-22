@@ -6,6 +6,7 @@ import buildsJson from "../data/builds.json";
 import farmsJson from "../data/farms.json";
 import loreJson from "../data/lore.json";
 import tiersJson from "../data/tiers.json";
+import { TARNISHED_ENCOUNTERS, TARNISHED_ITEMS } from "../data/game";
 import type {
   Archetype,
   BossStrategy,
@@ -44,10 +45,10 @@ export const ROUTE_AREAS: RouteArea[] = routeJson.areas;
 export const OBJECTIVES: Objective[] = routeJson.objectives;
 export const SUPPLEMENTAL: Supplemental[] = routeJson.supplemental;
 export const CHRONOLOGY_AREAS = routeJson.chronologyAreas;
-export const ITEMS: Item[] = itemsJson.items;
+export const ITEMS: Item[] = [...itemsJson.items, ...TARNISHED_ITEMS];
 export const LORE: LoreEntry[] = loreJson.entries;
 export const TIERS: TierEntry[] = tiersJson.entries;
-export const ENCOUNTERS: Encounter[] = worldJson.encounters;
+export const ENCOUNTERS: Encounter[] = [...worldJson.encounters, ...TARNISHED_ENCOUNTERS];
 export const NPC_STATES: NpcState[] = worldJson.npcStates;
 export const DIALOGUE_EVENTS: DialogueEvent[] = worldJson.dialogueEvents;
 export const KNOWLEDGE: Knowledge[] = worldJson.knowledge;

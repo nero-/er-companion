@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-22T07:53:49.076375+00:00",
+  "generatedAt": "2026-10-22T10:11:27.522487+00:00",
   "source": {
     "file": "Elden Ring Definitive Companion — v1.1.0 — Production Certified.xlsx",
     "sha256": "9167efbd69b026f4ae844600ca3f63f5ab4234f58a0ba1057e4dc9c047897776",
@@ -65,7 +65,7 @@
     "endings": 6,
     "certifications": 7,
     "journeyPlans": 4,
-    "remembrances": 24,
+    "remembrances": 25,
     "trophyCues": 12,
     "transitionGates": 16,
     "merchantCloseout": 22,

@@ -103,6 +103,22 @@ export const CLASSES: CharacterClass[] = [
     stats: { vig: 10, mnd: 10, end: 10, str: 10, dex: 10, int: 10, fai: 10, arc: 10 },
     blurb: "Blank slate. Maximum respec freedom and the lowest investment cost in any stat.",
   },
+  {
+    id: "idus-knight",
+    name: "Idus Knight",
+    level: 7,
+    stats: { vig: 10, mnd: 12, end: 11, str: 13, dex: 15, int: 8, fai: 11, arc: 6 },
+    blurb:
+      "Tarnished Pack class from the land of Idus: lightweight attire and weaponry, high Dexterity, and enough Faith for hybrid casting. Added in patch 1.17.",
+  },
+  {
+    id: "heavy-knight",
+    name: "Heavy Knight",
+    level: 10,
+    stats: { vig: 14, mnd: 8, end: 17, str: 15, dex: 11, int: 7, fai: 8, arc: 9 },
+    blurb:
+      "Tarnished Pack class in bulky steel armor with a curved greatsword. High Endurance and Strength, minimal Intelligence/Faith. Added in patch 1.17; final release level is 10.",
+  },
 ];
 
 export const CLASS_BY_ID: Record<string, CharacterClass> = Object.fromEntries(

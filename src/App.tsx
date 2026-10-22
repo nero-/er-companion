@@ -13,6 +13,7 @@ import { FarmsPage } from "./pages/FarmsPage";
 import { TiersPage } from "./pages/TiersPage";
 import { CompletionPage } from "./pages/CompletionPage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { PatchPage } from "./pages/PatchPage";
 
 function Page() {
   const route = useRoute();
@@ -39,6 +40,8 @@ function Page() {
       return <TiersPage />;
     case "/completion":
       return <CompletionPage />;
+    case "/patch":
+      return <PatchPage />;
     case "/settings":
       return <SettingsPage />;
     default:
