@@ -1,6 +1,6 @@
 # Feature Crosswalk — Workbook & Research → Canonical Data → Application
 
-Final integration state: working tree after commit `2ceedc0`, 2026-10-22.  
+Final integration state: commit `dad630d`, 2026-10-22.  
 Foundation commit: `b7c6c76c31067de07042cc15d822db443aaf34de`.  
 Evidence: final `npm run build`, `npm test` (28 tests), desktop and 390 px sweeps (20 desktop / 9 mobile route states), offline reload, backup/restore and new-journey drills, plus source inspection.
 
