@@ -1,18 +1,18 @@
 # Baseline & Final Integration Audit — Elden Ring Definitive Companion
 
 - Initial baseline commit: `b7c6c76c31067de07042cc15d822db443aaf34de` (`master`)
-- Final verified state: uncommitted working tree, 2026-10-22 09:54 UTC
+- Final verified implementation: commit `2ceedc0` (`master`), 2026-10-22; audit documents committed separately
 - Repository: `/home/kal/Agent/Projects/er-companion`
 - Workbook: `Elden Ring Definitive Companion — v1.1.0 — Production Certified.xlsx`
 - Workbook SHA-256: `9167efbd69b026f4ae844600ca3f63f5ab4234f58a0ba1057e4dc9c047897776`
 - Workbook size: 22,032,045 bytes (21.01 MiB), 79 sheets (17 visible, 62 hidden)
 - Evidence: final `npm run build` / `npm test`, manual browser sweeps, offline drill, backup/restore drill, `docs/audit/DATA_INTEGRITY.json`, `WORKBOOK_INVENTORY.csv`, and source inspection
 
-This document separates **observed** evidence from **inferred** conclusions. Build, test, browser, offline and backup results below are the final integration verification evidence; filesystem facts, canonical counts and source wiring were independently re-checked during this audit. The foundation commit was a partial implementation; the final working tree is the implemented companion. No source file is modified by this audit.
+This document separates **observed** evidence from **inferred** conclusions. Build, test, browser, offline and backup results below are the final integration verification evidence; filesystem facts, canonical counts and source wiring were independently re-checked during this audit. The foundation commit was a partial implementation; commit `2ceedc0` is the implemented companion. No source file is modified by this audit.
 
 ## Executive findings
 
-1. **The workspace began without an application repository.** Git contains one foundation commit, no tags, no other branches, and no prior application history. The pre-existing inputs were the workbook, the handoff brief, and `PLAN.md`. The final integration is currently uncommitted working-tree state.
+1. **The workspace began without an application repository.** Git contains one foundation commit, no tags, no other branches, and no prior application history. The pre-existing inputs were the workbook, the handoff brief, and `PLAN.md`. The final integration is committed in `2ceedc0`.
 2. **The workbook is preserved and identified.** SHA-256 was independently recomputed and matches `DATA_INTEGRITY.json`. `Settings` reports workbook v12.44, Companion v10.44, production state v1.1.0. The older hidden `Release Manifest` still says v11.53 / 69 sheets / 16 player tabs and is treated as historical.
 3. **Final build and tests pass.** `npm run build` is TypeScript-clean with Vite 8, 58 modules, JS 11,756.98 kB (gzip 1,288.85 kB), CSS 82.37 kB (gzip 14.73 kB), and a 9-entry, 11,563.40 KiB PWA precache. `npm test` passes 18 tests in one file.
 4. **All 13 application routes render cleanly.** Desktop and 390 px sweeps covered `/`, `/journey`, `/collection`, `/builds`, `/character`, `/bosses`, `/quests`, `/lore`, `/farms`, `/tiers`, `/completion`, `/patch`, and `/settings` with 0 console/page errors and no page-level horizontal overflow.
@@ -43,14 +43,14 @@ This document separates **observed** evidence from **inferred** conclusions. Bui
 | `docs/audit/WORKBOOK_INVENTORY.csv` | 79 rows plus header | Sheet inventory |
 | `README.md` | Current product/run/provenance summary | Operator documentation |
 
-At the initial baseline commit, no `README`, CI workflow, `src-tauri/`, SQLite schema, prior audit set, Apps Script `.gs` file, or test-result artifact was present. These final additions are working-tree state, not the foundation commit.
+At the initial baseline commit, no `README`, CI workflow, `src-tauri/`, SQLite schema, prior audit set, Apps Script `.gs` file, or test-result artifact was present. These final additions are in `2ceedc0` and the audit revision, not the foundation commit.
 
 ## Git and workspace state
 
-- New repository on `master`; one commit; no tags; no remotes.
-- The final implementation is uncommitted. Modified and new source files are expected integration work, not audit edits.
+- New repository on `master`; foundation + feature commits; no tags; no remotes.
+- The final implementation is committed in `2ceedc0`; the audit documents are committed separately. No source file is modified by this audit.
 - The workbook is excluded by `*.xlsx`; there is no committed `data/source/*.xlsx` copy. The checksum is the source fingerprint.
-- The foundation commit added the data pipeline, store, and shell. The final working tree adds the feature modules, Tarnished Pack overlay, patch page, styles, tests, and audit deliverables.
+- The foundation commit added the data pipeline, store, and shell. Commit `2ceedc0` adds the feature modules, Tarnished Pack overlay, patch page, styles, tests, and point-of-use balance warnings.
 
 ## Build, test and runtime verification
 

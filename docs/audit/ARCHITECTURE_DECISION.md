@@ -3,14 +3,14 @@
 - Status: **Accepted**
 - Date: 2026-10-22
 - Foundation commit: `b7c6c76c31067de07042cc15d822db443aaf34de`
-- Final verified state: uncommitted working tree
+- Final verified state: commit `2ceedc0`
 - Decision owner: engineering
 - Supersedes: none
 - Review triggers: full-game route source, licensing clearance, Tauri toolchain, cross-device requirement, 1.17 re-ranking
 
 ## 1. Context
 
-The project started from a certified workbook, not an existing application repository. The only pre-existing artifacts were the workbook, a handoff brief and `PLAN.md`. The repository has one foundation commit; the final integration is working-tree state.
+The project started from a certified workbook, not an existing application repository. The only pre-existing artifacts were the workbook, a handoff brief and `PLAN.md`. The repository has a foundation commit and the final integration commit `2ceedc0`.
 
 Final inspection found:
 
