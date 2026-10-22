@@ -1,0 +1,80 @@
+sheet,state,nonEmptyRows
+START HERE,visible,56
+Dashboard,visible,154
+Journey Planner,visible,258
+Choices & Consequences,visible,34
+Character Planner,visible,2617
+Build Center,visible,371
+Armory & Fashion,visible,2401
+Tier Lists,visible,895
+Lore Companion,visible,97
+Master Completion,visible,618
+Supplemental Content,visible,118
+Farmable Collection,visible,323
+Crafting Material Farms,visible,112
+Remembrance Planner,visible,58
+Endings & Achievements,visible,21
+NPC & Dialogue Audit,visible,98
+External Resources,visible,48
+Save & Journey Registry,hidden,492
+Build Tech Tree,hidden,175
+Build Progression Loadouts,hidden,99
+Build Weapon Configurations,hidden,580
+Build Upgrade Planner,hidden,389
+Build Progression Sources,hidden,68
+Companion Data,hidden,80
+Route Guide,hidden,1172
+Objectives,hidden,95
+Completion Units,hidden,8
+Master Collectibles,hidden,2107
+NPC States,hidden,52
+Dialogue Events,hidden,42
+Bosses & Encounters,hidden,51
+World States,hidden,154
+Traversal,hidden,65
+Relationships,hidden,77
+Validation Log,hidden,3056
+Engineering,hidden,95
+Settings,hidden,38
+Objective Packages,hidden,16
+Permanent Collection,hidden,1788
+Finite Resources,hidden,319
+Merchants,hidden,168
+Knowledge Database,hidden,14
+Micro-Objectives,hidden,72
+Route Data,hidden,995
+Objectives Data,hidden,17
+Progression Matrix,hidden,86
+Dependency Matrix,hidden,80
+Encounter Metadata,hidden,16
+Encounter Recommendations,hidden,16
+Lockout Database,hidden,35
+Regional Audit Template,hidden,27
+Act I Collection Audit,hidden,83
+Scarab Audit,hidden,112
+Act I Reconciliation,hidden,72
+Build Catalog,hidden,20
+Build Profiles,hidden,30
+Build Loadouts,hidden,110
+Six Futures,hidden,8
+Inventory Coverage Audit,hidden,58
+Engineering Audit,hidden,1788
+Operational Acceptance,hidden,17
+Release Manifest,hidden,283
+Build Encounter Presets,hidden,2209
+Build Incantation Analysis,hidden,365
+Build Spell Packages,hidden,178
+Build Resource Presets,hidden,401
+Build Buff Matrix,hidden,91
+Build Boss Strategies,hidden,927
+Build Specialist Strategies,hidden,313
+Build Named Boss Strategies,hidden,507
+Build Named Boss Audit,hidden,124
+Build Acquisition Gates,hidden,658
+Build Production Certification,hidden,473
+Build Weapon Diversity Audit,hidden,118
+Build Weapon Analysis,hidden,731
+Build Equipment Analysis,hidden,244
+Upgrade Dependency Index,hidden,1347
+Finite Resource Allocation,hidden,291
+Collection Intelligence Index,hidden,15546
