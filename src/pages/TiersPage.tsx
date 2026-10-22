@@ -10,6 +10,7 @@ import {
   TierBadge,
 } from "../components/ui";
 import { ITEMS_BY_NAME, TIERS, TIERS_BY_LIST } from "../lib/data";
+import { PATCH_IMPACT_BY_NAME } from "../data/game";
 import { formatNumber } from "../lib/format";
 import { navigate, useRoute } from "../lib/router";
 import type { TierEntry } from "../lib/types";
@@ -224,11 +225,19 @@ export function TiersPage() {
         const href = itemMatch
           ? `#/collection?item=${encodeURIComponent(itemMatch.id)}`
           : `#/collection?q=${encodeURIComponent(entry.name)}`;
+        const patchImpact = PATCH_IMPACT_BY_NAME[entry.name];
         return (
           <>
-            <a className="tier-link" href={href}>
-              {entry.name}
-            </a>
+            <span className="row wrap" style={{ gap: 6 }}>
+              <a className="tier-link" href={href}>
+                {entry.name}
+              </a>
+              {patchImpact ? (
+                <span title={`${patchImpact.category}: ${patchImpact.summary}`}>
+                  <Badge tone="warning">1.17</Badge>
+                </span>
+              ) : null}
+            </span>
             {entry.poolType ? <div className="library-sub">{entry.poolType}</div> : null}
           </>
         );

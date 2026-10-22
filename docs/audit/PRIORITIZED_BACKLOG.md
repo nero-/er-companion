@@ -6,7 +6,7 @@ This backlog lists work that remains after the final implementation. It does not
 ## Already verified, not backlog
 
 - 13 routes implemented; desktop and 390 px sweeps pass with 0 page errors and no horizontal overflow.
-- `npm run build` passes: 58 modules; JS 11,756.39 kB (gzip 1,288.70 kB); CSS 82.37 kB (gzip 14.73 kB); 9-entry PWA precache 11,562.82 KiB.
+- `npm run build` passes: 58 modules; JS 11,756.98 kB (gzip 1,288.85 kB); CSS 82.37 kB (gzip 14.73 kB); 9-entry PWA precache 11,563.40 KiB.
 - `npm test` passes 18 tests, including route/ID integrity, build references, tier ties, lore gating, collection/equipment matching, the fixed denominator, the fixed progression fields, 25/25 remembrance extraction, and Tarnished Pack integration.
 - Offline reload renders Dashboard with a controlling service worker and 0 console errors.
 - Export → reset → import restores route progress; a new journey preserves lifetime items and creates empty journey state.

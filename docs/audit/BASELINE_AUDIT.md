@@ -14,7 +14,7 @@ This document separates **observed** evidence from **inferred** conclusions. Bui
 
 1. **The workspace began without an application repository.** Git contains one foundation commit, no tags, no other branches, and no prior application history. The pre-existing inputs were the workbook, the handoff brief, and `PLAN.md`. The final integration is currently uncommitted working-tree state.
 2. **The workbook is preserved and identified.** SHA-256 was independently recomputed and matches `DATA_INTEGRITY.json`. `Settings` reports workbook v12.44, Companion v10.44, production state v1.1.0. The older hidden `Release Manifest` still says v11.53 / 69 sheets / 16 player tabs and is treated as historical.
-3. **Final build and tests pass.** `npm run build` is TypeScript-clean with Vite 8, 58 modules, JS 11,756.39 kB (gzip 1,288.70 kB), CSS 82.37 kB (gzip 14.73 kB), and a 9-entry, 11,562.82 KiB PWA precache. `npm test` passes 18 tests in one file.
+3. **Final build and tests pass.** `npm run build` is TypeScript-clean with Vite 8, 58 modules, JS 11,756.98 kB (gzip 1,288.85 kB), CSS 82.37 kB (gzip 14.73 kB), and a 9-entry, 11,563.40 KiB PWA precache. `npm test` passes 18 tests in one file.
 4. **All 13 application routes render cleanly.** Desktop and 390 px sweeps covered `/`, `/journey`, `/collection`, `/builds`, `/character`, `/bosses`, `/quests`, `/lore`, `/farms`, `/tiers`, `/completion`, `/patch`, and `/settings` with 0 console/page errors and no page-level horizontal overflow.
 5. **Offline and recovery behavior is verified.** A service worker controlled `http://127.0.0.1:4173/`, the precache was present, and an offline reload rendered the Dashboard with 0 console errors. Export → reset → import restored two completed route steps. A new journey preserved 8 owned items and created Journey 2 with empty route state.
 6. **The final runtime catalog is 1,814 items**: 1,787 workbook permanent records plus **27 Tarnished Pack records**. Runtime encounters are **52** (50 workbook + 2 Tarnished Pack invasions), and starting classes are **12** (10 base + Idus Knight + Heavy Knight).
@@ -58,9 +58,9 @@ At the initial baseline commit, no `README`, CI workflow, `src-tauri/`, SQLite s
 
 | Check | Observed result |
 |---|---|
-| `npm run build` | Passed; TypeScript clean; Vite 8; 58 modules; JS 11,756.39 kB (gzip 1,288.70 kB); CSS 82.37 kB (gzip 14.73 kB) |
+| `npm run build` | Passed; TypeScript clean; Vite 8; 58 modules; JS 11,756.98 kB (gzip 1,288.85 kB); CSS 82.37 kB (gzip 14.73 kB) |
 | `npm test` | Passed; 18 tests, 1 file |
-| PWA precache | 9 entries; 11,562.82 KiB |
+| PWA precache | 9 entries; 11,563.40 KiB |
 | Desktop sweep | 13 routes; 0 console/page errors |
 | Mobile 390 px sweep | 13 routes; `innerWidth == scrollWidth`; no page-level horizontal overflow |
 | Offline PWA | Service worker controlling `http://127.0.0.1:4173/`; precache present; offline reload rendered Dashboard; 0 console errors |

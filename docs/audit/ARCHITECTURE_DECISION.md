@@ -48,7 +48,7 @@ Adopt a **web-first React + TypeScript + Vite PWA**:
 | Toolchain reality | `cargo`/`rustc`/`tauri` absent; Tauri cannot be built or smoke-tested here |
 | Portable saves | JSON export/import verified by a reset/restore drill |
 | Future desktop | Pure selectors and a storage adapter keep Tauri a packaging concern |
-| Bundle control | Final JS 11,756.39 kB (gzip 1,288.70 kB); one chunk remains the main performance risk |
+| Bundle control | Final JS 11,756.98 kB (gzip 1,288.85 kB); one chunk remains the main performance risk |
 
 ## 4. Architecture
 
@@ -165,7 +165,7 @@ Rules:
 
 - `registerType: "autoUpdate"`; Workbox precaches JS, CSS, HTML, SVG and WOFF2.
 - Navigation falls back to `index.html`.
-- Final precache: **9 entries, 11,562.82 KiB**.
+- Final precache: **9 entries, 11,563.40 KiB**.
 - Verified: service worker controlling `http://127.0.0.1:4173/`, 9-entry precache present, offline reload rendered Dashboard with 0 console errors.
 - Not yet verified: install prompt, cache-update migration, storage-quota failure, long-lived offline use, physical handheld.
 
@@ -174,9 +174,9 @@ Rules:
 Final `npm run build` evidence:
 
 - 58 modules.
-- JS: **11,756.39 kB** raw; **1,288.70 kB** gzip.
+- JS: **11,756.98 kB** raw; **1,288.85 kB** gzip.
 - CSS: **82.37 kB** raw; **14.73 kB** gzip.
-- PWA precache: **9 entries, 11,562.82 KiB**.
+- PWA precache: **9 entries, 11,563.40 KiB**.
 - `builds.json` alone is 8,100,097 bytes; `game.ts` adds 19,424 bytes of pack metadata.
 - `data.ts` eagerly indexes 1,814 items, 994 steps, 2,206 presets and 924 strategies.
 

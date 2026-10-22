@@ -636,3 +636,10 @@ export const PACK_HIGHLIGHTS = [
     detail: "Knight Leontiel in the Wailing Dunes and Broken Gold Mask at the Radagon statue in Leyndell.",
   },
 ];
+
+export const PATCH_IMPACT_BY_NAME: Record<string, { category: string; summary: string }> = {};
+for (const impact of PATCH_IMPACTS) {
+  for (const name of impact.affected) {
+    PATCH_IMPACT_BY_NAME[name] = { category: impact.category, summary: impact.summary };
+  }
+}

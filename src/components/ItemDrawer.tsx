@@ -3,6 +3,7 @@ import { Badge, Button, Callout, Drawer, SectionTitle, Switch, TierBadge, useToa
 import { Icon } from "./Icon";
 import { setItemOwned, useActiveCharacter, useActiveJourney } from "../lib/store";
 import { STEP_BY_ID, TIERS_BY_NAME } from "../lib/data";
+import { PATCH_IMPACT_BY_NAME } from "../data/game";
 import { stepStatusLabel, stepStatusTone } from "../lib/selectors";
 import { navigate } from "../lib/router";
 import type { Item, RouteStep, StepStatus } from "../lib/types";
@@ -34,6 +35,7 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
   if (!item) return null;
 
   const owned = character.items[item.id] === true;
+  const patchImpact = PATCH_IMPACT_BY_NAME[item.name];
   const tierEntries = Object.prototype.hasOwnProperty.call(TIERS_BY_NAME, item.name)
     ? TIERS_BY_NAME[item.name]
     : [];
@@ -86,6 +88,12 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
         </div>
       }
     >
+      {patchImpact ? (
+        <Callout tone="warning" icon="alert">
+          <strong>Patch 1.17 balance change:</strong> {patchImpact.summary} ({patchImpact.category}). The certified
+          build and tier data is 1.16.1 baseline; re-check this item before relying on its ranking.
+        </Callout>
+      ) : null}
       <dl className="kv col-kv">
         <dt>Location</dt>
         <dd>{item.location || NOT_IN_PACK}</dd>

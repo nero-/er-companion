@@ -28,7 +28,7 @@ Audit date: 2026-10-22. No workbook cell was modified.
 | Trophy cue reconciliation | 12 extracted vs 42 claimed | Only 12 numbered cue rows exist |
 | Platform ending achievements | 3 | Separate from route cues |
 | Final tests | 18 passed in 1 file | Includes denominator, progression, remembrance and pack tests |
-| Final build | Passed | 58 modules; JS 11,756.39 kB / gzip 1,288.70 kB; CSS 82.37 kB / gzip 14.73 kB; 9 precache entries; 11,562.82 KiB |
+| Final build | Passed | 58 modules; JS 11,756.98 kB / gzip 1,288.85 kB; CSS 82.37 kB / gzip 14.73 kB; 9 precache entries; 11,563.40 KiB |
 
 **Resolved during integration:** the denominator column, progression-loadout field alignment, and remembrance extraction are fixed and test-covered. They are no longer defects.
 
