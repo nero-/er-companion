@@ -2,7 +2,7 @@
 
 Date: 2026-10-22
 Scope: the additive ledgers layered over the Redmaw full-game pack — world atlas, upgrade pickups, crafting materials, reference tables, alternate NPC walkthrough, branch plan, and merchant inventory.
-Base implementation: commit `598235b` plus the beyond-Redmaw working tree. This document records observed counts and evidence; it does not re-open completed full-game integration.
+Base implementation: commit `39596b9` plus the beyond-Redmaw working tree. This document records observed counts and evidence; it does not re-open completed full-game integration.
 
 ## Release summary
 
