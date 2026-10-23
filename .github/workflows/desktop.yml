@@ -1,4 +1,5 @@
 name: Desktop builds
+run-name: Desktop builds (${{ github.ref_name }})
 
 on:
   workflow_dispatch:
