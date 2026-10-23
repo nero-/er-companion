@@ -3,6 +3,7 @@ import {
   Badge,
   Button,
   Callout,
+  Checkbox,
   Drawer,
   EmptyState,
   Modal,
@@ -19,6 +20,7 @@ import { Icon } from "../components/Icon";
 import { ART, ArtBanner, OrnamentRule } from "../components/Art";
 import {
   resolveArea,
+  setNpcWalkthroughStep,
   setSettings,
   setStepNote,
   setStepStatus,
@@ -30,6 +32,7 @@ import {
   areaProgress,
   currentAreaName,
   nextRouteStep,
+  npcWalkthroughProgress,
   routeProgress,
   stepStatusLabel,
   stepStatusTone,
@@ -41,6 +44,11 @@ import {
   ENCOUNTER_BY_ID,
   ITEM_BY_ID,
   ITEM_BY_NORMALIZED_NAME,
+  NPC_WALKTHROUGH_SECTIONS,
+  NPC_WALKTHROUGH_SECTION_BY_ID,
+  NPC_WALKTHROUGH_STEPS,
+  NPC_WALKTHROUGH_STEP_BY_ID,
+  NPC_WALKTHROUGH_STEP_SECTION,
   OBJECTIVES,
   PHASE_GATE_BY_ID,
   PHASE_GATES,
@@ -60,6 +68,8 @@ import { navigate, queryString, useRoute } from "../lib/router";
 import type {
   Encounter,
   Item,
+  NpcWalkthroughSection,
+  NpcWalkthroughStep,
   Objective,
   PhaseGate,
   RouteArea,
@@ -69,9 +79,10 @@ import type {
 } from "../lib/types";
 import "./journey.css";
 
-type JourneyTab = "route" | "chronology";
+type JourneyTab = "route" | "chronology" | "npc";
 type StatusFilter = "all" | "pending" | StepStatus;
 type RequirementFilter = "all" | "required" | "optional";
+type NpcStatusFilter = "all" | "pending" | "done";
 
 const PHASES = ROUTE_CHRONOLOGY.phases;
 
@@ -147,6 +158,64 @@ function missableStats(steps: RouteStep[], statuses: Record<string, StepStatus>)
     else remaining += 1;
   }
   return { total, remaining, resolved };
+}
+
+const NPC_SECTIONS = [...NPC_WALKTHROUGH_SECTIONS].sort((a, b) => a.order - b.order);
+
+interface NpcCounts {
+  total: number;
+  done: number;
+  remaining: number;
+  optional: number;
+  missable: number;
+  missableRemaining: number;
+  dlc: number;
+  percent: number;
+}
+
+function npcCountsFor(
+  steps: NpcWalkthroughStep[],
+  checks: Record<string, boolean>,
+): NpcCounts {
+  let done = 0;
+  let optional = 0;
+  let missable = 0;
+  let missableRemaining = 0;
+  let dlc = 0;
+  for (const step of steps) {
+    const checked = Boolean(checks[step.id]);
+    if (checked) done += 1;
+    if (step.optional) optional += 1;
+    if (step.dlc) dlc += 1;
+    if (step.badges.some((badge) => badge.toUpperCase() === "MISSABLE")) {
+      missable += 1;
+      if (!checked) missableRemaining += 1;
+    }
+  }
+  return {
+    total: steps.length,
+    done,
+    remaining: steps.length - done,
+    optional,
+    missable,
+    missableRemaining,
+    dlc,
+    percent: steps.length ? Math.round((done / steps.length) * 100) : 0,
+  };
+}
+
+function npcStepSearchText(step: NpcWalkthroughStep, section: NpcWalkthroughSection): string {
+  return [
+    step.id,
+    step.text,
+    section.title,
+    section.levelRange,
+    section.dlc ? "dlc shadow of the erdtree" : "base game",
+    ...step.badges,
+    ...step.links.flatMap((link) => [link.label, link.url]),
+  ]
+    .join(" ")
+    .toLowerCase();
 }
 
 function areasForGate(gate: PhaseGate): RouteArea[] {
@@ -316,6 +385,9 @@ export function JourneyPage() {
   const [requirementFilter, setRequirementFilter] = useState<RequirementFilter>("all");
   const [chronologySearch, setChronologySearch] = useState("");
   const [chronologyStatus, setChronologyStatus] = useState<StatusFilter>("all");
+  const [npcSearch, setNpcSearch] = useState("");
+  const [npcStatus, setNpcStatus] = useState<NpcStatusFilter>("all");
+  const [npcRequirement, setNpcRequirement] = useState<RequirementFilter>("all");
   const [areaSearch, setAreaSearch] = useState("");
   const [collapsedPhases, setCollapsedPhases] = useState<Record<string, boolean>>({});
   const [resolveOpen, setResolveOpen] = useState(false);
@@ -373,24 +445,32 @@ export function JourneyPage() {
   const areaParam = route.query.get("area");
   const phaseParam = route.query.get("phase");
   const gateParam = route.query.get("gate");
+  const sectionParam = route.query.get("section");
   const missable = route.query.get("missable") === "1";
+  const dlc = route.query.get("dlc") === "1";
 
   const linkedStep = stepParam ? STEP_BY_ID[stepParam] : undefined;
+  const npcLinkedStep = stepParam ? NPC_WALKTHROUGH_STEP_BY_ID[stepParam] : undefined;
+  const npcLinkedSection = sectionParam ? NPC_WALKTHROUGH_SECTION_BY_ID[sectionParam] : undefined;
   const matchedArea = areaParam
     ? allAreas.find((area) => area.name === areaParam || area.sectionId === areaParam)
     : undefined;
   const phaseParamMeta = PHASES.find((phase) => phase.id === phaseParam || phase.label === phaseParam);
 
   const tab: JourneyTab =
-    stepParam && linkedStep
-      ? "route"
-      : tabParam === "chronology"
-        ? "chronology"
-        : tabParam === "route"
-          ? "route"
-          : actionParam
-            ? "chronology"
-            : "route";
+    tabParam === "npc" ||
+    npcLinkedStep ||
+    (npcLinkedSection && !linkedStep && !areaParam && !phaseParam && !gateParam && tabParam !== "route")
+      ? "npc"
+      : stepParam && linkedStep
+        ? "route"
+        : tabParam === "chronology"
+          ? "chronology"
+          : tabParam === "route"
+            ? "route"
+            : actionParam
+              ? "chronology"
+              : "route";
 
   let phaseLabel = linkedStep?.phase ?? matchedArea?.phase ?? phaseParamMeta?.label;
   if (!phaseLabel)
@@ -542,6 +622,65 @@ export function JourneyPage() {
       .sort((a, b) => a.order - b.order);
   }, [chronologyOrder, filteredActions]);
 
+  const npcStats = npcWalkthroughProgress(journey);
+  const npcCounts = useMemo(
+    () => npcCountsFor(NPC_WALKTHROUGH_STEPS, journey.npcWalkthroughSteps),
+    [journey.npcWalkthroughSteps],
+  );
+  const npcSectionCounts = useMemo(() => {
+    const counts: Record<string, NpcCounts> = {};
+    for (const section of NPC_SECTIONS) {
+      counts[section.id] = npcCountsFor(section.steps, journey.npcWalkthroughSteps);
+    }
+    return counts;
+  }, [journey.npcWalkthroughSteps]);
+
+  const npcDefaultSectionId = NPC_SECTIONS[0]?.id ?? "";
+  const npcActiveSection =
+    (npcLinkedStep
+      ? NPC_WALKTHROUGH_SECTION_BY_ID[NPC_WALKTHROUGH_STEP_SECTION[npcLinkedStep.id] ?? ""]
+      : undefined) ??
+    npcLinkedSection ??
+    NPC_WALKTHROUGH_SECTION_BY_ID[npcDefaultSectionId] ??
+    NPC_SECTIONS[0];
+  const npcFiltersActive =
+    npcSearch.trim().length > 0 || npcStatus !== "all" || npcRequirement !== "all" || missable || dlc;
+
+  const npcFilteredSections = useMemo(() => {
+    const needle = npcSearch.trim().toLowerCase();
+    return NPC_SECTIONS.map((section) => {
+      const steps = [...section.steps]
+        .sort((a, b) => a.order - b.order)
+        .filter((step) => {
+          const checked = Boolean(journey.npcWalkthroughSteps[step.id]);
+          const stepMissable = step.badges.some((badge) => badge.toUpperCase() === "MISSABLE");
+          if (missable && !stepMissable) return false;
+          if (dlc && !step.dlc && !section.dlc) return false;
+          if (npcStatus === "pending" && checked) return false;
+          if (npcStatus === "done" && !checked) return false;
+          if (npcRequirement === "required" && step.optional) return false;
+          if (npcRequirement === "optional" && !step.optional) return false;
+          if (needle && !npcStepSearchText(step, section).includes(needle)) return false;
+          return true;
+        });
+      return { section, steps };
+    }).filter((entry) => entry.steps.length > 0);
+  }, [dlc, journey.npcWalkthroughSteps, missable, npcRequirement, npcSearch, npcStatus]);
+
+  const npcMatchCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const entry of npcFilteredSections) counts[entry.section.id] = entry.steps.length;
+    return counts;
+  }, [npcFilteredSections]);
+
+  const npcDisplaySections =
+    npcFiltersActive && !npcLinkedStep && !npcLinkedSection
+      ? npcFilteredSections
+      : npcFilteredSections.filter((entry) => entry.section.id === npcActiveSection.id);
+  const npcVisibleStepCount = npcDisplaySections.reduce((sum, entry) => sum + entry.steps.length, 0);
+  const npcBaseSectionCount = NPC_SECTIONS.filter((section) => !section.dlc).length;
+  const npcDlcSectionCount = NPC_SECTIONS.length - npcBaseSectionCount;
+
   const selectedStep = tab === "route" ? linkedStep : undefined;
   const selectedStepStatus: StepStatus | undefined = selectedStep ? journey.steps[selectedStep.id] : undefined;
   const selectedRecords = selectedStep ? linkedRecordsFor(selectedStep) : [];
@@ -572,6 +711,24 @@ export function JourneyPage() {
     });
   }, [selectedStep?.id, state.settings.reducedMotion]);
 
+  useEffect(() => {
+    if (tab !== "npc" || !npcLinkedStep) return;
+    const element = document.getElementById(`npc-step-${npcLinkedStep.id}`);
+    element?.scrollIntoView({
+      block: "center",
+      behavior: state.settings.reducedMotion ? "auto" : "smooth",
+    });
+  }, [npcLinkedStep?.id, state.settings.reducedMotion, tab]);
+
+  useEffect(() => {
+    if (tab !== "npc" || npcLinkedStep || !npcLinkedSection) return;
+    const element = document.getElementById(`npc-section-${npcLinkedSection.id}`);
+    element?.scrollIntoView({
+      block: "start",
+      behavior: state.settings.reducedMotion ? "auto" : "smooth",
+    });
+  }, [npcLinkedSection?.id, npcLinkedStep?.id, state.settings.reducedMotion, tab]);
+
   const openNextStep = () => {
     if (!nextStep) return;
     navigate(
@@ -587,14 +744,19 @@ export function JourneyPage() {
     navigate(journeyHref({ tab: "chronology" }));
   };
 
+  const openNpc = () => {
+    navigate(journeyHref({ tab: "npc" }));
+  };
+
   const switchTab = (id: string) => {
-    if (id === "chronology") openChronology();
+    if (id === "npc") openNpc();
+    else if (id === "chronology") openChronology();
     else
       navigate(
         journeyHref({
           phase: phaseMeta.id,
           area: phaseMissableMode ? undefined : activeArea.name,
-          missable: missable ? "1" : undefined,
+          missable: tab === "route" && missable ? "1" : undefined,
         }),
       );
   };
@@ -607,6 +769,62 @@ export function JourneyPage() {
         missable: missable && !activeGateFilter ? "1" : undefined,
       }),
     );
+  };
+
+  const selectNpcSection = (section: NpcWalkthroughSection) => {
+    navigate(
+      journeyHref({
+        tab: "npc",
+        section: section.id,
+        missable: missable ? "1" : undefined,
+        dlc: dlc ? "1" : undefined,
+      }),
+    );
+  };
+
+  const openNpcStep = (step: NpcWalkthroughStep) => {
+    navigate(
+      journeyHref({
+        tab: "npc",
+        section: NPC_WALKTHROUGH_STEP_SECTION[step.id],
+        step: step.id,
+        missable: missable ? "1" : undefined,
+        dlc: dlc ? "1" : undefined,
+      }),
+    );
+  };
+
+  const toggleNpcMissable = () => {
+    const nextMissable = missable ? undefined : "1";
+    const keepDlc = dlc ? "1" : undefined;
+    navigate(
+      journeyHref({
+        tab: "npc",
+        section: nextMissable || keepDlc ? undefined : npcActiveSection.id,
+        missable: nextMissable,
+        dlc: keepDlc,
+      }),
+    );
+  };
+
+  const toggleNpcDlc = () => {
+    const nextDlc = dlc ? undefined : "1";
+    const keepMissable = missable ? "1" : undefined;
+    navigate(
+      journeyHref({
+        tab: "npc",
+        section: nextDlc || keepMissable ? undefined : npcActiveSection.id,
+        missable: keepMissable,
+        dlc: nextDlc,
+      }),
+    );
+  };
+
+  const resetNpcFilters = () => {
+    setNpcSearch("");
+    setNpcStatus("all");
+    setNpcRequirement("all");
+    navigate(journeyHref({ tab: "npc", section: npcActiveSection.id }));
   };
 
   const selectArea = (area: RouteArea) => {
@@ -1091,6 +1309,85 @@ export function JourneyPage() {
     );
   };
 
+  const renderNpcStepCard = (step: NpcWalkthroughStep, section: NpcWalkthroughSection) => {
+    const checked = Boolean(journey.npcWalkthroughSteps[step.id]);
+    const stepMissable = step.badges.some((badge) => badge.toUpperCase() === "MISSABLE");
+    return (
+      <article
+        key={step.id}
+        id={`npc-step-${step.id}`}
+        className={`step-card journey-step journey-npc-step${checked ? " is-done" : ""}${
+          stepMissable ? " is-missable" : ""
+        }${npcLinkedStep?.id === step.id ? " is-selected" : ""}`}
+      >
+        <Checkbox
+          className="journey-npc-check"
+          checked={checked}
+          onChange={(value) => setNpcWalkthroughStep(step.id, value)}
+          label={
+            <span className="sr-only">
+              Mark {section.title} step {step.order} {checked ? "pending" : "done"}
+            </span>
+          }
+        />
+        <div className="journey-step-body">
+          <div className="journey-step-badges">
+            <Badge tone="accent">{section.title}</Badge>
+            <Badge tone={step.optional ? "default" : "warning"}>
+              {step.optional ? "Optional" : "Required"}
+            </Badge>
+            {stepMissable ? (
+              <Badge tone="danger">
+                <Icon name="alert" size={10} /> Missable
+              </Badge>
+            ) : null}
+            {step.dlc ? <Badge tone="info">DLC</Badge> : null}
+            {checked ? <Badge tone="success">Checked</Badge> : null}
+          </div>
+          <p className="step-instruction">{step.text}</p>
+          <div className="journey-step-context">
+            <span>
+              Step {step.order} of {section.steps.length}
+            </span>
+            <span>{section.levelRange || "Level range not recorded"}</span>
+            <span>{section.dlc ? "Shadow of the Erdtree" : "Base game"}</span>
+          </div>
+          {step.links.length ? (
+            <div className="tag-list journey-step-links">
+              {step.links.map((link) => (
+                <a
+                  key={`${link.label}-${link.url}`}
+                  className="chip journey-wiki-chip"
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  title={link.url}
+                >
+                  <Icon name="external" size={11} />
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          ) : null}
+        </div>
+        <div className="journey-npc-step-actions">
+          <span className="journey-npc-step-order mono">
+            {section.order}.{step.order}
+          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            icon="target"
+            aria-label={`Focus ${section.title} step ${step.order}`}
+            onClick={() => openNpcStep(step)}
+          >
+            Focus
+          </Button>
+        </div>
+      </article>
+    );
+  };
+
   const stepGroupsContent = stepGroups.map((group) => (
     <section className="journey-objective" key={group.objectiveId}>
       <div className="journey-objective-head">
@@ -1149,6 +1446,51 @@ export function JourneyPage() {
     );
   });
 
+  const npcSectionsContent = npcDisplaySections.map(({ section, steps }) => {
+    const counts = npcSectionCounts[section.id];
+    return (
+      <section
+        className="journey-npc-section"
+        id={`npc-section-${section.id}`}
+        key={section.id}
+      >
+        <div className="journey-npc-section-head">
+          <div className="grow">
+            <div className="eyebrow">
+              Section {section.order} of {NPC_SECTIONS.length} ·{" "}
+              {section.dlc ? "Shadow of the Erdtree" : "Base game"}
+            </div>
+            <h2 className="journey-objective-title">{section.title}</h2>
+            <p className="journey-objective-note">
+              {section.levelRange || "Level range not recorded"} · {plural(counts.total, "step")} ·{" "}
+              {counts.optional} optional · {counts.missable} missable
+            </p>
+          </div>
+          <div className="journey-npc-section-progress">
+            <Badge tone={counts.remaining ? "default" : "success"}>
+              {counts.done} / {counts.total} checked
+            </Badge>
+            <ProgressBar
+              value={counts.percent}
+              label={`${counts.done} of ${counts.total} steps checked`}
+            />
+          </div>
+        </div>
+        {section.notes?.length ? (
+          <div className="journey-npc-notes">
+            {section.notes.map((note, index) => (
+              <p className="step-warning journey-npc-note" key={`${section.id}-note-${index}`}>
+                <Icon name="alert" size={12} />
+                <span>{note}</span>
+              </p>
+            ))}
+          </div>
+        ) : null}
+        <div className="step-list">{steps.map((step) => renderNpcStepCard(step, section))}</div>
+      </section>
+    );
+  });
+
   return (
     <div className="page">
       <PageHeader
@@ -1162,7 +1504,7 @@ export function JourneyPage() {
               Object.values(phaseMissables).reduce((sum, stats) => sum + stats.total, 0),
             )}{" "}
             steps are flagged missable; the {chronologyStats.total}-action companion chronology remains a separate
-            cross-game tracking layer.
+            cross-game tracking layer, alongside a {NPC_WALKTHROUGH_STEPS.length}-step area-ordered NPC walkthrough.
           </>
         }
         actions={
@@ -1172,6 +1514,9 @@ export function JourneyPage() {
             </Button>
             <Button icon="list" onClick={openChronology}>
               Companion chronology
+            </Button>
+            <Button icon="users" onClick={openNpc}>
+              NPC walkthrough
             </Button>
           </>
         }
@@ -1183,6 +1528,7 @@ export function JourneyPage() {
             items={[
               { id: "route", label: "Full route", count: routeStats.total },
               { id: "chronology", label: "Companion chronology", count: chronologyStats.total },
+              { id: "npc", label: "NPC walkthrough", count: npcStats.total },
             ]}
             value={tab}
             onChange={switchTab}
@@ -1608,6 +1954,238 @@ export function JourneyPage() {
               </div>
             </div>
           </>
+        ) : tab === "npc" ? (
+          <div className="journey-npc">
+            <div className="journey-layout">
+              <aside className="journey-side">
+                <div className="card card-pad journey-rail journey-npc-rail">
+                  <SectionTitle
+                    title="NPC sections"
+                    note={`${NPC_SECTIONS.length} sections · ${formatNumber(npcStats.total)} steps`}
+                  />
+                  <div className="journey-npc-rail-summary">
+                    <ProgressBar
+                      value={npcStats.percent}
+                      label={`${npcStats.done} of ${npcStats.total} NPC steps checked`}
+                      detail={`Area and level order · ${npcBaseSectionCount} base-game · ${npcDlcSectionCount} DLC sections`}
+                    />
+                  </div>
+                  <div className="journey-rail-scroll journey-npc-rail-scroll">
+                    {NPC_SECTIONS.map((section) => {
+                      const counts = npcSectionCounts[section.id];
+                      const matching = npcMatchCounts[section.id] ?? 0;
+                      const isActive =
+                        section.id === npcActiveSection.id &&
+                        (!npcFiltersActive || Boolean(npcLinkedSection) || Boolean(npcLinkedStep));
+                      return (
+                        <button
+                          key={section.id}
+                          type="button"
+                          className={`area-row journey-area-item journey-npc-section-item${
+                            isActive ? " current" : ""
+                          }${npcFiltersActive && matching === 0 ? " is-muted" : ""}`}
+                          aria-current={isActive ? "page" : undefined}
+                          onClick={() => selectNpcSection(section)}
+                        >
+                          <span className="journey-area-main">
+                            <span className="journey-area-top">
+                              <span className="area-name grow">{section.title}</span>
+                              {section.dlc ? <Badge tone="info">DLC</Badge> : null}
+                              <span className="tiny faint mono">
+                                {counts.done}/{counts.total}
+                              </span>
+                            </span>
+                            <span className="journey-area-sub tiny faint">
+                              {section.levelRange || "Level range not recorded"} ·{" "}
+                              {npcFiltersActive ? `${matching} matching` : `${counts.remaining} open`}
+                            </span>
+                            <ProgressBar value={counts.percent} />
+                            {counts.missableRemaining ? (
+                              <span className="journey-area-missable">
+                                <Icon name="alert" size={10} /> {counts.missableRemaining} missable
+                              </span>
+                            ) : null}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="journey-rail-foot tiny faint">
+                    <Icon name="layers" size={11} /> Area and level order · {npcBaseSectionCount} base ·{" "}
+                    {npcDlcSectionCount} DLC
+                  </div>
+                </div>
+              </aside>
+
+              <div className="journey-main journey-npc-main">
+                <ArtBanner
+                  image={ART.heroErdtree}
+                  variant="erdtree"
+                  className="journey-phase-banner journey-npc-banner"
+                  caption={`Area and level order · ${NPC_SECTIONS.length} sections · ${formatNumber(npcStats.total)} steps`}
+                  title="NPC walkthrough"
+                >
+                  <div className="journey-phase-banner-body">
+                    <div className="journey-phase-banner-meta">
+                      <span>
+                        <strong>{formatNumber(npcStats.done)}</strong> checked ·{" "}
+                        <strong>{formatNumber(npcStats.total - npcStats.done)}</strong> open
+                      </span>
+                      <span className={npcCounts.missableRemaining ? "danger" : ""}>
+                        <Icon name={npcCounts.missableRemaining ? "alert" : "check"} size={12} />
+                        {npcCounts.missableRemaining
+                          ? `${formatNumber(npcCounts.missableRemaining)} missable steps remaining`
+                          : "No unresolved missables"}
+                      </span>
+                    </div>
+                    <ProgressBar
+                      value={npcStats.percent}
+                      label={`${npcStats.done} / ${npcStats.total} NPC steps`}
+                      detail={`${npcCounts.optional} optional · ${npcCounts.dlc} DLC steps · ${npcCounts.missable} flagged missable`}
+                    />
+                  </div>
+                </ArtBanner>
+
+                <section className="card card-pad journey-npc-head">
+                  <div className="row-between wrap">
+                    <div className="grow">
+                      <div className="eyebrow">Alternate walkthrough · area and level order</div>
+                      <h2 className="journey-area-title">How this list works</h2>
+                      <p className="small muted journey-chronology-intro">
+                        {formatNumber(npcStats.total)} NPC conversation and quest steps across {NPC_SECTIONS.length}{" "}
+                        areas, ordered by area and recommended level. This is an alternate companion list: it is not a
+                        replacement for the {formatNumber(routeStats.total)}-step full route, and it does not include
+                        achievements or non-quest content. Those remain in their own ledgers.
+                      </p>
+                    </div>
+                    <Badge tone={npcStats.complete ? "success" : "accent"}>
+                      {npcStats.done} / {npcStats.total} checked
+                    </Badge>
+                  </div>
+                  <div className="journey-counts journey-npc-counts">
+                    <span>
+                      <strong>{NPC_SECTIONS.length}</strong> sections
+                    </span>
+                    <span>
+                      <strong>{npcBaseSectionCount}</strong> base game
+                    </span>
+                    <span>
+                      <strong>{npcDlcSectionCount}</strong> DLC
+                    </span>
+                    <span>
+                      <strong>{npcCounts.optional}</strong> optional
+                    </span>
+                    <span>
+                      <strong>{npcCounts.missable}</strong> missable
+                    </span>
+                  </div>
+                </section>
+
+                <div className="card card-pad journey-filter-card">
+                  <div className="journey-filter-row journey-filter-row--npc">
+                    <SearchInput
+                      className="grow"
+                      value={npcSearch}
+                      onChange={setNpcSearch}
+                      placeholder="Search NPC step, section, level, link, badge…"
+                    />
+                    <Select
+                      label="Status"
+                      value={npcStatus}
+                      onChange={(event) => setNpcStatus(event.target.value as NpcStatusFilter)}
+                    >
+                      <option value="all">All statuses</option>
+                      <option value="pending">Pending</option>
+                      <option value="done">Checked</option>
+                    </Select>
+                    <Select
+                      label="Step type"
+                      value={npcRequirement}
+                      onChange={(event) => setNpcRequirement(event.target.value as RequirementFilter)}
+                    >
+                      <option value="all">All steps</option>
+                      <option value="required">Required only</option>
+                      <option value="optional">Optional only</option>
+                    </Select>
+                  </div>
+                  <div className="journey-filter-meta">
+                    <div className="journey-filter-count">
+                      <span className="small faint">
+                        {npcVisibleStepCount} of {formatNumber(npcStats.total)} steps shown
+                      </span>
+                      <button
+                        type="button"
+                        className={`journey-missable-toggle${missable ? " is-active" : ""}`}
+                        aria-pressed={missable}
+                        onClick={toggleNpcMissable}
+                      >
+                        <Icon name="alert" size={12} />
+                        Missables only
+                        <span className="journey-missable-toggle-count">
+                          {formatNumber(npcCounts.missableRemaining)}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`journey-npc-flag${dlc ? " is-active" : ""}`}
+                        aria-pressed={dlc}
+                        onClick={toggleNpcDlc}
+                      >
+                        <Icon name="spark" size={12} />
+                        DLC only
+                        <span className="journey-missable-toggle-count">{npcCounts.dlc}</span>
+                      </button>
+                    </div>
+                    {npcFiltersActive ? (
+                      <div className="row wrap" style={{ gap: 8 }}>
+                        {npcLinkedSection || npcLinkedStep ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            icon="layers"
+                            onClick={() =>
+                              navigate(
+                                journeyHref({
+                                  tab: "npc",
+                                  missable: missable ? "1" : undefined,
+                                  dlc: dlc ? "1" : undefined,
+                                }),
+                              )
+                            }
+                          >
+                            All matching sections
+                          </Button>
+                        ) : null}
+                        <Button variant="ghost" size="sm" icon="x" onClick={resetNpcFilters}>
+                          Clear filters
+                        </Button>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+
+                {npcDisplaySections.length ? (
+                  <div className="journey-npc-sections">{npcSectionsContent}</div>
+                ) : (
+                  <EmptyState
+                    icon="search"
+                    title="No NPC steps match these filters"
+                    description="Adjust the search, status, step type, missable, or DLC filter, or pick another section from the rail."
+                    action={
+                      <div className="row wrap" style={{ justifyContent: "center", gap: 8 }}>
+                        <Button icon="refresh" onClick={resetNpcFilters}>
+                          Clear filters
+                        </Button>
+                        <Button variant="ghost" icon="map" onClick={() => selectNpcSection(npcActiveSection)}>
+                          Back to {npcActiveSection.title}
+                        </Button>
+                      </div>
+                    }
+                  />
+                )}
+              </div>
+            </div>
+          </div>
         ) : (
           <div className="journey-chronology">
             <section className="card card-pad journey-chronology-head">

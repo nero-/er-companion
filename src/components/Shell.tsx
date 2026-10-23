@@ -35,6 +35,9 @@ const PAGE_TITLES: Record<string, string> = {
   "/farms": "Farms",
   "/tiers": "Tier Lists",
   "/completion": "Completion",
+  "/atlas": "World Atlas",
+  "/materials": "Materials",
+  "/resources": "Resources",
   "/patch": "Patch & DLC",
   "/settings": "Settings",
 };
@@ -75,6 +78,14 @@ export function Shell({ children }: { children: ReactNode }) {
         { path: "/lore", label: "Lore", icon: "book" },
         { path: "/farms", label: "Farms", icon: "leaf" },
         { path: "/tiers", label: "Tier Lists", icon: "list" },
+      ],
+    },
+    {
+      label: "Reference",
+      items: [
+        { path: "/atlas", label: "World Atlas", icon: "map", count: 697 },
+        { path: "/materials", label: "Materials", icon: "flask", count: 725 },
+        { path: "/resources", label: "Resources", icon: "scroll" },
       ],
     },
     {

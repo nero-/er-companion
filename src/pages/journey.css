@@ -1365,3 +1365,222 @@ span.journey-missable-toggle {
     justify-content: center;
   }
 }
+
+/* ---------- NPC walkthrough ---------- */
+
+.journey-npc {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.journey-npc-main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.journey-npc-rail-summary {
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--border);
+}
+
+.journey-npc-rail-scroll {
+  max-height: calc(100vh - 340px);
+}
+
+.journey-npc-section-item .badge {
+  padding: 2px 5px;
+  font-size: 8px;
+}
+
+.journey-npc-section-item.is-muted {
+  opacity: 0.42;
+}
+
+.journey-npc-head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.journey-npc-counts {
+  flex-wrap: wrap;
+}
+
+.journey-npc-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border: 1px solid rgba(212, 176, 106, 0.28);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.journey-npc-flag:hover {
+  border-color: rgba(212, 176, 106, 0.48);
+  background: var(--accent-soft);
+}
+
+.journey-npc-flag.is-active {
+  border-color: rgba(212, 176, 106, 0.55);
+  background: var(--accent-soft);
+  color: var(--parchment);
+}
+
+.journey-npc-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  min-width: 0;
+}
+
+.journey-npc-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  scroll-margin-top: 86px;
+}
+
+.journey-npc-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.journey-npc-section-head .eyebrow {
+  margin-bottom: 5px;
+}
+
+.journey-npc-section-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: min(210px, 100%);
+}
+
+.journey-npc-section-progress .progress-track {
+  height: 4px;
+}
+
+.journey-npc-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.journey-npc-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.journey-npc-note svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.journey-npc-note span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.journey-npc-step {
+  scroll-margin-top: 86px;
+}
+
+.journey-npc-step.is-done {
+  opacity: 0.7;
+  border-color: rgba(145, 176, 122, 0.22);
+}
+
+.journey-npc-step.is-selected {
+  border-color: rgba(212, 176, 106, 0.55);
+  background:
+    radial-gradient(480px 130px at 100% 0, rgba(212, 176, 106, 0.1), transparent 70%),
+    var(--surface);
+}
+
+.journey-npc-check {
+  align-self: start;
+  justify-content: center;
+  padding-top: 6px;
+}
+
+.journey-npc-check .check-box {
+  width: 22px;
+  height: 22px;
+}
+
+.journey-npc-step .step-instruction {
+  margin: 0;
+}
+
+.journey-npc-step .journey-step-context {
+  margin: 5px 0 0;
+}
+
+.journey-npc-step-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.journey-npc-step-order {
+  color: var(--faint);
+  font-size: 10px;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 1200px) {
+  .journey-npc-rail-scroll {
+    max-height: 380px;
+  }
+}
+
+@media (max-width: 760px) {
+  .journey-npc-step {
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+
+  .journey-npc-step-actions {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .journey-npc-section-head {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 520px) {
+  .journey-npc-rail-scroll {
+    max-height: 320px;
+  }
+
+  .journey-npc-section-progress {
+    min-width: 100%;
+  }
+}

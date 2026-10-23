@@ -4,6 +4,7 @@ import itemsJson from "../data/items.full.json";
 import worldJson from "../data/world.json";
 import buildsJson from "../data/builds.json";
 import farmsJson from "../data/farms.json";
+import merchantsJson from "../data/merchants.full.json";
 import loreJson from "../data/lore.json";
 import tiersJson from "../data/tiers.json";
 import achievementsJson from "../data/achievements.json";
@@ -12,14 +13,23 @@ import questlinesJson from "../data/questlines.json";
 import ngplusJson from "../data/ngplus.json";
 import coverageJson from "../data/content-coverage.json";
 import legacyStepMapJson from "../data/legacy-step-map.json";
+import worldObjectsJson from "../data/world.objects.json";
+import upgradesJson from "../data/upgrades.json";
+import materialsJson from "../data/materials.full.json";
+import resourcesJson from "../data/resources.json";
+import npcWalkthroughJson from "../data/npc-walkthrough.json";
+import branchPlanJson from "../data/branch-plan.json";
 import type {
   Achievement,
   AchievementRequirementGroup,
   Archetype,
   BossStrategy,
+  BranchPlanDecision,
+  BranchReward,
   BuildLoadout,
   BuildProfile,
   ContentCoverage,
+  CraftingMaterial,
   DialogueEvent,
   Encounter,
   EncounterPreset,
@@ -30,16 +40,21 @@ import type {
   LoreEntry,
   Material,
   MerchantRecord,
+  MerchantInventory,
+  MerchantInventoryItem,
   Meta,
   NgPlusSection,
   NgPlusStep,
   NpcState,
+  NpcWalkthroughSection,
+  NpcWalkthroughStep,
   Objective,
   PhaseGate,
   ProgressionLoadout,
   Questline,
   QuestlineStep,
   ResourcePreset,
+  ResourceTable,
   RouteArea,
   RouteChronology,
   RouteStep,
@@ -49,8 +64,12 @@ import type {
   TechEdge,
   TechNode,
   TierEntry,
+  UpgradeEntry,
   UpgradePlan,
   WeaponConfig,
+  WorldObject,
+  WorldObjectCategoryStatus,
+  WorldObjectGap,
 } from "./types";
 
 export const META: Meta = metaJson;
@@ -78,7 +97,40 @@ export const FARMABLES: Farmable[] = farmsJson.farmables;
 export const MATERIALS: Material[] = farmsJson.materials;
 export const FINITE_RESOURCES: FiniteResource[] = farmsJson.finiteResources;
 export const MERCHANTS: MerchantRecord[] = farmsJson.merchants;
+export const MERCHANT_INVENTORIES: MerchantInventory[] = merchantsJson.merchants;
+export const MERCHANT_INVENTORY_COUNTS = merchantsJson.counts;
 export const SCARABS: Scarab[] = farmsJson.scarabs;
+
+export const WORLD_OBJECTS: WorldObject[] = worldObjectsJson.entries;
+export const WORLD_CATEGORY_STATUS: Record<string, WorldObjectCategoryStatus> =
+  worldObjectsJson.categoryStatus;
+export const WORLD_GAPS: WorldObjectGap[] = worldObjectsJson.gaps;
+export const WORLD_COUNTS: Record<string, number> = worldObjectsJson.counts;
+export const UPGRADE_ENTRIES: UpgradeEntry[] = upgradesJson.entries;
+export const UPGRADE_DROP_SOURCES: UpgradeEntry[] = upgradesJson.dropSources;
+export const UPGRADE_COUNTS: Record<string, number> = upgradesJson.counts;
+export const UPGRADE_STATED_TOTALS: Record<string, number> = upgradesJson.statedTotals;
+export const UPGRADE_QUANTITY_TOTALS: Record<string, number> = (() => {
+  const totals: Record<string, number> = {};
+  for (const entry of UPGRADE_ENTRIES) {
+    totals[entry.category] = (totals[entry.category] ?? 0) + (entry.quantity ?? 0);
+  }
+  return totals;
+})();
+export const CRAFTING_MATERIALS: CraftingMaterial[] = materialsJson.entries;
+export const CRAFTING_MATERIAL_COUNTS = materialsJson.counts;
+export const RESOURCE_TABLES: ResourceTable[] = resourcesJson.tables;
+export const RESOURCE_TABLE_COUNTS = resourcesJson.counts;
+export const NPC_WALKTHROUGH_SECTIONS: NpcWalkthroughSection[] = npcWalkthroughJson.sections;
+export const NPC_WALKTHROUGH_STEPS: NpcWalkthroughStep[] = NPC_WALKTHROUGH_SECTIONS.flatMap(
+  (section) => section.steps,
+);
+export const NPC_WALKTHROUGH_COUNTS = npcWalkthroughJson.counts;
+export const BRANCH_PLAN_DECISIONS: BranchPlanDecision[] = branchPlanJson.decisions;
+export const BRANCH_REWARDS: BranchReward[] = BRANCH_PLAN_DECISIONS.flatMap(
+  (decision) => decision.rewards,
+);
+export const BRANCH_PLAN_COUNTS = branchPlanJson.counts;
 
 export const ARCHETYPES: Archetype[] = buildsJson.archetypes;
 export const PROFILES: BuildProfile[] = buildsJson.profiles;
@@ -281,3 +333,114 @@ export const ACHIEVEMENT_COUNT = ACHIEVEMENTS.length;
 export const QUESTLINE_COUNT = QUESTLINES.length;
 export const QUESTLINE_STEP_COUNT = QUESTLINE_STEPS.length;
 export const NGPLUS_STEP_COUNT = NGPLUS_STEPS.length;
+
+export const WORLD_BY_ID: Record<string, WorldObject> = Object.fromEntries(
+  WORLD_OBJECTS.map((object) => [object.id, object]),
+);
+export const WORLD_BY_CATEGORY = groupBy(WORLD_OBJECTS, (object) => object.category);
+export const WORLD_BY_REGION = groupBy(WORLD_OBJECTS, (object) => object.region);
+export const WORLD_BY_ROUTE_STEP = groupBy(
+  WORLD_OBJECTS.filter((object) => object.routeStepId.length > 0),
+  (object) => object.routeStepId,
+);
+
+export const UPGRADE_BY_ID: Record<string, UpgradeEntry> = Object.fromEntries(
+  UPGRADE_ENTRIES.map((entry) => [entry.id, entry]),
+);
+export const UPGRADES_BY_CATEGORY = groupBy(UPGRADE_ENTRIES, (entry) => entry.category);
+export const UPGRADE_DROP_SOURCES_BY_CATEGORY = groupBy(
+  UPGRADE_DROP_SOURCES,
+  (entry) => entry.category,
+);
+export const UPGRADE_COUNT = UPGRADE_ENTRIES.length;
+
+export const MATERIAL_BY_ID: Record<string, CraftingMaterial> = Object.fromEntries(
+  CRAFTING_MATERIALS.map((material) => [material.id, material]),
+);
+export const MATERIALS_BY_CATEGORY = groupBy(CRAFTING_MATERIALS, (material) => material.category);
+export const CRAFTING_MATERIAL_COUNT = CRAFTING_MATERIALS.length;
+
+export const RESOURCE_TABLE_BY_ID: Record<string, ResourceTable> = Object.fromEntries(
+  RESOURCE_TABLES.map((table) => [table.id, table]),
+);
+export const RESOURCE_TABLE_COUNT = RESOURCE_TABLES.length;
+export const RESOURCE_ROW_COUNT = RESOURCE_TABLES.reduce(
+  (total, table) => total + table.rows.length,
+  0,
+);
+
+export const NPC_WALKTHROUGH_SECTION_BY_ID: Record<string, NpcWalkthroughSection> =
+  Object.fromEntries(NPC_WALKTHROUGH_SECTIONS.map((section) => [section.id, section]));
+export const NPC_WALKTHROUGH_STEP_BY_ID: Record<string, NpcWalkthroughStep> =
+  Object.fromEntries(NPC_WALKTHROUGH_STEPS.map((step) => [step.id, step]));
+export const NPC_WALKTHROUGH_STEP_SECTION: Record<string, string> = Object.fromEntries(
+  NPC_WALKTHROUGH_SECTIONS.flatMap((section) =>
+    section.steps.map((step) => [step.id, section.id] as const),
+  ),
+);
+export const NPC_WALKTHROUGH_STEPS_BY_SECTION = groupBy(
+  NPC_WALKTHROUGH_STEPS,
+  (step) => NPC_WALKTHROUGH_STEP_SECTION[step.id] ?? "",
+);
+export const NPC_WALKTHROUGH_SECTION_COUNT = NPC_WALKTHROUGH_SECTIONS.length;
+export const NPC_WALKTHROUGH_STEP_COUNT = NPC_WALKTHROUGH_STEPS.length;
+
+export const BRANCH_PLAN_BY_DECISION: Record<string, BranchPlanDecision> = Object.fromEntries(
+  BRANCH_PLAN_DECISIONS.map((decision) => [decision.decisionId, decision]),
+);
+export const BRANCH_REWARDS_BY_DECISION = groupBy(
+  BRANCH_PLAN_DECISIONS.flatMap((decision) =>
+    decision.rewards.map((reward) => ({ ...reward, decisionId: decision.decisionId })),
+  ),
+  (reward) => reward.decisionId,
+);
+export const BRANCH_REWARD_BY_ITEM = groupBy(
+  BRANCH_REWARDS.filter((reward) => reward.itemId.length > 0),
+  (reward) => reward.itemId,
+);
+export const BRANCH_REWARD_ITEM_IDS: string[] = [
+  ...new Set(
+    BRANCH_REWARDS.filter((reward) => reward.itemId.length > 0).map((reward) => reward.itemId),
+  ),
+];
+export const BRANCH_PLAN_DECISION_COUNT = BRANCH_PLAN_DECISIONS.length;
+export const BRANCH_REWARD_COUNT = BRANCH_REWARDS.length;
+export const BRANCH_REWARD_RESOLVED_COUNT = BRANCH_REWARDS.filter(
+  (reward) => !reward.unresolved,
+).length;
+export const BRANCH_REWARD_UNRESOLVED_COUNT = BRANCH_REWARDS.filter(
+  (reward) => reward.unresolved,
+).length;
+
+export const MERCHANT_INVENTORY_ITEMS: MerchantInventoryItem[] = MERCHANT_INVENTORIES.flatMap(
+  (inventory) => inventory.items,
+);
+export const MERCHANT_INVENTORY_ITEM_COUNT = MERCHANT_INVENTORY_ITEMS.length;
+export const MERCHANT_INVENTORY_ITEM_BY_ID: Record<string, MerchantInventoryItem> =
+  Object.fromEntries(MERCHANT_INVENTORY_ITEMS.map((item) => [item.id, item]));
+
+const INVENTORY_ID_BY_MERCHANT_ITEM: Record<string, string> = {};
+for (const inventory of MERCHANT_INVENTORIES) {
+  for (const item of inventory.items) {
+    const key = `${normalizeContentKey(inventory.name)}|${normalizeContentKey(item.name)}`;
+    INVENTORY_ID_BY_MERCHANT_ITEM[key] ??= item.id;
+  }
+}
+export const MERCHANT_INVENTORY_ID_BY_LEGACY_ID: Record<string, string> = Object.fromEntries(
+  MERCHANTS.map((record) => {
+    const key = `${normalizeContentKey(record.merchant)}|${normalizeContentKey(record.item)}`;
+    return [record.id, INVENTORY_ID_BY_MERCHANT_ITEM[key] ?? ""] as const;
+  }).filter(([, itemId]) => itemId.length > 0),
+);
+
+export const WORLD_OBJECT_COUNT = WORLD_OBJECTS.length;
+export const WORLD_GRACE_COUNT = WORLD_OBJECTS.filter((object) => object.category === "grace").length;
+export const WORLD_NON_GRACE_COUNT = WORLD_OBJECT_COUNT - WORLD_GRACE_COUNT;
+export const WORLD_UNRESOLVED_COUNT = WORLD_OBJECTS.filter((object) => object.unresolved).length;
+export const WORLD_CATEGORY_COUNTS: Record<string, number> = Object.fromEntries(
+  Object.entries(WORLD_BY_CATEGORY).map(([category, objects]) => [category, objects.length]),
+);
+export const UPGRADE_TOTAL_QUANTITY = Object.values(UPGRADE_QUANTITY_TOTALS).reduce(
+  (total, quantity) => total + quantity,
+  0,
+);

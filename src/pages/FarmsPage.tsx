@@ -16,6 +16,8 @@ import {
   FINITE_RESOURCES,
   FARMABLES,
   MATERIALS,
+  MERCHANT_INVENTORIES,
+  MERCHANT_INVENTORY_COUNTS,
   MERCHANTS,
   SCARABS,
 } from "../lib/data";
@@ -31,11 +33,25 @@ import {
   useActiveCharacter,
   useActiveJourney,
 } from "../lib/store";
-import type { Farmable, FiniteResource, Material, MerchantRecord, Scarab } from "../lib/types";
+import type {
+  Farmable,
+  FiniteResource,
+  Material,
+  MerchantInventoryItem,
+  MerchantRecord,
+  Scarab,
+} from "../lib/types";
 import "./library.css";
 
 type FarmTabId = "farmables" | "materials" | "finite" | "merchants" | "scarabs";
 type TimingGroup = "regional" | "act1" | "maliketh";
+type MerchantScope = "inventory" | "workbook";
+
+interface InventoryRow extends MerchantInventoryItem {
+  merchantId: string;
+  merchantName: string;
+  merchantSourceUrl: string;
+}
 
 interface FarmTab {
   id: FarmTabId;
@@ -58,11 +74,24 @@ interface Filters {
 
 const PAGE_SIZE = 120;
 
+const INVENTORY_ROWS: InventoryRow[] = MERCHANT_INVENTORIES.flatMap((merchant) =>
+  merchant.items.map((item) => ({
+    ...item,
+    merchantId: merchant.id,
+    merchantName: merchant.name,
+    merchantSourceUrl: merchant.sourceUrl,
+  })),
+);
+
+const INVENTORY_ROW_BY_ID: Record<string, InventoryRow> = Object.fromEntries(
+  INVENTORY_ROWS.map((row) => [row.id, row]),
+);
+
 const FARM_TABS: FarmTab[] = [
   { id: "farmables", label: "Farmables", count: FARMABLES.length },
   { id: "materials", label: "Materials", count: MATERIALS.length },
   { id: "finite", label: "Finite pickups", count: FINITE_RESOURCES.length },
-  { id: "merchants", label: "Merchants", count: MERCHANTS.length },
+  { id: "merchants", label: "Merchants", count: INVENTORY_ROWS.length },
   { id: "scarabs", label: "Scarabs", count: SCARABS.length },
 ];
 
@@ -70,7 +99,7 @@ const TAB_ROWS: Record<FarmTabId, { id: string }[]> = {
   farmables: FARMABLES,
   materials: MATERIALS,
   finite: FINITE_RESOURCES,
-  merchants: MERCHANTS,
+  merchants: [...INVENTORY_ROWS, ...MERCHANTS],
   scarabs: SCARABS,
 };
 
@@ -105,6 +134,7 @@ const MATERIAL_PRIORITIES = uniqueSorted(MATERIALS.map((entry) => entry.priority
 const FINITE_TYPES = uniqueSorted(FINITE_RESOURCES.map((entry) => entry.type));
 const FINITE_REGIONS = uniqueSorted(FINITE_RESOURCES.map((entry) => entry.region));
 const MERCHANT_NAMES = uniqueSorted(MERCHANTS.map((entry) => entry.merchant));
+const INVENTORY_MERCHANT_NAMES = uniqueSorted(MERCHANT_INVENTORIES.map((entry) => entry.name));
 const MERCHANT_PRIORITIES = uniqueSorted(MERCHANTS.map((entry) => entry.priority));
 const MERCHANT_MISSABLE = uniqueSorted(MERCHANTS.map((entry) => entry.missable));
 const SCARAB_REGIONS = uniqueSorted(SCARABS.map((entry) => entry.region));
@@ -136,6 +166,25 @@ function formatQuantity(value: number): string {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
+function stockLabel(stock: string): string {
+  if (stock === "infinite") return "Infinite";
+  if (!stock) return "Not listed";
+  return `×${stock}`;
+}
+
+function unlockBadge(note?: string, cost?: string): { label: string; tone: "info" | "warning" | "default" } | null {
+  if (cost && /MISSABLE/i.test(cost)) return { label: "Missable", tone: "warning" };
+  if (cost && /remembrance/i.test(cost)) return { label: "Remembrance", tone: "warning" };
+  if (!note) return null;
+  if (/bell bearing/i.test(note)) return { label: "Bell bearing", tone: "info" };
+  if (/MISSABLE/i.test(note)) return { label: "Missable", tone: "warning" };
+  if (/remembrance/i.test(note)) return { label: "Remembrance", tone: "warning" };
+  if (/quest|side with|giving|gave|relocat|moving|join|killing|defeating|finishing|selecting|buying|hearing|telling|reading|agree/i.test(note)) {
+    return { label: "Quest gate", tone: "default" };
+  }
+  return { label: "Unlock gate", tone: "default" };
+}
+
 function priorityTone(priority: string): "accent" | "warning" | "default" {
   if (priority === "High" || priority === "Preserve" || priority.includes("Required")) return "warning";
   if (priority === "Medium") return "accent";
@@ -152,7 +201,7 @@ function DetailLine({ label, value }: { label: string; value?: string }) {
   );
 }
 
-function SourceLink({ url, name }: { url: string; name: string }) {
+function SourceLink({ url, name, label = "Source" }: { url: string; name: string; label?: string }) {
   if (!url) return null;
   return (
     <a
@@ -160,9 +209,9 @@ function SourceLink({ url, name }: { url: string; name: string }) {
       href={url}
       target="_blank"
       rel="noreferrer"
-      aria-label={`Open web source for ${name}`}
+      aria-label={`Open ${label.toLowerCase()} for ${name}`}
     >
-      Source <Icon name="external" size={11} />
+      {label} <Icon name="external" size={11} />
     </a>
   );
 }
@@ -313,6 +362,7 @@ export function FarmsPage() {
 
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [limit, setLimit] = useState(PAGE_SIZE);
+  const [merchantScope, setMerchantScope] = useState<MerchantScope>("inventory");
   const previousTab = useRef<FarmTabId>(activeTab);
   const focusExpanded = useRef<string | null>(null);
   const scrolledFocus = useRef<string | null>(null);
@@ -325,13 +375,27 @@ export function FarmsPage() {
   }, [activeTab]);
 
   useEffect(() => {
+    if (!focusId) return;
+    if (INVENTORY_ROW_BY_ID[focusId]) {
+      setMerchantScope("inventory");
+    } else if (MERCHANTS.some((entry) => entry.id === focusId)) {
+      setMerchantScope("workbook");
+    }
+  }, [focusId]);
+
+  useEffect(() => {
     if (!focusId) {
       focusExpanded.current = null;
       return;
     }
     const key = `${focusId}:${activeTab}`;
     if (focusExpanded.current === key) return;
-    const index = TAB_ROWS[activeTab].findIndex((row) => row.id === focusId);
+    const index =
+      activeTab === "merchants"
+        ? INVENTORY_ROW_BY_ID[focusId]
+          ? INVENTORY_ROWS.findIndex((row) => row.id === focusId)
+          : MERCHANTS.findIndex((row) => row.id === focusId)
+        : TAB_ROWS[activeTab].findIndex((row) => row.id === focusId);
     if (index < 0) return;
     focusExpanded.current = key;
     setLimit(Math.max(PAGE_SIZE, index + 1));
@@ -441,6 +505,47 @@ export function FarmsPage() {
     [filters],
   );
 
+  const inventoryRows = useMemo(
+    () =>
+      INVENTORY_ROWS.filter((entry) => {
+        if (filters.merchant !== "all" && entry.merchantName !== filters.merchant) return false;
+        return matchesSearch(filters.query, [
+          entry.name,
+          entry.merchantName,
+          entry.cost,
+          entry.price,
+          entry.stock,
+          entry.note,
+          entry.stepId,
+        ]);
+      }),
+    [filters],
+  );
+
+  const inventoryStats = useMemo(() => {
+    const stats: Record<string, { owned: number; total: number }> = {};
+    for (const merchant of MERCHANT_INVENTORIES) {
+      stats[merchant.id] = {
+        owned: merchant.items.filter((item) => journey.merchants[item.id]).length,
+        total: merchant.items.length,
+      };
+    }
+    return stats;
+  }, [journey.merchants]);
+
+  const inventoryPurchased = useMemo(
+    () => INVENTORY_ROWS.filter((row) => journey.merchants[row.id]).length,
+    [journey.merchants],
+  );
+
+  const workbookPurchased = useMemo(
+    () => MERCHANTS.filter((row) => journey.merchants[row.id]).length,
+    [journey.merchants],
+  );
+
+  const selectedInventoryMerchant =
+    filters.merchant === "all" ? undefined : MERCHANT_INVENTORIES.find((entry) => entry.name === filters.merchant);
+
   const scarabRows = useMemo(
     () =>
       SCARABS.filter((entry) => {
@@ -463,13 +568,14 @@ export function FarmsPage() {
   const visibleMaterials = materialRows.slice(0, limit);
   const visibleFinite = finiteRows.slice(0, limit);
   const visibleMerchants = merchantRows.slice(0, limit);
+  const visibleInventory = inventoryRows.slice(0, limit);
   const visibleScarabs = scarabRows.slice(0, limit);
 
   const matchingCount = {
     farmables: farmableRows.length,
     materials: materialRows.length,
     finite: finiteRows.length,
-    merchants: merchantRows.length,
+    merchants: merchantScope === "inventory" ? inventoryRows.length : merchantRows.length,
     scarabs: scarabRows.length,
   }[activeTab];
 
@@ -477,7 +583,7 @@ export function FarmsPage() {
     farmables: visibleFarmables.length,
     materials: visibleMaterials.length,
     finite: visibleFinite.length,
-    merchants: visibleMerchants.length,
+    merchants: merchantScope === "inventory" ? visibleInventory.length : visibleMerchants.length,
     scarabs: visibleScarabs.length,
   }[activeTab];
 
@@ -503,13 +609,22 @@ export function FarmsPage() {
       scope: "Journey" as const,
       note: "One-time pickups for this journey. These are not lifetime inventory quantities.",
     },
-    merchants: {
-      owned: summary.merchantsPurchased,
-      total: summary.merchantsTotal,
-      unit: "purchased",
-      scope: "Journey" as const,
-      note: "Per-journey merchant purchases. Buying also records matching item ownership on the character.",
-    },
+    merchants:
+      merchantScope === "inventory"
+        ? {
+            owned: inventoryPurchased,
+            total: INVENTORY_ROWS.length,
+            unit: "purchased",
+            scope: "Journey" as const,
+            note: `Full Redmaw merchant inventory: ${MERCHANT_INVENTORIES.length} merchants, ${formatNumber(MERCHANT_INVENTORY_COUNTS.items)} item rows parsed from ${formatNumber(MERCHANT_INVENTORY_COUNTS.sheetRows)} sheet rows (${formatNumber(MERCHANT_INVENTORY_COUNTS.headingsSkipped)} unlock group headings). Buying also records matching item ownership on the character.`,
+          }
+        : {
+            owned: workbookPurchased,
+            total: MERCHANTS.length,
+            unit: "purchased",
+            scope: "Journey" as const,
+            note: `Workbook merchant ledger: ${formatNumber(MERCHANTS.length)} curated purchase rows. Switch to Full inventory for every row on the merchant sheet.`,
+          },
     scarabs: {
       owned: summary.scarabsCollected,
       total: summary.scarabsTotal,
@@ -524,6 +639,17 @@ export function FarmsPage() {
     setFilters(DEFAULT_FILTERS);
     setLimit(PAGE_SIZE);
     navigate(`/farms?tab=${id}`);
+  }
+
+  function changeMerchantScope(scope: MerchantScope) {
+    if (scope === merchantScope) return;
+    setMerchantScope(scope);
+    setFilters(DEFAULT_FILTERS);
+    setLimit(PAGE_SIZE);
+  }
+
+  function selectInventoryMerchant(name: string) {
+    updateFilter("merchant", filters.merchant === name ? "all" : name);
   }
 
   function changeFarmable(entry: Farmable, next: number) {
@@ -547,6 +673,16 @@ export function FarmsPage() {
       toast.push(`${acquired.join(", ")} added to the collection.`, "success");
     } else {
       toast.push(`${entry.item} marked purchased.`);
+    }
+  }
+
+  function toggleInventory(entry: InventoryRow, purchased: boolean) {
+    const acquired = setMerchant(entry.id, purchased, entry.name);
+    if (!purchased) return;
+    if (acquired.length) {
+      toast.push(`${acquired.join(", ")} added to the collection.`, "success");
+    } else {
+      toast.push(`${entry.name} marked purchased.`);
     }
   }
 
@@ -806,6 +942,83 @@ export function FarmsPage() {
     },
   ];
 
+  const inventoryColumns: Column<InventoryRow>[] = [
+    {
+      key: "item",
+      label: "Item",
+      width: "24%",
+      render: (entry) => {
+        const unlock = unlockBadge(entry.note, entry.cost);
+        return (
+          <>
+            <div className="library-title">{entry.name}</div>
+            <div className="library-badges">
+              {entry.price != null ? <Badge tone="accent">Runes</Badge> : null}
+              {entry.cost ? (
+                <Badge tone="info">
+                  {/remembrance/i.test(entry.cost) ? "Remembrance cost" : "Alternate cost"}
+                </Badge>
+              ) : null}
+              {unlock && unlock.label !== "Remembrance" ? <Badge tone={unlock.tone}>{unlock.label}</Badge> : null}
+            </div>
+            <div className="library-sub">Sheet row {entry.stepId}</div>
+            <SourceLink url={entry.wikiUrl} name={entry.name} label="Wiki" />
+          </>
+        );
+      },
+    },
+    {
+      key: "purchased",
+      label: "Purchased",
+      width: "105px",
+      render: (entry) => (
+        <div className="library-check-cell">
+          <Checkbox
+            checked={journey.merchants[entry.id] ?? false}
+            onChange={(checked) => toggleInventory(entry, checked)}
+            label="Purchased"
+          />
+        </div>
+      ),
+    },
+    {
+      key: "merchant",
+      label: "Merchant",
+      width: "18%",
+      render: (entry) => (
+        <>
+          <div className="small">{entry.merchantName}</div>
+          <SourceLink url={entry.merchantSourceUrl} name={entry.merchantName} label="Sheet" />
+        </>
+      ),
+    },
+    {
+      key: "price",
+      label: "Price & stock",
+      width: "14%",
+      render: (entry) => (
+        <>
+          <DetailLine label="Runes" value={entry.price != null ? formatNumber(entry.price) : undefined} />
+          <DetailLine label="Cost" value={entry.cost} />
+          <DetailLine label="Stock" value={stockLabel(entry.stock)} />
+        </>
+      ),
+    },
+    {
+      key: "unlock",
+      label: "Unlock & note",
+      render: (entry) => (
+        <>
+          {entry.note ? (
+            <div className="library-note" style={{ marginTop: 0 }}>{entry.note}</div>
+          ) : (
+            <span className="tiny faint">No extra unlock note in the sheet.</span>
+          )}
+        </>
+      ),
+    },
+  ];
+
   const merchantColumns: Column<MerchantRecord>[] = [
     {
       key: "item",
@@ -948,7 +1161,8 @@ export function FarmsPage() {
         description={
           <>
             Farmable quantities are permanent character records; materials, finite pickups, merchant purchases, and
-            scarabs are tracked per journey. Reaching a farmable target also marks the matching collection item.
+            scarabs are tracked per journey. The Merchants tab offers the full sheet inventory and the workbook ledger,
+            and reaching a farmable target also marks the matching collection item.
           </>
         }
         actions={
@@ -1093,10 +1307,30 @@ export function FarmsPage() {
 
           {activeTab === "merchants" ? (
             <>
+              <div className="library-scope-switch" role="group" aria-label="Merchant record scope">
+                <Button
+                  size="sm"
+                  variant={merchantScope === "inventory" ? "primary" : "default"}
+                  onClick={() => changeMerchantScope("inventory")}
+                >
+                  Full inventory · {formatNumber(INVENTORY_ROWS.length)} rows
+                </Button>
+                <Button
+                  size="sm"
+                  variant={merchantScope === "workbook" ? "primary" : "default"}
+                  onClick={() => changeMerchantScope("workbook")}
+                >
+                  Workbook ledger · {formatNumber(MERCHANTS.length)} rows
+                </Button>
+              </div>
               <SearchInput
                 value={filters.query}
                 onChange={(value) => updateFilter("query", value)}
-                placeholder="Search merchant, item, notes…"
+                placeholder={
+                  merchantScope === "inventory"
+                    ? "Search item, merchant, unlock note, cost…"
+                    : "Search merchant, item, notes…"
+                }
               />
               <Select
                 label="Merchant"
@@ -1104,36 +1338,52 @@ export function FarmsPage() {
                 onChange={(event) => updateFilter("merchant", event.target.value)}
               >
                 <option value="all">All merchants</option>
-                {MERCHANT_NAMES.map((value) => (
+                {(merchantScope === "inventory" ? INVENTORY_MERCHANT_NAMES : MERCHANT_NAMES).map((value) => (
                   <option key={value} value={value}>
                     {value}
                   </option>
                 ))}
               </Select>
-              <Select
-                label="Priority"
-                value={filters.priority}
-                onChange={(event) => updateFilter("priority", event.target.value)}
-              >
-                <option value="all">All priorities</option>
-                {MERCHANT_PRIORITIES.map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </Select>
-              <Select
-                label="Missable"
-                value={filters.missable}
-                onChange={(event) => updateFilter("missable", event.target.value)}
-              >
-                <option value="all">All purchase states</option>
-                {MERCHANT_MISSABLE.map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </Select>
+              {merchantScope === "workbook" ? (
+                <>
+                  <Select
+                    label="Priority"
+                    value={filters.priority}
+                    onChange={(event) => updateFilter("priority", event.target.value)}
+                  >
+                    <option value="all">All priorities</option>
+                    {MERCHANT_PRIORITIES.map((value) => (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
+                    ))}
+                  </Select>
+                  <Select
+                    label="Missable"
+                    value={filters.missable}
+                    onChange={(event) => updateFilter("missable", event.target.value)}
+                  >
+                    <option value="all">All purchase states</option>
+                    {MERCHANT_MISSABLE.map((value) => (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
+                    ))}
+                  </Select>
+                </>
+              ) : null}
+              {merchantScope === "inventory" && selectedInventoryMerchant ? (
+                <div className="library-scope-summary">
+                  <Badge tone="accent">{selectedInventoryMerchant.name}</Badge>
+                  <span className="library-count">
+                    {formatNumber(inventoryStats[selectedInventoryMerchant.id]?.owned ?? 0)} /{" "}
+                    {formatNumber(inventoryStats[selectedInventoryMerchant.id]?.total ?? 0)} purchased
+                  </span>
+                  <Button size="sm" variant="ghost" icon="x" onClick={() => updateFilter("merchant", "all")}>
+                    Clear
+                  </Button>
+                </div>
+              ) : null}
             </>
           ) : null}
 
@@ -1171,6 +1421,43 @@ export function FarmsPage() {
             </>
           ) : null}
         </div>
+
+        {activeTab === "merchants" && merchantScope === "inventory" ? (
+          <div className="merchant-roster">
+            <div className="merchant-roster-head">
+              <span className="merchant-roster-title">Merchant roster</span>
+              <span>
+                {formatNumber(inventoryPurchased)} / {formatNumber(INVENTORY_ROWS.length)} purchased overall
+              </span>
+            </div>
+            <div className="merchant-roster-grid">
+              {MERCHANT_INVENTORIES.map((merchant) => {
+                const stats = inventoryStats[merchant.id];
+                const percent = stats.total ? (stats.owned / stats.total) * 100 : 0;
+                const selected = filters.merchant === merchant.name;
+                return (
+                  <button
+                    key={merchant.id}
+                    type="button"
+                    className={`merchant-roster-card ${selected ? "is-active" : ""}`.trim()}
+                    onClick={() => selectInventoryMerchant(merchant.name)}
+                    aria-pressed={selected}
+                  >
+                    <span className="merchant-roster-row">
+                      <span className="merchant-roster-name">{merchant.name}</span>
+                      <span className="merchant-roster-count">
+                        {formatNumber(stats.owned)}/{formatNumber(stats.total)}
+                      </span>
+                    </span>
+                    <span className="merchant-roster-track" aria-hidden="true">
+                      <span style={{ width: `${Math.round(percent)}%` }} />
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
 
         {activeTab === "farmables" ? (
           <>
@@ -1212,16 +1499,29 @@ export function FarmsPage() {
         ) : null}
 
         {activeTab === "merchants" ? (
-          <>
-            <LedgerTable
-              rows={visibleMerchants}
-              columns={merchantColumns}
-              focusId={focusId}
-              className="farm-table"
-              empty={filterEmpty("No merchant records match these filters")}
-            />
-            <LoadMore shown={shownCount} total={matchingCount} onMore={() => setLimit((current) => current + PAGE_SIZE)} />
-          </>
+          merchantScope === "inventory" ? (
+            <>
+              <LedgerTable
+                rows={visibleInventory}
+                columns={inventoryColumns}
+                focusId={focusId}
+                className="farm-table"
+                empty={filterEmpty("No merchant inventory rows match these filters")}
+              />
+              <LoadMore shown={shownCount} total={matchingCount} onMore={() => setLimit((current) => current + PAGE_SIZE)} />
+            </>
+          ) : (
+            <>
+              <LedgerTable
+                rows={visibleMerchants}
+                columns={merchantColumns}
+                focusId={focusId}
+                className="farm-table"
+                empty={filterEmpty("No merchant records match these filters")}
+              />
+              <LoadMore shown={shownCount} total={matchingCount} onMore={() => setLimit((current) => current + PAGE_SIZE)} />
+            </>
+          )
         ) : null}
 
         {activeTab === "scarabs" ? (

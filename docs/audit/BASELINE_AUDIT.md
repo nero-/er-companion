@@ -215,6 +215,22 @@ Verified against official Bandai Namco pages on 2026-10-21:
 - Mobile verification is a 390 px viewport sweep, not a physical-device lab.
 - Browser sweep route counts include tab/query states; the router itself has 13 top-level paths.
 
+## Beyond-Redmaw addendum (2026-10-22)
+
+The findings above cover the Redmaw full-game pack. A later additive phase layered six checkable ledgers over it without changing the 4,521-step route, 2,325-item catalog, 237-boss ledger, or save schema:
+
+- **World atlas** — 697 objects: 413 graces, 213 martyr effigies, 44 stranded souls, 14 sword monuments, 9 finger readers, 4 telescopes; Stakes of Marika and Gatekeeper Statues emit zero rows because no authoritative per-object list exists.
+- **Upgrades** — 725 pickups / 993 quantity across eight categories, plus 101 enemy-drop leads kept outside the completion denominator; 138 pickups have an imprecise location.
+- **Crafting materials** — 108 (69 base / 39 DLC; 107 obtainable), zero unresolved rows.
+- **Reference tables** — 11 tables / 138 rows, display-only, no unresolved tables.
+- **NPC walkthrough** — 36 sections / 604 steps as an alternate area-ordered checklist with separately persisted state.
+- **Branch plan** — 27 decisions / 43 reward entries: 36 resolved (31 exact, 5 alias), 7 unresolved.
+- **Merchants** — 40 merchants / 627 purchasable items; the 167-row workbook ledger remains for objective links, with 110 rows bridged.
+
+These additions raise completion to **16 independent scopes** (seven appended to the original nine), the automated suite to **34 tests**, and the router to **16 top-level routes**; those figures supersede the earlier nine-scope / 28-test / 13-route statements in this document. The six new surfaces render with 0 console/page errors and no 390 px page-level overflow. Dialogue remains intentionally deferred: quest-critical actions, choices and rewards are tracked, but no spoken line is stored or counted.
+
+Evidence: `docs/audit/BEYOND_REDMAW_RELEASE.md`, `docs/audit/BEYOND_REDMAW_DATA.md`, `docs/audit/WORLD_INTERACTIONS_COVERAGE.md`, `docs/audit/UPGRADE_MATERIALS_COVERAGE.md`, `docs/audit/REFERENCE_COVERAGE.md`, `docs/audit/BRANCH_PLAN.md`, and the runtime files `src/data/world.objects.json`, `upgrades.json`, `materials.full.json`, `resources.json`, `npc-walkthrough.json`, `branch-plan.json`, and `merchants.full.json`.
+
 ## Evidence links
 
 - `ELDEN_RING_DEFINITIVE_COMPANION_AGENT_HANDOFF.md`, `PLAN.md`, `README.md`

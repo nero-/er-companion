@@ -14,6 +14,9 @@ import { TiersPage } from "./pages/TiersPage";
 import { CompletionPage } from "./pages/CompletionPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { PatchPage } from "./pages/PatchPage";
+import { AtlasPage } from "./pages/AtlasPage";
+import { MaterialsPage } from "./pages/MaterialsPage";
+import { ResourcesPage } from "./pages/ResourcesPage";
 
 function Page() {
   const route = useRoute();
@@ -40,6 +43,12 @@ function Page() {
       return <TiersPage />;
     case "/completion":
       return <CompletionPage />;
+    case "/atlas":
+      return <AtlasPage />;
+    case "/materials":
+      return <MaterialsPage />;
+    case "/resources":
+      return <ResourcesPage />;
     case "/patch":
       return <PatchPage />;
     case "/settings":

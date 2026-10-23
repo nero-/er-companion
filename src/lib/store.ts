@@ -77,6 +77,9 @@ function emptyJourney(index: number, label?: string): JourneyState {
     zonesRevealed: {},
     questlineSteps: {},
     ngplusChecklist: {},
+    worldChecks: {},
+    upgradeCounts: {},
+    npcWalkthroughSteps: {},
   };
 }
 
@@ -242,6 +245,9 @@ export function normalizeJourney(value: unknown, index: number): JourneyState {
     zonesRevealed: boolRecord(source.zonesRevealed),
     questlineSteps: boolRecord(source.questlineSteps),
     ngplusChecklist: boolRecord(source.ngplusChecklist),
+    worldChecks: boolRecord(source.worldChecks),
+    upgradeCounts: numberRecord(source.upgradeCounts),
+    npcWalkthroughSteps: boolRecord(source.npcWalkthroughSteps),
   };
 }
 
@@ -336,6 +342,7 @@ function normalizeState(value: unknown): AppState | null {
 
 function loadState(): AppState {
   try {
+    if (typeof localStorage === "undefined") return createDefaultState();
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return createDefaultState();
     const parsed: unknown = JSON.parse(raw);
@@ -343,6 +350,7 @@ function loadState(): AppState {
     if (normalized) return normalized;
     localStorage.setItem(BACKUP_KEY, raw);
   } catch {
+    if (typeof localStorage === "undefined") return createDefaultState();
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) localStorage.setItem(BACKUP_KEY, raw);
   }
@@ -362,6 +370,7 @@ function persistNow(): void {
 }
 
 function schedulePersist(): void {
+  if (typeof window === "undefined") return;
   clearTimeout(persistTimer);
   persistTimer = window.setTimeout(persistNow, 180);
 }
@@ -682,6 +691,34 @@ export function setNgPlusItem(id: string, value: boolean): void {
     if (value) ngplusChecklist[id] = true;
     else delete ngplusChecklist[id];
     return { ...journey, ngplusChecklist };
+  });
+}
+
+export function setWorldCheck(id: string, value: boolean): void {
+  updateJourney((journey) => {
+    const worldChecks = { ...journey.worldChecks };
+    if (value) worldChecks[id] = true;
+    else delete worldChecks[id];
+    return { ...journey, worldChecks };
+  });
+}
+
+export function setUpgradeCount(id: string, count: number): void {
+  updateJourney((journey) => {
+    const upgradeCounts = { ...journey.upgradeCounts };
+    const next = Number.isFinite(count) ? Math.max(0, Math.floor(count)) : 0;
+    if (next > 0) upgradeCounts[id] = next;
+    else delete upgradeCounts[id];
+    return { ...journey, upgradeCounts };
+  });
+}
+
+export function setNpcWalkthroughStep(id: string, value: boolean): void {
+  updateJourney((journey) => {
+    const npcWalkthroughSteps = { ...journey.npcWalkthroughSteps };
+    if (value) npcWalkthroughSteps[id] = true;
+    else delete npcWalkthroughSteps[id];
+    return { ...journey, npcWalkthroughSteps };
   });
 }
 

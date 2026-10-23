@@ -10,16 +10,20 @@ import {
   Modal,
   PageHeader,
   ProgressBar,
+  SearchInput,
   SectionTitle,
   Select,
   TabBar,
   useToast,
 } from "../components/ui";
 import { Icon } from "../components/Icon";
+import type { IconName } from "../components/Icon";
 import { formatNumber } from "../lib/format";
 import { ART, ArtBanner } from "../components/Art";
 import {
   ACHIEVEMENTS,
+  BRANCH_PLAN_DECISIONS,
+  BRANCH_REWARDS,
   CONTENT_COVERAGE,
   FARMABLES,
   FINITE_RESOURCES,
@@ -38,6 +42,7 @@ import {
 import {
   achievementProgress,
   bossProgress,
+  branchRewardProgress,
   collectionSummary,
   completionScopes,
   decisionsResolved,
@@ -61,7 +66,7 @@ import {
   useActiveCharacter,
   useActiveJourney,
 } from "../lib/store";
-import type { EndingState } from "../lib/types";
+import type { BranchReward, EndingState } from "../lib/types";
 import "./lore-completion.css";
 
 const TABS = [
@@ -69,6 +74,7 @@ const TABS = [
   { id: "achievements", label: "Achievements" },
   { id: "endings", label: "Endings & Certifications" },
   { id: "remembrances", label: "Remembrances" },
+  { id: "branch", label: "Journey Plan" },
   { id: "ngplus", label: "NG+ Readiness" },
 ] as const;
 
@@ -93,9 +99,16 @@ const SCOPE_LINKS: Record<string, string> = {
   endings: "/completion?tab=endings",
   remembrances: "/completion?tab=remembrances",
   ngplus: "/completion?tab=ngplus",
+  graces: "/atlas?category=grace",
+  world: "/atlas",
+  upgrades: "/materials?tab=upgrades",
+  materials: "/materials?tab=materials",
+  merchants: "/farms?tab=merchants",
+  "npc-walkthrough": "/journey?tab=npc",
+  "branch-rewards": "/completion?tab=branch",
 };
 
-const SCOPE_ICONS = {
+const SCOPE_ICONS: Record<string, IconName> = {
   route: "map",
   collection: "bag",
   achievements: "achievement",
@@ -105,7 +118,28 @@ const SCOPE_ICONS = {
   endings: "flame",
   remembrances: "grace",
   ngplus: "refresh",
-} as const;
+  graces: "grace",
+  world: "map",
+  upgrades: "spark",
+  materials: "leaf",
+  merchants: "bag",
+  "npc-walkthrough": "users",
+  "branch-rewards": "target",
+};
+
+const BRANCH_AVAILABILITY_LABELS: Record<string, string> = {
+  "journey-1": "Journey 1",
+  "journey-2": "Journey 2",
+  "journey-3": "Journey 3",
+  optional: "Optional",
+};
+
+const BRANCH_AVAILABILITY_TONES: Record<string, "accent" | "info" | "warning" | "default"> = {
+  "journey-1": "accent",
+  "journey-2": "info",
+  "journey-3": "warning",
+  optional: "default",
+};
 
 const REMEMBRANCE_GAMES = Array.from(new Set(META.remembrances.map((remembrance) => remembrance.game)));
 
@@ -113,6 +147,7 @@ const COVERAGE_NOTES = [
   `Route: ${CONTENT_COVERAGE.route.steps} steps across ${CONTENT_COVERAGE.route.sections} sections — ${CONTENT_COVERAGE.route.preDlcSteps} base-game pre-DLC, ${CONTENT_COVERAGE.route.dlcSteps} Shadow of the Erdtree, ${CONTENT_COVERAGE.route.endgameSteps} endgame. ${CONTENT_COVERAGE.route.missableSteps} steps are missable (${CONTENT_COVERAGE.route.missableBaseSteps} base, ${CONTENT_COVERAGE.route.missableDlcSteps} DLC).`,
   `Catalog: ${CONTENT_COVERAGE.items.final} merged permanent items; ${CONTENT_COVERAGE.items.linkedToRoute} are linked to route steps and ${CONTENT_COVERAGE.items.placeholdersReplaced} placeholder acquisitions were replaced.`,
   `Ledgers: ${CONTENT_COVERAGE.achievements.achievements} achievements with ${CONTENT_COVERAGE.achievements.requirementItems} legendary requirement items, ${CONTENT_COVERAGE.bosses.final} bosses, ${CONTENT_COVERAGE.questlines.questlines} questlines across ${CONTENT_COVERAGE.questlines.steps} steps, and ${CONTENT_COVERAGE.ngplus.items} NG+ checklist items.`,
+  "Dialogue remains deferred: NPC dialogue lines are not tracked and do not contribute to any scope denominator. The merged pack covers choices, routes, and rewards only.",
   "Companion records live in local storage. They are not a platform trophy audit, and no single blended completion percentage is shown.",
 ];
 
@@ -168,6 +203,86 @@ function PulseCard({
   );
 }
 
+function BranchRewardChip({
+  reward,
+  ownedItemIds,
+}: {
+  reward: BranchReward;
+  ownedItemIds: Record<string, boolean>;
+}) {
+  const item = reward.itemId ? ITEM_BY_ID[reward.itemId] : undefined;
+  const owned = Boolean(reward.itemId && ownedItemIds[reward.itemId]);
+  const availabilityLabel =
+    BRANCH_AVAILABILITY_LABELS[reward.availability] ?? reward.availability;
+  const availabilityTone = BRANCH_AVAILABILITY_TONES[reward.availability] ?? "default";
+
+  return (
+    <div
+      className={`branch-reward${owned ? " is-owned" : ""}${reward.unresolved ? " is-unresolved" : ""}`}
+    >
+      <div className="branch-reward-head">
+        {item ? (
+          <button
+            type="button"
+            className="lore-inline-link branch-reward-link"
+            onClick={() => navigate(`/collection?item=${encodeURIComponent(reward.itemId)}`)}
+            aria-label={`Open ${reward.name} in the collection`}
+          >
+            {reward.name}
+          </button>
+        ) : (
+          <span className="branch-reward-name">{reward.name}</span>
+        )}
+        <span className="branch-reward-badges">
+          <Badge tone={availabilityTone}>{availabilityLabel}</Badge>
+          {owned ? <Badge tone="success">Owned</Badge> : null}
+          {reward.unresolved ? <Badge tone="warning">Unresolved</Badge> : null}
+          {!reward.retained ? <Badge tone="danger">Not retained</Badge> : null}
+        </span>
+      </div>
+
+      {reward.unresolved ? (
+        <p className="branch-reward-reason">
+          {reward.reason ?? "Not resolved against the item catalog."}
+        </p>
+      ) : null}
+
+      {reward.componentItemIds.length > 0 ? (
+        <div className="branch-set">
+          <span className="branch-set-label">
+            Set components · {reward.componentItemIds.length}
+          </span>
+          <div className="branch-set-items">
+            {reward.componentItemIds.map((componentId) => {
+              const component = ITEM_BY_ID[componentId];
+              const componentOwned = Boolean(ownedItemIds[componentId]);
+              return (
+                <button
+                  key={componentId}
+                  type="button"
+                  className={`branch-component${componentOwned ? " is-owned" : ""}`}
+                  onClick={() => navigate(`/collection?item=${encodeURIComponent(componentId)}`)}
+                  aria-label={`Open ${component?.name ?? componentId} in the collection`}
+                >
+                  <Icon name={componentOwned ? "check" : "bag"} size={11} />
+                  {component?.name ?? componentId}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      <span className="branch-reward-foot">
+        <span className="mono">
+          {reward.kind} · {reward.resolution}
+        </span>
+        <span className="mono">{reward.itemId ? reward.itemId : "no catalog id"}</span>
+      </span>
+    </div>
+  );
+}
+
 export function CompletionPage() {
   const character = useActiveCharacter();
   const journey = useActiveJourney();
@@ -176,17 +291,23 @@ export function CompletionPage() {
 
   const [gameFilter, setGameFilter] = useState("all");
   const [achievementFilter, setAchievementFilter] = useState("all");
+  const [branchQuery, setBranchQuery] = useState("");
+  const [branchJourneyFilter, setBranchJourneyFilter] = useState("all");
+  const [branchResultFilter, setBranchResultFilter] = useState("all");
   const [confirm, setConfirm] = useState<"new-journey" | "reset-journey" | null>(null);
   const [planIndex, setPlanIndex] = useState<number | null>(null);
   const [merchantId, setMerchantId] = useState<string | null>(null);
 
   const tabParam = route.query.get("tab");
   const achievementParam = route.query.get("achievement");
+  const branchParam = route.query.get("decision");
   const activeTab: TabId = achievementParam
     ? "achievements"
-    : isTabId(tabParam)
-      ? tabParam
-      : "overview";
+    : branchParam
+      ? "branch"
+      : isTabId(tabParam)
+        ? tabParam
+        : "overview";
 
   const routeState = routeProgress(journey);
   const chronology = supplementalProgress(journey);
@@ -199,6 +320,8 @@ export function CompletionPage() {
   const quests = questlineProgress(journey);
   const scopes = completionScopes(character, journey);
   const scopesComplete = scopes.filter((scopeRow) => scopeRow.complete).length;
+  const branchProgress = branchRewardProgress(character);
+  const branchResolvedDecisions = BRANCH_PLAN_DECISIONS.filter((decision) => !decision.unresolved).length;
   const ngplusTotal = NGPLUS_SECTIONS.reduce((total, section) => total + section.stepCount, 0);
   const missableAchievements = ACHIEVEMENTS.filter((achievement) => achievement.missable).length;
   const achievementItems = REQUIREMENT_GROUPS.reduce((total, group) => total + group.items.length, 0);
@@ -319,6 +442,34 @@ export function CompletionPage() {
     [gameFilter],
   );
 
+  const filteredBranchDecisions = useMemo(() => {
+    const query = branchQuery.trim().toLowerCase();
+    const journey = branchJourneyFilter === "all" ? null : Number(branchJourneyFilter);
+    return BRANCH_PLAN_DECISIONS.filter((decision) => {
+      if (journey !== null && !decision.rewards.some((reward) => reward.journey === journey)) {
+        return false;
+      }
+      if (branchResultFilter === "resolved" && decision.unresolved) return false;
+      if (branchResultFilter === "unresolved" && !decision.unresolved) return false;
+      if (!query) return true;
+      const haystack = [
+        decision.decisionId,
+        decision.title,
+        decision.game,
+        decision.category,
+        decision.journey1,
+        decision.journey1Result,
+        decision.futureOutcome,
+        decision.futureJourney,
+        decision.notes,
+        ...decision.rewards.map((reward) => reward.name),
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(query);
+    });
+  }, [branchQuery, branchJourneyFilter, branchResultFilter]);
+
   const tabItems = TABS.map((tab) => ({
     ...tab,
     count:
@@ -328,9 +479,11 @@ export function CompletionPage() {
           ? META.endings.length
           : tab.id === "remembrances"
             ? META.remembrances.length
-            : tab.id === "ngplus"
-              ? ngplusTotal
-              : undefined,
+            : tab.id === "branch"
+              ? BRANCH_PLAN_DECISIONS.length
+              : tab.id === "ngplus"
+                ? ngplusTotal
+                : undefined,
   }));
 
   const filteredAchievements = ACHIEVEMENTS.filter((achievement) => {
@@ -345,6 +498,12 @@ export function CompletionPage() {
     const target = document.getElementById(`achievement-${achievementParam}`);
     target?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [achievementParam]);
+
+  useEffect(() => {
+    if (!branchParam) return;
+    const target = document.getElementById(`branch-${branchParam}`);
+    target?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [branchParam]);
 
   const updateEnding = (id: string, patch: Partial<EndingState>) => {
     setEnding(id, patch);
@@ -380,7 +539,7 @@ export function CompletionPage() {
         image={ART.heroSote}
         variant="sote"
         caption={`Shadow of the Erdtree · endgame · ${NGPLUS_SECTIONS.length} NG+ sections`}
-        title="Nine ledgers, one closeout"
+        title={`${scopes.length} ledgers, one closeout`}
         className="completion-banner"
       >
         <p className="completion-banner-note">
@@ -394,9 +553,9 @@ export function CompletionPage() {
         title="Completion"
         description={
           <>
-            Route, collection, achievements, bosses, quests, lore, endings, remembrances, and NG+ each report their own
-            numerator and denominator. Stored companion state drives every row; nothing here claims platform-level
-            completion.
+            Route, collection, achievements, bosses, quests, lore, endings, remembrances, NG+, graces, world objects,
+            upgrades, materials, merchants, NPC walkthrough, and branch rewards each report their own numerator and
+            denominator. Stored companion state drives every row; nothing here claims platform-level completion.
           </>
         }
         actions={
@@ -1188,6 +1347,170 @@ export function CompletionPage() {
                         Source <Icon name="external" size={11} />
                       </a>
                     </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      ) : null}
+
+      {activeTab === "branch" ? (
+        <div className="completion-tab">
+          <div className="row-between wrap branch-header-row">
+            <SectionTitle
+              title="Journey plan"
+              note={`${BRANCH_PLAN_DECISIONS.length} decisions · ${BRANCH_REWARDS.length} rewards · ${branchResolvedDecisions} decisions fully resolved`}
+            />
+            <span className="tiny faint" aria-live="polite">
+              {filteredBranchDecisions.length} / {BRANCH_PLAN_DECISIONS.length} decisions shown
+            </span>
+          </div>
+
+          <Callout tone="default" icon="quest">
+            Each decision records the Journey 1 outcome and the stated future-journey alternative. Reward chips resolve
+            to the permanent collection; unresolved rewards stay labeled with the reason they cannot be linked. Branch
+            rewards are counted from character ownership, so they survive new journeys.
+          </Callout>
+
+          <div className="branch-summary" aria-label="Branch reward summary">
+            <div className="branch-summary-cell">
+              <span className="stat-label">Decisions</span>
+              <strong>{BRANCH_PLAN_DECISIONS.length}</strong>
+              <span className="tiny faint">{branchResolvedDecisions} fully resolved</span>
+            </div>
+            <div className="branch-summary-cell">
+              <span className="stat-label">Rewards</span>
+              <strong>{BRANCH_REWARDS.length}</strong>
+              <span className="tiny faint">{branchProgress.resolved} resolved / {branchProgress.unresolved} unresolved</span>
+            </div>
+            <div className="branch-summary-cell">
+              <span className="stat-label">Resolved rewards owned</span>
+              <strong>
+                {branchProgress.done} <span className="faint">/ {branchProgress.total}</span>
+              </strong>
+              <span className="tiny faint">{branchProgress.percent}% from character items</span>
+            </div>
+            <div className="branch-summary-cell">
+              <span className="stat-label">Distinct item IDs</span>
+              <strong>
+                {branchProgress.distinctAcquired} <span className="faint">/ {branchProgress.distinctResolved}</span>
+              </strong>
+              <span className="tiny faint">owned / resolved distinct rewards</span>
+            </div>
+          </div>
+
+          <div className="branch-toolbar">
+            <SearchInput
+              value={branchQuery}
+              onChange={setBranchQuery}
+              placeholder="Search decisions, rewards, outcomes…"
+            />
+            <Select
+              label="Journey availability"
+              value={branchJourneyFilter}
+              onChange={(event) => setBranchJourneyFilter(event.target.value)}
+            >
+              <option value="all">All journeys ({BRANCH_PLAN_DECISIONS.length})</option>
+              <option value="1">Journey 1</option>
+              <option value="2">Journey 2</option>
+              <option value="3">Journey 3</option>
+            </Select>
+            <Select
+              label="Reward state"
+              value={branchResultFilter}
+              onChange={(event) => setBranchResultFilter(event.target.value)}
+            >
+              <option value="all">All states ({BRANCH_PLAN_DECISIONS.length})</option>
+              <option value="resolved">Resolved only ({branchResolvedDecisions})</option>
+              <option value="unresolved">
+                Unresolved only ({BRANCH_PLAN_DECISIONS.length - branchResolvedDecisions})
+              </option>
+            </Select>
+          </div>
+
+          {filteredBranchDecisions.length === 0 ? (
+            <EmptyState
+              title="No decisions in this filter"
+              description="Try another journey, reward state, or search term."
+              action={
+                <Button
+                  icon="refresh"
+                  onClick={() => {
+                    setBranchQuery("");
+                    setBranchJourneyFilter("all");
+                    setBranchResultFilter("all");
+                  }}
+                >
+                  Clear filters
+                </Button>
+              }
+            />
+          ) : (
+            <div className="branch-grid">
+              {filteredBranchDecisions.map((decision) => {
+                const resolvedRewards = decision.rewards.filter((reward) => !reward.unresolved).length;
+                return (
+                  <article
+                    className={`card card-pad branch-card${decision.unresolved ? " is-unresolved" : " is-resolved"}`}
+                    key={decision.decisionId}
+                    id={`branch-${decision.decisionId}`}
+                  >
+                    <div className="branch-card-head">
+                      <div className="grow">
+                        <div className="tag-list branch-tags">
+                          <span className="mono tiny faint">{decision.decisionId}</span>
+                          <Badge tone="info">{decision.game}</Badge>
+                          <Badge>{decision.category}</Badge>
+                          {decision.unresolved ? (
+                            <Badge tone="warning">Unresolved rewards</Badge>
+                          ) : (
+                            <Badge tone="success">Resolved</Badge>
+                          )}
+                        </div>
+                        <h3 className="card-title branch-title">{decision.title}</h3>
+                      </div>
+                      <span className="tiny faint branch-reward-count">
+                        {resolvedRewards} / {decision.rewards.length} rewards
+                      </span>
+                    </div>
+
+                    <dl className="branch-outcomes">
+                      <div>
+                        <dt>Journey 1</dt>
+                        <dd>{decision.journey1}</dd>
+                      </div>
+                      <div>
+                        <dt>Journey 1 result</dt>
+                        <dd>{decision.journey1Result}</dd>
+                      </div>
+                      <div>
+                        <dt>Future outcome</dt>
+                        <dd>{decision.futureOutcome}</dd>
+                      </div>
+                      <div>
+                        <dt>Future journey</dt>
+                        <dd>{decision.futureJourney}</dd>
+                      </div>
+                    </dl>
+
+                    {decision.rewards.length > 0 ? (
+                      <div className="branch-rewards">
+                        {decision.rewards.map((reward, index) => (
+                          <BranchRewardChip
+                            key={`${decision.decisionId}-${reward.name}-${reward.journey}-${index}`}
+                            reward={reward}
+                            ownedItemIds={character.items}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="tiny faint branch-no-rewards">
+                        No catalog item reward in any branch; outcome is narrative only.
+                      </p>
+                    )}
+
+                    {decision.notes ? <p className="branch-note">{decision.notes}</p> : null}
                   </article>
                 );
               })}

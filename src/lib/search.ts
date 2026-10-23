@@ -3,6 +3,8 @@ import {
   ACHIEVEMENTS,
   ARCHETYPES,
   BOSS_NAMES,
+  BRANCH_PLAN_DECISIONS,
+  CRAFTING_MATERIALS,
   ENCOUNTERS,
   FARMABLES,
   ITEMS,
@@ -11,11 +13,17 @@ import {
   MERCHANTS,
   META,
   NPC_STATES,
+  NPC_WALKTHROUGH_SECTION_BY_ID,
+  NPC_WALKTHROUGH_STEP_SECTION,
+  NPC_WALKTHROUGH_STEPS,
   PROFILES,
   QUESTLINES,
+  RESOURCE_TABLES,
   ROUTE_STEPS,
   SCARABS,
   TIERS,
+  UPGRADE_ENTRIES,
+  WORLD_OBJECTS,
 } from "./data";
 
 export interface SearchEntry {
@@ -255,6 +263,96 @@ for (const tier of TIERS) {
       `${tier.list} · #${tier.rank} · ${tier.tier}`,
       `/tiers?list=${encodeURIComponent(tier.list)}&q=${encodeURIComponent(tier.name)}`,
       `${tier.className ?? ""} ${tier.notes ?? ""}`,
+    ),
+  );
+}
+
+const WORLD_CATEGORY_LABEL: Record<string, string> = {
+  grace: "Site of Grace",
+  "finger-reader": "Finger Reader",
+  "stranded-soul": "Stranded Soul",
+  "sword-monument": "Sword Monument",
+  "stake-of-marika": "Stake of Marika",
+  "martyr-effigy": "Effigy of the Martyr",
+  "birdseye-telescope": "Birdseye Telescope",
+  "gatekeeper-statue": "Gatekeeper Statue",
+};
+
+for (const object of WORLD_OBJECTS) {
+  INDEX.push(
+    entry(
+      `world:${object.id}`,
+      "World object",
+      object.name,
+      `${WORLD_CATEGORY_LABEL[object.category] ?? object.category} · ${object.region}${object.dlc ? " · DLC" : ""}`,
+      `/atlas?focus=${encodeURIComponent(object.id)}`,
+      `${object.subregion} ${object.location} ${object.description}`,
+    ),
+  );
+}
+
+for (const upgrade of UPGRADE_ENTRIES) {
+  INDEX.push(
+    entry(
+      `upgrade:${upgrade.id}`,
+      "Upgrade",
+      upgrade.name,
+      `${upgrade.category}${upgrade.tier ? ` · Tier ${upgrade.tier}` : ""} · ${upgrade.region || "Region unknown"}`,
+      `/materials?tab=upgrades&focus=${encodeURIComponent(upgrade.id)}`,
+      `${upgrade.location} ${upgrade.description} ${upgrade.sourceText}`,
+    ),
+  );
+}
+
+for (const material of CRAFTING_MATERIALS) {
+  INDEX.push(
+    entry(
+      `material:${material.id}`,
+      "Crafting material",
+      material.name,
+      `${material.category} · ${material.game}`,
+      `/materials?tab=materials&focus=${encodeURIComponent(material.id)}`,
+      `${material.earlySource} ${material.lateSource} ${material.grace} ${material.use}`,
+    ),
+  );
+}
+
+for (const table of RESOURCE_TABLES) {
+  INDEX.push(
+    entry(
+      `resources:${table.id}`,
+      "Resource table",
+      table.caption,
+      `${table.sectionTitle} · ${table.rows.length} rows`,
+      `/resources?table=${encodeURIComponent(table.id)}`,
+      `${table.columns.join(" ")} ${table.sourceUrl}`,
+    ),
+  );
+}
+
+for (const step of NPC_WALKTHROUGH_STEPS) {
+  const section = NPC_WALKTHROUGH_SECTION_BY_ID[NPC_WALKTHROUGH_STEP_SECTION[step.id]];
+  INDEX.push(
+    entry(
+      `npc:${step.id}`,
+      "NPC walkthrough",
+      step.text,
+      `${section?.title ?? "NPC walkthrough"} · Step ${step.order}${step.dlc ? " · DLC" : ""}`,
+      `/journey?tab=npc&step=${encodeURIComponent(step.id)}`,
+      `${step.badges.join(" ")} ${step.links.map((link) => link.label).join(" ")}`,
+    ),
+  );
+}
+
+for (const decision of BRANCH_PLAN_DECISIONS) {
+  INDEX.push(
+    entry(
+      `branch:${decision.decisionId}`,
+      "Branch decision",
+      decision.title,
+      `${decision.game} · ${decision.category}`,
+      `/completion?tab=branch&decision=${encodeURIComponent(decision.decisionId)}`,
+      `${decision.journey1} ${decision.journey1Result} ${decision.futureOutcome} ${decision.futureJourney}`,
     ),
   );
 }

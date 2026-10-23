@@ -5,21 +5,31 @@ import {
   AUTO_BOSSES_BY_STEP,
   AUTO_ITEMS_BY_STEP,
   BOSS_STRATEGIES,
+  BRANCH_PLAN_DECISIONS,
+  BRANCH_REWARDS,
+  BRANCH_REWARD_RESOLVED_COUNT,
+  BRANCH_REWARD_UNRESOLVED_COUNT,
   CONTENT_COVERAGE,
+  CRAFTING_MATERIALS,
   ENCOUNTERS,
   ITEMS,
   LEGACY_STEP_MAP,
   LORE,
   LOADOUTS,
+  MERCHANT_INVENTORIES,
+  MERCHANT_INVENTORY_ITEM_COUNT,
   META,
   NGPLUS_SECTIONS,
   NGPLUS_STEPS,
+  NPC_WALKTHROUGH_SECTIONS,
+  NPC_WALKTHROUGH_STEPS,
   OBJECTIVES,
   PHASE_GATES,
   PROGRESSION_LOADOUTS,
   PROFILES,
   QUESTLINES,
   QUESTLINE_STEPS,
+  RESOURCE_TABLES,
   ROUTE_AREAS,
   ROUTE_STEPS,
   STEP_BY_ID,
@@ -28,24 +38,36 @@ import {
   TECH_NODES,
   TIERS,
   TIERS_BY_LIST,
+  UPGRADE_ENTRIES,
+  UPGRADE_QUANTITY_TOTALS,
+  WORLD_BY_CATEGORY,
+  WORLD_OBJECTS,
 } from "./data";
 import { CLASSES, levelFromStats } from "./classes";
 import { GAME_VERSION, TARNISHED_ITEMS } from "../data/game";
 import legacyItemsJson from "../data/items.json";
+import { normalizeJourney } from "./store";
 import {
   achievementProgress,
   areaProgress,
   bossProgress,
+  branchRewardProgress,
   collectionCompletion,
   collectionSummary,
   completionScopes,
+  farmSummary,
   isEquipmentOwned,
   itemForEquipmentName,
   loreAccess,
+  materialProgress,
+  merchantInventoryProgress,
   nextRouteStep,
   ngplusProgress,
+  npcWalkthroughProgress,
   questlineProgress,
   routeProgress,
+  upgradeProgress,
+  worldProgress,
 } from "./selectors";
 import type { Character, JourneyState, Stats } from "./types";
 
@@ -75,6 +97,9 @@ function journey(overrides: Partial<JourneyState> = {}): JourneyState {
     zonesRevealed: {},
     questlineSteps: {},
     ngplusChecklist: {},
+    worldChecks: {},
+    upgradeCounts: {},
+    npcWalkthroughSteps: {},
     ...overrides,
   };
 }
@@ -368,6 +393,136 @@ describe("full content catalogs", () => {
   });
 });
 
+describe("beyond Redmaw ledgers", () => {
+  it("ships 697 world objects with resolved category counts", () => {
+    expect(WORLD_OBJECTS).toHaveLength(697);
+    expect(new Set(WORLD_OBJECTS.map((object) => object.id)).size).toBe(697);
+    expect(WORLD_BY_CATEGORY.grace).toHaveLength(413);
+    expect(WORLD_BY_CATEGORY["finger-reader"]).toHaveLength(9);
+    expect(WORLD_BY_CATEGORY["stranded-soul"]).toHaveLength(44);
+    expect(WORLD_BY_CATEGORY["sword-monument"]).toHaveLength(14);
+    expect(WORLD_BY_CATEGORY["martyr-effigy"]).toHaveLength(213);
+    expect(WORLD_BY_CATEGORY["birdseye-telescope"]).toHaveLength(4);
+    expect(WORLD_BY_CATEGORY["stake-of-marika"]).toBeUndefined();
+    expect(WORLD_BY_CATEGORY["gatekeeper-statue"]).toBeUndefined();
+  });
+
+  it("ships 725 upgrade pickups with quantity-preserving totals", () => {
+    expect(UPGRADE_ENTRIES).toHaveLength(725);
+    expect(new Set(UPGRADE_ENTRIES.map((entry) => entry.id)).size).toBe(725);
+    expect(UPGRADE_QUANTITY_TOTALS["scadutree-fragment"]).toBe(50);
+    expect(UPGRADE_QUANTITY_TOTALS["revered-spirit-ash"]).toBe(25);
+    expect(UPGRADE_QUANTITY_TOTALS["golden-seed"]).toBe(45);
+    expect(UPGRADE_QUANTITY_TOTALS["sacred-tear"]).toBe(12);
+    expect(UPGRADE_ENTRIES.filter((entry) => entry.category === "smithing-stone")).toHaveLength(267);
+    expect(UPGRADE_ENTRIES.filter((entry) => entry.category === "somber-smithing-stone")).toHaveLength(155);
+    expect(UPGRADE_ENTRIES.filter((entry) => entry.category === "glovewort")).toHaveLength(165);
+    expect(UPGRADE_ENTRIES.filter((entry) => entry.category === "great-glovewort")).toHaveLength(18);
+    expect(Object.values(UPGRADE_QUANTITY_TOTALS).reduce((total, quantity) => total + quantity, 0)).toBe(993);
+  });
+
+  it("ships 108 crafting materials, 11 resource tables and the 604-step NPC walkthrough", () => {
+    expect(CRAFTING_MATERIALS).toHaveLength(108);
+    expect(new Set(CRAFTING_MATERIALS.map((material) => material.id)).size).toBe(108);
+    expect(RESOURCE_TABLES).toHaveLength(11);
+    expect(RESOURCE_TABLES.reduce((total, table) => total + table.rows.length, 0)).toBe(138);
+    expect(new Set(RESOURCE_TABLES.map((table) => table.id)).size).toBe(11);
+    expect(NPC_WALKTHROUGH_SECTIONS).toHaveLength(36);
+    expect(NPC_WALKTHROUGH_STEPS).toHaveLength(604);
+    expect(new Set(NPC_WALKTHROUGH_STEPS.map((step) => step.id)).size).toBe(604);
+  });
+
+  it("ships 27 branch decisions with 36 resolved and 7 unresolved rewards", () => {
+    expect(BRANCH_PLAN_DECISIONS).toHaveLength(27);
+    expect(new Set(BRANCH_PLAN_DECISIONS.map((decision) => decision.decisionId)).size).toBe(27);
+    expect(BRANCH_REWARDS).toHaveLength(43);
+    expect(BRANCH_REWARD_RESOLVED_COUNT).toBe(36);
+    expect(BRANCH_REWARD_UNRESOLVED_COUNT).toBe(7);
+    const itemIds = new Set(ITEMS.map((item) => item.id));
+    const resolved = BRANCH_REWARDS.filter((reward) => !reward.unresolved);
+    expect(resolved.every((reward) => reward.itemId.length > 0)).toBe(true);
+    for (const reward of resolved) expect(itemIds.has(reward.itemId)).toBe(true);
+    for (const reward of BRANCH_REWARDS.filter((entry) => entry.unresolved)) {
+      expect(reward.itemId).toBe("");
+    }
+  });
+
+  it("defaults new journey ledgers when loading an older save", () => {
+    const normalized = normalizeJourney({ id: "legacy", steps: {} }, 1);
+    expect(normalized.worldChecks).toEqual({});
+    expect(normalized.upgradeCounts).toEqual({});
+    expect(normalized.npcWalkthroughSteps).toEqual({});
+    const populated = normalizeJourney(
+      {
+        id: "newer",
+        worldChecks: { "grace-a": true, "grace-b": false },
+        upgradeCounts: { "upgrade-a": 3, "upgrade-b": "4" },
+        npcWalkthroughSteps: { "n1-1": true },
+      },
+      2,
+    );
+    expect(populated.worldChecks).toEqual({ "grace-a": true });
+    expect(populated.upgradeCounts).toEqual({ "upgrade-a": 3 });
+    expect(populated.npcWalkthroughSteps).toEqual({ "n1-1": true });
+  });
+
+  it("tracks world, upgrade, material, merchant, NPC and branch progress", () => {
+    const grace = WORLD_BY_CATEGORY.grace[0];
+    const nonGrace = WORLD_OBJECTS.find((object) => object.category !== "grace");
+    expect(grace).toBeDefined();
+    expect(nonGrace).toBeDefined();
+    if (!grace || !nonGrace) return;
+    const worldJourney = journey({
+      worldChecks: { [grace.id]: true, [nonGrace.id]: true },
+    });
+    const world = worldProgress(worldJourney);
+    expect(world.done).toBe(2);
+    expect(world.total).toBe(697);
+    expect(world.byCategory.grace.done).toBe(1);
+    expect(world.byCategory["stake-of-marika"].total).toBe(0);
+    expect(world.byCategory["gatekeeper-statue"].total).toBe(0);
+    expect(worldProgress(worldJourney, "grace").done).toBe(1);
+
+    const upgrade = UPGRADE_ENTRIES[0];
+    const upgrades = upgradeProgress(journey({ upgradeCounts: { [upgrade.id]: 1 } }));
+    expect(upgrades.done).toBe(1);
+    expect(upgrades.acquired).toBe(1);
+    expect(upgrades.total).toBe(993);
+    expect(upgrades.entriesTouched).toBe(1);
+    expect(upgrades.entriesTotal).toBe(725);
+
+    const material = CRAFTING_MATERIALS[0];
+    expect(materialProgress(journey({ materials: { [material.id]: true } })).done).toBe(1);
+    expect(materialProgress(journey()).total).toBe(108);
+
+    const inventoryItem = MERCHANT_INVENTORIES[0].items[0];
+    const merchantProgress = merchantInventoryProgress(
+      journey({ merchants: { [inventoryItem.id]: true } }),
+    );
+    expect(merchantProgress.done).toBe(1);
+    expect(merchantProgress.total).toBe(627);
+    expect(MERCHANT_INVENTORIES).toHaveLength(40);
+    expect(MERCHANT_INVENTORY_ITEM_COUNT).toBe(627);
+    const farms = farmSummary(character(), journey());
+    expect(farms.merchantsTotal).toBe(627);
+    expect(farms.materialsTotal).toBe(108);
+
+    const npcStep = NPC_WALKTHROUGH_STEPS[0];
+    expect(npcWalkthroughProgress(journey({ npcWalkthroughSteps: { [npcStep.id]: true } })).done).toBe(1);
+    expect(npcWalkthroughProgress(journey()).total).toBe(604);
+
+    const resolvedReward = BRANCH_REWARDS.find((reward) => !reward.unresolved);
+    expect(resolvedReward).toBeDefined();
+    if (!resolvedReward) return;
+    const branch = branchRewardProgress(character({ items: { [resolvedReward.itemId]: true } }));
+    expect(branch.done).toBe(1);
+    expect(branch.acquired).toBe(1);
+    expect(branch.total).toBe(36);
+    expect(branch.resolved).toBe(36);
+    expect(branch.unresolved).toBe(7);
+  });
+});
+
 describe("completion scopes", () => {
   it("reports every scope with a real denominator", () => {
     const scopes = completionScopes(character(), journey());
@@ -381,6 +536,13 @@ describe("completion scopes", () => {
       "endings",
       "remembrances",
       "ngplus",
+      "graces",
+      "world",
+      "upgrades",
+      "materials",
+      "merchants",
+      "npc-walkthrough",
+      "branch-rewards",
     ]);
     const byId = Object.fromEntries(scopes.map((scope) => [scope.id, scope]));
     expect(byId.route.denominator).toBe(4521);
@@ -392,6 +554,13 @@ describe("completion scopes", () => {
     expect(byId.endings.denominator).toBe(META.endings.length);
     expect(byId.remembrances.denominator).toBe(META.remembrances.length);
     expect(byId.ngplus.denominator).toBe(68);
+    expect(byId.graces.denominator).toBe(413);
+    expect(byId.world.denominator).toBe(284);
+    expect(byId.upgrades.denominator).toBe(993);
+    expect(byId.materials.denominator).toBe(108);
+    expect(byId.merchants.denominator).toBe(627);
+    expect(byId["npc-walkthrough"].denominator).toBe(604);
+    expect(byId["branch-rewards"].denominator).toBe(36);
     for (const scope of scopes) {
       expect(scope.percent).toBeGreaterThanOrEqual(0);
       expect(scope.percent).toBeLessThanOrEqual(100);

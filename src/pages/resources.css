@@ -1,0 +1,434 @@
+/* ---------- Resources reference tables ---------- */
+
+.resources-banner {
+  margin-bottom: 16px;
+}
+
+.resources-banner .art-banner-body {
+  align-items: flex-end;
+}
+
+.resources-banner .art-banner-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.resources-banner-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.resources-banner-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 9px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  background: rgba(6, 8, 9, 0.52);
+  backdrop-filter: blur(4px);
+}
+
+.resources-banner-label {
+  color: rgba(232, 226, 212, 0.65);
+  font-size: 8.5px;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.resources-banner-stat strong {
+  color: var(--parchment, #efe7d6);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.resources-banner-detail {
+  color: rgba(232, 226, 212, 0.52);
+  font-size: 9.5px;
+}
+
+.resources-banner-note {
+  max-width: 900px;
+  margin-top: 12px;
+  color: rgba(232, 226, 212, 0.7);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+/* ---------- Toolbar ---------- */
+
+.resources-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(180px, 0.8fr) auto;
+  gap: 10px;
+  align-items: end;
+  margin: 14px 0 10px;
+}
+
+.resources-toolbar > .field,
+.resources-toolbar > .search-field {
+  min-width: 0;
+}
+
+.resources-toolbar .select,
+.resources-toolbar .input {
+  width: 100%;
+}
+
+.resources-toolbar > .btn {
+  height: 34px;
+}
+
+.resources-result-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.resources-result-row strong {
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ---------- Sections and tables ---------- */
+
+.resources-section {
+  margin-bottom: 24px;
+}
+
+.resources-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--border);
+}
+
+.resources-section-head h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.resources-section-count {
+  color: var(--faint);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.resources-table-block {
+  margin-bottom: 16px;
+  padding: 13px 14px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 54%),
+    var(--surface);
+  scroll-margin-top: 18px;
+}
+
+.resources-section .resources-table-block:last-child {
+  margin-bottom: 0;
+}
+
+.resources-table-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px 14px;
+  margin-bottom: 10px;
+}
+
+.resources-table-title {
+  min-width: 0;
+}
+
+.resources-table-eyebrow {
+  color: var(--faint);
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.resources-table-title h2 {
+  margin-top: 2px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.resources-table-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.resources-table-count {
+  color: var(--faint);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.resources-source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--accent);
+  font-size: 10px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.resources-source-link:hover {
+  color: var(--accent-strong);
+  text-decoration: underline;
+}
+
+.table-wrap.resources-table-wrap {
+  max-height: none;
+  border-radius: 9px;
+}
+
+.resources-table {
+  min-width: 720px;
+  font-size: 12px;
+}
+
+.resources-table th {
+  font-size: 8.5px;
+}
+
+.resources-table td {
+  padding: 8px 10px;
+  line-height: 1.45;
+}
+
+.resources-primary-cell {
+  min-width: 150px;
+}
+
+.resources-primary-value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 7px;
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.resources-inline-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--accent);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.resources-inline-link:hover {
+  color: var(--accent-strong);
+  text-decoration: underline;
+}
+
+.resources-cell-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 9px;
+}
+
+.resources-cell-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--accent);
+  font-size: 10px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.resources-cell-links a:hover {
+  color: var(--accent-strong);
+  text-decoration: underline;
+}
+
+.resources-note-cell {
+  min-width: 280px;
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+.resources-blank {
+  color: var(--faint);
+  opacity: 0.75;
+}
+
+.resources-table-legend,
+.resources-table-empty {
+  margin-top: 8px;
+  color: var(--faint);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.resources-table-empty {
+  padding: 14px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 9px;
+  text-align: center;
+}
+
+.resources-footnote {
+  margin-top: 18px;
+  color: var(--faint);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.resources-footnote code {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--muted);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1080px) {
+  .resources-toolbar {
+    grid-template-columns: minmax(0, 1.5fr) minmax(180px, 0.8fr);
+  }
+
+  .resources-toolbar > .btn {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 760px) {
+  .resources-banner-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .resources-banner-stat strong {
+    font-size: 19px;
+  }
+
+  .resources-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .resources-toolbar > .btn {
+    width: 100%;
+  }
+
+  .resources-table-block {
+    padding: 11px;
+  }
+
+  .resources-table-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .table-wrap.resources-table-wrap {
+    max-height: none;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .data-table.resources-table {
+    display: block;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .data-table.resources-table thead {
+    display: none;
+  }
+
+  .data-table.resources-table tbody {
+    display: block;
+  }
+
+  .data-table.resources-table tr {
+    display: block;
+    margin-bottom: 9px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.014);
+  }
+
+  .data-table.resources-table td {
+    display: block;
+    padding: 7px 10px;
+    border-bottom: 1px solid rgba(43, 38, 28, 0.6);
+  }
+
+  .data-table.resources-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .data-table.resources-table td::before {
+    display: block;
+    content: attr(data-label);
+    margin-bottom: 3px;
+    color: var(--faint);
+    font-size: 8px;
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .data-table.resources-table td.resources-primary-cell {
+    padding: 9px 10px;
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  .data-table.resources-table td.resources-primary-cell::before {
+    display: none;
+  }
+
+  .data-table.resources-table .resources-note-cell {
+    min-width: 0;
+    font-size: 10.5px;
+  }
+
+  .data-table.resources-table tr:hover td {
+    background: transparent;
+  }
+
+  .resources-cell-links a,
+  .resources-inline-link {
+    white-space: normal;
+  }
+}

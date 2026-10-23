@@ -2,12 +2,18 @@ import {
   ACHIEVEMENTS,
   AREA_BY_NAME,
   BOSS_STRATEGIES_BY_BOSS,
+  BRANCH_PLAN_DECISION_COUNT,
+  BRANCH_REWARDS,
+  CRAFTING_MATERIALS,
   ENCOUNTERS,
   ITEMS,
   ITEMS_BY_NAME,
   LORE,
+  MERCHANT_INVENTORY_ID_BY_LEGACY_ID,
+  MERCHANT_INVENTORY_ITEMS,
   META,
   NGPLUS_STEPS,
+  NPC_WALKTHROUGH_STEPS,
   PROGRESSION_BY_NODE,
   PROFILES_BY_ARCHETYPE,
   QUESTLINE_STEPS,
@@ -21,6 +27,9 @@ import {
   SUPPLEMENTAL_BY_AREA,
   TECH_NODES,
   TIERS_BY_NAME,
+  UPGRADE_ENTRIES,
+  WORLD_CATEGORY_STATUS,
+  WORLD_OBJECTS,
   ARCHETYPE_BY_ID,
   LOADOUTS_BY_BUILD,
   LOADOUT_BY_ID,
@@ -238,15 +247,17 @@ export interface FarmSummary {
 
 export function farmSummary(character: Character, journey: JourneyState): FarmSummary {
   const farmablesOwned = Object.values(character.farmables).filter((value) => value > 0).length;
+  const materials = materialProgress(journey);
+  const merchants = merchantInventoryProgress(journey);
   return {
     farmablesOwned,
     farmablesTotal: 318,
-    materialsStocked: Object.values(journey.materials).filter(Boolean).length,
-    materialsTotal: 107,
+    materialsStocked: materials.done,
+    materialsTotal: materials.total,
     finiteCollected: Object.values(journey.finite).filter(Boolean).length,
     finiteTotal: 318,
-    merchantsPurchased: Object.values(journey.merchants).filter(Boolean).length,
-    merchantsTotal: 167,
+    merchantsPurchased: merchants.done,
+    merchantsTotal: merchants.total,
     scarabsCollected: Object.values(journey.scarabs).filter(Boolean).length,
     scarabsTotal: 107,
   };
@@ -317,6 +328,137 @@ export function ngplusProgress(journey: JourneyState): CountProgress {
   );
 }
 
+export interface WorldProgress extends CountProgress {
+  byCategory: Record<string, CountProgress>;
+}
+
+const WORLD_CATEGORIES = Object.keys(WORLD_CATEGORY_STATUS);
+
+export function worldProgress(journey: JourneyState, category?: string): WorldProgress {
+  const byCategory: Record<string, CountProgress> = {};
+  for (const key of WORLD_CATEGORIES) {
+    const objects = WORLD_OBJECTS.filter((object) => object.category === key);
+    byCategory[key] = countProgress(
+      objects.filter((object) => journey.worldChecks[object.id]).length,
+      objects.length,
+    );
+  }
+  const objects = category
+    ? WORLD_OBJECTS.filter((object) => object.category === category)
+    : WORLD_OBJECTS;
+  const done = objects.filter((object) => journey.worldChecks[object.id]).length;
+  return { ...countProgress(done, objects.length), byCategory };
+}
+
+export interface UpgradeProgress extends CountProgress {
+  acquired: number;
+  entriesTouched: number;
+  entriesTotal: number;
+  byCategory: Record<string, UpgradeCategoryProgress>;
+}
+
+export interface UpgradeCategoryProgress extends CountProgress {
+  entriesTouched: number;
+  entriesTotal: number;
+}
+
+export function upgradeProgress(journey: JourneyState): UpgradeProgress {
+  const byCategory: Record<string, UpgradeCategoryProgress> = {};
+  let acquired = 0;
+  let total = 0;
+  let entriesTouched = 0;
+  for (const entry of UPGRADE_ENTRIES) {
+    const quantity = entry.quantity ?? 0;
+    const raw = journey.upgradeCounts[entry.id] ?? 0;
+    const count = Math.min(Math.max(0, raw), quantity);
+    const category = (byCategory[entry.category] ??= {
+      ...countProgress(0, 0),
+      entriesTouched: 0,
+      entriesTotal: 0,
+    });
+    category.done += count;
+    category.total += quantity;
+    category.entriesTotal += 1;
+    if (raw > 0) {
+      category.entriesTouched += 1;
+      entriesTouched += 1;
+    }
+    acquired += count;
+    total += quantity;
+  }
+  for (const category of Object.values(byCategory)) {
+    category.percent = category.total ? Math.round((category.done / category.total) * 100) : 0;
+    category.complete = category.total > 0 && category.done >= category.total;
+  }
+  const progress = countProgress(acquired, total);
+  return {
+    ...progress,
+    acquired,
+    entriesTouched,
+    entriesTotal: UPGRADE_ENTRIES.length,
+    byCategory,
+  };
+}
+
+export function materialProgress(journey: JourneyState): CountProgress {
+  return countProgress(
+    CRAFTING_MATERIALS.filter((material) => journey.materials[material.id]).length,
+    CRAFTING_MATERIALS.length,
+  );
+}
+
+export function merchantInventoryProgress(journey: JourneyState): CountProgress {
+  const purchased = new Set<string>();
+  for (const item of MERCHANT_INVENTORY_ITEMS) {
+    if (journey.merchants[item.id]) purchased.add(item.id);
+  }
+  for (const [legacyId, itemId] of Object.entries(MERCHANT_INVENTORY_ID_BY_LEGACY_ID)) {
+    if (journey.merchants[legacyId]) purchased.add(itemId);
+  }
+  return countProgress(purchased.size, MERCHANT_INVENTORY_ITEMS.length);
+}
+
+export function npcWalkthroughProgress(journey: JourneyState): CountProgress {
+  return countProgress(
+    NPC_WALKTHROUGH_STEPS.filter((step) => journey.npcWalkthroughSteps[step.id]).length,
+    NPC_WALKTHROUGH_STEPS.length,
+  );
+}
+
+export interface BranchRewardProgress extends CountProgress {
+  acquired: number;
+  resolved: number;
+  unresolved: number;
+  decisions: number;
+  distinctAcquired: number;
+  distinctResolved: number;
+}
+
+export function branchRewardProgress(character: Character): BranchRewardProgress {
+  const resolved = BRANCH_REWARDS.filter((reward) => !reward.unresolved);
+  const unresolved = BRANCH_REWARDS.length - resolved.length;
+  const acquired = resolved.filter(
+    (reward) => reward.itemId.length > 0 && Boolean(character.items[reward.itemId]),
+  ).length;
+  const acquiredIds = new Set(
+    resolved
+      .filter((reward) => reward.itemId.length > 0 && Boolean(character.items[reward.itemId]))
+      .map((reward) => reward.itemId),
+  );
+  const resolvedIds = new Set(
+    resolved.filter((reward) => reward.itemId.length > 0).map((reward) => reward.itemId),
+  );
+  return {
+    ...countProgress(acquired, resolved.length),
+    acquired,
+    resolved: resolved.length,
+    unresolved,
+    decisions: BRANCH_PLAN_DECISION_COUNT,
+    distinctAcquired: acquiredIds.size,
+    distinctResolved: resolvedIds.size,
+  };
+}
+
 export interface CompletionScope {
   id: string;
   label: string;
@@ -354,6 +496,13 @@ export function completionScopes(character: Character, journey: JourneyState): C
   const remembrancesResolved = Object.values(journey.remembrances).filter(
     (state) => Boolean(state.selectedReward || state.duplicated || state.consumed),
   ).length;
+  const world = worldProgress(journey);
+  const graces = worldProgress(journey, "grace");
+  const upgrades = upgradeProgress(journey);
+  const materials = materialProgress(journey);
+  const merchants = merchantInventoryProgress(journey);
+  const npcWalkthrough = npcWalkthroughProgress(journey);
+  const branchRewards = branchRewardProgress(character);
   return [
     scope("route", "Route", route.resolved, route.total),
     scope("collection", "Collection", collection.done, collection.total),
@@ -364,6 +513,13 @@ export function completionScopes(character: Character, journey: JourneyState): C
     scope("endings", "Endings", endingsViewed, META.endings.length),
     scope("remembrances", "Remembrances", remembrancesResolved, META.remembrances.length),
     scope("ngplus", "NG+", ngplus.done, ngplus.total),
+    scope("graces", "Graces", graces.done, graces.total),
+    scope("world", "World (non-grace)", world.done - graces.done, world.total - graces.total),
+    scope("upgrades", "Upgrades", upgrades.done, upgrades.total),
+    scope("materials", "Materials", materials.done, materials.total),
+    scope("merchants", "Merchants", merchants.done, merchants.total),
+    scope("npc-walkthrough", "NPC walkthrough", npcWalkthrough.done, npcWalkthrough.total),
+    scope("branch-rewards", "Branch rewards", branchRewards.done, branchRewards.total),
   ];
 }
 

@@ -797,6 +797,24 @@ export interface MerchantRecord extends LinkedRecord {
   notes: string;
 }
 
+export interface MerchantInventoryItem {
+  id: string;
+  name: string;
+  price?: number;
+  cost?: string;
+  stock: string;
+  note?: string;
+  wikiUrl: string;
+  stepId: string;
+}
+
+export interface MerchantInventory {
+  id: string;
+  name: string;
+  sourceUrl: string;
+  items: MerchantInventoryItem[];
+}
+
 export interface Scarab {
   id: string;
   sourceRow: number;
@@ -1208,6 +1226,9 @@ export interface JourneyState {
   zonesRevealed: Record<string, boolean>;
   questlineSteps: Record<string, boolean>;
   ngplusChecklist: Record<string, boolean>;
+  worldChecks: Record<string, boolean>;
+  upgradeCounts: Record<string, number>;
+  npcWalkthroughSteps: Record<string, boolean>;
 }
 
 export interface EquipmentState {
@@ -1253,4 +1274,158 @@ export interface AppState {
   activeCharacterId: string;
   settings: Settings;
   updatedAt: string;
+}
+
+/* ---------------------------------------------------------------------------
+ * Beyond-Redmaw ledgers: world objects, upgrades, materials, resource tables,
+ * NPC walkthrough, and branch-plan rewards.
+ * ------------------------------------------------------------------------- */
+
+export interface WorldObject {
+  id: string;
+  category: string;
+  name: string;
+  region: string;
+  subregion: string;
+  location: string;
+  description: string;
+  sourceUrl: string;
+  mapUrl: string;
+  dlc: boolean;
+  missable: boolean;
+  routeStepId: string;
+  unresolved: boolean;
+}
+
+export interface WorldObjectCategoryStatus {
+  resolved: boolean;
+  count: number;
+  sourceUrl: string;
+  note: string;
+}
+
+export interface WorldObjectGap {
+  category: string;
+  issue: string;
+  detail: string;
+  sourcesTried: string[];
+}
+
+export interface UpgradeEntry {
+  id: string;
+  category: string;
+  name: string;
+  tier: string;
+  quantity: number | null;
+  region: string;
+  location: string;
+  description: string;
+  sourceText: string;
+  sourceUrl: string;
+  dlc: boolean;
+  unresolved: boolean;
+  acquisitionType: string;
+  quantityStated: boolean;
+  missable: boolean;
+  nearestGrace?: string;
+  subregion?: string;
+  variant?: string;
+  note?: string;
+}
+
+export interface CraftingMaterial {
+  id: string;
+  name: string;
+  category: string;
+  game: string;
+  environmental: boolean;
+  obtainable: boolean;
+  renewability: string;
+  earlySource: string;
+  lateSource: string;
+  grace: string;
+  method: string;
+  purchasable: string;
+  merchant: string;
+  bellBearing: string;
+  finiteBeforeUnlock: string;
+  priority: string;
+  use: string;
+  sourceUrl: string;
+  dlc: boolean;
+  inFarms: boolean;
+  inWikiCategory: boolean;
+  inItemCatalog: boolean;
+  inRoute: boolean;
+  unresolved: boolean;
+  note?: string;
+}
+
+export type ResourceCell = string | number | boolean | null | ResourceLink[];
+
+export interface ResourceLink {
+  label: string;
+  url: string;
+}
+
+export type ResourceRow = Record<string, ResourceCell | undefined>;
+
+export interface ResourceTable {
+  id: string;
+  caption: string;
+  sectionId: string;
+  sectionTitle: string;
+  sourceUrl: string;
+  dlc: boolean;
+  columns: string[];
+  rowKeys: string[];
+  rows: ResourceRow[];
+}
+
+export interface NpcWalkthroughStep {
+  id: string;
+  order: number;
+  text: string;
+  optional: boolean;
+  badges: string[];
+  links: Link[];
+  dlc: boolean;
+}
+
+export interface NpcWalkthroughSection {
+  id: string;
+  title: string;
+  order: number;
+  levelRange: string;
+  dlc: boolean;
+  sourceUrl: string;
+  steps: NpcWalkthroughStep[];
+  notes?: string[];
+}
+
+export interface BranchReward {
+  name: string;
+  itemId: string;
+  journey: number;
+  availability: string;
+  kind: string;
+  resolution: string;
+  retained: boolean;
+  componentItemIds: string[];
+  unresolved: boolean;
+  reason?: string;
+}
+
+export interface BranchPlanDecision {
+  decisionId: string;
+  title: string;
+  game: string;
+  category: string;
+  journey1: string;
+  journey1Result: string;
+  futureOutcome: string;
+  futureJourney: string;
+  rewards: BranchReward[];
+  unresolved: boolean;
+  notes: string;
 }

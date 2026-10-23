@@ -1,0 +1,1398 @@
+{
+ "source": {
+  "name": "Redmaw Completion Sheets — Resources",
+  "url": "https://eldenring.redmaw.dev/sheets/resources",
+  "fetchedAt": "2026-10-23T01:00:19Z"
+ },
+ "fetchedAt": "2026-10-23T01:00:19Z",
+ "categories": {
+  "softCaps": [
+   "soft-caps"
+  ],
+  "smithingStones": [
+   "smithing-stones",
+   "somber-smithing-stones"
+  ],
+  "gloveworts": [
+   "grave-gloveworts",
+   "ghost-gloveworts"
+  ],
+  "runes": [
+   "runes-base",
+   "runes-dlc"
+  ],
+  "remembrances": [
+   "remembrances-base",
+   "remembrances-dlc"
+  ],
+  "scadutreeFragments": [
+   "scadutree-fragments"
+  ],
+  "reveredSpiritAshes": [
+   "revered-spirit-ashes"
+  ]
+ },
+ "notes": [
+  {
+   "topic": "Vigor",
+   "text": "Increases your HP. Getting 40 Vigor early makes the early-mid game much easier. Since you can get a +5 Somber weapon and upgraded flasks early, you can be tanking and killing most enemies with little investment.",
+   "links": []
+  },
+  {
+   "topic": "Mind",
+   "text": "Increases your mana bar. Most builds will be fine between 15-40 Mind depending on how many spells or weapon skills you use.",
+   "links": []
+  },
+  {
+   "topic": "Endurance",
+   "text": "Increases your stamina and equip load. Level based on how much stamina and equip load your armor and weapons need. You typically want to end between 30-50 Endurance.",
+   "links": []
+  },
+  {
+   "topic": "Strength",
+   "text": "Increases your strength and when two-handing, multiplies your strength by 50%. For accurate stats, use a Weapon Calculator , select a weapon with \"Heavy\" as the affinity, and play with the strength stat until you see diminishing returns.",
+   "links": [
+    {
+     "label": "Weapon Calculator",
+     "url": "https://www.tarnished.dev/weapon-calculator"
+    }
+   ]
+  },
+  {
+   "topic": "Dexterity",
+   "text": "Increases your dexterity and spell casting speed. Use the abovementioned weapon calculator with a \"Keen\" affinity to find your weapons soft cap. Casting speed caps at 70 dexterity.",
+   "links": []
+  },
+  {
+   "topic": "Intelligence",
+   "text": "Increases your ability to cast sorceries. Use a Casting Tool Comparator to find out which staff is best for your build.",
+   "links": [
+    {
+     "label": "Casting Tool Comparator",
+     "url": "https://jerp.tv/eldenring/spelltools/"
+    }
+   ]
+  },
+  {
+   "topic": "Faith",
+   "text": "Increases your ability to cast incantations. Use the abovementioned casting tool comparator to find out which seal is best for your build.",
+   "links": []
+  },
+  {
+   "topic": "Arcane",
+   "text": "Increases the damage of arcane-scaling weapons and the amount of status buildup it inflicts. Additionally, leveling this stat increases your Item Discovery (1 per point, up to 99).",
+   "links": [
+    {
+     "label": "Item Discovery",
+     "url": "https://eldenring.wiki.gg/wiki/Discovery"
+    }
+   ]
+  },
+  {
+   "topic": "Build",
+   "text": "If you know what equipment you'll use, you can min-max your class and stats with a Build Planner .",
+   "links": [
+    {
+     "label": "Build Planner",
+     "url": "https://eip.gg/elden-ring/build-planner/"
+    }
+   ]
+  }
+ ],
+ "buildRecommendation": {
+  "heading": "General recommendation:",
+  "items": [
+   {
+    "text": "Reach level requirements for your desired weapon, casting tool, or spell.",
+    "links": []
+   },
+   {
+    "text": "Level Vigor to 40. Most of your HP gains come between levels 28-40, and leveling damage stats provides little benefit due to weapons having poor scaling at low levels.",
+    "links": []
+   },
+   {
+    "text": "Get enough stamina to comfortably use your weapons and reach medium roll equip load.",
+    "links": []
+   },
+   {
+    "text": "Level damage stats once you have your setup going, have upgraded your weapon a few times, and can infuse it with an ash of war that increases its scaling.",
+    "links": []
+   }
+  ]
+ },
+ "counts": {
+  "soft-caps": 12,
+  "smithing-stones": 9,
+  "somber-smithing-stones": 10,
+  "grave-gloveworts": 10,
+  "ghost-gloveworts": 10,
+  "runes-base": 21,
+  "runes-dlc": 11,
+  "remembrances-base": 15,
+  "remembrances-dlc": 10,
+  "scadutree-fragments": 20,
+  "revered-spirit-ashes": 10,
+  "tables": 11,
+  "rows": 138
+ },
+ "unresolved": [],
+ "unresolvedTables": [],
+ "notesOnCoverage": {
+  "nullCostRows": [
+   "smithing-stones: Ancient Dragon Smithing Stone",
+   "somber-smithing-stones: Somber Ancient Dragon Smithing Stone",
+   "grave-gloveworts: Great Grave Glovewort",
+   "ghost-gloveworts: Great Ghost Glovewort"
+  ],
+  "explanation": "Rows with a null cost are the top-tier materials whose cost and bell-bearing cells are blank on the sheet; blanks are preserved as null rather than inferred."
+ },
+ "tables": [
+  {
+   "id": "soft-caps",
+   "caption": "Soft Caps",
+   "sectionId": "stats",
+   "sectionTitle": "Stats and Build",
+   "sourceUrl": "https://eldenring.redmaw.dev/sheets/resources#stats",
+   "dlc": false,
+   "columns": [
+    "Stat",
+    "Soft cap 1",
+    "Soft cap 2",
+    "Soft cap 3",
+    "Soft cap 4"
+   ],
+   "rowKeys": [
+    "stat",
+    "softCap1",
+    "softCap2",
+    "softCap3",
+    "softCap4"
+   ],
+   "rows": [
+    {
+     "stat": "Vigor",
+     "softCap1": 40,
+     "softCap2": 60,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Vigor",
+     "note": "Increases your HP. Getting 40 Vigor early makes the early-mid game much easier. Since you can get a +5 Somber weapon and upgraded flasks early, you can be tanking and killing most enemies with little investment.",
+     "softCap3": null,
+     "softCap4": null
+    },
+    {
+     "stat": "Mind",
+     "softCap1": 50,
+     "softCap2": 60,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Mind",
+     "note": "Increases your mana bar. Most builds will be fine between 15-40 Mind depending on how many spells or weapon skills you use.",
+     "softCap3": null,
+     "softCap4": null
+    },
+    {
+     "stat": "Endurance",
+     "softCap1": 15,
+     "softCap2": 30,
+     "softCap3": 50,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Endurance",
+     "note": "Increases your stamina and equip load. Level based on how much stamina and equip load your armor and weapons need. You typically want to end between 30-50 Endurance.",
+     "softCap4": null
+    },
+    {
+     "stat": "Equip Load (Endurance)",
+     "softCap1": 25,
+     "softCap2": 60,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Equip_Load",
+     "softCap3": null,
+     "softCap4": null
+    },
+    {
+     "stat": "Strength",
+     "softCap1": 18,
+     "softCap2": 50,
+     "softCap3": 60,
+     "softCap4": 80,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Strength",
+     "note": "Increases your strength and when two-handing, multiplies your strength by 50%. For accurate stats, use a Weapon Calculator , select a weapon with \"Heavy\" as the affinity, and play with the strength stat until you see diminishing returns.",
+     "noteLinks": [
+      {
+       "label": "Weapon Calculator",
+       "url": "https://www.tarnished.dev/weapon-calculator"
+      }
+     ]
+    },
+    {
+     "stat": "Dexterity",
+     "softCap1": 18,
+     "softCap2": 50,
+     "softCap3": 60,
+     "softCap4": 80,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Dexterity",
+     "note": "Increases your dexterity and spell casting speed. Use the abovementioned weapon calculator with a \"Keen\" affinity to find your weapons soft cap. Casting speed caps at 70 dexterity."
+    },
+    {
+     "stat": "Intelligence (Weapon)",
+     "softCap1": 20,
+     "softCap2": 50,
+     "softCap3": 80,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Intelligence",
+     "note": "Increases your ability to cast sorceries. Use a Casting Tool Comparator to find out which staff is best for your build.",
+     "noteLinks": [
+      {
+       "label": "Casting Tool Comparator",
+       "url": "https://jerp.tv/eldenring/spelltools/"
+      }
+     ],
+     "softCap4": null
+    },
+    {
+     "stat": "Intelligence (Sorcery)",
+     "softCap1": 60,
+     "softCap2": 80,
+     "wikiUrl": "",
+     "note": "Increases your ability to cast sorceries. Use a Casting Tool Comparator to find out which staff is best for your build.",
+     "noteLinks": [
+      {
+       "label": "Casting Tool Comparator",
+       "url": "https://jerp.tv/eldenring/spelltools/"
+      }
+     ],
+     "softCap3": null,
+     "softCap4": null
+    },
+    {
+     "stat": "Faith (Weapon)",
+     "softCap1": 20,
+     "softCap2": 50,
+     "softCap3": 80,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Faith",
+     "note": "Increases your ability to cast incantations. Use the abovementioned casting tool comparator to find out which seal is best for your build.",
+     "softCap4": null
+    },
+    {
+     "stat": "Faith (Incantation)",
+     "softCap1": 60,
+     "softCap2": 80,
+     "wikiUrl": "",
+     "note": "Increases your ability to cast incantations. Use the abovementioned casting tool comparator to find out which seal is best for your build.",
+     "softCap3": null,
+     "softCap4": null
+    },
+    {
+     "stat": "Arcane (Weapon)",
+     "softCap1": 20,
+     "softCap2": 60,
+     "softCap3": 80,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Arcane",
+     "note": "Increases the damage of arcane-scaling weapons and the amount of status buildup it inflicts. Additionally, leveling this stat increases your Item Discovery (1 per point, up to 99).",
+     "noteLinks": [
+      {
+       "label": "Item Discovery",
+       "url": "https://eldenring.wiki.gg/wiki/Discovery"
+      }
+     ],
+     "softCap4": null
+    },
+    {
+     "stat": "Status Buildup (Arcane)",
+     "softCap1": 40,
+     "softCap2": 45,
+     "softCap3": 60,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Status_Effects",
+     "softCap4": null
+    }
+   ]
+  },
+  {
+   "id": "smithing-stones",
+   "caption": "Smithing Stones",
+   "sectionId": "smithing-stones",
+   "sectionTitle": "Smithing Stones",
+   "sourceUrl": "https://eldenring.redmaw.dev/sheets/resources#smithing-stones",
+   "dlc": false,
+   "columns": [
+    "Material",
+    "Upgrades to",
+    "Cost",
+    "x12",
+    "Total",
+    "Bell-Bearing"
+   ],
+   "rowKeys": [
+    "material",
+    "upgradesTo",
+    "cost",
+    "x12",
+    "total",
+    "bellBearing"
+   ],
+   "rows": [
+    {
+     "material": "Smithing Stone [1]",
+     "upgradesTo": "+3",
+     "cost": 200,
+     "x12": 2400,
+     "total": 2400,
+     "bellBearing": "Smithing-Stone Miner's Bell Bearing [1]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_1",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Smithing-Stone_Miner%27s_Bell_Bearing_1"
+    },
+    {
+     "material": "Smithing Stone [2]",
+     "upgradesTo": "+6",
+     "cost": 400,
+     "x12": 4800,
+     "total": 7200,
+     "bellBearing": "Smithing-Stone Miner's Bell Bearing [1]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_2",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Smithing-Stone_Miner%27s_Bell_Bearing_1"
+    },
+    {
+     "material": "Smithing Stone [3]",
+     "upgradesTo": "+9",
+     "cost": 600,
+     "x12": 7200,
+     "total": 14400,
+     "bellBearing": "Smithing-Stone Miner's Bell Bearing [2]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_3",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Smithing-Stone_Miner's_Bell_Bearing_2"
+    },
+    {
+     "material": "Smithing Stone [4]",
+     "upgradesTo": "+12",
+     "cost": 900,
+     "x12": 10800,
+     "total": 25200,
+     "bellBearing": "Smithing-Stone Miner's Bell Bearing [2]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_4",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Smithing-Stone_Miner's_Bell_Bearing_2"
+    },
+    {
+     "material": "Smithing Stone [5]",
+     "upgradesTo": "+15",
+     "cost": 1200,
+     "x12": 14400,
+     "total": 39600,
+     "bellBearing": "Smithing-Stone Miner's Bell Bearing [3]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_5",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Smithing-Stone_Miner's_Bell_Bearing_3"
+    },
+    {
+     "material": "Smithing Stone [6]",
+     "upgradesTo": "+18",
+     "cost": 1500,
+     "x12": 18000,
+     "total": 57600,
+     "bellBearing": "Smithing-Stone Miner's Bell Bearing [3]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_6",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Smithing-Stone_Miner's_Bell_Bearing_3"
+    },
+    {
+     "material": "Smithing Stone [7]",
+     "upgradesTo": "+21",
+     "cost": 2400,
+     "x12": 28800,
+     "total": 86400,
+     "bellBearing": "Smithing-Stone Miner's Bell Bearing [4]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_7",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Smithing-Stone_Miner's_Bell_Bearing_4"
+    },
+    {
+     "material": "Smithing Stone [8]",
+     "upgradesTo": "+24",
+     "cost": 3600,
+     "x12": 43200,
+     "total": 129600,
+     "bellBearing": "Smithing-Stone Miner's Bell Bearing [4]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_8",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Smithing-Stone_Miner's_Bell_Bearing_4"
+    },
+    {
+     "material": "Ancient Dragon Smithing Stone",
+     "upgradesTo": "+25",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancient_Dragon_Smithing_Stone",
+     "cost": null,
+     "x12": null,
+     "total": null,
+     "bellBearing": null
+    }
+   ]
+  },
+  {
+   "id": "somber-smithing-stones",
+   "caption": "Somber Smithing Stones",
+   "sectionId": "smithing-stones",
+   "sectionTitle": "Smithing Stones",
+   "sourceUrl": "https://eldenring.redmaw.dev/sheets/resources#smithing-stones",
+   "dlc": false,
+   "columns": [
+    "Material",
+    "Upgrades to",
+    "Cost",
+    "Total",
+    "Bell-Bearing"
+   ],
+   "rowKeys": [
+    "material",
+    "upgradesTo",
+    "cost",
+    "total",
+    "bellBearing"
+   ],
+   "rows": [
+    {
+     "material": "Somber Smithing Stone [1]",
+     "upgradesTo": "+1",
+     "cost": 2000,
+     "total": 2000,
+     "bellBearing": "Somberstone Miner's Bell Bearing [1]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_1",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Somberstone_Miner%27s_Bell_Bearing_1"
+    },
+    {
+     "material": "Somber Smithing Stone [2]",
+     "upgradesTo": "+2",
+     "cost": 3000,
+     "total": 5000,
+     "bellBearing": "Somberstone Miner's Bell Bearing [1]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_2",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Somberstone_Miner%27s_Bell_Bearing_1"
+    },
+    {
+     "material": "Somber Smithing Stone [3]",
+     "upgradesTo": "+3",
+     "cost": 4000,
+     "total": 9000,
+     "bellBearing": "Somberstone Miner's Bell Bearing [2]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_3",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Somberstone_Miner's_Bell_Bearing_2"
+    },
+    {
+     "material": "Somber Smithing Stone [4]",
+     "upgradesTo": "+4",
+     "cost": 6000,
+     "total": 15000,
+     "bellBearing": "Somberstone Miner's Bell Bearing [2]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_4",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Somberstone_Miner's_Bell_Bearing_2"
+    },
+    {
+     "material": "Somber Smithing Stone [5]",
+     "upgradesTo": "+5",
+     "cost": 9000,
+     "total": 24000,
+     "bellBearing": "Somberstone Miner's Bell Bearing [3]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_5",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Somberstone_Miner's_Bell_Bearing_3"
+    },
+    {
+     "material": "Somber Smithing Stone [6]",
+     "upgradesTo": "+6",
+     "cost": 12000,
+     "total": 36000,
+     "bellBearing": "Somberstone Miner's Bell Bearing [3]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_6",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Somberstone_Miner's_Bell_Bearing_3"
+    },
+    {
+     "material": "Somber Smithing Stone [7]",
+     "upgradesTo": "+7",
+     "cost": 16000,
+     "total": 52000,
+     "bellBearing": "Somberstone Miner's Bell Bearing [4]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_7",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Somberstone_Miner's_Bell_Bearing_4"
+    },
+    {
+     "material": "Somber Smithing Stone [8]",
+     "upgradesTo": "+8",
+     "cost": 20000,
+     "total": 72000,
+     "bellBearing": "Somberstone Miner's Bell Bearing [4]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_8",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Somberstone_Miner's_Bell_Bearing_4"
+    },
+    {
+     "material": "Somber Smithing Stone [9]",
+     "upgradesTo": "+9",
+     "cost": 25000,
+     "total": 97000,
+     "bellBearing": "Somberstone Miner's Bell Bearing [5]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_9",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Somberstone_Miner's_Bell_Bearing_5"
+    },
+    {
+     "material": "Somber Ancient Dragon Smithing Stone",
+     "upgradesTo": "+10",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Ancient_Dragon_Smithing_Stone",
+     "cost": null,
+     "total": null,
+     "bellBearing": null
+    }
+   ]
+  },
+  {
+   "id": "grave-gloveworts",
+   "caption": "Grave Gloveworts",
+   "sectionId": "gloveworts",
+   "sectionTitle": "Gloveworts",
+   "sourceUrl": "https://eldenring.redmaw.dev/sheets/resources#gloveworts",
+   "dlc": false,
+   "columns": [
+    "Material",
+    "Upgrades to",
+    "Cost",
+    "Total",
+    "Bell-Bearing"
+   ],
+   "rowKeys": [
+    "material",
+    "upgradesTo",
+    "cost",
+    "total",
+    "bellBearing"
+   ],
+   "rows": [
+    {
+     "material": "Grave Glovewort [1]",
+     "upgradesTo": "+1",
+     "cost": 800,
+     "total": 800,
+     "bellBearing": "Glovewort Picker's Bell Bearing [1]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_1",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Glovewort_Picker%27s_Bell_Bearing_1"
+    },
+    {
+     "material": "Grave Glovewort [2]",
+     "upgradesTo": "+2",
+     "cost": 1200,
+     "total": 2000,
+     "bellBearing": "Glovewort Picker's Bell Bearing [1]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_2",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Glovewort_Picker%27s_Bell_Bearing_1"
+    },
+    {
+     "material": "Grave Glovewort [3]",
+     "upgradesTo": "+3",
+     "cost": 1600,
+     "total": 3600,
+     "bellBearing": "Glovewort Picker's Bell Bearing [1]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_3",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Glovewort_Picker%27s_Bell_Bearing_1"
+    },
+    {
+     "material": "Grave Glovewort [4]",
+     "upgradesTo": "+4",
+     "cost": 2400,
+     "total": 6000,
+     "bellBearing": "Glovewort Picker's Bell Bearing [2]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_4",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Glovewort_Picker's_Bell_Bearing_2"
+    },
+    {
+     "material": "Grave Glovewort [5]",
+     "upgradesTo": "+5",
+     "cost": 3200,
+     "total": 9200,
+     "bellBearing": "Glovewort Picker's Bell Bearing [2]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_5",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Glovewort_Picker's_Bell_Bearing_2"
+    },
+    {
+     "material": "Grave Glovewort [6]",
+     "upgradesTo": "+6",
+     "cost": 4000,
+     "total": 13200,
+     "bellBearing": "Glovewort Picker's Bell Bearing [2]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_6",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Glovewort_Picker's_Bell_Bearing_2"
+    },
+    {
+     "material": "Grave Glovewort [7]",
+     "upgradesTo": "+7",
+     "cost": 5000,
+     "total": 18200,
+     "bellBearing": "Glovewort Picker's Bell Bearing [3]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_7",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Glovewort_Picker's_Bell_Bearing_3"
+    },
+    {
+     "material": "Grave Glovewort [8]",
+     "upgradesTo": "+8",
+     "cost": 6000,
+     "total": 24200,
+     "bellBearing": "Glovewort Picker's Bell Bearing [3]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_8",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Glovewort_Picker's_Bell_Bearing_3"
+    },
+    {
+     "material": "Grave Glovewort [9]",
+     "upgradesTo": "+9",
+     "cost": 8000,
+     "total": 32200,
+     "bellBearing": "Glovewort Picker's Bell Bearing [3]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_9",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Glovewort_Picker's_Bell_Bearing_3"
+    },
+    {
+     "material": "Great Grave Glovewort",
+     "upgradesTo": "+10",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Grave_Glovewort",
+     "cost": null,
+     "total": null,
+     "bellBearing": null
+    }
+   ]
+  },
+  {
+   "id": "ghost-gloveworts",
+   "caption": "Ghost Gloveworts",
+   "sectionId": "gloveworts",
+   "sectionTitle": "Gloveworts",
+   "sourceUrl": "https://eldenring.redmaw.dev/sheets/resources#gloveworts",
+   "dlc": false,
+   "columns": [
+    "Material",
+    "Upgrades to",
+    "Cost",
+    "Total",
+    "Bell-Bearing"
+   ],
+   "rowKeys": [
+    "material",
+    "upgradesTo",
+    "cost",
+    "total",
+    "bellBearing"
+   ],
+   "rows": [
+    {
+     "material": "Ghost Glovewort [1]",
+     "upgradesTo": "+1",
+     "cost": 1200,
+     "total": 1200,
+     "bellBearing": "Ghost-Glovewort Picker's Bell Bearing [1]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_1",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Ghost-Glovewort_Picker%27s_Bell_Bearing_1"
+    },
+    {
+     "material": "Ghost Glovewort [2]",
+     "upgradesTo": "+2",
+     "cost": 1800,
+     "total": 3000,
+     "bellBearing": "Ghost-Glovewort Picker's Bell Bearing [1]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_2",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Ghost-Glovewort_Picker%27s_Bell_Bearing_1"
+    },
+    {
+     "material": "Ghost Glovewort [3]",
+     "upgradesTo": "+3",
+     "cost": 2400,
+     "total": 5400,
+     "bellBearing": "Ghost-Glovewort Picker's Bell Bearing [1]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_3",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Ghost-Glovewort_Picker%27s_Bell_Bearing_1"
+    },
+    {
+     "material": "Ghost Glovewort [4]",
+     "upgradesTo": "+4",
+     "cost": 3600,
+     "total": 9000,
+     "bellBearing": "Ghost-Glovewort Picker's Bell Bearing [2]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_4",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Ghost-Glovewort_Picker's_Bell_Bearing_2"
+    },
+    {
+     "material": "Ghost Glovewort [5]",
+     "upgradesTo": "+5",
+     "cost": 4800,
+     "total": 13800,
+     "bellBearing": "Ghost-Glovewort Picker's Bell Bearing [2]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_5",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Ghost-Glovewort_Picker's_Bell_Bearing_2"
+    },
+    {
+     "material": "Ghost Glovewort [6]",
+     "upgradesTo": "+6",
+     "cost": 6000,
+     "total": 19800,
+     "bellBearing": "Ghost-Glovewort Picker's Bell Bearing [2]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_6",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Ghost-Glovewort_Picker's_Bell_Bearing_2"
+    },
+    {
+     "material": "Ghost Glovewort [7]",
+     "upgradesTo": "+7",
+     "cost": 7500,
+     "total": 27300,
+     "bellBearing": "Ghost-Glovewort Picker's Bell Bearing [3]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_7",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Ghost-Glovewort_Picker's_Bell_Bearing_3"
+    },
+    {
+     "material": "Ghost Glovewort [8]",
+     "upgradesTo": "+8",
+     "cost": 9000,
+     "total": 36300,
+     "bellBearing": "Ghost-Glovewort Picker's Bell Bearing [3]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_8",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Ghost-Glovewort_Picker's_Bell_Bearing_3"
+    },
+    {
+     "material": "Ghost Glovewort [9]",
+     "upgradesTo": "+9",
+     "cost": 12000,
+     "total": 48300,
+     "bellBearing": "Ghost-Glovewort Picker's Bell Bearing [3]",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_9",
+     "bellBearingUrl": "https://eldenring.wiki.gg/wiki/Ghost-Glovewort_Picker's_Bell_Bearing_3"
+    },
+    {
+     "material": "Great Ghost Glovewort",
+     "upgradesTo": "+10",
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Ghost_Glovewort",
+     "cost": null,
+     "total": null,
+     "bellBearing": null
+    }
+   ]
+  },
+  {
+   "id": "runes-base",
+   "caption": "Base Game",
+   "sectionId": "runes",
+   "sectionTitle": "Runes",
+   "sourceUrl": "https://eldenring.redmaw.dev/sheets/resources#runes",
+   "dlc": false,
+   "columns": [
+    "Consumable",
+    "Runes"
+   ],
+   "rowKeys": [
+    "name",
+    "runes"
+   ],
+   "rows": [
+    {
+     "name": "Lands Between Rune (Keepsake)",
+     "runes": 3000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Lands_Between_Rune"
+    },
+    {
+     "name": "Golden Rune [1]",
+     "runes": 200,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Rune_1"
+    },
+    {
+     "name": "Golden Rune [2]",
+     "runes": 400,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Rune_2"
+    },
+    {
+     "name": "Golden Rune [3]",
+     "runes": 800,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Rune_3"
+    },
+    {
+     "name": "Golden Rune [4]",
+     "runes": 1200,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Rune_4"
+    },
+    {
+     "name": "Golden Rune [5]",
+     "runes": 1600,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Rune_5"
+    },
+    {
+     "name": "Golden Rune [6]",
+     "runes": 2000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Rune_6"
+    },
+    {
+     "name": "Golden Rune [7]",
+     "runes": 2500,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Rune_7"
+    },
+    {
+     "name": "Golden Rune [8]",
+     "runes": 3000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Rune_8"
+    },
+    {
+     "name": "Golden Rune [9]",
+     "runes": 3800,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Rune_9"
+    },
+    {
+     "name": "Golden Rune [10]",
+     "runes": 5000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Rune_10"
+    },
+    {
+     "name": "Golden Rune [11]",
+     "runes": 6250,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Rune_11"
+    },
+    {
+     "name": "Golden Rune [12]",
+     "runes": 7500,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Rune_12"
+    },
+    {
+     "name": "Golden Rune [13]",
+     "runes": 10000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Rune_13"
+    },
+    {
+     "name": "Numen's Rune",
+     "runes": 12500,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Numen%27s_Rune"
+    },
+    {
+     "name": "Hero's Rune [1]",
+     "runes": 15000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Hero%27s_Rune_1"
+    },
+    {
+     "name": "Hero's Rune [2]",
+     "runes": 20000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Hero%27s_Rune_2"
+    },
+    {
+     "name": "Hero's Rune [3]",
+     "runes": 25000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Hero%27s_Rune_3"
+    },
+    {
+     "name": "Hero's Rune [4]",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Hero%27s_Rune_4"
+    },
+    {
+     "name": "Hero's Rune [5]",
+     "runes": 35000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Hero%27s_Rune_5"
+    },
+    {
+     "name": "Lord's Rune",
+     "runes": 50000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Lord%27s_Rune"
+    }
+   ]
+  },
+  {
+   "id": "runes-dlc",
+   "caption": "DLC",
+   "sectionId": "runes",
+   "sectionTitle": "Runes",
+   "sourceUrl": "https://eldenring.redmaw.dev/sheets/resources#runes",
+   "dlc": true,
+   "columns": [
+    "Consumable",
+    "Runes"
+   ],
+   "rowKeys": [
+    "name",
+    "runes"
+   ],
+   "rows": [
+    {
+     "name": "Broken Rune",
+     "runes": 500,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Broken_Rune"
+    },
+    {
+     "name": "Shadow Realm Rune [1]",
+     "runes": 7500,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Shadow_Realm_Rune_1"
+    },
+    {
+     "name": "Shadow Realm Rune [2]",
+     "runes": 10000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Shadow_Realm_Rune_2"
+    },
+    {
+     "name": "Shadow Realm Rune [3]",
+     "runes": 12500,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Shadow_Realm_Rune_3"
+    },
+    {
+     "name": "Shadow Realm Rune [4]",
+     "runes": 15000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Shadow_Realm_Rune_4"
+    },
+    {
+     "name": "Shadow Realm Rune [5]",
+     "runes": 17500,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Shadow_Realm_Rune_5"
+    },
+    {
+     "name": "Shadow Realm Rune [6]",
+     "runes": 22500,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Shadow_Realm_Rune_6"
+    },
+    {
+     "name": "Shadow Realm Rune [7]",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Shadow_Realm_Rune_7"
+    },
+    {
+     "name": "Leda's Rune",
+     "runes": 40000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Leda%27s_Rune"
+    },
+    {
+     "name": "Rune of an Unsung Hero",
+     "runes": 50000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Rune_of_an_Unsung_Hero"
+    },
+    {
+     "name": "Marika's Rune",
+     "runes": 80000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Marika%27s_Rune"
+    }
+   ]
+  },
+  {
+   "id": "remembrances-base",
+   "caption": "Base Game",
+   "sectionId": "remembrances",
+   "sectionTitle": "Remembrances",
+   "sourceUrl": "https://eldenring.redmaw.dev/sheets/resources#remembrances",
+   "dlc": false,
+   "columns": [
+    "Remembrance",
+    "Runes"
+   ],
+   "rowKeys": [
+    "name",
+    "runes"
+   ],
+   "rows": [
+    {
+     "name": "Remembrance of the Grafted",
+     "runes": 20000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Grafted"
+    },
+    {
+     "name": "Remembrance of the Full Moon Queen",
+     "runes": 20000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Full_Moon_Queen"
+    },
+    {
+     "name": "Remembrance of the Starscourge",
+     "runes": 40000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Starscourge"
+    },
+    {
+     "name": "Remembrance of the Regal Ancestor",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Regal_Ancestor"
+    },
+    {
+     "name": "Remembrance of the Lichdragon",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Lichdragon"
+    },
+    {
+     "name": "Remembrance of the Naturalborn",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Naturalborn"
+    },
+    {
+     "name": "Remembrance of the Omen King",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Omen_King"
+    },
+    {
+     "name": "Remembrance of the Blasphemous",
+     "runes": 50000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Blasphemous"
+    },
+    {
+     "name": "Remembrance of the Fire Giant",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Fire_Giant"
+    },
+    {
+     "name": "Remembrance of the Blood Lord",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Blood_Lord"
+    },
+    {
+     "name": "Remembrance of the Rot Goddess",
+     "runes": 50000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Rot_Goddess"
+    },
+    {
+     "name": "Remembrance of the Dragonlord",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Dragonlord"
+    },
+    {
+     "name": "Remembrance of the Black Blade",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Black_Blade"
+    },
+    {
+     "name": "Remembrance of Hoarah Loux",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_Hoarah_Loux"
+    },
+    {
+     "name": "Elden Remembrance",
+     "runes": 50000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Elden_Remembrance"
+    }
+   ]
+  },
+  {
+   "id": "remembrances-dlc",
+   "caption": "DLC",
+   "sectionId": "remembrances",
+   "sectionTitle": "Remembrances",
+   "sourceUrl": "https://eldenring.redmaw.dev/sheets/resources#remembrances",
+   "dlc": true,
+   "columns": [
+    "Remembrance",
+    "Runes"
+   ],
+   "rowKeys": [
+    "name",
+    "runes"
+   ],
+   "rows": [
+    {
+     "name": "Remembrance of the Dancing Lion",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Dancing_Lion"
+    },
+    {
+     "name": "Remembrance of the Twin Moon Knight",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Twin_Moon_Knight"
+    },
+    {
+     "name": "Remembrance of Putrescence",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_Putrescence"
+    },
+    {
+     "name": "Remembrance of the Shadow Sunflower",
+     "runes": 40000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Shadow_Sunflower"
+    },
+    {
+     "name": "Remembrance of the Wild Boar Rider",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Wild_Boar_Rider"
+    },
+    {
+     "name": "Remembrance of the Impaler",
+     "runes": 40000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Impaler"
+    },
+    {
+     "name": "Remembrance of the Mother of Fingers",
+     "runes": 40000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Mother_of_Fingers"
+    },
+    {
+     "name": "Remembrance of the Lord of Frenzied Flame",
+     "runes": 40000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Lord_of_Frenzied_Flame"
+    },
+    {
+     "name": "Remembrance of the Saint of the Bud",
+     "runes": 30000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_the_Saint_of_the_Bud"
+    },
+    {
+     "name": "Remembrance of a God and a Lord",
+     "runes": 50000,
+     "wikiUrl": "https://eldenring.wiki.gg/wiki/Remembrance_of_a_God_and_a_Lord"
+    }
+   ]
+  },
+  {
+   "id": "scadutree-fragments",
+   "caption": "Scadutree Fragments",
+   "sectionId": "scadu-fragments",
+   "sectionTitle": "Scadutree Fragments",
+   "sourceUrl": "https://eldenring.redmaw.dev/sheets/resources#scadu-fragments",
+   "dlc": true,
+   "columns": [
+    "Level",
+    "Required",
+    "Total Required",
+    "Damage Multiplier",
+    "Damage Negation"
+   ],
+   "rowKeys": [
+    "level",
+    "required",
+    "totalRequired",
+    "damageMultiplier",
+    "damageNegation"
+   ],
+   "rows": [
+    {
+     "level": 1,
+     "required": 1,
+     "totalRequired": 1,
+     "damageMultiplier": "1.10x",
+     "damageNegation": "9.09%"
+    },
+    {
+     "level": 2,
+     "required": 2,
+     "totalRequired": 3,
+     "damageMultiplier": "1.20x",
+     "damageNegation": "16.67%"
+    },
+    {
+     "level": 3,
+     "required": 2,
+     "totalRequired": 5,
+     "damageMultiplier": "1.25x",
+     "damageNegation": "20.00%"
+    },
+    {
+     "level": 4,
+     "required": 2,
+     "totalRequired": 7,
+     "damageMultiplier": "1.30x",
+     "damageNegation": "23.08%"
+    },
+    {
+     "level": 5,
+     "required": 2,
+     "totalRequired": 9,
+     "damageMultiplier": "1.35x",
+     "damageNegation": "25.93%"
+    },
+    {
+     "level": 6,
+     "required": 2,
+     "totalRequired": 11,
+     "damageMultiplier": "1.42x",
+     "damageNegation": "29.82%"
+    },
+    {
+     "level": 7,
+     "required": 2,
+     "totalRequired": 13,
+     "damageMultiplier": "1.50x",
+     "damageNegation": "33.33%"
+    },
+    {
+     "level": 8,
+     "required": 2,
+     "totalRequired": 15,
+     "damageMultiplier": "1.55x",
+     "damageNegation": "35.48%"
+    },
+    {
+     "level": 9,
+     "required": 2,
+     "totalRequired": 17,
+     "damageMultiplier": "1.60x",
+     "damageNegation": "37.50%"
+    },
+    {
+     "level": 10,
+     "required": 3,
+     "totalRequired": 20,
+     "damageMultiplier": "1.65x",
+     "damageNegation": "39.39%"
+    },
+    {
+     "level": 11,
+     "required": 3,
+     "totalRequired": 23,
+     "damageMultiplier": "1.75x",
+     "damageNegation": "42.86%"
+    },
+    {
+     "level": 12,
+     "required": 3,
+     "totalRequired": 26,
+     "damageMultiplier": "1.85x",
+     "damageNegation": "45.95%"
+    },
+    {
+     "level": 13,
+     "required": 3,
+     "totalRequired": 29,
+     "damageMultiplier": "1.88x",
+     "damageNegation": "46.67%"
+    },
+    {
+     "level": 14,
+     "required": 3,
+     "totalRequired": 32,
+     "damageMultiplier": "1.90x",
+     "damageNegation": "47.37%"
+    },
+    {
+     "level": 15,
+     "required": 3,
+     "totalRequired": 35,
+     "damageMultiplier": "1.92x",
+     "damageNegation": "48.05%"
+    },
+    {
+     "level": 16,
+     "required": 3,
+     "totalRequired": 38,
+     "damageMultiplier": "1.95x",
+     "damageNegation": "48.72%"
+    },
+    {
+     "level": 17,
+     "required": 3,
+     "totalRequired": 41,
+     "damageMultiplier": "1.98x",
+     "damageNegation": "49.37%"
+    },
+    {
+     "level": 18,
+     "required": 3,
+     "totalRequired": 44,
+     "damageMultiplier": "2.00x",
+     "damageNegation": "50.00%"
+    },
+    {
+     "level": 19,
+     "required": 3,
+     "totalRequired": 47,
+     "damageMultiplier": "2.02x",
+     "damageNegation": "50.62%"
+    },
+    {
+     "level": 20,
+     "required": 3,
+     "totalRequired": 50,
+     "damageMultiplier": "2.05x",
+     "damageNegation": "51.22%"
+    }
+   ]
+  },
+  {
+   "id": "revered-spirit-ashes",
+   "caption": "Revered Spirit Ashes",
+   "sectionId": "revered-ashes",
+   "sectionTitle": "Revered Spirit Ashes",
+   "sourceUrl": "https://eldenring.redmaw.dev/sheets/resources#revered-ashes",
+   "dlc": true,
+   "columns": [
+    "Level",
+    "Required",
+    "Total Required",
+    "Damage Multiplier",
+    "Mimic Tear Damage",
+    "Damage Negation",
+    "Mimic Tear Negation"
+   ],
+   "rowKeys": [
+    "level",
+    "required",
+    "totalRequired",
+    "damageMultiplier",
+    "mimicTearDamage",
+    "damageNegation",
+    "mimicTearNegation"
+   ],
+   "rows": [
+    {
+     "level": 1,
+     "required": 1,
+     "totalRequired": 1,
+     "damageMultiplier": "1.08x",
+     "mimicTearDamage": "1.08x",
+     "damageNegation": "6.82%",
+     "mimicTearNegation": "6.82%"
+    },
+    {
+     "level": 2,
+     "required": 1,
+     "totalRequired": 2,
+     "damageMultiplier": "1.15x",
+     "mimicTearDamage": "1.15x",
+     "damageNegation": "12.50%",
+     "mimicTearNegation": "12.50%"
+    },
+    {
+     "level": 3,
+     "required": 1,
+     "totalRequired": 3,
+     "damageMultiplier": "1.22x",
+     "mimicTearDamage": "1.22x",
+     "damageNegation": "17.31%",
+     "mimicTearNegation": "17.31%"
+    },
+    {
+     "level": 4,
+     "required": 2,
+     "totalRequired": 5,
+     "damageMultiplier": "1.30x",
+     "mimicTearDamage": "1.30x",
+     "damageNegation": "21.43%",
+     "mimicTearNegation": "21.43%"
+    },
+    {
+     "level": 5,
+     "required": 2,
+     "totalRequired": 7,
+     "damageMultiplier": "1.40x",
+     "mimicTearDamage": "1.38x",
+     "damageNegation": "27.00%",
+     "mimicTearNegation": "25.00%"
+    },
+    {
+     "level": 6,
+     "required": 3,
+     "totalRequired": 10,
+     "damageMultiplier": "1.57x",
+     "mimicTearDamage": "1.45x",
+     "damageNegation": "33.88%",
+     "mimicTearNegation": "28.12%"
+    },
+    {
+     "level": 7,
+     "required": 3,
+     "totalRequired": 13,
+     "damageMultiplier": "1.65x",
+     "mimicTearDamage": "1.52x",
+     "damageNegation": "36.41%",
+     "mimicTearNegation": "30.88%"
+    },
+    {
+     "level": 8,
+     "required": 3,
+     "totalRequired": 16,
+     "damageMultiplier": "1.73x",
+     "mimicTearDamage": "1.60",
+     "damageNegation": "38.67%",
+     "mimicTearNegation": "33.33%"
+    },
+    {
+     "level": 9,
+     "required": 4,
+     "totalRequired": 20,
+     "damageMultiplier": "1.81x",
+     "mimicTearDamage": "1.68x",
+     "damageNegation": "40.68%",
+     "mimicTearNegation": "35.53%"
+    },
+    {
+     "level": 10,
+     "required": 5,
+     "totalRequired": 25,
+     "damageMultiplier": "1.89x",
+     "mimicTearDamage": "1.75x",
+     "damageNegation": "42.50%",
+     "mimicTearNegation": "37.50%"
+    }
+   ]
+  }
+ ]
+}

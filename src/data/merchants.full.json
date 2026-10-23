@@ -1,0 +1,5483 @@
+{
+  "source": "Redmaw Completion Sheets",
+  "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants",
+  "fetchedAt": "2026-10-22",
+  "disclaimer": "Unofficial fan project. Elden Ring and its content belong to FromSoftware and Bandai Namco. Data from the Redmaw Completion Sheets.",
+  "counts": {
+    "merchants": 40,
+    "items": 627,
+    "sheetRows": 724,
+    "headingsSkipped": 97
+  },
+  "merchants": [
+    {
+      "id": "kale",
+      "name": "Merchant Kale",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#kale",
+      "items": [
+        {
+          "id": "MERCH-kale-1",
+          "name": "Throwing Dagger",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Throwing_Dagger",
+          "stepId": "m1-1",
+          "price": 40
+        },
+        {
+          "id": "MERCH-kale-2",
+          "name": "Telescope",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Telescope",
+          "stepId": "m1-2",
+          "price": 500
+        },
+        {
+          "id": "MERCH-kale-3",
+          "name": "Furlcalling Finger Remedy",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Furlcalling_Finger_Remedy",
+          "stepId": "m1-3",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-kale-4",
+          "name": "Cracked Pot",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Cracked_Pot",
+          "stepId": "m1-4",
+          "price": 300
+        },
+        {
+          "id": "MERCH-kale-5",
+          "name": "Crafting Kit",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Crafting_Kit",
+          "stepId": "m1-5",
+          "price": 300
+        },
+        {
+          "id": "MERCH-kale-6",
+          "name": "Nomadic Warrior's Cookbook [1]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Nomadic_Warrior%27s_Cookbook_1",
+          "stepId": "m1-6",
+          "price": 500
+        },
+        {
+          "id": "MERCH-kale-7",
+          "name": "Nomadic Warrior's Cookbook [2]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Nomadic_Warrior%27s_Cookbook_2",
+          "stepId": "m1-7",
+          "price": 500
+        },
+        {
+          "id": "MERCH-kale-8",
+          "name": "Missionary's Cookbook [1]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Missionary%27s_Cookbook_1",
+          "stepId": "m1-8",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-kale-9",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m1-9",
+          "price": 20
+        },
+        {
+          "id": "MERCH-kale-10",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m1-10",
+          "price": 40
+        },
+        {
+          "id": "MERCH-kale-11",
+          "name": "Torch",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Torch",
+          "stepId": "m1-11",
+          "price": 200
+        },
+        {
+          "id": "MERCH-kale-12",
+          "name": "Large Leather Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Large_Leather_Shield",
+          "stepId": "m1-12",
+          "price": 600
+        },
+        {
+          "id": "MERCH-kale-13",
+          "name": "Chain Coif",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Chain_Coif",
+          "stepId": "m1-13",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-kale-14",
+          "name": "Chain Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Chain_Armor",
+          "stepId": "m1-14",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-kale-15",
+          "name": "Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Gauntlets",
+          "stepId": "m1-15",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-kale-16",
+          "name": "Chain Leggings",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Chain_Leggings",
+          "stepId": "m1-16",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-kale-17",
+          "name": "Note: Flask of Wondrous Physick",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Flask_of_Wondrous_Physick",
+          "stepId": "m1-17",
+          "price": 200
+        },
+        {
+          "id": "MERCH-kale-18",
+          "name": "Note: Waypoint Ruins",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Waypoint_Ruins",
+          "stepId": "m1-18",
+          "price": 200
+        }
+      ]
+    },
+    {
+      "id": "sellen",
+      "name": "Sorceress Sellen",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#sellen",
+      "items": [
+        {
+          "id": "MERCH-sellen-1",
+          "name": "Glintstone Pebble",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintstone_Pebble",
+          "stepId": "m2-1",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-sellen-2",
+          "name": "Glintstone Stars",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintstone_Stars",
+          "stepId": "m2-2",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-sellen-3",
+          "name": "Glintstone Arc",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintstone_Arc",
+          "stepId": "m2-3",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-sellen-4",
+          "name": "Crystal Barrage",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Crystal_Barrage",
+          "stepId": "m2-4",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-sellen-5",
+          "name": "Scholar's Armament",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Scholar%27s_Armament",
+          "stepId": "m2-5",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-sellen-6",
+          "name": "Scholar's Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Scholar%27s_Shield",
+          "stepId": "m2-6",
+          "price": 2500
+        },
+        {
+          "id": "MERCH-sellen-7",
+          "name": "Shard Spiral",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Shard_Spiral",
+          "stepId": "m2-8",
+          "price": 8000,
+          "note": "If you side with Sellen at the end of her questline"
+        }
+      ]
+    },
+    {
+      "id": "patches",
+      "name": "Patches",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#patches",
+      "items": [
+        {
+          "id": "MERCH-patches-1",
+          "name": "Gold-Pickled Fowl Foot",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Gold-Pickled_Fowl_Foot",
+          "stepId": "m3-1",
+          "price": 600
+        },
+        {
+          "id": "MERCH-patches-2",
+          "name": "Fan Daggers",
+          "stock": "20",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Fan_Daggers",
+          "stepId": "m3-2",
+          "price": 160
+        },
+        {
+          "id": "MERCH-patches-3",
+          "name": "Margit's Shackle",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Margit%27s_Shackle",
+          "stepId": "m3-3",
+          "price": 5000
+        },
+        {
+          "id": "MERCH-patches-4",
+          "name": "Grace Mimic",
+          "stock": "15",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Grace_Mimic",
+          "stepId": "m3-4",
+          "price": 100
+        },
+        {
+          "id": "MERCH-patches-5",
+          "name": "Glass Shard",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glass_Shard",
+          "stepId": "m3-5",
+          "price": 100
+        },
+        {
+          "id": "MERCH-patches-6",
+          "name": "Furlcalling Finger Remedy",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Furlcalling_Finger_Remedy",
+          "stepId": "m3-6",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-patches-7",
+          "name": "Festering Bloody Finger",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Festering_Bloody_Finger",
+          "stepId": "m3-7",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-patches-8",
+          "name": "Stonesword Key",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stonesword_Key",
+          "stepId": "m3-8",
+          "price": 5000
+        },
+        {
+          "id": "MERCH-patches-9",
+          "name": "Missionary's Cookbook [2]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Missionary%27s_Cookbook_2",
+          "stepId": "m3-9",
+          "price": 800
+        },
+        {
+          "id": "MERCH-patches-10",
+          "name": "Parrying Dagger",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Parrying_Dagger",
+          "stepId": "m3-10",
+          "price": 1600
+        },
+        {
+          "id": "MERCH-patches-11",
+          "name": "Great Arrow",
+          "stock": "10",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Arrow",
+          "stepId": "m3-11",
+          "price": 300
+        },
+        {
+          "id": "MERCH-patches-12",
+          "name": "Ballista Bolt",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ballista_Bolt",
+          "stepId": "m3-12",
+          "price": 300
+        },
+        {
+          "id": "MERCH-patches-13",
+          "name": "Horse Crest Wooden Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Horse_Crest_Wooden_Shield",
+          "stepId": "m3-13",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-patches-14",
+          "name": "Sacrificial Twig",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Sacrificial_Twig",
+          "stepId": "m3-14",
+          "price": 5000
+        },
+        {
+          "id": "MERCH-patches-15",
+          "name": "Festering Bloody Finger",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Festering_Bloody_Finger",
+          "stepId": "m3-16",
+          "price": 1000,
+          "note": "After moving to the Scenic Isle, he additionally sells"
+        },
+        {
+          "id": "MERCH-patches-16",
+          "name": "Estoc",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Estoc",
+          "stepId": "m3-17",
+          "price": 3000,
+          "note": "After moving to the Scenic Isle, he additionally sells"
+        },
+        {
+          "id": "MERCH-patches-17",
+          "name": "Great Arrow",
+          "stock": "10",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Arrow",
+          "stepId": "m3-18",
+          "price": 300,
+          "note": "After moving to the Scenic Isle, he additionally sells"
+        },
+        {
+          "id": "MERCH-patches-18",
+          "name": "Ballista Bolt",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ballista_Bolt",
+          "stepId": "m3-19",
+          "price": 300,
+          "note": "After moving to the Scenic Isle, he additionally sells"
+        }
+      ]
+    },
+    {
+      "id": "bernahl",
+      "name": "Knight Bernahl",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#bernahl",
+      "items": [
+        {
+          "id": "MERCH-bernahl-1",
+          "name": "Ash of War: Stamp (Upward Cut)",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Stamp_(Upward_Cut)",
+          "stepId": "m4-1",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-bernahl-2",
+          "name": "Ash of War: Kick",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Kick",
+          "stepId": "m4-2",
+          "price": 800
+        },
+        {
+          "id": "MERCH-bernahl-3",
+          "name": "Ash of War: Endure",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Endure",
+          "stepId": "m4-3",
+          "price": 600
+        },
+        {
+          "id": "MERCH-bernahl-4",
+          "name": "Ash of War: War Cry",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_War_Cry",
+          "stepId": "m4-4",
+          "price": 800
+        },
+        {
+          "id": "MERCH-bernahl-5",
+          "name": "Ash of War: Spinning Slash",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Spinning_Slash",
+          "stepId": "m4-5",
+          "price": 1200
+        },
+        {
+          "id": "MERCH-bernahl-6",
+          "name": "Ash of War: Impaling Thrust",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Impaling_Thrust",
+          "stepId": "m4-6",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-bernahl-7",
+          "name": "Ash of War: Quickstep",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Quickstep",
+          "stepId": "m4-7",
+          "price": 800
+        },
+        {
+          "id": "MERCH-bernahl-8",
+          "name": "Ash of War: Storm Blade",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Storm_Blade",
+          "stepId": "m4-8",
+          "price": 1800
+        },
+        {
+          "id": "MERCH-bernahl-9",
+          "name": "Ash of War: Parry",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Parry",
+          "stepId": "m4-9",
+          "price": 600
+        },
+        {
+          "id": "MERCH-bernahl-10",
+          "name": "Ash of War: No Skill",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_No_Skill",
+          "stepId": "m4-10",
+          "price": 600
+        },
+        {
+          "id": "MERCH-bernahl-11",
+          "name": "Ash of War: Eruption",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Eruption",
+          "stepId": "m4-12",
+          "price": 8000,
+          "note": "After joining the Volcano Manor and killing Istvan (or after killing Rykard)"
+        },
+        {
+          "id": "MERCH-bernahl-12",
+          "name": "Ash of War: Assassin's Gambit",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Assassin%27s_Gambit",
+          "stepId": "m4-13",
+          "price": 6500,
+          "note": "After joining the Volcano Manor and killing Istvan (or after killing Rykard)"
+        }
+      ]
+    },
+    {
+      "id": "gostoc",
+      "name": "Gatekeeper Gostoc",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#gostoc",
+      "items": [
+        {
+          "id": "MERCH-gostoc-1",
+          "name": "Silver-Pickled Fowl Foot",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Silver-Pickled_Fowl_Foot",
+          "stepId": "m5-1",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-gostoc-2",
+          "name": "Ruin Fragment",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ruin_Fragment",
+          "stepId": "m5-2",
+          "price": 100
+        },
+        {
+          "id": "MERCH-gostoc-3",
+          "name": "Furlcalling Finger Remedy",
+          "stock": "4",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Furlcalling_Finger_Remedy",
+          "stepId": "m5-3",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-gostoc-4",
+          "name": "Festering Bloody Finger",
+          "stock": "2",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Festering_Bloody_Finger",
+          "stepId": "m5-4",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-gostoc-5",
+          "name": "Stormhawk Feather",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stormhawk_Feather",
+          "stepId": "m5-5",
+          "price": 500
+        },
+        {
+          "id": "MERCH-gostoc-6",
+          "name": "Caestus",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Caestus",
+          "stepId": "m5-6",
+          "price": 800
+        },
+        {
+          "id": "MERCH-gostoc-7",
+          "name": "Great Arrow",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Arrow",
+          "stepId": "m5-7",
+          "price": 300
+        },
+        {
+          "id": "MERCH-gostoc-8",
+          "name": "Ballista Bolt",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ballista_Bolt",
+          "stepId": "m5-8",
+          "price": 300
+        },
+        {
+          "id": "MERCH-gostoc-9",
+          "name": "Buckler",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Buckler",
+          "stepId": "m5-9",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-gostoc-10",
+          "name": "Bandit Garb",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bandit_Garb",
+          "stepId": "m5-10",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-gostoc-11",
+          "name": "Bandit Manchettes",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bandit_Manchettes",
+          "stepId": "m5-11",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-gostoc-12",
+          "name": "Bandit Boots",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bandit_Boots",
+          "stepId": "m5-12",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-gostoc-13",
+          "name": "Ancient Dragon Smithing Stone",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancient_Dragon_Smithing_Stone",
+          "stepId": "m5-14",
+          "price": 20000,
+          "note": "After finishing Nepheli's questline"
+        }
+      ]
+    },
+    {
+      "id": "rogier",
+      "name": "Sorcerer Rogier",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#rogier",
+      "items": [
+        {
+          "id": "MERCH-rogier-1",
+          "name": "Ash of War: Glintstone Pebble",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Glintstone_Pebble",
+          "stepId": "m6-1",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-rogier-2",
+          "name": "Ash of War: Carian Greatsword",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Carian_Greatsword",
+          "stepId": "m6-2",
+          "price": 2500
+        },
+        {
+          "id": "MERCH-rogier-3",
+          "name": "Ash of War: Spinning Weapon",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Spinning_Weapon",
+          "stepId": "m6-3",
+          "price": 1000
+        }
+      ]
+    },
+    {
+      "id": "darian",
+      "name": "D, Hunter of the Dead",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#darian",
+      "items": [
+        {
+          "id": "MERCH-darian-1",
+          "name": "Litany of Proper Death",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Litany_of_Proper_Death",
+          "stepId": "m7-1",
+          "price": 2500
+        },
+        {
+          "id": "MERCH-darian-2",
+          "name": "Order's Blade",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Order%27s_Blade",
+          "stepId": "m7-2",
+          "price": 3000
+        }
+      ]
+    },
+    {
+      "id": "corhyn",
+      "name": "Brother Corhyn",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#corhyn",
+      "items": [
+        {
+          "id": "MERCH-corhyn-1",
+          "name": "Urgent Heal",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Urgent_Heal",
+          "stepId": "m8-1",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-corhyn-2",
+          "name": "Heal",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Heal",
+          "stepId": "m8-2",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-corhyn-3",
+          "name": "Cure Poison",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Cure_Poison",
+          "stepId": "m8-3",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-corhyn-4",
+          "name": "Magic Fortification",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Magic_Fortification",
+          "stepId": "m8-4",
+          "price": 3500
+        },
+        {
+          "id": "MERCH-corhyn-5",
+          "name": "Flame Fortification",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Flame_Fortification",
+          "stepId": "m8-5",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-corhyn-6",
+          "name": "Rejection",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rejection",
+          "stepId": "m8-6",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-corhyn-7",
+          "name": "Catch Flame",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Catch_Flame",
+          "stepId": "m8-7",
+          "price": 600
+        },
+        {
+          "id": "MERCH-corhyn-8",
+          "name": "Flame Sling",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Flame_Sling",
+          "stepId": "m8-8",
+          "price": 800
+        },
+        {
+          "id": "MERCH-corhyn-9",
+          "name": "Great Heal",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Heal",
+          "stepId": "m8-10",
+          "price": 9000,
+          "note": "After relocating to Altus Plateau"
+        },
+        {
+          "id": "MERCH-corhyn-10",
+          "name": "Lightning Fortification",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lightning_Fortification",
+          "stepId": "m8-11",
+          "price": 7500,
+          "note": "After relocating to Altus Plateau"
+        },
+        {
+          "id": "MERCH-corhyn-11",
+          "name": "Discus of Light",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Discus_of_Light",
+          "stepId": "m8-13",
+          "price": 11000,
+          "note": "After relocating next to Goldmask"
+        },
+        {
+          "id": "MERCH-corhyn-12",
+          "name": "Immutable Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Immutable_Shield",
+          "stepId": "m8-15",
+          "price": 13000,
+          "note": "After telling Goldmask that Radagon is Marika, immediately speak with Corhyn to unlock"
+        }
+      ]
+    },
+    {
+      "id": "twin-maiden-husks",
+      "name": "Twin Maiden Husks",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#twin-maiden-husks",
+      "items": [
+        {
+          "id": "MERCH-twin-maiden-husks-1",
+          "name": "Rune Arc",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rune_Arc",
+          "stepId": "m9-1",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-2",
+          "name": "White Cipher Ring",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/White_Cipher_Ring",
+          "stepId": "m9-2",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-3",
+          "name": "Blue Cipher Ring",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Blue_Cipher_Ring",
+          "stepId": "m9-3",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-4",
+          "name": "Memory Stone",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Memory_Stone",
+          "stepId": "m9-4",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-5",
+          "name": "Stonesword Key",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stonesword_Key",
+          "stepId": "m9-5",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-6",
+          "name": "Dagger",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Dagger",
+          "stepId": "m9-6",
+          "price": 400
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-7",
+          "name": "Longsword",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Longsword",
+          "stepId": "m9-7",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-8",
+          "name": "Rapier",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rapier",
+          "stepId": "m9-8",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-9",
+          "name": "Scimitar",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Scimitar",
+          "stepId": "m9-9",
+          "price": 600
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-10",
+          "name": "Reverse-Bladed Sword",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Reverse-Bladed_Sword",
+          "stepId": "m9-10",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-11",
+          "name": "Battle Axe",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Battle_Axe",
+          "stepId": "m9-11",
+          "price": 800
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-12",
+          "name": "Mace",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Mace",
+          "stepId": "m9-12",
+          "price": 800
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-13",
+          "name": "Short Spear",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Short_Spear",
+          "stepId": "m9-13",
+          "price": 600
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-14",
+          "name": "Longbow",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Longbow",
+          "stepId": "m9-14",
+          "price": 1200
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-15",
+          "name": "Finger Seal",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Finger_Seal",
+          "stepId": "m9-15",
+          "price": 800
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-16",
+          "name": "Heater Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Heater_Shield",
+          "stepId": "m9-16",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-17",
+          "name": "Knight Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Knight_Helm",
+          "stepId": "m9-17",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-18",
+          "name": "Knight Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Knight_Armor",
+          "stepId": "m9-18",
+          "price": 4500
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-19",
+          "name": "Knight Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Knight_Gauntlets",
+          "stepId": "m9-19",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-20",
+          "name": "Knight Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Knight_Greaves",
+          "stepId": "m9-20",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-21",
+          "name": "Furled Finger's Trick-Mirror",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Furled_Finger%27s_Trick-Mirror",
+          "stepId": "m9-21",
+          "price": 5000
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-22",
+          "name": "Host's Trick-Mirror",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Host%27s_Trick-Mirror",
+          "stepId": "m9-22",
+          "price": 5000
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-23",
+          "name": "Thin Beast Bones",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Thin_Beast_Bones",
+          "stepId": "m9-24",
+          "price": 150,
+          "note": "After giving Bone Peddler's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-24",
+          "name": "Hefty Beast Bone",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Hefty_Beast_Bone",
+          "stepId": "m9-25",
+          "price": 250,
+          "note": "After giving Bone Peddler's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-25",
+          "name": "Glintstone Scrap",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintstone_Scrap",
+          "stepId": "m9-27",
+          "price": 300,
+          "note": "After giving Smithing-Stone Miner's Bell Bearing [1]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-26",
+          "name": "Smithing Stone [1]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_1",
+          "stepId": "m9-28",
+          "price": 200,
+          "note": "After giving Smithing-Stone Miner's Bell Bearing [1]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-27",
+          "name": "Smithing Stone [2]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_2",
+          "stepId": "m9-29",
+          "price": 400,
+          "note": "After giving Smithing-Stone Miner's Bell Bearing [1]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-28",
+          "name": "Sliver of Meat",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Sliver_of_Meat",
+          "stepId": "m9-31",
+          "price": 1000,
+          "note": "After giving Meat Peddler's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-29",
+          "name": "Lump of Flesh",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lump_of_Flesh",
+          "stepId": "m9-32",
+          "price": 1500,
+          "note": "After giving Meat Peddler's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-30",
+          "name": "Turtle Neck Meat",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Turtle_Neck_Meat",
+          "stepId": "m9-33",
+          "price": 1200,
+          "note": "After giving Meat Peddler's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-31",
+          "name": "Somber Smithing Stone [1]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_1",
+          "stepId": "m9-35",
+          "price": 2000,
+          "note": "After giving Somberstone Miner's Bell Bearing [1]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-32",
+          "name": "Somber Smithing Stone [2]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_2",
+          "stepId": "m9-36",
+          "price": 3000,
+          "note": "After giving Somberstone Miner's Bell Bearing [1]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-33",
+          "name": "Ghost Glovewort [1]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_1",
+          "stepId": "m9-38",
+          "price": 1200,
+          "note": "After giving Ghost-Glovewort Picker's Bell Bearing [1]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-34",
+          "name": "Ghost Glovewort [2]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_2",
+          "stepId": "m9-39",
+          "price": 1800,
+          "note": "After giving Ghost-Glovewort Picker's Bell Bearing [1]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-35",
+          "name": "Ghost Glovewort [3]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_3",
+          "stepId": "m9-40",
+          "price": 2400,
+          "note": "After giving Ghost-Glovewort Picker's Bell Bearing [1]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-36",
+          "name": "Ghost Glovewort [4]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_4",
+          "stepId": "m9-42",
+          "price": 3600,
+          "note": "After giving Ghost-Glovewort Picker's Bell Bearing [2]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-37",
+          "name": "Ghost Glovewort [5]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_5",
+          "stepId": "m9-43",
+          "price": 4800,
+          "note": "After giving Ghost-Glovewort Picker's Bell Bearing [2]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-38",
+          "name": "Ghost Glovewort [6]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_6",
+          "stepId": "m9-44",
+          "price": 6000,
+          "note": "After giving Ghost-Glovewort Picker's Bell Bearing [2]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-39",
+          "name": "Grave Glovewort [1]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_1",
+          "stepId": "m9-46",
+          "price": 800,
+          "note": "After giving Glovewort Picker's Bell Bearing [1]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-40",
+          "name": "Grave Glovewort [2]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_2",
+          "stepId": "m9-47",
+          "price": 1200,
+          "note": "After giving Glovewort Picker's Bell Bearing [1]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-41",
+          "name": "Grave Glovewort [3]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_3",
+          "stepId": "m9-48",
+          "price": 1600,
+          "note": "After giving Glovewort Picker's Bell Bearing [1]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-42",
+          "name": "Cracked Crystal",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Cracked_Crystal",
+          "stepId": "m9-50",
+          "price": 300,
+          "note": "After giving Somberstone Miner's Bell Bearing [2]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-43",
+          "name": "Somber Smithing Stone [3]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_3",
+          "stepId": "m9-51",
+          "price": 4000,
+          "note": "After giving Somberstone Miner's Bell Bearing [2]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-44",
+          "name": "Somber Smithing Stone [4]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_4",
+          "stepId": "m9-52",
+          "price": 6000,
+          "note": "After giving Somberstone Miner's Bell Bearing [2]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-45",
+          "name": "Explosive Stone",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Explosive_Stone",
+          "stepId": "m9-54",
+          "price": 300,
+          "note": "After giving Smithing-Stone Miner's Bell Bearing [2]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-46",
+          "name": "Smithing Stone [3]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_3",
+          "stepId": "m9-55",
+          "price": 600,
+          "note": "After giving Smithing-Stone Miner's Bell Bearing [2]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-47",
+          "name": "Smithing Stone [4]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_4",
+          "stepId": "m9-56",
+          "price": 900,
+          "note": "After giving Smithing-Stone Miner's Bell Bearing [2]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-48",
+          "name": "Neutralizing Boluses",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Neutralizing_Boluses",
+          "stepId": "m9-58",
+          "price": 1200,
+          "note": "After giving Medicine Peddler's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-49",
+          "name": "Stanching Boluses",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stanching_Boluses",
+          "stepId": "m9-59",
+          "price": 1200,
+          "note": "After giving Medicine Peddler's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-50",
+          "name": "Thawfrost Boluses",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Thawfrost_Boluses",
+          "stepId": "m9-60",
+          "price": 2400,
+          "note": "After giving Medicine Peddler's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-51",
+          "name": "Stimulating Boluses",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stimulating_Boluses",
+          "stepId": "m9-61",
+          "price": 3000,
+          "note": "After giving Medicine Peddler's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-52",
+          "name": "Smithing Stone [5]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_5",
+          "stepId": "m9-63",
+          "price": 1200,
+          "note": "After giving Smithing-Stone Miner's Bell Bearing [3]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-53",
+          "name": "Smithing Stone [6]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_6",
+          "stepId": "m9-64",
+          "price": 1500,
+          "note": "After giving Smithing-Stone Miner's Bell Bearing [3]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-54",
+          "name": "Grave Glovewort [4]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_4",
+          "stepId": "m9-66",
+          "price": 2400,
+          "note": "After giving Glovewort Picker's Bell Bearing [2]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-55",
+          "name": "Grave Glovewort [5]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_5",
+          "stepId": "m9-67",
+          "price": 3200,
+          "note": "After giving Glovewort Picker's Bell Bearing [2]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-56",
+          "name": "Grave Glovewort [6]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_6",
+          "stepId": "m9-68",
+          "price": 4000,
+          "note": "After giving Glovewort Picker's Bell Bearing [2]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-57",
+          "name": "Somber Smithing Stone [5]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_5",
+          "stepId": "m9-70",
+          "price": 9000,
+          "note": "After giving Somberstone Miner's Bell Bearing [3]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-58",
+          "name": "Somber Smithing Stone [6]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_6",
+          "stepId": "m9-71",
+          "price": 12000,
+          "note": "After giving Somberstone Miner's Bell Bearing [3]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-59",
+          "name": "Gravity Stone Fan",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Gravity_Stone_Fan",
+          "stepId": "m9-73",
+          "price": 400,
+          "note": "After giving Gravity Stone Peddler's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-60",
+          "name": "Gravity Stone Chunk",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Gravity_Stone_Chunk",
+          "stepId": "m9-74",
+          "price": 600,
+          "note": "After giving Gravity Stone Peddler's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-61",
+          "name": "Ghost Glovewort [7]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_7",
+          "stepId": "m9-76",
+          "price": 7500,
+          "note": "After giving Ghost-Glovewort Picker's Bell Bearing [3]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-62",
+          "name": "Ghost Glovewort [8]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_8",
+          "stepId": "m9-77",
+          "price": 9000,
+          "note": "After giving Ghost-Glovewort Picker's Bell Bearing [3]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-63",
+          "name": "Ghost Glovewort [9]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghost_Glovewort_9",
+          "stepId": "m9-78",
+          "price": 12000,
+          "note": "After giving Ghost-Glovewort Picker's Bell Bearing [3]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-64",
+          "name": "Grave Glovewort [7]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_7",
+          "stepId": "m9-80",
+          "price": 5000,
+          "note": "After giving Glovewort Picker's Bell Bearing [3]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-65",
+          "name": "Grave Glovewort [8]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_8",
+          "stepId": "m9-81",
+          "price": 6000,
+          "note": "After giving Glovewort Picker's Bell Bearing [3]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-66",
+          "name": "Grave Glovewort [9]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Grave_Glovewort_9",
+          "stepId": "m9-82",
+          "price": 8000,
+          "note": "After giving Glovewort Picker's Bell Bearing [3]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-67",
+          "name": "Sanctuary Stone",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Sanctuary_Stone",
+          "stepId": "m9-84",
+          "price": 600,
+          "note": "After giving Somberstone Miner's Bell Bearing [4]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-68",
+          "name": "Somber Smithing Stone [7]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_7",
+          "stepId": "m9-85",
+          "price": 16000,
+          "note": "After giving Somberstone Miner's Bell Bearing [4]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-69",
+          "name": "Somber Smithing Stone [8]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_8",
+          "stepId": "m9-86",
+          "price": 20000,
+          "note": "After giving Somberstone Miner's Bell Bearing [4]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-70",
+          "name": "Ruin Fragment",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ruin_Fragment",
+          "stepId": "m9-88",
+          "price": 100,
+          "note": "After giving Smithing-Stone Miner's Bell Bearing [4]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-71",
+          "name": "Smithing Stone [7]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_7",
+          "stepId": "m9-89",
+          "price": 2400,
+          "note": "After giving Smithing-Stone Miner's Bell Bearing [4]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-72",
+          "name": "Smithing Stone [8]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_8",
+          "stepId": "m9-90",
+          "price": 3600,
+          "note": "After giving Smithing-Stone Miner's Bell Bearing [4]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-73",
+          "name": "Somber Smithing Stone [9]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_9",
+          "stepId": "m9-92",
+          "price": 25000,
+          "note": "After giving Somberstone Miner's Bell Bearing [5]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-74",
+          "name": "String",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/String",
+          "stepId": "m9-94",
+          "price": 1200,
+          "note": "After giving String-Seller's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-75",
+          "name": "Rada Fruit",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rada_Fruit",
+          "stepId": "m9-96",
+          "price": 800,
+          "note": "After giving Herbalist's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-76",
+          "name": "Mushroom",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Mushroom",
+          "stepId": "m9-98",
+          "price": 800,
+          "note": "After giving Mushroom-Seller's Bell Bearing [1]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-77",
+          "name": "Redflesh Mushroom",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Redflesh_Mushroom",
+          "stepId": "m9-99",
+          "price": 1500,
+          "note": "After giving Mushroom-Seller's Bell Bearing [1]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-78",
+          "name": "Toxic Mushroom",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Toxic_Mushroom",
+          "stepId": "m9-101",
+          "price": 1000,
+          "note": "After giving Mushroom-Seller's Bell Bearing [2]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-79",
+          "name": "Whiteflesh Mushroom",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Whiteflesh_Mushroom",
+          "stepId": "m9-102",
+          "price": 2000,
+          "note": "After giving Mushroom-Seller's Bell Bearing [2]"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-80",
+          "name": "Root Resin",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Root_Resin",
+          "stepId": "m9-104",
+          "price": 900,
+          "note": "After giving Greasemonger's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-81",
+          "name": "Knot Resin",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Knot_Resin",
+          "stepId": "m9-105",
+          "price": 1800,
+          "note": "After giving Greasemonger's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-82",
+          "name": "Rabbath's Greatbolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rabbath%27s_Greatbolt",
+          "stepId": "m9-107",
+          "price": 800,
+          "note": "After giving Spellmachinist's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-83",
+          "name": "Fly Mold",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Fly_Mold",
+          "stepId": "m9-109",
+          "price": 2500,
+          "note": "After giving Moldmonger's Bell Bearing"
+        },
+        {
+          "id": "MERCH-twin-maiden-husks-84",
+          "name": "Igon's Harpoon",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Igon%27s_Harpoon",
+          "stepId": "m9-111",
+          "price": 1000,
+          "note": "After giving Igon's Bell Bearing"
+        }
+      ]
+    },
+    {
+      "id": "enia-remembrances",
+      "name": "Finger Reader Enia (Remembrances)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#enia-remembrances",
+      "items": [
+        {
+          "id": "MERCH-enia-remembrances-1",
+          "name": "Axe of Godrick",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Axe_of_Godrick",
+          "stepId": "m40-2",
+          "cost": "Remembrance of the Grafted"
+        },
+        {
+          "id": "MERCH-enia-remembrances-2",
+          "name": "Grafted Dragon",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Grafted_Dragon",
+          "stepId": "m40-3",
+          "cost": "Remembrance of the Grafted"
+        },
+        {
+          "id": "MERCH-enia-remembrances-3",
+          "name": "Carian Regal Scepter",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Carian_Regal_Scepter",
+          "stepId": "m40-5",
+          "cost": "Remembrance of the Full Moon Queen"
+        },
+        {
+          "id": "MERCH-enia-remembrances-4",
+          "name": "Rennala's Full Moon",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rennala%27s_Full_Moon",
+          "stepId": "m40-6",
+          "cost": "Remembrance of the Full Moon Queen"
+        },
+        {
+          "id": "MERCH-enia-remembrances-5",
+          "name": "Starscourge Greatsword",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Starscourge_Greatsword",
+          "stepId": "m40-8",
+          "cost": "Remembrance of the Starscourge"
+        },
+        {
+          "id": "MERCH-enia-remembrances-6",
+          "name": "Lion Greatbow",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lion_Greatbow",
+          "stepId": "m40-9",
+          "cost": "Remembrance of the Starscourge"
+        },
+        {
+          "id": "MERCH-enia-remembrances-7",
+          "name": "Winged Greathorn",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Winged_Greathorn",
+          "stepId": "m40-11",
+          "cost": "Remembrance of the Regal Ancestor"
+        },
+        {
+          "id": "MERCH-enia-remembrances-8",
+          "name": "Ancestral Spirit's Horn",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancestral_Spirit%27s_Horn",
+          "stepId": "m40-12",
+          "cost": "Remembrance of the Regal Ancestor"
+        },
+        {
+          "id": "MERCH-enia-remembrances-9",
+          "name": "Fortissax's Lightning Spear",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Fortissax%27s_Lightning_Spear",
+          "stepId": "m40-14",
+          "cost": "MISSABLE Remembrance of the Lichdragon"
+        },
+        {
+          "id": "MERCH-enia-remembrances-10",
+          "name": "Death Lightning",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Death_Lightning",
+          "stepId": "m40-15",
+          "cost": "MISSABLE Remembrance of the Lichdragon"
+        },
+        {
+          "id": "MERCH-enia-remembrances-11",
+          "name": "Bastard's Stars",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bastard%27s_Stars",
+          "stepId": "m40-17",
+          "cost": "Remembrance of the Naturalborn"
+        },
+        {
+          "id": "MERCH-enia-remembrances-12",
+          "name": "Ash of War: Waves of Darkness",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Waves_of_Darkness",
+          "stepId": "m40-18",
+          "cost": "Remembrance of the Naturalborn"
+        },
+        {
+          "id": "MERCH-enia-remembrances-13",
+          "name": "Morgott's Cursed Sword",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Morgott%27s_Cursed_Sword",
+          "stepId": "m40-20",
+          "cost": "Remembrance of the Omen King"
+        },
+        {
+          "id": "MERCH-enia-remembrances-14",
+          "name": "Regal Omen Bairn",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Regal_Omen_Bairn",
+          "stepId": "m40-21",
+          "cost": "Remembrance of the Omen King"
+        },
+        {
+          "id": "MERCH-enia-remembrances-15",
+          "name": "Blasphemous Blade",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Blasphemous_Blade",
+          "stepId": "m40-23",
+          "cost": "Remembrance of the Blasphemous"
+        },
+        {
+          "id": "MERCH-enia-remembrances-16",
+          "name": "Rykard's Rancor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rykard%27s_Rancor",
+          "stepId": "m40-24",
+          "cost": "Remembrance of the Blasphemous"
+        },
+        {
+          "id": "MERCH-enia-remembrances-17",
+          "name": "Giant's Red Braid",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Giant%27s_Red_Braid",
+          "stepId": "m40-26",
+          "cost": "Remembrance of the Fire Giant"
+        },
+        {
+          "id": "MERCH-enia-remembrances-18",
+          "name": "Burn, O Flame!",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Burn,_O_Flame!",
+          "stepId": "m40-27",
+          "cost": "Remembrance of the Fire Giant"
+        },
+        {
+          "id": "MERCH-enia-remembrances-19",
+          "name": "Mohgwyn's Sacred Spear",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Mohgwyn%27s_Sacred_Spear",
+          "stepId": "m40-29",
+          "cost": "Remembrance of the Blood Lord"
+        },
+        {
+          "id": "MERCH-enia-remembrances-20",
+          "name": "Bloodboon",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bloodboon",
+          "stepId": "m40-30",
+          "cost": "Remembrance of the Blood Lord"
+        },
+        {
+          "id": "MERCH-enia-remembrances-21",
+          "name": "Hand of Malenia",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Hand_of_Malenia",
+          "stepId": "m40-32",
+          "cost": "Remembrance of the Rot Goddess"
+        },
+        {
+          "id": "MERCH-enia-remembrances-22",
+          "name": "Scarlet Aeonia",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Scarlet_Aeonia",
+          "stepId": "m40-33",
+          "cost": "Remembrance of the Rot Goddess"
+        },
+        {
+          "id": "MERCH-enia-remembrances-23",
+          "name": "Dragon King's Cragblade",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragon_King%27s_Cragblade",
+          "stepId": "m40-35",
+          "cost": "Remembrance of the Dragonlord"
+        },
+        {
+          "id": "MERCH-enia-remembrances-24",
+          "name": "Placidusax's Ruin",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Placidusax%27s_Ruin",
+          "stepId": "m40-36",
+          "cost": "Remembrance of the Dragonlord"
+        },
+        {
+          "id": "MERCH-enia-remembrances-25",
+          "name": "Maliketh's Black Blade",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Maliketh%27s_Black_Blade",
+          "stepId": "m40-38",
+          "cost": "Remembrance of the Black Blade"
+        },
+        {
+          "id": "MERCH-enia-remembrances-26",
+          "name": "Black Blade",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Blade",
+          "stepId": "m40-39",
+          "cost": "Remembrance of the Black Blade"
+        },
+        {
+          "id": "MERCH-enia-remembrances-27",
+          "name": "Axe of Godfrey",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Axe_of_Godfrey",
+          "stepId": "m40-41",
+          "cost": "Remembrance of Hoarah Loux"
+        },
+        {
+          "id": "MERCH-enia-remembrances-28",
+          "name": "Ash of War: Hoarah Loux's Earthshaker",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Hoarah_Loux%27s_Earthshaker",
+          "stepId": "m40-42",
+          "cost": "Remembrance of Hoarah Loux"
+        },
+        {
+          "id": "MERCH-enia-remembrances-29",
+          "name": "Marika's Hammer",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Marika%27s_Hammer",
+          "stepId": "m40-44",
+          "cost": "Elden Remembrance"
+        },
+        {
+          "id": "MERCH-enia-remembrances-30",
+          "name": "Sacred Relic Sword",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Sacred_Relic_Sword",
+          "stepId": "m40-45",
+          "cost": "Elden Remembrance"
+        },
+        {
+          "id": "MERCH-enia-remembrances-31",
+          "name": "Enraged Divine Beast",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Enraged_Divine_Beast",
+          "stepId": "m40-47",
+          "cost": "Remembrance of the Dancing Lion"
+        },
+        {
+          "id": "MERCH-enia-remembrances-32",
+          "name": "Ash of War: Divine Beast Frost Stomp",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Divine_Beast_Frost_Stomp",
+          "stepId": "m40-48",
+          "cost": "Remembrance of the Dancing Lion"
+        },
+        {
+          "id": "MERCH-enia-remembrances-33",
+          "name": "Rellana's Twin Blades",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rellana%27s_Twin_Blades",
+          "stepId": "m40-50",
+          "cost": "Remembrance of the Twin Moon Knight"
+        },
+        {
+          "id": "MERCH-enia-remembrances-34",
+          "name": "Rellana's Twin Moons",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rellana%27s_Twin_Moons",
+          "stepId": "m40-51",
+          "cost": "Remembrance of the Twin Moon Knight"
+        },
+        {
+          "id": "MERCH-enia-remembrances-35",
+          "name": "Putrescence Cleaver",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Putrescence_Cleaver",
+          "stepId": "m40-53",
+          "cost": "Remembrance of Putrescence"
+        },
+        {
+          "id": "MERCH-enia-remembrances-36",
+          "name": "Vortex of Putrescence",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Vortex_of_Putrescence",
+          "stepId": "m40-54",
+          "cost": "Remembrance of Putrescence"
+        },
+        {
+          "id": "MERCH-enia-remembrances-37",
+          "name": "Shadow Sunflower Blossom",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Shadow_Sunflower_Blossom",
+          "stepId": "m40-56",
+          "cost": "Remembrance of the Shadow Sunflower"
+        },
+        {
+          "id": "MERCH-enia-remembrances-38",
+          "name": "Land of Shadow",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Land_of_Shadow_(spell)",
+          "stepId": "m40-57",
+          "cost": "Remembrance of the Shadow Sunflower"
+        },
+        {
+          "id": "MERCH-enia-remembrances-39",
+          "name": "Sword Lance",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Sword_Lance",
+          "stepId": "m40-59",
+          "cost": "Remembrance of the Wild Boar Rider"
+        },
+        {
+          "id": "MERCH-enia-remembrances-40",
+          "name": "Blades of Stone",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Blades_of_Stone",
+          "stepId": "m40-60",
+          "cost": "Remembrance of the Wild Boar Rider"
+        },
+        {
+          "id": "MERCH-enia-remembrances-41",
+          "name": "Spear of the Impaler",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Spear_of_the_Impaler",
+          "stepId": "m40-62",
+          "cost": "Remembrance of the Impaler"
+        },
+        {
+          "id": "MERCH-enia-remembrances-42",
+          "name": "Messmer's Orb",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Messmer%27s_Orb",
+          "stepId": "m40-63",
+          "cost": "Remembrance of the Impaler"
+        },
+        {
+          "id": "MERCH-enia-remembrances-43",
+          "name": "Staff of the Great Beyond",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Staff_of_the_Great_Beyond",
+          "stepId": "m40-65",
+          "cost": "Remembrance of the Mother of Fingers"
+        },
+        {
+          "id": "MERCH-enia-remembrances-44",
+          "name": "Gazing Finger",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Gazing_Finger",
+          "stepId": "m40-66",
+          "cost": "Remembrance of the Mother of Fingers"
+        },
+        {
+          "id": "MERCH-enia-remembrances-45",
+          "name": "Greatsword of Damnation",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Greatsword_of_Damnation",
+          "stepId": "m40-68",
+          "cost": "Remembrance of the Lord of Frenzied Flame"
+        },
+        {
+          "id": "MERCH-enia-remembrances-46",
+          "name": "Midra's Flame of Frenzy",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Midra%27s_Flame_of_Frenzy",
+          "stepId": "m40-69",
+          "cost": "Remembrance of the Lord of Frenzied Flame"
+        },
+        {
+          "id": "MERCH-enia-remembrances-47",
+          "name": "Poleblade of the Bud",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Poleblade_of_the_Bud",
+          "stepId": "m40-71",
+          "cost": "Remembrance of the Saint of the Bud"
+        },
+        {
+          "id": "MERCH-enia-remembrances-48",
+          "name": "Rotten Butterflies",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rotten_Butterflies",
+          "stepId": "m40-72",
+          "cost": "Remembrance of the Saint of the Bud"
+        },
+        {
+          "id": "MERCH-enia-remembrances-49",
+          "name": "Greatsword of Radahn (Lord)",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Greatsword_of_Radahn_(Lord)",
+          "stepId": "m40-74",
+          "cost": "Remembrance of a God and a Lord"
+        },
+        {
+          "id": "MERCH-enia-remembrances-50",
+          "name": "Greatsword of Radahn (Light)",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Greatsword_of_Radahn_(Light)",
+          "stepId": "m40-75",
+          "cost": "Remembrance of a God and a Lord"
+        },
+        {
+          "id": "MERCH-enia-remembrances-51",
+          "name": "Light of Miquella",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Light_of_Miquella",
+          "stepId": "m40-76",
+          "cost": "Remembrance of a God and a Lord"
+        }
+      ]
+    },
+    {
+      "id": "enia-equipment",
+      "name": "Finger Reader Enia (Equipment)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#enia-equipment",
+      "items": [
+        {
+          "id": "MERCH-enia-equipment-1",
+          "name": "Queen's Crescent Crown",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Queen%27s_Crescent_Crown",
+          "stepId": "m10-2",
+          "price": 7000,
+          "note": "Available after defeating Rennala, Queen of the Full Moon"
+        },
+        {
+          "id": "MERCH-enia-equipment-2",
+          "name": "Queen's Robe",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Queen%27s_Robe",
+          "stepId": "m10-3",
+          "price": 10000,
+          "note": "Available after defeating Rennala, Queen of the Full Moon"
+        },
+        {
+          "id": "MERCH-enia-equipment-3",
+          "name": "Queen's Bracelets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Queen%27s_Bracelets",
+          "stepId": "m10-4",
+          "price": 7000,
+          "note": "Available after defeating Rennala, Queen of the Full Moon"
+        },
+        {
+          "id": "MERCH-enia-equipment-4",
+          "name": "Queen's Leggings",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Queen%27s_Leggings",
+          "stepId": "m10-5",
+          "price": 7000,
+          "note": "Available after defeating Rennala, Queen of the Full Moon"
+        },
+        {
+          "id": "MERCH-enia-equipment-5",
+          "name": "Radahn's Spear",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Radahn%27s_Spear",
+          "stepId": "m10-7",
+          "price": 800,
+          "note": "Available after killing Starscourge Radahn"
+        },
+        {
+          "id": "MERCH-enia-equipment-6",
+          "name": "Radahn's Redmane Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Radahn%27s_Redmane_Helm",
+          "stepId": "m10-8",
+          "price": 8000,
+          "note": "Available after killing Starscourge Radahn"
+        },
+        {
+          "id": "MERCH-enia-equipment-7",
+          "name": "Radahn's Lion Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Radahn%27s_Lion_Armor",
+          "stepId": "m10-9",
+          "price": 12000,
+          "note": "Available after killing Starscourge Radahn"
+        },
+        {
+          "id": "MERCH-enia-equipment-8",
+          "name": "Radahn's Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Radahn%27s_Gauntlets",
+          "stepId": "m10-10",
+          "price": 8000,
+          "note": "Available after killing Starscourge Radahn"
+        },
+        {
+          "id": "MERCH-enia-equipment-9",
+          "name": "Radahn's Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Radahn%27s_Greaves",
+          "stepId": "m10-11",
+          "price": 8000,
+          "note": "Available after killing Starscourge Radahn"
+        },
+        {
+          "id": "MERCH-enia-equipment-10",
+          "name": "Briar Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Briar_Helm",
+          "stepId": "m10-13",
+          "price": 4000,
+          "note": "Available after killing Elemer of the Briar"
+        },
+        {
+          "id": "MERCH-enia-equipment-11",
+          "name": "Briar Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Briar_Armor",
+          "stepId": "m10-14",
+          "price": 6000,
+          "note": "Available after killing Elemer of the Briar"
+        },
+        {
+          "id": "MERCH-enia-equipment-12",
+          "name": "Briar Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Briar_Gauntlets",
+          "stepId": "m10-15",
+          "price": 4000,
+          "note": "Available after killing Elemer of the Briar"
+        },
+        {
+          "id": "MERCH-enia-equipment-13",
+          "name": "Briar Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Briar_Greaves",
+          "stepId": "m10-16",
+          "price": 4000,
+          "note": "Available after killing Elemer of the Briar"
+        },
+        {
+          "id": "MERCH-enia-equipment-14",
+          "name": "Fell Omen Cloak",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Fell_Omen_Cloak",
+          "stepId": "m10-18",
+          "price": 12000,
+          "note": "Available after killing Morgott, the Omen King"
+        },
+        {
+          "id": "MERCH-enia-equipment-15",
+          "name": "Veteran's Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Veteran%27s_Helm",
+          "stepId": "m10-20",
+          "price": 4000,
+          "note": "Available after killing Commander Niall"
+        },
+        {
+          "id": "MERCH-enia-equipment-16",
+          "name": "Veteran's Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Veteran%27s_Armor",
+          "stepId": "m10-21",
+          "price": 6000,
+          "note": "Available after killing Commander Niall"
+        },
+        {
+          "id": "MERCH-enia-equipment-17",
+          "name": "Veteran's Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Veteran%27s_Gauntlets",
+          "stepId": "m10-22",
+          "price": 4000,
+          "note": "Available after killing Commander Niall"
+        },
+        {
+          "id": "MERCH-enia-equipment-18",
+          "name": "Veteran's Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Veteran%27s_Greaves",
+          "stepId": "m10-23",
+          "price": 4000,
+          "note": "Available after killing Commander Niall"
+        },
+        {
+          "id": "MERCH-enia-equipment-19",
+          "name": "Lord of Blood's Robe",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lord_of_Blood%27s_Robe",
+          "stepId": "m10-25",
+          "price": 20000,
+          "note": "Available after killing Mohg, Lord of Blood"
+        },
+        {
+          "id": "MERCH-enia-equipment-20",
+          "name": "Royal Knight Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Royal_Knight_Helm",
+          "stepId": "m10-27",
+          "price": 4000,
+          "note": "Available after killing Loretta, Knight of the Haligtree"
+        },
+        {
+          "id": "MERCH-enia-equipment-21",
+          "name": "Royal Knight Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Royal_Knight_Armor",
+          "stepId": "m10-28",
+          "price": 6000,
+          "note": "Available after killing Loretta, Knight of the Haligtree"
+        },
+        {
+          "id": "MERCH-enia-equipment-22",
+          "name": "Royal Knight Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Royal_Knight_Gauntlets",
+          "stepId": "m10-29",
+          "price": 4000,
+          "note": "Available after killing Loretta, Knight of the Haligtree"
+        },
+        {
+          "id": "MERCH-enia-equipment-23",
+          "name": "Royal Knight Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Royal_Knight_Greaves",
+          "stepId": "m10-30",
+          "price": 4000,
+          "note": "Available after killing Loretta, Knight of the Haligtree"
+        },
+        {
+          "id": "MERCH-enia-equipment-24",
+          "name": "Malenia's Winged Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Malenia%27s_Winged_Helm",
+          "stepId": "m10-32",
+          "price": 12000,
+          "note": "Available after killing Malenia, Blade of Miquella"
+        },
+        {
+          "id": "MERCH-enia-equipment-25",
+          "name": "Malenia's Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Malenia%27s_Armor",
+          "stepId": "m10-33",
+          "price": 20000,
+          "note": "Available after killing Malenia, Blade of Miquella"
+        },
+        {
+          "id": "MERCH-enia-equipment-26",
+          "name": "Malenia's Gauntlet",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Malenia%27s_Gauntlet",
+          "stepId": "m10-34",
+          "price": 12000,
+          "note": "Available after killing Malenia, Blade of Miquella"
+        },
+        {
+          "id": "MERCH-enia-equipment-27",
+          "name": "Malenia's Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Malenia%27s_Greaves",
+          "stepId": "m10-35",
+          "price": 12000,
+          "note": "Available after killing Malenia, Blade of Miquella"
+        },
+        {
+          "id": "MERCH-enia-equipment-28",
+          "name": "Maliketh's Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Maliketh%27s_Helm",
+          "stepId": "m10-37",
+          "price": 10000,
+          "note": "Available after killing Maliketh, the Black Blade"
+        },
+        {
+          "id": "MERCH-enia-equipment-29",
+          "name": "Maliketh's Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Maliketh%27s_Armor",
+          "stepId": "m10-38",
+          "price": 15000,
+          "note": "Available after killing Maliketh, the Black Blade"
+        },
+        {
+          "id": "MERCH-enia-equipment-30",
+          "name": "Maliketh's Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Maliketh%27s_Gauntlets",
+          "stepId": "m10-39",
+          "price": 10000,
+          "note": "Available after killing Maliketh, the Black Blade"
+        },
+        {
+          "id": "MERCH-enia-equipment-31",
+          "name": "Maliketh's Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Maliketh%27s_Greaves",
+          "stepId": "m10-40",
+          "price": 10000,
+          "note": "Available after killing Maliketh, the Black Blade"
+        },
+        {
+          "id": "MERCH-enia-equipment-32",
+          "name": "Elden Lord Crown",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Elden_Lord_Crown",
+          "stepId": "m10-42",
+          "price": 12000,
+          "note": "Available after killing Godfrey, First Elden Lord"
+        },
+        {
+          "id": "MERCH-enia-equipment-33",
+          "name": "Elden Lord Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Elden_Lord_Armor",
+          "stepId": "m10-43",
+          "price": 20000,
+          "note": "Available after killing Godfrey, First Elden Lord"
+        },
+        {
+          "id": "MERCH-enia-equipment-34",
+          "name": "Elden Lord Bracers",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Elden_Lord_Bracers",
+          "stepId": "m10-44",
+          "price": 12000,
+          "note": "Available after killing Godfrey, First Elden Lord"
+        },
+        {
+          "id": "MERCH-enia-equipment-35",
+          "name": "Elden Lord Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Elden_Lord_Greaves",
+          "stepId": "m10-45",
+          "price": 12000,
+          "note": "Available after killing Godfrey, First Elden Lord"
+        },
+        {
+          "id": "MERCH-enia-equipment-36",
+          "name": "Rellana's Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rellana%27s_Helm",
+          "stepId": "m10-47",
+          "price": 10000,
+          "note": "Available after killing Rellana, Twin Moon Knight"
+        },
+        {
+          "id": "MERCH-enia-equipment-37",
+          "name": "Rellana's Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rellana%27s_Armor",
+          "stepId": "m10-48",
+          "price": 15000,
+          "note": "Available after killing Rellana, Twin Moon Knight"
+        },
+        {
+          "id": "MERCH-enia-equipment-38",
+          "name": "Rellana's Gloves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rellana%27s_Gloves",
+          "stepId": "m10-49",
+          "price": 10000,
+          "note": "Available after killing Rellana, Twin Moon Knight"
+        },
+        {
+          "id": "MERCH-enia-equipment-39",
+          "name": "Rellana's Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rellana%27s_Greaves",
+          "stepId": "m10-50",
+          "price": 10000,
+          "note": "Available after killing Rellana, Twin Moon Knight"
+        },
+        {
+          "id": "MERCH-enia-equipment-40",
+          "name": "Gaius's Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Gaius%27s_Helm",
+          "stepId": "m10-52",
+          "price": 8000,
+          "note": "Available after killing Commander Gaius"
+        },
+        {
+          "id": "MERCH-enia-equipment-41",
+          "name": "Gaius's Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Gaius%27s_Armor",
+          "stepId": "m10-53",
+          "price": 12000,
+          "note": "Available after killing Commander Gaius"
+        },
+        {
+          "id": "MERCH-enia-equipment-42",
+          "name": "Gaius's Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Gaius%27s_Gauntlets",
+          "stepId": "m10-54",
+          "price": 8000,
+          "note": "Available after killing Commander Gaius"
+        },
+        {
+          "id": "MERCH-enia-equipment-43",
+          "name": "Messmer's Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Messmer%27s_Helm",
+          "stepId": "m10-56",
+          "price": 10000,
+          "note": "Available after killing Messmer the Impaler"
+        },
+        {
+          "id": "MERCH-enia-equipment-44",
+          "name": "Messmer's Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Messmer%27s_Armor",
+          "stepId": "m10-57",
+          "price": 15000,
+          "note": "Available after killing Messmer the Impaler"
+        },
+        {
+          "id": "MERCH-enia-equipment-45",
+          "name": "Messmer's Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Messmer%27s_Gauntlets",
+          "stepId": "m10-58",
+          "price": 10000,
+          "note": "Available after killing Messmer the Impaler"
+        },
+        {
+          "id": "MERCH-enia-equipment-46",
+          "name": "Messmer's Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Messmer%27s_Greaves",
+          "stepId": "m10-59",
+          "price": 10000,
+          "note": "Available after killing Messmer the Impaler"
+        },
+        {
+          "id": "MERCH-enia-equipment-47",
+          "name": "Young Lion's Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Young_Lion%27s_Helm",
+          "stepId": "m10-61",
+          "price": 12000,
+          "note": "Available after killing Promised Consort Radahn"
+        },
+        {
+          "id": "MERCH-enia-equipment-48",
+          "name": "Young Lion's Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Young_Lion%27s_Armor",
+          "stepId": "m10-62",
+          "price": 20000,
+          "note": "Available after killing Promised Consort Radahn"
+        },
+        {
+          "id": "MERCH-enia-equipment-49",
+          "name": "Young Lion's Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Young_Lion%27s_Gauntlets",
+          "stepId": "m10-63",
+          "price": 12000,
+          "note": "Available after killing Promised Consort Radahn"
+        },
+        {
+          "id": "MERCH-enia-equipment-50",
+          "name": "Young Lion's Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Young_Lion%27s_Greaves",
+          "stepId": "m10-64",
+          "price": 12000,
+          "note": "Available after killing Promised Consort Radahn"
+        }
+      ]
+    },
+    {
+      "id": "thops",
+      "name": "Sorcerer Thops",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#thops",
+      "items": [
+        {
+          "id": "MERCH-thops-1",
+          "name": "Glintstone Pebble",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintstone_Pebble",
+          "stepId": "m11-1",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-thops-2",
+          "name": "Glintstone Arc",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintstone_Arc",
+          "stepId": "m11-2",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-thops-3",
+          "name": "Starlight",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Starlight",
+          "stepId": "m11-3",
+          "price": 2500
+        }
+      ]
+    },
+    {
+      "id": "blackguard",
+      "name": "Blackguard Big Boggart",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#blackguard",
+      "items": [
+        {
+          "id": "MERCH-blackguard-1",
+          "name": "Rya's Necklace",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rya%27s_Necklace",
+          "stepId": "m12-2",
+          "price": 1000,
+          "note": "After hearing Rya's request, talk to him and agree to buy her necklace from him"
+        },
+        {
+          "id": "MERCH-blackguard-2",
+          "name": "Boiled Prawn",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Boiled_Prawn",
+          "stepId": "m12-4",
+          "price": 600,
+          "note": "After buying the necklace"
+        },
+        {
+          "id": "MERCH-blackguard-3",
+          "name": "Boiled Crab",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Boiled_Crab",
+          "stepId": "m12-6",
+          "price": 600,
+          "note": "After buying one prawn and resting at a grace in Altus Plateau"
+        }
+      ]
+    },
+    {
+      "id": "iji",
+      "name": "Smithing Master Iji",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#iji",
+      "items": [
+        {
+          "id": "MERCH-iji-1",
+          "name": "Somber Smithing Stone [1]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_1",
+          "stepId": "m13-1",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-iji-2",
+          "name": "Somber Smithing Stone [2]",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_2",
+          "stepId": "m13-2",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-iji-3",
+          "name": "Somber Smithing Stone [3]",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_3",
+          "stepId": "m13-3",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-iji-4",
+          "name": "Somber Smithing Stone [4]",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Somber_Smithing_Stone_4",
+          "stepId": "m13-4",
+          "price": 6000
+        },
+        {
+          "id": "MERCH-iji-5",
+          "name": "Carian Filigreed Crest",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Carian_Filigreed_Crest",
+          "stepId": "m13-6",
+          "price": 5000,
+          "note": "After selecting \"Blaidd sent me\" or entering Ranni's service"
+        }
+      ]
+    },
+    {
+      "id": "seluvis",
+      "name": "Preceptor Seluvis",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#seluvis",
+      "items": [
+        {
+          "id": "MERCH-seluvis-1",
+          "name": "Carian Phalanx",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Carian_Phalanx",
+          "stepId": "m14-1",
+          "price": 12000
+        },
+        {
+          "id": "MERCH-seluvis-2",
+          "name": "Carian Retaliation",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Carian_Retaliation",
+          "stepId": "m14-2",
+          "price": 9000
+        },
+        {
+          "id": "MERCH-seluvis-3",
+          "name": "Glintstone Icecrag",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintstone_Icecrag",
+          "stepId": "m14-3",
+          "price": 7500
+        },
+        {
+          "id": "MERCH-seluvis-4",
+          "name": "Freezing Mist",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Freezing_Mist",
+          "stepId": "m14-4",
+          "price": 6000
+        },
+        {
+          "id": "MERCH-seluvis-5",
+          "name": "Finger Maiden Therolina Puppet",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Finger_Maiden_Therolina_Puppet",
+          "stepId": "m14-6",
+          "cost": "2 Starlight Shards",
+          "note": "After reading the message in his puppet chamber and selecting \"I want a new puppet\""
+        },
+        {
+          "id": "MERCH-seluvis-6",
+          "name": "Jarwight Puppet",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Jarwight_Puppet",
+          "stepId": "m14-7",
+          "cost": "3 Starlight Shards",
+          "note": "After reading the message in his puppet chamber and selecting \"I want a new puppet\""
+        },
+        {
+          "id": "MERCH-seluvis-7",
+          "name": "Dolores the Sleeping Arrow Puppet",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Dolores_the_Sleeping_Arrow_Puppet",
+          "stepId": "m14-9",
+          "cost": "5 Starlight Shards",
+          "note": "If you gave his potion to Nepheli"
+        },
+        {
+          "id": "MERCH-seluvis-8",
+          "name": "Dung Eater Puppet",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Dung_Eater_Puppet",
+          "stepId": "m14-11",
+          "cost": "5 Starlight Shards",
+          "note": "If you gave his potion to Dung Eater"
+        }
+      ]
+    },
+    {
+      "id": "pidia",
+      "name": "Pidia, Carian Servant",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#pidia",
+      "items": [
+        {
+          "id": "MERCH-pidia-1",
+          "name": "Budding Horn",
+          "stock": "2",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Budding_Horn",
+          "stepId": "m15-1",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-pidia-2",
+          "name": "Old Fang",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Old_Fang",
+          "stepId": "m15-2",
+          "price": 800
+        },
+        {
+          "id": "MERCH-pidia-3",
+          "name": "Slumbering Egg",
+          "stock": "2",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Slumbering_Egg",
+          "stepId": "m15-3",
+          "price": 600
+        },
+        {
+          "id": "MERCH-pidia-4",
+          "name": "Ritual Pot",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ritual_Pot",
+          "stepId": "m15-4",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-pidia-5",
+          "name": "Celestial Dew",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Celestial_Dew",
+          "stepId": "m15-5",
+          "price": 5000
+        },
+        {
+          "id": "MERCH-pidia-6",
+          "name": "Larval Tear",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Larval_Tear",
+          "stepId": "m15-6",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-pidia-7",
+          "name": "Glintstone Craftsman's Cookbook [7]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintstone_Craftsman%27s_Cookbook_7",
+          "stepId": "m15-7",
+          "price": 2500
+        },
+        {
+          "id": "MERCH-pidia-8",
+          "name": "Ash of War: Carian Retaliation",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ash_of_War:_Carian_Retaliation",
+          "stepId": "m15-8",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-pidia-9",
+          "name": "Ripple Blade",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ripple_Blade",
+          "stepId": "m15-9",
+          "price": 3500
+        },
+        {
+          "id": "MERCH-pidia-10",
+          "name": "Black Leather Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Leather_Shield",
+          "stepId": "m15-10",
+          "price": 2500
+        },
+        {
+          "id": "MERCH-pidia-11",
+          "name": "Weathered Map",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Weathered_Map",
+          "stepId": "m15-11",
+          "price": 600
+        }
+      ]
+    },
+    {
+      "id": "miriel",
+      "name": "Miriel, Pastor of Vows",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#miriel",
+      "items": [
+        {
+          "id": "MERCH-miriel-1",
+          "name": "Magic Glintblade",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Magic_Glintblade",
+          "stepId": "m16-1",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-miriel-2",
+          "name": "Carian Greatsword",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Carian_Greatsword",
+          "stepId": "m16-2",
+          "price": 10000
+        },
+        {
+          "id": "MERCH-miriel-3",
+          "name": "Blessing's Boon",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Blessing%27s_Boon",
+          "stepId": "m16-3",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-miriel-4",
+          "name": "Swift Glintstone Shard",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Swift_Glintstone_Shard",
+          "stepId": "m16-5",
+          "price": 600,
+          "note": "After giving Academy Scroll"
+        },
+        {
+          "id": "MERCH-miriel-5",
+          "name": "Great Glintstone Shard",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Glintstone_Shard",
+          "stepId": "m16-6",
+          "price": 2000,
+          "note": "After giving Academy Scroll"
+        },
+        {
+          "id": "MERCH-miriel-6",
+          "name": "Glintblade Phalanx",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintblade_Phalanx",
+          "stepId": "m16-8",
+          "price": 2500,
+          "note": "After giving Royal House Scroll"
+        },
+        {
+          "id": "MERCH-miriel-7",
+          "name": "Carian Slicer",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Carian_Slicer",
+          "stepId": "m16-9",
+          "price": 1500,
+          "note": "After giving Royal House Scroll"
+        },
+        {
+          "id": "MERCH-miriel-8",
+          "name": "Black Flame",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Flame",
+          "stepId": "m16-11",
+          "price": 7500,
+          "note": "After giving Godskin Prayerbook"
+        },
+        {
+          "id": "MERCH-miriel-9",
+          "name": "Black Flame Blade",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Flame_Blade",
+          "stepId": "m16-12",
+          "price": 6000,
+          "note": "After giving Godskin Prayerbook"
+        },
+        {
+          "id": "MERCH-miriel-10",
+          "name": "O, Flame!",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/O,_Flame!",
+          "stepId": "m16-14",
+          "price": 6000,
+          "note": "After giving Fire Monks' Prayerbook"
+        },
+        {
+          "id": "MERCH-miriel-11",
+          "name": "Surge, O Flame!",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Surge,_O_Flame!",
+          "stepId": "m16-15",
+          "price": 5500,
+          "note": "After giving Fire Monks' Prayerbook"
+        },
+        {
+          "id": "MERCH-miriel-12",
+          "name": "Glintstone Cometshard",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintstone_Cometshard",
+          "stepId": "m16-17",
+          "price": 12000,
+          "note": "After giving Conspectus Scroll"
+        },
+        {
+          "id": "MERCH-miriel-13",
+          "name": "Star Shower",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Star_Shower",
+          "stepId": "m16-18",
+          "price": 10000,
+          "note": "After giving Conspectus Scroll"
+        },
+        {
+          "id": "MERCH-miriel-14",
+          "name": "Lightning Spear",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lightning_Spear",
+          "stepId": "m16-20",
+          "price": 6000,
+          "note": "After giving Dragon Cult Prayerbook"
+        },
+        {
+          "id": "MERCH-miriel-15",
+          "name": "Honed Bolt",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Honed_Bolt",
+          "stepId": "m16-21",
+          "price": 7000,
+          "note": "After giving Dragon Cult Prayerbook"
+        },
+        {
+          "id": "MERCH-miriel-16",
+          "name": "Electrify Armament",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Electrify_Armament",
+          "stepId": "m16-22",
+          "price": 4000,
+          "note": "After giving Dragon Cult Prayerbook"
+        },
+        {
+          "id": "MERCH-miriel-17",
+          "name": "Darkness",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Darkness",
+          "stepId": "m16-24",
+          "price": 3500,
+          "note": "After giving Assassin's Prayerbook"
+        },
+        {
+          "id": "MERCH-miriel-18",
+          "name": "Assassin's Approach",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Assassin%27s_Approach",
+          "stepId": "m16-25",
+          "price": 2000,
+          "note": "After giving Assassin's Prayerbook"
+        },
+        {
+          "id": "MERCH-miriel-19",
+          "name": "Lord's Heal",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lord%27s_Heal",
+          "stepId": "m16-27",
+          "price": 8000,
+          "note": "After giving Two Fingers' Prayerbook"
+        },
+        {
+          "id": "MERCH-miriel-20",
+          "name": "Lord's Aid",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lord%27s_Aid",
+          "stepId": "m16-28",
+          "price": 2500,
+          "note": "After giving Two Fingers' Prayerbook"
+        },
+        {
+          "id": "MERCH-miriel-21",
+          "name": "Radagon's Rings of Light",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Radagon%27s_Rings_of_Light",
+          "stepId": "m16-30",
+          "price": 7500,
+          "note": "After giving Golden Order Principia"
+        },
+        {
+          "id": "MERCH-miriel-22",
+          "name": "Law of Regression",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Law_of_Regression",
+          "stepId": "m16-31",
+          "price": 10000,
+          "note": "After giving Golden Order Principia"
+        },
+        {
+          "id": "MERCH-miriel-23",
+          "name": "Giantsflame Take Thee",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Giantsflame_Take_Thee",
+          "stepId": "m16-33",
+          "price": 13000,
+          "note": "After giving Giant's Prayerbook"
+        },
+        {
+          "id": "MERCH-miriel-24",
+          "name": "Flame, Fall Upon Them",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Flame,_Fall_Upon_Them",
+          "stepId": "m16-34",
+          "price": 10000,
+          "note": "After giving Giant's Prayerbook"
+        },
+        {
+          "id": "MERCH-miriel-25",
+          "name": "Ancient Dragons' Lightning Spear",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancient_Dragons%27_Lightning_Spear",
+          "stepId": "m16-36",
+          "price": 8500,
+          "note": "After giving Ancient Dragon Prayerbook"
+        },
+        {
+          "id": "MERCH-miriel-26",
+          "name": "Ancient Dragons' Lightning Strike",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancient_Dragons%27_Lightning_Strike",
+          "stepId": "m16-37",
+          "price": 10000,
+          "note": "After giving Ancient Dragon Prayerbook"
+        }
+      ]
+    },
+    {
+      "id": "gowry",
+      "name": "Sage Gowry",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#gowry",
+      "items": [
+        {
+          "id": "MERCH-gowry-1",
+          "name": "Glintstone Stars",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintstone_Stars",
+          "stepId": "m17-1",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-gowry-2",
+          "name": "Night Shard",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Night_Shard",
+          "stepId": "m17-2",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-gowry-3",
+          "name": "Night Maiden's Mist",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Night_Maiden%27s_Mist",
+          "stepId": "m17-3",
+          "price": 5000
+        },
+        {
+          "id": "MERCH-gowry-4",
+          "name": "Pest Threads",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Pest_Threads",
+          "stepId": "m17-5",
+          "price": 7500,
+          "note": "After giving the Valkyrie's Prosthesis to Millicent"
+        }
+      ]
+    },
+    {
+      "id": "dragon-communion",
+      "name": "Dragon Communion",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#dragon-communion",
+      "items": [
+        {
+          "id": "MERCH-dragon-communion-1",
+          "name": "Dragonfire",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragonfire",
+          "stepId": "m18-1",
+          "cost": "1 Dragon Heart"
+        },
+        {
+          "id": "MERCH-dragon-communion-2",
+          "name": "Dragonclaw",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragonclaw",
+          "stepId": "m18-2",
+          "cost": "1 Dragon Heart"
+        },
+        {
+          "id": "MERCH-dragon-communion-3",
+          "name": "Dragonmaw",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragonmaw",
+          "stepId": "m18-3",
+          "cost": "1 Dragon Heart"
+        },
+        {
+          "id": "MERCH-dragon-communion-4",
+          "name": "Agheel's Flame",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Agheel%27s_Flame",
+          "stepId": "m18-5",
+          "cost": "2 Dragon Hearts",
+          "note": "Only available at the Cathedral of Dragon Communion"
+        },
+        {
+          "id": "MERCH-dragon-communion-5",
+          "name": "Magma Breath",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Magma_Breath",
+          "stepId": "m18-6",
+          "cost": "1 Dragon Heart",
+          "note": "Only available at the Cathedral of Dragon Communion"
+        },
+        {
+          "id": "MERCH-dragon-communion-6",
+          "name": "Theodorix's Magma",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Theodorix%27s_Magma",
+          "stepId": "m18-7",
+          "cost": "2 Dragon Hearts",
+          "note": "Only available at the Cathedral of Dragon Communion"
+        },
+        {
+          "id": "MERCH-dragon-communion-7",
+          "name": "Glintstone Breath",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintstone_Breath",
+          "stepId": "m18-8",
+          "cost": "1 Dragon Heart",
+          "note": "Only available at the Cathedral of Dragon Communion"
+        },
+        {
+          "id": "MERCH-dragon-communion-8",
+          "name": "Smarag's Glintstone Breath",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smarag%27s_Glintstone_Breath",
+          "stepId": "m18-9",
+          "cost": "2 Dragon Hearts",
+          "note": "Only available at the Cathedral of Dragon Communion"
+        },
+        {
+          "id": "MERCH-dragon-communion-9",
+          "name": "Rotten Breath",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rotten_Breath",
+          "stepId": "m18-10",
+          "cost": "1 Dragon Heart",
+          "note": "Only available at the Cathedral of Dragon Communion"
+        },
+        {
+          "id": "MERCH-dragon-communion-10",
+          "name": "Ekzykes's Decay",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ekzykes%27s_Decay",
+          "stepId": "m18-11",
+          "cost": "2 Dragon Hearts",
+          "note": "Only available at the Cathedral of Dragon Communion"
+        },
+        {
+          "id": "MERCH-dragon-communion-11",
+          "name": "Dragonice",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragonice",
+          "stepId": "m18-12",
+          "cost": "1 Dragon Heart",
+          "note": "Only available at the Cathedral of Dragon Communion"
+        },
+        {
+          "id": "MERCH-dragon-communion-12",
+          "name": "Borealis's Mist",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Borealis%27s_Mist",
+          "stepId": "m18-13",
+          "cost": "2 Dragon Hearts",
+          "note": "Only available at the Cathedral of Dragon Communion"
+        },
+        {
+          "id": "MERCH-dragon-communion-13",
+          "name": "Greyoll's Roar",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Greyoll%27s_Roar",
+          "stepId": "m18-14",
+          "cost": "3 Dragon Hearts",
+          "note": "Only available at the Cathedral of Dragon Communion"
+        },
+        {
+          "id": "MERCH-dragon-communion-14",
+          "name": "Bayle's Tyranny",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bayle%27s_Tyranny",
+          "stepId": "m18-16",
+          "cost": "1 Heart of Bayle",
+          "note": "Only available at the Grand Altar of Dragon Communion"
+        },
+        {
+          "id": "MERCH-dragon-communion-15",
+          "name": "Bayle's Flame Lightning",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bayle%27s_Flame_Lightning",
+          "stepId": "m18-17",
+          "cost": "1 Heart of Bayle",
+          "note": "Only available at the Grand Altar of Dragon Communion"
+        },
+        {
+          "id": "MERCH-dragon-communion-16",
+          "name": "Ghostflame Breath",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ghostflame_Breath",
+          "stepId": "m18-18",
+          "cost": "3 Dragon Hearts",
+          "note": "Only available at the Grand Altar of Dragon Communion"
+        }
+      ]
+    },
+    {
+      "id": "nomadic-west-limgrave",
+      "name": "Nomadic Merchant (West Limgrave)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#nomadic-west-limgrave",
+      "items": [
+        {
+          "id": "MERCH-nomadic-west-limgrave-1",
+          "name": "Neutralizing Boluses",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Neutralizing_Boluses",
+          "stepId": "m19-1",
+          "price": 600
+        },
+        {
+          "id": "MERCH-nomadic-west-limgrave-2",
+          "name": "Stanching Boluses",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stanching_Boluses",
+          "stepId": "m19-2",
+          "price": 600
+        },
+        {
+          "id": "MERCH-nomadic-west-limgrave-3",
+          "name": "Stimulating Boluses",
+          "stock": "2",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stimulating_Boluses",
+          "stepId": "m19-3",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-west-limgrave-4",
+          "name": "Smithing Stone [1]",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_1",
+          "stepId": "m19-4",
+          "price": 200
+        },
+        {
+          "id": "MERCH-nomadic-west-limgrave-5",
+          "name": "Armorer's Cookbook [2]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Armorer%27s_Cookbook_2",
+          "stepId": "m19-5",
+          "price": 600
+        },
+        {
+          "id": "MERCH-nomadic-west-limgrave-6",
+          "name": "Broadsword",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Broadsword",
+          "stepId": "m19-6",
+          "price": 1800
+        },
+        {
+          "id": "MERCH-nomadic-west-limgrave-7",
+          "name": "Club",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Club",
+          "stepId": "m19-7",
+          "price": 600
+        },
+        {
+          "id": "MERCH-nomadic-west-limgrave-8",
+          "name": "Shortbow",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Shortbow",
+          "stepId": "m19-8",
+          "price": 600
+        },
+        {
+          "id": "MERCH-nomadic-west-limgrave-9",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m19-9",
+          "price": 20
+        },
+        {
+          "id": "MERCH-nomadic-west-limgrave-10",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m19-10",
+          "price": 40
+        },
+        {
+          "id": "MERCH-nomadic-west-limgrave-11",
+          "name": "Iron Roundshield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Iron_Roundshield",
+          "stepId": "m19-11",
+          "price": 900
+        },
+        {
+          "id": "MERCH-nomadic-west-limgrave-12",
+          "name": "Note: Land Squirts",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Land_Squirts",
+          "stepId": "m19-12",
+          "price": 200
+        },
+        {
+          "id": "MERCH-nomadic-west-limgrave-13",
+          "name": "Note: Stonedigger Trolls",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Stonedigger_Trolls",
+          "stepId": "m19-13",
+          "price": 400
+        }
+      ]
+    },
+    {
+      "id": "nomadic-east-limgrave",
+      "name": "Nomadic Merchant (East Limgrave)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#nomadic-east-limgrave",
+      "items": [
+        {
+          "id": "MERCH-nomadic-east-limgrave-1",
+          "name": "Festering Bloody Finger",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Festering_Bloody_Finger",
+          "stepId": "m20-1",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-nomadic-east-limgrave-2",
+          "name": "Sliver of Meat",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Sliver_of_Meat",
+          "stepId": "m20-2",
+          "price": 500
+        },
+        {
+          "id": "MERCH-nomadic-east-limgrave-3",
+          "name": "Beast Liver",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Beast_Liver",
+          "stepId": "m20-3",
+          "price": 500
+        },
+        {
+          "id": "MERCH-nomadic-east-limgrave-4",
+          "name": "Lump of Flesh",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lump_of_Flesh",
+          "stepId": "m20-4",
+          "price": 800
+        },
+        {
+          "id": "MERCH-nomadic-east-limgrave-5",
+          "name": "Trina's Lily",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Trina%27s_Lily",
+          "stepId": "m20-5",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-nomadic-east-limgrave-6",
+          "name": "Smithing Stone [1]",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_1",
+          "stepId": "m20-6",
+          "price": 200
+        },
+        {
+          "id": "MERCH-nomadic-east-limgrave-7",
+          "name": "Nomadic Warrior's Cookbook [5]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Nomadic_Warrior%27s_Cookbook_5",
+          "stepId": "m20-7",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-east-limgrave-8",
+          "name": "Armorer's Cookbook [3]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Armorer%27s_Cookbook_3",
+          "stepId": "m20-8",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-nomadic-east-limgrave-9",
+          "name": "Hefty Scimitar",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Hefty_Scimitar",
+          "stepId": "m20-9",
+          "price": 2400
+        },
+        {
+          "id": "MERCH-nomadic-east-limgrave-10",
+          "name": "Hand Axe",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Hand_Axe",
+          "stepId": "m20-10",
+          "price": 600
+        },
+        {
+          "id": "MERCH-nomadic-east-limgrave-11",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m20-11",
+          "price": 20
+        },
+        {
+          "id": "MERCH-nomadic-east-limgrave-12",
+          "name": "St. Trina's Arrow",
+          "stock": "10",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/St._Trina%27s_Arrow",
+          "stepId": "m20-12",
+          "price": 160
+        },
+        {
+          "id": "MERCH-nomadic-east-limgrave-13",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m20-13",
+          "price": 40
+        },
+        {
+          "id": "MERCH-nomadic-east-limgrave-14",
+          "name": "Riveted Wooden Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Riveted_Wooden_Shield",
+          "stepId": "m20-14",
+          "price": 600
+        },
+        {
+          "id": "MERCH-nomadic-east-limgrave-15",
+          "name": "Blue-Gold Kite Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Blue-Gold_Kite_Shield",
+          "stepId": "m20-15",
+          "price": 1000
+        }
+      ]
+    },
+    {
+      "id": "nomadic-north-limgrave",
+      "name": "Nomadic Merchant (North Limgrave)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#nomadic-north-limgrave",
+      "items": [
+        {
+          "id": "MERCH-nomadic-north-limgrave-1",
+          "name": "Pickled Turtle Neck",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Pickled_Turtle_Neck",
+          "stepId": "m21-1",
+          "price": 800
+        },
+        {
+          "id": "MERCH-nomadic-north-limgrave-2",
+          "name": "Smithing Stone [1]",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_1",
+          "stepId": "m21-2",
+          "price": 200
+        },
+        {
+          "id": "MERCH-nomadic-north-limgrave-3",
+          "name": "Cracked Pot",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Cracked_Pot",
+          "stepId": "m21-3",
+          "price": 600
+        },
+        {
+          "id": "MERCH-nomadic-north-limgrave-4",
+          "name": "Nomadic Warrior's Cookbook [3]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Nomadic_Warrior%27s_Cookbook_3",
+          "stepId": "m21-4",
+          "price": 500
+        },
+        {
+          "id": "MERCH-nomadic-north-limgrave-5",
+          "name": "Short Sword",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Short_Sword",
+          "stepId": "m21-5",
+          "price": 600
+        },
+        {
+          "id": "MERCH-nomadic-north-limgrave-6",
+          "name": "Halberd",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Halberd",
+          "stepId": "m21-6",
+          "price": 1200
+        },
+        {
+          "id": "MERCH-nomadic-north-limgrave-7",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m21-7",
+          "price": 20
+        },
+        {
+          "id": "MERCH-nomadic-north-limgrave-8",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m21-8",
+          "price": 40
+        },
+        {
+          "id": "MERCH-nomadic-north-limgrave-9",
+          "name": "Bandit Mask",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bandit_Mask",
+          "stepId": "m21-9",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-north-limgrave-10",
+          "name": "Note: Flame Chariots",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Flame_Chariots",
+          "stepId": "m21-10",
+          "price": 300
+        }
+      ]
+    },
+    {
+      "id": "nomadic-weeping-peninsula",
+      "name": "Nomadic Merchant (Weeping Peninsula)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#nomadic-weeping-peninsula",
+      "items": [
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-1",
+          "name": "Kukri",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Kukri",
+          "stepId": "m22-1",
+          "price": 60
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-2",
+          "name": "Smithing Stone [1]",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_1",
+          "stepId": "m22-2",
+          "price": 200
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-3",
+          "name": "Smithing Stone [2]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_2",
+          "stepId": "m22-3",
+          "price": 400
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-4",
+          "name": "Cracked Pot",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Cracked_Pot",
+          "stepId": "m22-4",
+          "price": 600
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-5",
+          "name": "Stonesword Key",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stonesword_Key",
+          "stepId": "m22-5",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-6",
+          "name": "Bastard Sword",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bastard_Sword",
+          "stepId": "m22-6",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-7",
+          "name": "Light Crossbow",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Light_Crossbow",
+          "stepId": "m22-7",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-8",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m22-8",
+          "price": 20
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-9",
+          "name": "Great Arrow",
+          "stock": "8",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Arrow",
+          "stepId": "m22-9",
+          "price": 300
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-10",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m22-10",
+          "price": 40
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-11",
+          "name": "Ballista Bolt",
+          "stock": "8",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ballista_Bolt",
+          "stepId": "m22-11",
+          "price": 300
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-12",
+          "name": "Red Thorn Roundshield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Red_Thorn_Roundshield",
+          "stepId": "m22-12",
+          "price": 600
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-13",
+          "name": "Round Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Round_Shield",
+          "stepId": "m22-13",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-14",
+          "name": "Iron Helmet",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Iron_Helmet",
+          "stepId": "m22-14",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-15",
+          "name": "Scale Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Scale_Armor",
+          "stepId": "m22-15",
+          "price": 2400
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-16",
+          "name": "Iron Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Iron_Gauntlets",
+          "stepId": "m22-16",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-17",
+          "name": "Leather Trousers",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Leather_Trousers",
+          "stepId": "m22-17",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-18",
+          "name": "Crimson Amber Medallion",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Crimson_Amber_Medallion",
+          "stepId": "m22-18",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-weeping-peninsula-19",
+          "name": "Note: Demi-human Mobs",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Demi-human_Mobs",
+          "stepId": "m22-19",
+          "price": 500
+        }
+      ]
+    },
+    {
+      "id": "isolated-weeping-peninsula",
+      "name": "Isolated Merchant (Weeping Peninsula)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#isolated-weeping-peninsula",
+      "items": [
+        {
+          "id": "MERCH-isolated-weeping-peninsula-1",
+          "name": "Lantern",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lantern",
+          "stepId": "m23-1",
+          "price": 1800
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-2",
+          "name": "Festering Bloody Finger",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Festering_Bloody_Finger",
+          "stepId": "m23-2",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-3",
+          "name": "Arteria Leaf",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arteria_Leaf",
+          "stepId": "m23-3",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-4",
+          "name": "Smithing Stone [2]",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_2",
+          "stepId": "m23-4",
+          "price": 400
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-5",
+          "name": "Stonesword Key",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stonesword_Key",
+          "stepId": "m23-5",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-6",
+          "name": "Lost Ashes of War",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lost_Ashes_of_War",
+          "stepId": "m23-6",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-7",
+          "name": "Zweihander",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Zweihander",
+          "stepId": "m23-7",
+          "price": 3500
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-8",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m23-8",
+          "price": 20
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-9",
+          "name": "Great Arrow",
+          "stock": "15",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Arrow",
+          "stepId": "m23-9",
+          "price": 300
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-10",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m23-10",
+          "price": 40
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-11",
+          "name": "Ballista Bolt",
+          "stock": "15",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ballista_Bolt",
+          "stepId": "m23-11",
+          "price": 300
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-12",
+          "name": "Steel Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Steel_Helm",
+          "stepId": "m23-12",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-13",
+          "name": "Steel Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Steel_Armor",
+          "stepId": "m23-13",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-14",
+          "name": "Steel Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Steel_Gauntlets",
+          "stepId": "m23-14",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-15",
+          "name": "Steel Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Steel_Greaves",
+          "stepId": "m23-15",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-16",
+          "name": "Sacrificial Twig",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Sacrificial_Twig",
+          "stepId": "m23-16",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-isolated-weeping-peninsula-17",
+          "name": "Note: Wandering Mausoleum",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Wandering_Mausoleum",
+          "stepId": "m23-17",
+          "price": 600
+        }
+      ]
+    },
+    {
+      "id": "nomadic-south-liurnia",
+      "name": "Nomadic Merchant (South Liurnia)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#nomadic-south-liurnia",
+      "items": [
+        {
+          "id": "MERCH-nomadic-south-liurnia-1",
+          "name": "Lantern",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lantern",
+          "stepId": "m24-1",
+          "price": 1800
+        },
+        {
+          "id": "MERCH-nomadic-south-liurnia-2",
+          "name": "Smithing Stone [1]",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_1",
+          "stepId": "m24-2",
+          "price": 200
+        },
+        {
+          "id": "MERCH-nomadic-south-liurnia-3",
+          "name": "Smithing Stone [2]",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Smithing_Stone_2",
+          "stepId": "m24-3",
+          "price": 400
+        },
+        {
+          "id": "MERCH-nomadic-south-liurnia-4",
+          "name": "Nomadic Warrior's Cookbook [11]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Nomadic_Warrior%27s_Cookbook_11",
+          "stepId": "m24-4",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-south-liurnia-5",
+          "name": "Estoc",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Estoc",
+          "stepId": "m24-5",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-nomadic-south-liurnia-6",
+          "name": "Astrologer's Staff",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Astrologer%27s_Staff",
+          "stepId": "m24-6",
+          "price": 800
+        },
+        {
+          "id": "MERCH-nomadic-south-liurnia-7",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m24-7",
+          "price": 20
+        },
+        {
+          "id": "MERCH-nomadic-south-liurnia-8",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m24-8",
+          "price": 40
+        },
+        {
+          "id": "MERCH-nomadic-south-liurnia-9",
+          "name": "Kite Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Kite_Shield",
+          "stepId": "m24-9",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-nomadic-south-liurnia-10",
+          "name": "Astrologer Hood",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Astrologer_Hood",
+          "stepId": "m24-10",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-nomadic-south-liurnia-11",
+          "name": "Astrologer Robe",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Astrologer_Robe",
+          "stepId": "m24-11",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-south-liurnia-12",
+          "name": "Astrologer Gloves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Astrologer_Gloves",
+          "stepId": "m24-12",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-nomadic-south-liurnia-13",
+          "name": "Astrologer Trousers",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Astrologer_Trousers",
+          "stepId": "m24-13",
+          "price": 1000
+        }
+      ]
+    },
+    {
+      "id": "nomadic-north-liurnia",
+      "name": "Nomadic Merchant (North Liurnia)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#nomadic-north-liurnia",
+      "items": [
+        {
+          "id": "MERCH-nomadic-north-liurnia-1",
+          "name": "Rune Arc",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rune_Arc",
+          "stepId": "m25-1",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-2",
+          "name": "Immunizing White Cured Meat",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Immunizing_White_Cured_Meat",
+          "stepId": "m25-2",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-3",
+          "name": "Invigorating White Cured Meat",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Invigorating_White_Cured_Meat",
+          "stepId": "m25-3",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-4",
+          "name": "Clarifying White Cured Meat",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Clarifying_White_Cured_Meat",
+          "stepId": "m25-4",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-5",
+          "name": "Bewitching Branch",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bewitching_Branch",
+          "stepId": "m25-5",
+          "price": 1600
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-6",
+          "name": "Nomadic Warrior's Cookbook [13]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Nomadic_Warrior%27s_Cookbook_13",
+          "stepId": "m25-6",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-7",
+          "name": "Composite Bow",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Composite_Bow",
+          "stepId": "m25-7",
+          "price": 3500
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-8",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m25-8",
+          "price": 20
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-9",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m25-9",
+          "price": 40
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-10",
+          "name": "Rift Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rift_Shield",
+          "stepId": "m25-10",
+          "price": 1800
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-11",
+          "name": "Silver Grooved Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Silver_Grooved_Shield",
+          "stepId": "m25-11",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-12",
+          "name": "Blue Crest Heater Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Blue_Crest_Heater_Shield",
+          "stepId": "m25-12",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-13",
+          "name": "Silver Grooved Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Silver_Grooved_Helm",
+          "stepId": "m25-13",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-14",
+          "name": "Silver Grooved Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Silver_Grooved_Armor",
+          "stepId": "m25-14",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-15",
+          "name": "Silver Grooved Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Silver_Grooved_Gauntlets",
+          "stepId": "m25-15",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-nomadic-north-liurnia-16",
+          "name": "Silver Grooved Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Silver_Grooved_Greaves",
+          "stepId": "m25-16",
+          "price": 1000
+        }
+      ]
+    },
+    {
+      "id": "isolated-raya-lucaria",
+      "name": "Isolated Merchant (Raya Lucaria)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#isolated-raya-lucaria",
+      "items": [
+        {
+          "id": "MERCH-isolated-raya-lucaria-1",
+          "name": "Festering Bloody Finger",
+          "stock": "8",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Festering_Bloody_Finger",
+          "stepId": "m26-1",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-2",
+          "name": "Fanged Imp Ashes",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Fanged_Imp_Ashes",
+          "stepId": "m26-2",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-3",
+          "name": "Trina's Lily",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Trina%27s_Lily",
+          "stepId": "m26-3",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-4",
+          "name": "Eye of Yelough",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Eye_of_Yelough",
+          "stepId": "m26-4",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-5",
+          "name": "Stonesword Key",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stonesword_Key",
+          "stepId": "m26-5",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-6",
+          "name": "Lost Ashes of War",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lost_Ashes_of_War",
+          "stepId": "m26-6",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-7",
+          "name": "Fevor's Cookbook [2]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Fevor%27s_Cookbook_2",
+          "stepId": "m26-7",
+          "price": 3500
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-8",
+          "name": "St. Trina's Arrow",
+          "stock": "20",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/St._Trina%27s_Arrow",
+          "stepId": "m26-8",
+          "price": 160
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-9",
+          "name": "Meteor Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Meteor_Bolt",
+          "stepId": "m26-9",
+          "price": 120
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-10",
+          "name": "Blue Cloth Cowl",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Blue_Cloth_Cowl",
+          "stepId": "m26-10",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-11",
+          "name": "Blue Cloth Vest",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Blue_Cloth_Vest",
+          "stepId": "m26-11",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-12",
+          "name": "Warrior Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Warrior_Gauntlets",
+          "stepId": "m26-12",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-13",
+          "name": "Warrior Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Warrior_Greaves",
+          "stepId": "m26-13",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-14",
+          "name": "Sacrificial Twig",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Sacrificial_Twig",
+          "stepId": "m26-14",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-15",
+          "name": "Note: The Preceptor's Secret",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_The_Preceptor%27s_Secret",
+          "stepId": "m26-15",
+          "price": 1200
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-16",
+          "name": "Note: Revenants",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Revenants",
+          "stepId": "m26-16",
+          "price": 800
+        },
+        {
+          "id": "MERCH-isolated-raya-lucaria-17",
+          "name": "Note: Frenzied Flame Village",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Frenzied_Flame_Village",
+          "stepId": "m26-17",
+          "price": 800
+        }
+      ]
+    },
+    {
+      "id": "nomadic-north-caelid",
+      "name": "Nomadic Merchant (North Caelid)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#nomadic-north-caelid",
+      "items": [
+        {
+          "id": "MERCH-nomadic-north-caelid-1",
+          "name": "Preserving Boluses",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Preserving_Boluses",
+          "stepId": "m27-1",
+          "price": 2500
+        },
+        {
+          "id": "MERCH-nomadic-north-caelid-2",
+          "name": "Poisonbone Dart",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Poisonbone_Dart",
+          "stepId": "m27-2",
+          "price": 120
+        },
+        {
+          "id": "MERCH-nomadic-north-caelid-3",
+          "name": "Poisoned Stone",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Poisoned_Stone",
+          "stepId": "m27-3",
+          "price": 150
+        },
+        {
+          "id": "MERCH-nomadic-north-caelid-4",
+          "name": "Poisoned Stone Clump",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Poisoned_Stone_Clump",
+          "stepId": "m27-4",
+          "price": 250
+        },
+        {
+          "id": "MERCH-nomadic-north-caelid-5",
+          "name": "Aeonian Butterfly",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Aeonian_Butterfly",
+          "stepId": "m27-5",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-north-caelid-6",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m27-6",
+          "price": 20
+        },
+        {
+          "id": "MERCH-nomadic-north-caelid-7",
+          "name": "Fire Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Fire_Arrow",
+          "stepId": "m27-7",
+          "price": 120
+        },
+        {
+          "id": "MERCH-nomadic-north-caelid-8",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m27-8",
+          "price": 40
+        }
+      ]
+    },
+    {
+      "id": "nomadic-south-caelid",
+      "name": "Nomadic Merchant (South Caelid)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#nomadic-south-caelid",
+      "items": [
+        {
+          "id": "MERCH-nomadic-south-caelid-1",
+          "name": "Cracked Pot",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Cracked_Pot",
+          "stepId": "m28-1",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-south-caelid-2",
+          "name": "Stonesword Key",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stonesword_Key",
+          "stepId": "m28-2",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-nomadic-south-caelid-3",
+          "name": "Nomadic Warrior's Cookbook [15]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Nomadic_Warrior%27s_Cookbook_15",
+          "stepId": "m28-3",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-nomadic-south-caelid-4",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m28-4",
+          "price": 20
+        },
+        {
+          "id": "MERCH-nomadic-south-caelid-5",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m28-5",
+          "price": 40
+        },
+        {
+          "id": "MERCH-nomadic-south-caelid-6",
+          "name": "Flaming Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Flaming_Bolt",
+          "stepId": "m28-6",
+          "price": 120
+        },
+        {
+          "id": "MERCH-nomadic-south-caelid-7",
+          "name": "Champion Headband",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Champion_Headband",
+          "stepId": "m28-7",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-nomadic-south-caelid-8",
+          "name": "Greathelm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Greathelm",
+          "stepId": "m28-8",
+          "price": 1800
+        },
+        {
+          "id": "MERCH-nomadic-south-caelid-9",
+          "name": "Champion Pauldron",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Champion_Pauldron",
+          "stepId": "m28-9",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-south-caelid-10",
+          "name": "Champion Bracers",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Champion_Bracers",
+          "stepId": "m28-10",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-nomadic-south-caelid-11",
+          "name": "Champion Gaiters",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Champion_Gaiters",
+          "stepId": "m28-11",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-nomadic-south-caelid-12",
+          "name": "Note: Gravity's Advantage",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Gravity%27s_Advantage",
+          "stepId": "m28-12",
+          "price": 800
+        }
+      ]
+    },
+    {
+      "id": "isolated-dragonbarrow",
+      "name": "Isolated Merchant (Dragonbarrow)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#isolated-dragonbarrow",
+      "items": [
+        {
+          "id": "MERCH-isolated-dragonbarrow-1",
+          "name": "Dragonwound Grease",
+          "stock": "2",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Dragonwound_Grease",
+          "stepId": "m29-1",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-2",
+          "name": "Festering Bloody Finger",
+          "stock": "8",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Festering_Bloody_Finger",
+          "stepId": "m29-2",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-3",
+          "name": "Gravel Stone",
+          "stock": "10",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Gravel_Stone",
+          "stepId": "m29-3",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-4",
+          "name": "Ritual Pot",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ritual_Pot",
+          "stepId": "m29-4",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-5",
+          "name": "Lost Ashes of War",
+          "stock": "2",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lost_Ashes_of_War",
+          "stepId": "m29-5",
+          "price": 5000
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-6",
+          "name": "Spiked Caestus",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Spiked_Caestus",
+          "stepId": "m29-6",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-7",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m29-7",
+          "price": 20
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-8",
+          "name": "Serpent Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Serpent_Arrow",
+          "stepId": "m29-8",
+          "price": 120
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-9",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m29-9",
+          "price": 40
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-10",
+          "name": "Beast-Repellent Torch",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Beast-Repellent_Torch",
+          "stepId": "m29-10",
+          "price": 1200
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-11",
+          "name": "Land of Reeds Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Land_of_Reeds_Helm",
+          "stepId": "m29-11",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-12",
+          "name": "Land of Reeds Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Land_of_Reeds_Armor",
+          "stepId": "m29-12",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-13",
+          "name": "Land of Reeds Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Land_of_Reeds_Gauntlets",
+          "stepId": "m29-13",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-14",
+          "name": "Land of Reeds Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Land_of_Reeds_Greaves",
+          "stepId": "m29-14",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-15",
+          "name": "Sacrificial Twig",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Sacrificial_Twig",
+          "stepId": "m29-15",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-16",
+          "name": "Note: Gateway",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Gateway",
+          "stepId": "m29-16",
+          "price": 1200
+        },
+        {
+          "id": "MERCH-isolated-dragonbarrow-17",
+          "name": "Note: Hidden Cave",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Hidden_Cave",
+          "stepId": "m29-17",
+          "price": 1200
+        }
+      ]
+    },
+    {
+      "id": "nomadic-altus-plateau",
+      "name": "Nomadic Merchant (Altus Plateau)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#nomadic-altus-plateau",
+      "items": [
+        {
+          "id": "MERCH-nomadic-altus-plateau-1",
+          "name": "Festering Bloody Finger",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Festering_Bloody_Finger",
+          "stepId": "m30-1",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-nomadic-altus-plateau-2",
+          "name": "Gravel Stone",
+          "stock": "8",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Gravel_Stone",
+          "stepId": "m30-2",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-nomadic-altus-plateau-3",
+          "name": "Stonesword Key",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stonesword_Key",
+          "stepId": "m30-3",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-nomadic-altus-plateau-4",
+          "name": "Ancient Dragon Apostle's Cookbook [2]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ancient_Dragon_Apostle%27s_Cookbook_2",
+          "stepId": "m30-4",
+          "price": 4500
+        },
+        {
+          "id": "MERCH-nomadic-altus-plateau-5",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m30-5",
+          "price": 20
+        },
+        {
+          "id": "MERCH-nomadic-altus-plateau-6",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m30-6",
+          "price": 40
+        },
+        {
+          "id": "MERCH-nomadic-altus-plateau-7",
+          "name": "Lightning Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lightning_Bolt",
+          "stepId": "m30-7",
+          "price": 160
+        },
+        {
+          "id": "MERCH-nomadic-altus-plateau-8",
+          "name": "Red Crest Heater Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Red_Crest_Heater_Shield",
+          "stepId": "m30-8",
+          "price": 2500
+        },
+        {
+          "id": "MERCH-nomadic-altus-plateau-9",
+          "name": "Scorpion Kite Shield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Scorpion_Kite_Shield",
+          "stepId": "m30-9",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-nomadic-altus-plateau-10",
+          "name": "Crossed-Tree Towershield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Crossed-Tree_Towershield",
+          "stepId": "m30-10",
+          "price": 3800
+        },
+        {
+          "id": "MERCH-nomadic-altus-plateau-11",
+          "name": "Tree Surcoat",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Tree_Surcoat",
+          "stepId": "m30-11",
+          "price": 3500
+        },
+        {
+          "id": "MERCH-nomadic-altus-plateau-12",
+          "name": "Note: Unseen Assassins",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Unseen_Assassins",
+          "stepId": "m30-12",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-nomadic-altus-plateau-13",
+          "name": "Note: Imp Shades",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Imp_Shades",
+          "stepId": "m30-13",
+          "price": 1200
+        }
+      ]
+    },
+    {
+      "id": "nomadic-mt-gelmir",
+      "name": "Nomadic Merchant (Mt. Gelmir)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#nomadic-mt-gelmir",
+      "items": [
+        {
+          "id": "MERCH-nomadic-mt-gelmir-1",
+          "name": "Stonesword Key",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stonesword_Key",
+          "stepId": "m31-1",
+          "price": 5000
+        },
+        {
+          "id": "MERCH-nomadic-mt-gelmir-2",
+          "name": "Nomadic Warrior's Cookbook [20]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Nomadic_Warrior%27s_Cookbook_20",
+          "stepId": "m31-2",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-nomadic-mt-gelmir-3",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m31-3",
+          "price": 20
+        },
+        {
+          "id": "MERCH-nomadic-mt-gelmir-4",
+          "name": "Great Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Arrow",
+          "stepId": "m31-4",
+          "price": 300
+        },
+        {
+          "id": "MERCH-nomadic-mt-gelmir-5",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m31-5",
+          "price": 40
+        },
+        {
+          "id": "MERCH-nomadic-mt-gelmir-6",
+          "name": "Explosive Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Explosive_Bolt",
+          "stepId": "m31-6",
+          "price": 160
+        },
+        {
+          "id": "MERCH-nomadic-mt-gelmir-7",
+          "name": "Ballista Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ballista_Bolt",
+          "stepId": "m31-7",
+          "price": 300
+        },
+        {
+          "id": "MERCH-nomadic-mt-gelmir-8",
+          "name": "Explosive Greatbolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Explosive_Greatbolt",
+          "stepId": "m31-8",
+          "price": 800
+        },
+        {
+          "id": "MERCH-nomadic-mt-gelmir-9",
+          "name": "Guilty Hood",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Guilty_Hood",
+          "stepId": "m31-9",
+          "price": 500
+        },
+        {
+          "id": "MERCH-nomadic-mt-gelmir-10",
+          "name": "Confessor Hood",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Confessor_Hood",
+          "stepId": "m31-10",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-nomadic-mt-gelmir-11",
+          "name": "Confessor Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Confessor_Armor",
+          "stepId": "m31-11",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-nomadic-mt-gelmir-12",
+          "name": "Confessor Gloves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Confessor_Gloves",
+          "stepId": "m31-12",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-nomadic-mt-gelmir-13",
+          "name": "Confessor Boots",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Confessor_Boots",
+          "stepId": "m31-13",
+          "price": 1000
+        }
+      ]
+    },
+    {
+      "id": "hermit-capital-outskirts",
+      "name": "Hermit Merchant (Capital Outskirts)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#hermit-capital-outskirts",
+      "items": [
+        {
+          "id": "MERCH-hermit-capital-outskirts-1",
+          "name": "Rune Arc",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rune_Arc",
+          "stepId": "m32-1",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-2",
+          "name": "Festering Bloody Finger",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Festering_Bloody_Finger",
+          "stepId": "m32-2",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-3",
+          "name": "Golden Sunflower",
+          "stock": "10",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Sunflower",
+          "stepId": "m32-3",
+          "price": 300
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-4",
+          "name": "Perfume Bottle",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Perfume_Bottle",
+          "stepId": "m32-4",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-5",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m32-5",
+          "price": 20
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-6",
+          "name": "Golden Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Arrow",
+          "stepId": "m32-6",
+          "price": 120
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-7",
+          "name": "Great Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Arrow",
+          "stepId": "m32-7",
+          "price": 300
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-8",
+          "name": "Golden Great Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Great_Arrow",
+          "stepId": "m32-8",
+          "price": 500
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-9",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m32-9",
+          "price": 40
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-10",
+          "name": "Golden Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Golden_Bolt",
+          "stepId": "m32-10",
+          "price": 120
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-11",
+          "name": "Ballista Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ballista_Bolt",
+          "stepId": "m32-11",
+          "price": 300
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-12",
+          "name": "Sentry's Torch",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Sentry%27s_Torch",
+          "stepId": "m32-12",
+          "price": 7000
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-13",
+          "name": "Distinguished Greatshield",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Distinguished_Greatshield",
+          "stepId": "m32-13",
+          "price": 5500
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-14",
+          "name": "Prophet Blindfold",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Prophet_Blindfold",
+          "stepId": "m32-14",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-15",
+          "name": "Prophet Robe",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Prophet_Robe",
+          "stepId": "m32-15",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-16",
+          "name": "Upper-Class Robe",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Upper-Class_Robe",
+          "stepId": "m32-16",
+          "price": 2400
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-17",
+          "name": "Prophet Trousers",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Prophet_Trousers",
+          "stepId": "m32-17",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-18",
+          "name": "Consort's Trousers",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Consort%27s_Trousers",
+          "stepId": "m32-18",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-hermit-capital-outskirts-19",
+          "name": "Note: Below the Capital",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Below_the_Capital",
+          "stepId": "m32-19",
+          "price": 800
+        }
+      ]
+    },
+    {
+      "id": "hermit-mountaintops",
+      "name": "Hermit Merchant (Mountaintops of the Giants)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#hermit-mountaintops",
+      "items": [
+        {
+          "id": "MERCH-hermit-mountaintops-1",
+          "name": "Rune Arc",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rune_Arc",
+          "stepId": "m33-1",
+          "price": 8000
+        },
+        {
+          "id": "MERCH-hermit-mountaintops-2",
+          "name": "Thawfrost Boluses",
+          "stock": "10",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Thawfrost_Boluses",
+          "stepId": "m33-2",
+          "price": 1200
+        },
+        {
+          "id": "MERCH-hermit-mountaintops-3",
+          "name": "Stonesword Key",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stonesword_Key",
+          "stepId": "m33-3",
+          "price": 5000
+        },
+        {
+          "id": "MERCH-hermit-mountaintops-4",
+          "name": "Missionary's Cookbook [7]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Missionary%27s_Cookbook_7",
+          "stepId": "m33-4",
+          "price": 7500
+        },
+        {
+          "id": "MERCH-hermit-mountaintops-5",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m33-5",
+          "price": 20
+        },
+        {
+          "id": "MERCH-hermit-mountaintops-6",
+          "name": "Great Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Arrow",
+          "stepId": "m33-6",
+          "price": 300
+        },
+        {
+          "id": "MERCH-hermit-mountaintops-7",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m33-7",
+          "price": 40
+        },
+        {
+          "id": "MERCH-hermit-mountaintops-8",
+          "name": "Ballista Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ballista_Bolt",
+          "stepId": "m33-8",
+          "price": 300
+        },
+        {
+          "id": "MERCH-hermit-mountaintops-9",
+          "name": "Lightning Greatbolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lightning_Greatbolt",
+          "stepId": "m33-9",
+          "price": 500
+        },
+        {
+          "id": "MERCH-hermit-mountaintops-10",
+          "name": "Vagabond Knight Helm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Vagabond_Knight_Helm",
+          "stepId": "m33-10",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-hermit-mountaintops-11",
+          "name": "Vagabond Knight Armor",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Vagabond_Knight_Armor",
+          "stepId": "m33-11",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-hermit-mountaintops-12",
+          "name": "Vagabond Knight Gauntlets",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Vagabond_Knight_Gauntlets",
+          "stepId": "m33-12",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-hermit-mountaintops-13",
+          "name": "Vagabond Knight Greaves",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Vagabond_Knight_Greaves",
+          "stepId": "m33-13",
+          "price": 1000
+        }
+      ]
+    },
+    {
+      "id": "hermit-ainsel-river",
+      "name": "Hermit Merchant (Ainsel River)",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#hermit-ainsel-river",
+      "items": [
+        {
+          "id": "MERCH-hermit-ainsel-river-1",
+          "name": "Gravity Stone Fan",
+          "stock": "20",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Gravity_Stone_Fan",
+          "stepId": "m34-1",
+          "price": 200
+        },
+        {
+          "id": "MERCH-hermit-ainsel-river-2",
+          "name": "Gravity Stone Chunk",
+          "stock": "10",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Gravity_Stone_Chunk",
+          "stepId": "m34-2",
+          "price": 300
+        },
+        {
+          "id": "MERCH-hermit-ainsel-river-3",
+          "name": "Lost Ashes of War",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lost_Ashes_of_War",
+          "stepId": "m34-3",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-hermit-ainsel-river-4",
+          "name": "Celestial Dew",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Celestial_Dew",
+          "stepId": "m34-4",
+          "price": 7500
+        },
+        {
+          "id": "MERCH-hermit-ainsel-river-5",
+          "name": "Nomadic Warrior's Cookbook [16]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Nomadic_Warrior%27s_Cookbook_16",
+          "stepId": "m34-5",
+          "price": 2500
+        },
+        {
+          "id": "MERCH-hermit-ainsel-river-6",
+          "name": "Perfumer's Cookbook [4]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Perfumer%27s_Cookbook_4",
+          "stepId": "m34-6",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-hermit-ainsel-river-7",
+          "name": "Prisoner Iron Mask",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Prisoner_Iron_Mask",
+          "stepId": "m34-7",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-hermit-ainsel-river-8",
+          "name": "Prisoner Clothing",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Prisoner_Clothing",
+          "stepId": "m34-8",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-hermit-ainsel-river-9",
+          "name": "Prisoner Trousers",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Prisoner_Trousers",
+          "stepId": "m34-9",
+          "price": 1000
+        }
+      ]
+    },
+    {
+      "id": "abandoned-merchant",
+      "name": "Abandoned Merchant",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#abandoned-merchant",
+      "items": [
+        {
+          "id": "MERCH-abandoned-merchant-1",
+          "name": "Soap",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Soap",
+          "stepId": "m35-1",
+          "price": 400
+        },
+        {
+          "id": "MERCH-abandoned-merchant-2",
+          "name": "Nascent Butterfly",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Nascent_Butterfly",
+          "stepId": "m35-2",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-abandoned-merchant-3",
+          "name": "Stonesword Key",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stonesword_Key",
+          "stepId": "m35-3",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-abandoned-merchant-4",
+          "name": "Larval Tear",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Larval_Tear",
+          "stepId": "m35-4",
+          "price": 3000
+        },
+        {
+          "id": "MERCH-abandoned-merchant-5",
+          "name": "Nomadic Warrior's Cookbook [17]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Nomadic_Warrior%27s_Cookbook_17",
+          "stepId": "m35-5",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-abandoned-merchant-6",
+          "name": "Nomadic Warrior's Cookbook [18]",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Nomadic_Warrior%27s_Cookbook_18",
+          "stepId": "m35-6",
+          "price": 6000
+        },
+        {
+          "id": "MERCH-abandoned-merchant-7",
+          "name": "Shotel",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Shotel",
+          "stepId": "m35-7",
+          "price": 2500
+        },
+        {
+          "id": "MERCH-abandoned-merchant-8",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m35-8",
+          "price": 20
+        },
+        {
+          "id": "MERCH-abandoned-merchant-9",
+          "name": "Dwelling Arrow",
+          "stock": "30",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Dwelling_Arrow",
+          "stepId": "m35-9",
+          "price": 160
+        },
+        {
+          "id": "MERCH-abandoned-merchant-10",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m35-10",
+          "price": 40
+        }
+      ]
+    },
+    {
+      "id": "imprisoned-merchant",
+      "name": "Imprisoned Merchant",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#imprisoned-merchant",
+      "items": [
+        {
+          "id": "MERCH-imprisoned-merchant-1",
+          "name": "Rune Arc",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rune_Arc",
+          "stepId": "m36-1",
+          "price": 8000
+        },
+        {
+          "id": "MERCH-imprisoned-merchant-2",
+          "name": "Stanching Boluses",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stanching_Boluses",
+          "stepId": "m36-2",
+          "price": 1200
+        },
+        {
+          "id": "MERCH-imprisoned-merchant-3",
+          "name": "Festering Bloody Finger",
+          "stock": "10",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Festering_Bloody_Finger",
+          "stepId": "m36-3",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-imprisoned-merchant-4",
+          "name": "Bloodrose",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bloodrose",
+          "stepId": "m36-4",
+          "price": 800
+        },
+        {
+          "id": "MERCH-imprisoned-merchant-5",
+          "name": "Stonesword Key",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Stonesword_Key",
+          "stepId": "m36-5",
+          "price": 5000
+        },
+        {
+          "id": "MERCH-imprisoned-merchant-6",
+          "name": "Lost Ashes of War",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lost_Ashes_of_War",
+          "stepId": "m36-6",
+          "price": 5000
+        },
+        {
+          "id": "MERCH-imprisoned-merchant-7",
+          "name": "Dwelling Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Dwelling_Arrow",
+          "stepId": "m36-7",
+          "price": 160
+        },
+        {
+          "id": "MERCH-imprisoned-merchant-8",
+          "name": "Burred Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Burred_Bolt",
+          "stepId": "m36-8",
+          "price": 200
+        }
+      ]
+    },
+    {
+      "id": "moore",
+      "name": "Moore",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#moore",
+      "items": [
+        {
+          "id": "MERCH-moore-1",
+          "name": "Rune Arc",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rune_Arc",
+          "stepId": "m37-1",
+          "price": 8000
+        },
+        {
+          "id": "MERCH-moore-2",
+          "name": "Spellproof Pickled Liver",
+          "stock": "2",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Spellproof_Pickled_Liver",
+          "stepId": "m37-2",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-moore-3",
+          "name": "Fireproof Pickled Liver",
+          "stock": "2",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Fireproof_Pickled_Liver",
+          "stepId": "m37-3",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-moore-4",
+          "name": "Lightningproof Pickled Liver",
+          "stock": "2",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Lightningproof_Pickled_Liver",
+          "stepId": "m37-4",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-moore-5",
+          "name": "Holyproof Pickled Liver",
+          "stock": "2",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Holyproof_Pickled_Liver",
+          "stepId": "m37-5",
+          "price": 4000
+        },
+        {
+          "id": "MERCH-moore-6",
+          "name": "Well-Pickled Turtle Neck",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Well-Pickled_Turtle_Neck",
+          "stepId": "m37-6",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-moore-7",
+          "name": "Black Pyrefly",
+          "stock": "8",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Black_Pyrefly",
+          "stepId": "m37-7",
+          "price": 1800
+        },
+        {
+          "id": "MERCH-moore-8",
+          "name": "Rada Fruit",
+          "stock": "10",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Rada_Fruit",
+          "stepId": "m37-8",
+          "price": 800
+        },
+        {
+          "id": "MERCH-moore-9",
+          "name": "Redflesh Mushroom",
+          "stock": "8",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Redflesh_Mushroom",
+          "stepId": "m37-9",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-moore-10",
+          "name": "Whiteflesh Mushroom",
+          "stock": "6",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Whiteflesh_Mushroom",
+          "stepId": "m37-10",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-moore-11",
+          "name": "Sanguine Amaryllis",
+          "stock": "4",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Sanguine_Amaryllis",
+          "stepId": "m37-11",
+          "price": 1800
+        },
+        {
+          "id": "MERCH-moore-12",
+          "name": "Knot Resin",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Knot_Resin",
+          "stepId": "m37-12",
+          "price": 1500
+        },
+        {
+          "id": "MERCH-moore-13",
+          "name": "Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Arrow",
+          "stepId": "m37-13",
+          "price": 20
+        },
+        {
+          "id": "MERCH-moore-14",
+          "name": "Great Arrow",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Arrow",
+          "stepId": "m37-14",
+          "price": 300
+        },
+        {
+          "id": "MERCH-moore-15",
+          "name": "Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Bolt",
+          "stepId": "m37-15",
+          "price": 40
+        },
+        {
+          "id": "MERCH-moore-16",
+          "name": "Ballista Bolt",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Ballista_Bolt",
+          "stepId": "m37-16",
+          "price": 300
+        },
+        {
+          "id": "MERCH-moore-17",
+          "name": "Note: Sealed Spiritsprings",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Note:_Sealed_Spiritsprings",
+          "stepId": "m37-17",
+          "price": 1000
+        }
+      ]
+    },
+    {
+      "id": "thiollier",
+      "name": "Thiollier",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#thiollier",
+      "items": [
+        {
+          "id": "MERCH-thiollier-1",
+          "name": "Poisonbone Dart",
+          "stock": "20",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Poisonbone_Dart",
+          "stepId": "m38-1",
+          "price": 120
+        },
+        {
+          "id": "MERCH-thiollier-2",
+          "name": "Poisoned Stone",
+          "stock": "10",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Poisoned_Stone",
+          "stepId": "m38-2",
+          "price": 150
+        },
+        {
+          "id": "MERCH-thiollier-3",
+          "name": "Poisoned Stone Clump",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Poisoned_Stone_Clump",
+          "stepId": "m38-3",
+          "price": 250
+        },
+        {
+          "id": "MERCH-thiollier-4",
+          "name": "Poison Grease",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Poison_Grease",
+          "stepId": "m38-4",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-thiollier-5",
+          "name": "Drawstring Poison Grease",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Drawstring_Poison_Grease",
+          "stepId": "m38-5",
+          "price": 800
+        },
+        {
+          "id": "MERCH-thiollier-6",
+          "name": "Toxic Mossling",
+          "stock": "5",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Toxic_Mossling",
+          "stepId": "m38-6",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-thiollier-7",
+          "name": "Toxic Mushroom",
+          "stock": "10",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Toxic_Mushroom",
+          "stepId": "m38-7",
+          "price": 500
+        },
+        {
+          "id": "MERCH-thiollier-8",
+          "name": "Poisonbloom",
+          "stock": "10",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Poisonbloom",
+          "stepId": "m38-8",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-thiollier-9",
+          "name": "Altus Bloom",
+          "stock": "20",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Altus_Bloom",
+          "stepId": "m38-9",
+          "price": 500
+        },
+        {
+          "id": "MERCH-thiollier-10",
+          "name": "Trina's Lily",
+          "stock": "3",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Trina%27s_Lily",
+          "stepId": "m38-10",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-thiollier-11",
+          "name": "Miranda Powder",
+          "stock": "10",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Miranda_Powder",
+          "stepId": "m38-11",
+          "price": 800
+        },
+        {
+          "id": "MERCH-thiollier-12",
+          "name": "Deadly Poison Perfume Bottle",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Deadly_Poison_Perfume_Bottle",
+          "stepId": "m38-12",
+          "price": 6000
+        },
+        {
+          "id": "MERCH-thiollier-13",
+          "name": "Thiollier's Concoction",
+          "stock": "infinite",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Thiollier%27s_Concoction",
+          "stepId": "m38-14",
+          "price": 30000,
+          "note": "After giving him the Black Syrup , asking about it, and telling him that you're weary of life"
+        }
+      ]
+    },
+    {
+      "id": "ymir",
+      "name": "Count Ymir, High Priest",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/merchants#ymir",
+      "items": [
+        {
+          "id": "MERCH-ymir-1",
+          "name": "Glintstone Pebble",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintstone_Pebble",
+          "stepId": "m39-1",
+          "price": 1000
+        },
+        {
+          "id": "MERCH-ymir-2",
+          "name": "Great Glintstone Shard",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Great_Glintstone_Shard",
+          "stepId": "m39-2",
+          "price": 2000
+        },
+        {
+          "id": "MERCH-ymir-3",
+          "name": "Glintblade Phalanx",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintblade_Phalanx",
+          "stepId": "m39-3",
+          "price": 2500
+        },
+        {
+          "id": "MERCH-ymir-4",
+          "name": "Carian Phalanx",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Carian_Phalanx",
+          "stepId": "m39-4",
+          "price": 12000
+        },
+        {
+          "id": "MERCH-ymir-5",
+          "name": "Carian Retaliation",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Carian_Retaliation",
+          "stepId": "m39-5",
+          "price": 9000
+        },
+        {
+          "id": "MERCH-ymir-6",
+          "name": "Miriam's Vanishing",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Miriam%27s_Vanishing",
+          "stepId": "m39-6",
+          "price": 10000
+        },
+        {
+          "id": "MERCH-ymir-7",
+          "name": "Glintstone Nail",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintstone_Nail",
+          "stepId": "m39-8",
+          "price": 12000,
+          "note": "After sounding the hanging bell in either of the two finger ruins"
+        },
+        {
+          "id": "MERCH-ymir-8",
+          "name": "Glintstone Nails",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Glintstone_Nails",
+          "stepId": "m39-9",
+          "price": 12000,
+          "note": "After sounding the hanging bell in either of the two finger ruins"
+        },
+        {
+          "id": "MERCH-ymir-9",
+          "name": "Fleeting Microcosm",
+          "stock": "",
+          "wikiUrl": "https://eldenring.wiki.gg/wiki/Fleeting_Microcosm",
+          "stepId": "m39-11",
+          "price": 20000,
+          "note": "After sounding the hanging bell in the other finger ruins"
+        }
+      ]
+    }
+  ]
+}
