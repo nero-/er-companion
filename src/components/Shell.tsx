@@ -10,6 +10,7 @@ import { collectionSummary, routeProgress } from "../lib/selectors";
 import { levelFromStats } from "../lib/classes";
 import { initials } from "../lib/format";
 import { navigate, useRoute } from "../lib/router";
+import { isDesktop } from "../lib/desktop";
 
 interface NavItem {
   path: string;
@@ -53,6 +54,8 @@ export function Shell({ children }: { children: ReactNode }) {
   const routeStats = routeProgress(journey);
   const collection = collectionSummary(character);
   const level = levelFromStats(character.stats);
+  const commandKey =
+    typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘K" : "Ctrl K";
 
   const groups: NavGroup[] = [
     {
@@ -213,9 +216,9 @@ export function Shell({ children }: { children: ReactNode }) {
           <button className="search-trigger" onClick={() => setSearchOpen(true)}>
             <Icon name="search" size={15} />
             <span>Search the companion</span>
-            <kbd>⌘K</kbd>
+            <kbd>{commandKey}</kbd>
           </button>
-          <span className="offline-dot">Offline ready</span>
+          <span className="offline-dot">{isDesktop() ? "Desktop · offline" : "Offline ready"}</span>
           <div className="avatar" title={`${character.name} · Level ${level}`}>
             {initials(character.name)}
           </div>

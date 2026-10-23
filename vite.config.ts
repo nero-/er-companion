@@ -1,11 +1,16 @@
 import { defineConfig } from "vite";
+import { env } from "node:process";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+
+// Tauri builds serve immutable local assets from the app bundle. A service
+// worker adds no offline value there and can conflict with the custom protocol.
+const isTauriBuild = Boolean(env.TAURI_ENV_PLATFORM);
 
 export default defineConfig({
   plugins: [
     react(),
-    VitePWA({
+    ...(isTauriBuild ? [] : [VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["icon.svg", "icon-192.png", "icon-512.png"],
       manifest: {
@@ -29,7 +34,13 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 32 * 1024 * 1024
       }
     })
-  ],
+    ])],
+  clearScreen: false,
+  server: {
+    port: 5173,
+    strictPort: true,
+    watch: { ignored: ["**/src-tauri/**"] },
+  },
   build: {
     target: "es2022",
     chunkSizeWarningLimit: 6000

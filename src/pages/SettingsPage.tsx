@@ -33,6 +33,8 @@ import {
 import { ART, ArtBanner, OrnamentRule, UnofficialNote } from "../components/Art";
 import { DATA_BASELINE, GAME_VERSION, TARNISHED_ENCOUNTERS } from "../data/game";
 import { formatDate, formatNumber } from "../lib/format";
+import { exportDesktopBackup, getDesktopInfo, importDesktopBackup, isDesktop } from "../lib/desktop";
+import type { DesktopInfo } from "../lib/desktop";
 
 type ConfirmKind = "new-journey" | "reset-journey" | "reset-all" | null;
 
@@ -117,33 +119,85 @@ export function SettingsPage() {
   const character = useActiveCharacter();
   const journey = useActiveJourney();
   const toast = useToast();
+  const desktopMode = isDesktop();
   const [name, setName] = useState(character.name);
   const [confirm, setConfirm] = useState<ConfirmKind>(null);
+  const [desktop, setDesktop] = useState<DesktopInfo | null>(null);
+  const [desktopError, setDesktopError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setName(character.name);
   }, [character.id, character.name]);
 
+  useEffect(() => {
+    if (!desktopMode) return;
+    let active = true;
+    getDesktopInfo()
+      .then((info) => {
+        if (active) setDesktop(info);
+      })
+      .catch((error: unknown) => {
+        if (active) setDesktopError(error instanceof Error ? error.message : String(error));
+      });
+    return () => {
+      active = false;
+    };
+  }, [desktopMode]);
+
   const level = levelFromStats(character.stats);
   const questStepCount = QUESTLINES.reduce((total, questline) => total + questline.steps.length, 0);
 
-  const download = () => {
-    const blob = new Blob([exportState()], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `er-companion-${character.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${new Date().toISOString().slice(0, 10)}.json`;
-    anchor.click();
-    URL.revokeObjectURL(url);
-    toast.push("Backup exported.", "success");
+  const backupName = `er-companion-${character.name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")}-${new Date().toISOString().slice(0, 10)}.json`;
+
+  const download = async () => {
+    try {
+      if (desktopMode) {
+        const saved = await exportDesktopBackup(exportState(), backupName);
+        if (saved) toast.push("Backup saved through the system dialog.", "success");
+        return;
+      }
+      const blob = new Blob([exportState()], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = backupName;
+      anchor.click();
+      URL.revokeObjectURL(url);
+      toast.push("Backup exported.", "success");
+    } catch (error) {
+      toast.push(error instanceof Error ? error.message : "Export failed.", "error");
+    }
+  };
+
+  const importJson = (json: string) => {
+    try {
+      importState(json);
+      toast.push("Backup imported. Progress restored.", "success");
+    } catch (error) {
+      toast.push(error instanceof Error ? error.message : "Import failed.", "error");
+    }
   };
 
   const importFile = async (file: File | undefined) => {
     if (!file) return;
     try {
-      importState(await file.text());
-      toast.push("Backup imported. Progress restored.", "success");
+      importJson(await file.text());
+    } catch (error) {
+      toast.push(error instanceof Error ? error.message : "Could not read that file.", "error");
+    }
+  };
+
+  const openImport = async () => {
+    if (!desktopMode) {
+      fileRef.current?.click();
+      return;
+    }
+    try {
+      const json = await importDesktopBackup();
+      if (json) importJson(json);
     } catch (error) {
       toast.push(error instanceof Error ? error.message : "Import failed.", "error");
     }
@@ -173,10 +227,10 @@ export function SettingsPage() {
         description="Characters, journeys, spoiler policy, backups, and the provenance of the content pack."
         actions={
           <>
-            <Button icon="download" onClick={download}>
+            <Button icon="download" onClick={() => void download()}>
               Export backup
             </Button>
-            <Button variant="ghost" icon="upload" onClick={() => fileRef.current?.click()}>
+            <Button variant="ghost" icon="upload" onClick={() => void openImport()}>
               Import
             </Button>
             <input
@@ -386,17 +440,47 @@ export function SettingsPage() {
           <SectionTitle title="Data & backups" note="Offline-first" />
           <div className="stack">
             <div className="row wrap">
-              <Button icon="download" onClick={download}>
+              <Button icon="download" onClick={() => void download()}>
                 Export JSON backup
               </Button>
-              <Button variant="ghost" icon="upload" onClick={() => fileRef.current?.click()}>
+              <Button variant="ghost" icon="upload" onClick={() => void openImport()}>
                 Import JSON backup
               </Button>
             </div>
-            <Callout icon="lock">
-              Progress is stored in this browser's local storage. Export a backup before clearing site data or moving to
-              another device. The desktop/PWA build has no network dependency.
-            </Callout>
+            {desktopMode ? (
+              <>
+                <div className="list-row">
+                  <div className="grow">
+                    <div className="row" style={{ gap: 8 }}>
+                      <span className="card-title" style={{ fontSize: 14 }}>
+                        Desktop edition
+                      </span>
+                      <Badge tone="accent">Native</Badge>
+                    </div>
+                    <div className="small muted">
+                      {desktop
+                        ? `${desktop.platform} ${desktop.arch} · v${desktop.version} · system save dialogs`
+                        : desktopError || "Reading native host details…"}
+                    </div>
+                    {desktop ? (
+                      <div className="tiny faint mono" style={{ wordBreak: "break-all", marginTop: 4 }}>
+                        {desktop.dataDir}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+                <Callout icon="lock">
+                  Progress is stored in this app's private WebView data directory. Export writes a normal JSON backup
+                  through the operating system's save dialog; import reads one through the open dialog. No network is
+                  used.
+                </Callout>
+              </>
+            ) : (
+              <Callout icon="lock">
+                Progress is stored in this browser's local storage. Export a backup before clearing site data or moving
+                to another device. The PWA has no network dependency after install.
+              </Callout>
+            )}
             <div className="divider" />
             <div className="kv">
               <dt>Schema</dt>

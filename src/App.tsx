@@ -1,6 +1,8 @@
 import { Shell } from "./components/Shell";
 import { ToastProvider } from "./components/ui";
 import { useRoute } from "./lib/router";
+import { useEffect } from "react";
+import { isDesktop, openExternal } from "./lib/desktop";
 import { DashboardPage } from "./pages/DashboardPage";
 import { JourneyPage } from "./pages/JourneyPage";
 import { CollectionPage } from "./pages/CollectionPage";
@@ -59,6 +61,23 @@ function Page() {
 }
 
 export function App() {
+  useEffect(() => {
+    if (!isDesktop()) return;
+    const onClick = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const anchor = target.closest("a[href]");
+      if (!(anchor instanceof HTMLAnchorElement)) return;
+      if (!/^https?:\/\//i.test(anchor.href)) return;
+      event.preventDefault();
+      void openExternal(anchor.href).catch((error: unknown) => {
+        console.error("Could not open external link", error);
+      });
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
+
   return (
     <ToastProvider>
       <Shell>

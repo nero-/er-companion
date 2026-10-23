@@ -4,30 +4,48 @@ An offline-first companion for **Elden Ring** and **Shadow of the Erdtree**. It 
 
 The route follows the game's intended full-content order: **base game through Maliketh → the entire Shadow of the Erdtree → Leyndell, Ashen Capital → endings → NG+ preparation**. It is a complete route, not a partial export.
 
-The app is a **web-first PWA**: React 19 + TypeScript + Vite, static content generated from the workbook and the Redmaw Completion Sheets, and versioned local persistence. It installs for offline use, works at desktop and handheld widths, and makes no runtime API calls, accounts, or telemetry requests.
+The app is a **web-first PWA plus a Tauri 2 desktop app** for Linux, macOS, and Windows: React 19 + TypeScript + Vite, static content generated from the workbook and the Redmaw Completion Sheets, and versioned local persistence. It installs for offline use, works at desktop and handheld widths, and makes no runtime API calls, accounts, or telemetry requests.
 
 ## Run
+
+Web development:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Production build and preview:
+Production web build and preview:
 
 ```bash
 npm run build
 npm run preview
 ```
 
+Desktop development window:
+
+```bash
+npm install
+npm run desktop:dev
+```
+
+Desktop installers for the host platform:
+
+```bash
+npm run desktop:build
+```
+
+The Linux build requires Rust stable plus WebKitGTK 4.1, GTK 3, and `librsvg`; the workflow and platform prerequisites are in [`docs/DESKTOP.md`](docs/DESKTOP.md). The Tauri shell provides native JSON save/open dialogs, opens external links in the system browser, and stores progress in the app's private WebView directory. The PWA service worker is omitted from desktop builds because the assets already ship locally. Cross-platform installers are built by `.github/workflows/desktop.yml`.
+
 Checks:
 
 ```bash
 npm run typecheck
 npm run test
+npm run desktop:check
 ```
 
-`npm run build` runs `tsc --noEmit` before Vite. Unit tests cover content integrity, route/catalog merge, completion scopes and the pure selectors in `src/lib/selectors.test.ts` (34 tests). Evidence-backed audit notes and data integrity reports live in `docs/audit/`.
+`npm run build` runs `tsc --noEmit` before Vite. Unit tests cover content integrity, route/catalog merge, completion scopes and the pure selectors in `src/lib/selectors.test.ts` (34 tests); Rust tests cover backup validation, file-extension handling and the HTTP/HTTPS-only link policy (3 tests). Evidence-backed audit notes and data integrity reports live in `docs/audit/`.
 
 ## Full-game content
 
@@ -180,6 +198,10 @@ src/lib/data.ts              arrays + indexes (route, items, builds, world, farm
 src/lib/selectors.ts         progress, collection, achievement, boss, quest, NG+, lore, world, upgrade, material, merchant, NPC walkthrough, branch reward, equipment selectors
 src/lib/store.ts             versioned localStorage state + actions + import/export + legacy step remap
 src/lib/search.ts            global in-memory search index
+src/lib/desktop.ts           typed Tauri bridge: native backup dialogs and external links
+src-tauri/src/lib.rs         Rust desktop shell, validated file I/O, desktop info
+src-tauri/tauri.conf.json    window, CSP, bundle metadata
+.github/workflows/desktop.yml  Linux/macOS/Windows installer matrix
 src/pages/*                  feature modules
 src/components/*             shell, command palette, UI primitives, icons, local art library
 public/art                   bundled official store/press artwork

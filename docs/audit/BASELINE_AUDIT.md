@@ -159,7 +159,7 @@ Status meaning: **VERIFIED** = implemented, data-wired, and loaded without error
 | PWA / offline | VERIFIED | Service worker/precache verified; offline reload with cached hero art; install/update/quota drill pending |
 | Legacy progress migration | PARTIAL | 62 of 994 legacy `RTE-*` steps mapped by conservative text matching; unmapped IDs are dropped |
 | Accessibility | PARTIAL | 390 px overflow check and labels; no formal keyboard/screen-reader/axe audit |
-| Tauri desktop wrapper | MISSING / BLOCKED | No `src-tauri`; `cargo`, `rustc`, `tauri` absent |
+| Tauri desktop wrapper | VERIFIED (Linux) / CONFIGURED (macOS, Windows) | Tauri 2 shell, native backup dialogs and external-link bridge; Linux binary and `.deb` built and smoke-tested; CI matrix for macOS/Windows |
 
 ## Known bugs, gaps and blockers
 
@@ -172,7 +172,7 @@ Status meaning: **VERIFIED** = implemented, data-wired, and loaded without error
 7. **Offline install/update drill.** Offline reload passed; install prompt, update migration, and quota-failure recovery are not yet drilled.
 8. **No formal accessibility audit.** Only a 390 px overflow check, labels, reduced-motion and hide-completed settings are verified.
 9. **No save migration registry or content-version pin.** Import requires `schemaVersion === 1`; unknown fields are dropped.
-10. **No Tauri toolchain.** Desktop packaging cannot be built or smoke-tested here.
+10. **macOS and Windows installers are not locally verified.** The Linux desktop build is verified; the macOS universal and Windows NSIS bundles depend on the CI matrix and remain unsigned.
 11. **No committed source copy.** The workbook is ignored and represented only by its hash; a read-only source copy plus checksum file is recommended.
 12. **Storage model.** `localStorage` is origin-bound and clearable; export/import is manual, not cross-device sync.
 13. **Workbook-extraction link warnings.** `DATA_INTEGRITY.json` still reports DEP 91, VAL 120, MER 101, KN 14, LCK 8, SCB 21, REC 13, FRM 3 for the Act I workbook route. Six domains are validator-index scope false positives; VAL/REC and one FRM are genuine workbook-route references. This does not affect the integrated Redmaw route, whose 5,290 link labels resolve to 1,502 catalog items/bosses and 3,788 display-only labels.
@@ -208,12 +208,12 @@ Verified against official Bandai Namco pages on 2026-10-21:
 
 - OS: Linux 7.2.8-9-omarchy, x64.
 - Node v26.7.0; npm 12.2.0; Python 3.14.8.
-- `cargo`, `rustc`, and `tauri` are absent; a Tauri wrapper cannot be built here.
+- Rust 1.99.1 and Tauri CLI 2.12.4 were installed for the desktop release; see the desktop addendum. The host is Linux, so macOS/Windows bundles were not compiled locally.
 - The workbook is read with `openpyxl` in read-only/data-only mode. Formulas are not evaluated; Apps Script/VBA behavior is not present in the `.xlsx`.
-- No browser E2E framework, CI pipeline, or test-result artifact is checked in.
+- No browser E2E framework or checked-in test-result artifact; desktop CI is checked in but was not executed from this host.
 - The app makes no network calls at runtime and cannot verify platform achievements.
 - Mobile verification is a 390 px viewport sweep, not a physical-device lab.
-- Browser sweep route counts include tab/query states; the router itself has 13 top-level paths.
+- Browser sweep route counts include tab/query states; the router itself has 16 top-level paths after the beyond-Redmaw additions.
 
 ## Beyond-Redmaw addendum (2026-10-22)
 
@@ -242,6 +242,19 @@ Evidence: `docs/audit/BEYOND_REDMAW_RELEASE.md`, `docs/audit/BEYOND_REDMAW_DATA.
 - `src/lib/types.ts`, `data.ts`, `store.ts`, `selectors.ts`, `search.ts`, `classes.ts`
 - `src/pages/*.tsx`, `src/components/*.tsx`
 - `src/lib/selectors.test.ts`, `dist/`, `vite.config.ts`, `package.json`
+- `docs/DESKTOP.md`, `src-tauri/*`, `.github/workflows/desktop.yml`
+
+## Desktop release addendum (2026-10-22)
+
+The companion now has a **Tauri 2** desktop shell in `src-tauri/`, sharing the same renderer and content pack as the PWA.
+
+- **Linux verified:** Rust 1.99.1; Tauri CLI 2.12.4; Tauri crate 2.12.5; `cargo check` clean; 3 Rust validation tests and 34 frontend tests pass; release binary 20 MB; Debian package 8.39 MiB.
+- **Native I/O verified:** the save dialog wrote a valid 2,510-byte JSON backup; the open dialog restored it and the renderer showed “Backup imported. Progress restored.”
+- **Desktop asset build verified:** 17,961.49 kB JS / 1,935.54 kB gzip; 155.14 kB CSS; no service worker or registration is emitted for Tauri builds.
+- **Window verified:** launched under Xvfb + dwm; Settings rendered the desktop host card, platform, architecture, version, and app-data path, and both native dialogs appeared and completed. `npm run desktop:dev` also launched and rendered the dashboard with no startup errors.
+- **Fixes found by the desktop smoke test:** synchronous Tauri commands deadlocked the GTK main loop, so backup dialogs now use async callbacks; WebKitGTK’s DMABUF renderer produced a blank Xvfb window, so Linux defaults to the shared-memory fallback with an environment override.
+- **External links:** desktop clicks are intercepted, restricted to HTTP/HTTPS in Rust, and opened in the system browser.
+- **Not verified locally:** macOS and Windows bundles. `.github/workflows/desktop.yml` builds Linux DEB/AppImage, a macOS universal DMG/app, and a Windows NSIS installer. Signing and notarization are not configured.
 
 ## Audit boundary
 
