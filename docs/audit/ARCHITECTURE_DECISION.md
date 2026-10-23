@@ -3,7 +3,7 @@
 - Status: **Accepted**
 - Date: 2026-10-22
 - Foundation commit: `b7c6c76c31067de07042cc15d822db443aaf34de`
-- Final verified state: commit `5ce6450` (full-game research integration plus desktop shell)
+- Final verified state: release `v1.0.0`, source commit `7a46344` (full-game research integration plus desktop shell)
 - Decision owner: engineering
 - Supersedes: none
 - Review triggers: licensing clearance, Tauri toolchain, cross-device requirement, 1.17 re-ranking, content-pack split

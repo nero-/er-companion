@@ -77,8 +77,10 @@ The Linux x86_64 build was verified locally on 2026-10-22:
 | Native export | system save dialog wrote a valid 2,510-byte JSON backup |
 | Native import | restored that backup; in-app confirmation shown |
 | Development mode | `npm run desktop:dev` launched, served Vite, and rendered the dashboard with 0 startup errors |
+| Cross-platform CI | GitHub Actions run `39902191472`: Linux, macOS universal, and Windows all passed |
+| Published assets | private `v1.0.0` release: DEB 8.4 MB, AppImage 84 MB, universal DMG 15 MB, Windows NSIS 6.3 MB |
 
-The window was launched under Xvfb with dwm and rendered Settings, the desktop host card, and both native dialogs. macOS and Windows bundles are built by the CI matrix but were not compiled on this Linux host.
+The window was launched under Xvfb with dwm and rendered Settings, the desktop host card, and both native dialogs. macOS and Windows bundles were compiled successfully by the CI matrix but were not launched on those operating systems from this Linux host.
 
 ## Signing and distribution
 

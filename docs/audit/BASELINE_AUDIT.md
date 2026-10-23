@@ -1,8 +1,8 @@
 # Baseline & Final Integration Audit — Elden Ring Definitive Companion
 
 - Initial baseline commit: `b7c6c76c31067de07042cc15d822db443aaf34de` (`master`)
-- Final verified implementation: commit `5ce6450` (`master`), 2026-10-22
-- Full-game integration commit: `39596b9`; desktop shell commit: `5ce6450`
+- Final verified implementation: release `v1.0.0`, source commit `7a46344` (`master`), 2026-10-22
+- Full-game integration commit: `39596b9`; desktop shell: `5ce6450`; CI fixes: `7a46344`
 - Repository: `/home/kal/Agent/Projects/er-companion`
 - Workbook: `Elden Ring Definitive Companion — v1.1.0 — Production Certified.xlsx`
 - Workbook SHA-256: `9167efbd69b026f4ae844600ca3f63f5ab4234f58a0ba1057e4dc9c047897776`
@@ -160,7 +160,7 @@ Status meaning: **VERIFIED** = implemented, data-wired, and loaded without error
 | PWA / offline | VERIFIED | Service worker/precache verified; offline reload with cached hero art; install/update/quota drill pending |
 | Legacy progress migration | PARTIAL | 62 of 994 legacy `RTE-*` steps mapped by conservative text matching; unmapped IDs are dropped |
 | Accessibility | PARTIAL | 390 px overflow check and labels; no formal keyboard/screen-reader/axe audit |
-| Tauri desktop wrapper | VERIFIED (Linux) / CONFIGURED (macOS, Windows) | Tauri 2 shell, native backup dialogs and external-link bridge; Linux binary and `.deb` built and smoke-tested; CI matrix for macOS/Windows |
+| Tauri desktop wrapper | VERIFIED (Linux runtime; all-platform CI) | Tauri 2 shell, native backup dialogs and external-link bridge; Linux binary and `.deb` smoke-tested; CI built Linux DEB/AppImage, macOS universal DMG, and Windows NSIS |
 
 ## Known bugs, gaps and blockers
 
@@ -255,7 +255,7 @@ The companion now has a **Tauri 2** desktop shell in `src-tauri/`, sharing the s
 - **Window verified:** launched under Xvfb + dwm; Settings rendered the desktop host card, platform, architecture, version, and app-data path, and both native dialogs appeared and completed. `npm run desktop:dev` also launched and rendered the dashboard with no startup errors.
 - **Fixes found by the desktop smoke test:** synchronous Tauri commands deadlocked the GTK main loop, so backup dialogs now use async callbacks; WebKitGTK’s DMABUF renderer produced a blank Xvfb window, so Linux defaults to the shared-memory fallback with an environment override.
 - **External links:** desktop clicks are intercepted, restricted to HTTP/HTTPS in Rust, and opened in the system browser.
-- **Not verified locally:** macOS and Windows bundles. `.github/workflows/desktop.yml` builds Linux DEB/AppImage, a macOS universal DMG/app, and a Windows NSIS installer. Signing and notarization are not configured.
+- **Cross-platform CI verified:** run `39902191472` passed Linux DEB/AppImage, macOS universal DMG/app, and Windows NSIS; the private `v1.0.0` release carries those assets. They were not launched on macOS/Windows from this host. Signing and notarization are not configured.
 
 ## Audit boundary
 
