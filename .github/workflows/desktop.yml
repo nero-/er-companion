@@ -27,7 +27,7 @@ jobs:
             platform: macos-14
             artifact: macos-universal
             args: "--target universal-apple-darwin --bundles dmg,app"
-            targets: "aarch64-apple-darwin,x86_64-apple-darwin"
+            targets: "aarch64-apple-darwin x86_64-apple-darwin"
           - name: Windows x86_64
             platform: windows-latest
             artifact: windows-x86_64

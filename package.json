@@ -11,6 +11,7 @@
     "desktop:dev": "tauri dev",
     "desktop:build": "tauri build",
     "desktop:check": "cargo check --manifest-path src-tauri/Cargo.toml",
+    "tauri": "tauri",
     "test": "vitest run",
     "extract": "python scripts/extract_workbook.py"
   },
