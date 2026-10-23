@@ -1,7 +1,8 @@
 # Baseline & Final Integration Audit — Elden Ring Definitive Companion
 
 - Initial baseline commit: `b7c6c76c31067de07042cc15d822db443aaf34de` (`master`)
-- Final verified implementation: commit `39596b9` (`master`), 2026-10-22
+- Final verified implementation: commit `5ce6450` (`master`), 2026-10-22
+- Full-game integration commit: `39596b9`; desktop shell commit: `5ce6450`
 - Repository: `/home/kal/Agent/Projects/er-companion`
 - Workbook: `Elden Ring Definitive Companion — v1.1.0 — Production Certified.xlsx`
 - Workbook SHA-256: `9167efbd69b026f4ae844600ca3f63f5ab4234f58a0ba1057e4dc9c047897776`
@@ -52,7 +53,7 @@ This document separates **observed** evidence from **inferred** conclusions. Bui
 | `docs/audit/FULL_GAME_RESEARCH_VERIFICATION.md` | 64 PASS / 3 FAIL, all resolved during integration | Independent research verification |
 | `README.md` | Current product/run/provenance summary | Operator documentation |
 
-At the initial baseline commit, no `README`, CI workflow, `src-tauri/`, SQLite schema, prior audit set, Apps Script `.gs` file, or test-result artifact was present. These final additions are in `39596b9`, not the foundation commit.
+At the initial baseline commit, no `README`, CI workflow, `src-tauri/`, SQLite schema, prior audit set, Apps Script `.gs` file, or test-result artifact was present. The full-game additions are in `39596b9`; the desktop additions are in `5ce6450`.
 
 ## Content coverage at final state
 
@@ -85,9 +86,9 @@ The runtime `content-coverage.json` carries the same counts and research input h
 ## Git and workspace state
 
 - New repository on `master`; foundation, feature and final-integration commits; no tags; no remotes.
-- The implementation is committed in `39596b9`. No source file is modified by this audit.
+- The full-game implementation is committed in `39596b9`; the desktop shell is committed in `5ce6450`. No source file is modified by this audit.
 - The workbook is excluded by `*.xlsx`; there is no committed `data/source/*.xlsx` copy. The checksum is the source fingerprint.
-- The foundation commit added the data pipeline, store, and shell. Commit `39596b9` adds the full-game route, merged catalogs, achievements, bosses, questlines, official-art theme and tests. The workbook still seeds builds/lore/farms; `build_full_content.py` generates the full route/catalog from `research/`.
+- The foundation commit added the data pipeline, store, and shell. Commit `39596b9` adds the full-game route, merged catalogs, achievements, bosses, questlines, official-art theme and tests. Commit `5ce6450` adds the Tauri desktop shell, native backup dialogs and the Linux/macOS/Windows CI matrix. The workbook still seeds builds/lore/farms; `build_full_content.py` generates the full route/catalog from `research/`.
 
 ## Research and integration pipeline
 

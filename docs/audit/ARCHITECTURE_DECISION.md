@@ -3,14 +3,14 @@
 - Status: **Accepted**
 - Date: 2026-10-22
 - Foundation commit: `b7c6c76c31067de07042cc15d822db443aaf34de`
-- Final verified state: commit `39596b9` (full-game research integration)
+- Final verified state: commit `5ce6450` (full-game research integration plus desktop shell)
 - Decision owner: engineering
 - Supersedes: none
 - Review triggers: licensing clearance, Tauri toolchain, cross-device requirement, 1.17 re-ranking, content-pack split
 
 ## 1. Context
 
-The project started from a certified workbook, not an existing application repository. The only pre-existing artifacts were the workbook, a handoff brief and `PLAN.md`. The repository has a foundation commit and the final integration commit `39596b9`; the full-game route and catalogs are then generated from `research/` by `scripts/build_full_content.py`.
+The project started from a certified workbook, not an existing application repository. The only pre-existing artifacts were the workbook, a handoff brief and `PLAN.md`. The repository has a foundation commit, the full-game integration commit `39596b9`, and the desktop release commit `5ce6450`; the full-game route and catalogs are generated from `research/` by `scripts/build_full_content.py`.
 
 Final inspection found:
 
