@@ -232,6 +232,20 @@ These additions raise completion to **16 independent scopes** (seven appended to
 
 Evidence: `docs/audit/BEYOND_REDMAW_RELEASE.md`, `docs/audit/BEYOND_REDMAW_DATA.md`, `docs/audit/WORLD_INTERACTIONS_COVERAGE.md`, `docs/audit/UPGRADE_MATERIALS_COVERAGE.md`, `docs/audit/REFERENCE_COVERAGE.md`, `docs/audit/BRANCH_PLAN.md`, and the runtime files `src/data/world.objects.json`, `upgrades.json`, `materials.full.json`, `resources.json`, `npc-walkthrough.json`, `branch-plan.json`, and `merchants.full.json`.
 
+
+## Redesign and content expansion (2026-10-29)
+
+A later phase replaced the dense layout and filled the content gaps that blocked automatic tracking. Current state:
+
+- **Interface:** progressive disclosure by default (`Disclosure`/`CollapsibleCard`), an **Everything** mode, auto/large interface scaling for 1440p/4K, a working sidebar collapse, a live storage-status chip, an Elden Ring emblem, and a handheld bottom bar. At most one hero image per page; utility pages carry none.
+- **Data:** 2,042 item / 232 boss / 52 NPC / 66 area descriptions; 70 area sweep ledgers (627 merchant items, 154 farmables, 97 loose pickups, 46 materials); 431/587 quest steps anchored to route steps; 25/27 branch decisions anchored; 69 expanded lore chapters; 25 remembrance plan entries; 872 tier rows with wiki links.
+- **Automation:** route-step completion writes linked atlas checks (source-id mapping fixed), merchant/farmable/material quantities feed one shared item count, and anchored branch decisions settle automatically.
+- **State:** `itemCounts`, `itemOrigins`, `statSnapshots`, `progressionChecks`, `bossReveals`, `materialCounts`, `decisionChecks` added with older-save defaults.
+- **Verification:** `npx tsc --noEmit` clean; **41** frontend tests; **3** Rust tests; `npm run build` passes; `scripts/verify_release_data.py` 0 errors/0 warnings; 16-route desktop sweep and 390 px mobile sweep with 0 console errors and no horizontal overflow; persistence drill covers quantities, step completion, atlas auto-checks and reset.
+- **Desktop:** v1.1.0 Debian package built (8.75 MiB) plus a 20 MB binary; the window now sizes to the monitor and `Ctrl+Shift+L` logs the next step globally.
+
+Evidence and per-series counts: `docs/REDESIGN_AND_DATA.md`.
+
 ## Evidence links
 
 - `ELDEN_RING_DEFINITIVE_COMPANION_AGENT_HANDOFF.md`, `PLAN.md`, `README.md`
