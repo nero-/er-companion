@@ -379,7 +379,6 @@ ANCHOR_WEIGHTS: dict[str, int] = {
     "npc+item": 5,
     "npc-pair+evidence": 5,
     "title+item": 5,
-    "npc+choice": 5,
     "title": 4,
     "choice-phrase": 4,
     "npc-pair": 3,
@@ -390,25 +389,48 @@ ANCHOR_WEIGHTS: dict[str, int] = {
 }
 
 MAX_ROUTE_STEPS = 6
+# The title stem must still be distinctive in the route to count as evidence.
+TITLE_FREQ_LIMIT = 6
+# A phrase the route repeats more than this is background vocabulary (Smithing
+# Stone, Larval Tear) rather than evidence for one decision. Names the decision
+# states declaratively (reward/item/quote/title/journey1 wording) get a wider
+# allowance because recurrence does not make them generic.
+TERM_LIMIT = 12
+STRONG_TERM_LIMIT = 24
+# Menu-option lines are short; anything longer is prose that mentions a choice.
+CHOICE_INSTRUCTION_LIMIT = 160
+# Steps that only pick an item up cannot perform a dialogue choice.
+PICKUP_PREFIX = re.compile(r"\s*(loot|pick up|grab|buy|purchase)\b", re.IGNORECASE)
 
 
 def fold_ascii(value: str) -> str:
     return unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode()
 
 
+def _key_base(value: str) -> str:
+    """Lowercase text with typographic apostrophes normalized to ``'``.
+
+    Normalizing *before* ASCII folding matters: ``fold_ascii`` drops U+2019
+    outright, which would glue "Miquella's" into "miquellas" while the straight
+    apostrophe variant stays "miquella s".
+    """
+    normalized = value.replace("\u2018", "'").replace("\u2019", "'")
+    return fold_ascii(normalized).lower()
+
+
 def match_key(value: str) -> str:
-    """Accent/apostrophe-insensitive key; apostrophes become separators."""
-    folded = fold_ascii(value).lower()
-    folded = re.sub(r"[\u2018\u2019'`]", " ", folded)
-    return re.sub(r"[^a-z0-9]+", " ", folded).strip()
+    """Key that treats apostrophes as separators ("Zorayas's" -> "zorayas s")."""
+    return re.sub(r"[^a-z0-9]+", " ", _key_base(value).replace("'", " ")).strip()
 
 
-def compact_key(value: str) -> str:
-    """Like :func:`match_key` but apostrophes are deleted ("Zorayas's" ->
-    "zorayass"), which is how the route and the decision matrix differ."""
-    folded = fold_ascii(value).lower()
-    folded = re.sub(r"[\u2018\u2019'`]", "", folded)
-    return re.sub(r"[^a-z0-9]+", " ", folded).strip()
+def joint_key(value: str) -> str:
+    """Key that deletes apostrophes ("Zorayas's" -> "zorayass").
+
+    The decision matrix and the route disagree about apostrophe placement often
+    enough ("Zorayas’s Letter" vs "Zorayas's Letter") that a second key is
+    needed; ASCII folding alone silently merges the words instead.
+    """
+    return re.sub(r"[^a-z0-9]+", " ", _key_base(value).replace("'", "")).strip()
 
 
 class RouteIndex:
@@ -418,32 +440,31 @@ class RouteIndex:
         self.steps: list[dict] = route["steps"]
         self.areas: list[str] = [area["name"] for area in route["areas"]]
         self.spaces = [" " + match_key(step["instruction"]) + " " for step in self.steps]
-        self.compacts = [
-            " " + compact_key(step["instruction"]) + " " for step in self.steps
-        ]
+        self.joints = [" " + joint_key(step["instruction"]) + " " for step in self.steps]
         self._freq: dict[str, int] = {}
         self.catalog_names = [item["name"] for item in items]
         self.area_keys = {match_key(area) for area in self.areas}
-        self.npc_names = sorted(
-            {n for names in ROUTE_NPC_NAMES.values() for n in names},
-            key=len,
-            reverse=True,
-        )
 
     def frequency(self, phrase: str) -> int:
         key = match_key(phrase)
         if key not in self._freq:
             needle = f" {key} "
-            self._freq[key] = sum(1 for text in self.spaces if needle in text)
+            count = sum(1 for text in self.spaces if needle in text)
+            if not count:
+                joint = joint_key(phrase)
+                if joint:
+                    needle = f" {joint} "
+                    count = sum(1 for text in self.joints if needle in text)
+            self._freq[key] = count
         return self._freq[key]
 
     @staticmethod
-    def occurs(phrase: str, space: str, compact: str) -> bool:
+    def occurs(phrase: str, space: str, joint: str) -> bool:
         key = match_key(phrase)
         if key and f" {key} " in space:
             return True
-        alt = compact_key(phrase)
-        return bool(alt) and f" {alt} " in compact
+        alt = joint_key(phrase)
+        return bool(alt) and f" {alt} " in joint
 
     def is_area_name(self, phrase: str) -> bool:
         key = match_key(phrase)
@@ -495,39 +516,96 @@ def decision_places(text: str, index: RouteIndex) -> list[str]:
     return found
 
 
+# Capitalized multi-word runs are the decision's own names for things it does
+# not catalogue (choices, places, mechanics). Ones the route never mentions are
+# dropped by the frequency check, so this adds no invented vocabulary.
+PROPER_NOISE = frozenset(
+    {
+        "journey", "journeys", "backup", "six futures", "ng", "ng plus", "base game",
+        "shadow of the erdtree", "eld tree", "ending", "endings", "steam",
+        "lord", "optional", "permanent", "unlocated",
+    }
+)
+
+
+def proper_phrases(text: str) -> set[str]:
+    phrases: set[str] = set()
+    pattern = r"[A-Z][A-Za-z'\u2019-]+(?:\s+(?:of|the|and|a|in|for|to|de|la)?\s*[A-Z][A-Za-z'\u2019-]+)*"
+    for match in re.finditer(pattern, text):
+        tokens = match.group(0).split()
+        for size in range(2, min(4, len(tokens)) + 1):
+            for start in range(len(tokens) - size + 1):
+                span = " ".join(tokens[start : start + size])
+                key = match_key(span)
+                if key in PROPER_NOISE or not key:
+                    continue
+                if key.split()[0] in STOPWORDS or key.split()[-1] in STOPWORDS:
+                    continue
+                phrases.add(span)
+    return phrases
+
+
 def decision_terms(
     decision: dict, index: RouteIndex
-) -> tuple[list[tuple[str, int]], set[str]]:
-    """Return (phrase, route frequency) pairs plus the reward-name keys."""
+) -> tuple[list[tuple[str, int, bool]], set[str]]:
+    """Return (phrase, route frequency, strong) triples plus reward-name keys.
+
+    ``strong`` terms are names the matrix states declaratively: reward names,
+    catalog item names, quoted choice text, and capitalized phrases its own
+    ``title``/``journey1`` use. Other capitalized prose is ``weak``: it can
+    support an NPC match but never anchors a step on its own.
+    """
     text = decision_text(decision)
     space = " " + match_key(text) + " "
-    compact = " " + compact_key(text) + " "
+    joint = " " + joint_key(text) + " "
     reward_names = [reward["name"] for reward in decision["rewards"]]
-    candidates: set[str] = set(reward_names)
+    strong: set[str] = set(reward_names)
     for name in index.catalog_names:
-        if RouteIndex.occurs(name, space, compact):
-            candidates.add(name)
-    candidates.update(re.findall(r"[\u201c\"]([^\u201d\"]{4,60})[\u201d\"]", text))
+        # "Note: X" rows are the in-world note about X, not X; a decision that
+        # names X must never anchor to the note pickup.
+        if name.startswith("Note: "):
+            continue
+        if RouteIndex.occurs(name, space, joint):
+            strong.add(name)
+    strong.update(re.findall(r"[\u201c\"]([^\u201d\"]{4,60})[\u201d\"]", text))
+    # A capitalized phrase is strong when the decision's own branch text names
+    # it: the title, or ``journey1`` (the branch this plan routes). Phrases that
+    # only appear in prose commentary stay weak and merely corroborate an NPC.
+    branch_key = f" {match_key(decision['journey1'])} "
+    title_key = f" {match_key(decision['title'])} "
+    extra = proper_phrases(text) - strong
+    strong |= {
+        phrase
+        for phrase in extra
+        if f" {match_key(phrase)} " in branch_key
+        or f" {match_key(phrase)} " in title_key
+    }
+    weak = extra - strong
 
-    kept: list[tuple[str, int]] = []
-    for candidate in sorted(candidates, key=lambda value: (-len(match_key(value).split()), value)):
+    kept: list[tuple[str, int, bool]] = []
+    # Strong terms are considered first so that a broad weak phrase
+    # ("Lord of Frenzied Flame") cannot shadow the narrower strong one
+    # ("Frenzied Flame") via the substring check below.
+    ordered = sorted(
+        [(name, True) for name in strong] + [(name, False) for name in weak],
+        key=lambda pair: (not pair[1], -len(match_key(pair[0]).split()), pair[0]),
+    )
+    for candidate, is_strong in ordered:
         key = match_key(candidate)
         tokens = key.split()
         if len(tokens) < 2 or tokens[0] in STOPWORDS or tokens[-1] in STOPWORDS:
             continue
         if index.is_area_name(candidate):
             continue
-        if any(
-            f" {key} " in f" {match_key(other)} " or compact_key(candidate) == compact_key(other)
-            for other, _ in kept
-        ):
+        if any(f" {key} " in f" {match_key(other)} " for other, _, _ in kept):
             continue
-        if not RouteIndex.occurs(candidate, space, compact):
+        if not RouteIndex.occurs(candidate, space, joint):
             continue
         frequency = index.frequency(candidate)
-        if frequency == 0:
+        limit = STRONG_TERM_LIMIT if is_strong else TERM_LIMIT
+        if frequency == 0 or frequency > limit:
             continue
-        kept.append((candidate, frequency))
+        kept.append((candidate, frequency, is_strong))
     return kept, {match_key(name) for name in reward_names}
 
 
@@ -547,48 +625,81 @@ def route_anchors(
     stem = title_stem(decision)
     stem_key = match_key(stem)
     stem_freq = index.frequency(stem) if stem else 0
-    quotes = {
-        match_key(quote)
+    quotes = [
+        quote
         for quote in re.findall(r"[\u201c\"]([^\u201d\"]{4,60})[\u201d\"]", text)
-    }
+        if len(match_key(quote).split()) >= 2
+    ]
     is_ending = decision["category"] == "Ending"
     is_dlc = decision["game"] == "DLC"
 
     rows: list[dict] = []
-    for step, space, compact in zip(index.steps, index.spaces, index.compacts):
+    for step, space, joint in zip(index.steps, index.spaces, index.joints):
         if step["area"] == "New Game Plus Preparation":
             continue
-        if step["instruction"].strip().lower().startswith("note:"):
+        # Notes describe consequences ("Note: you lock yourself out of...") and
+        # are never the step that performs the branch.
+        if "note:" in step["instruction"].lower():
             continue
         if is_ending and step["area"] != "Endings":
             continue
         if (step["game"] == "Shadow of the Erdtree") != is_dlc:
             continue
 
-        step_npcs = [n for n in npcs if RouteIndex.occurs(n, space, compact)]
+        step_npcs = [n for n in npcs if RouteIndex.occurs(n, space, joint)]
         step_terms = [
-            (name, frequency)
-            for name, frequency in terms
-            if RouteIndex.occurs(name, space, compact)
+            (name, frequency, strong)
+            for name, frequency, strong in terms
+            if RouteIndex.occurs(name, space, joint)
         ]
+        # Weak (prose) phrases only corroborate a step that already names the
+        # decision's NPC; they never carry a match by themselves.
         reward_terms = [
             name
-            for name, frequency in step_terms
-            if frequency <= 12 or match_key(name) in reward_keys
+            for name, frequency, strong in step_terms
+            if strong or match_key(name) in reward_keys
         ]
-        rare = [name for name, frequency in step_terms if frequency <= 4]
-        mid = [name for name, frequency in step_terms if frequency <= 12]
+        support_terms = [
+            name
+            for name, frequency, strong in step_terms
+            if strong or step_npcs
+        ]
+        # Only strong terms can carry a step on their own; weak prose terms are
+        # used solely through ``support_terms`` next to an NPC. ``rare`` exists
+        # only to distinguish a title match backed by a specific item name.
+        rare = [
+            name for name, frequency, strong in step_terms if strong and frequency <= 4
+        ]
+        mid = [
+            name
+            for name, frequency, strong in step_terms
+            if strong and frequency <= TERM_LIMIT
+        ]
         step_places = [
             area
             for area in places
-            if RouteIndex.occurs(area, space, compact)
+            if RouteIndex.occurs(area, space, joint)
             or match_key(area) == match_key(step["area"])
         ]
-        step_quotes = [q for q in quotes if f" {q} " in space]
-        title_hit = bool(stem) and f" {stem_key} " in space and stem_freq <= MAX_ROUTE_STEPS
+        # Choice text in the matrix names a menu option, and the route writes
+        # menu options as short standalone lines ("Put it behind you:"). Long
+        # prose that merely quotes the phrase is not the branch step.
+        step_quotes = (
+            [q for q in quotes if RouteIndex.occurs(q, space, joint)]
+            if len(step["instruction"]) <= CHOICE_INSTRUCTION_LIMIT
+            else []
+        )
+        title_hit = (
+            bool(stem) and f" {stem_key} " in space and stem_freq <= TITLE_FREQ_LIMIT
+        )
 
         kind = ""
-        if len(step_npcs) >= 2 and (reward_terms or step_places or step_quotes):
+        # A "choice" the step merely loots is an item pickup, not the branch
+        # action; the option that applies the choice is written as an action.
+        quote_ok = bool(step_quotes) and not PICKUP_PREFIX.search(step["instruction"])
+        # A reward the decision actually grants outranks generic nearby items.
+        reward_hit = any(match_key(name) in reward_keys for name, _, _ in step_terms)
+        if len(step_npcs) >= 2 and (reward_terms or step_places or quote_ok):
             kind = "npc-pair+evidence"
         elif len(step_npcs) >= 2:
             kind = "npc-pair"
@@ -598,16 +709,12 @@ def route_anchors(
             kind = "title+item"
         elif title_hit:
             kind = "title"
-        elif step_quotes and reward_terms:
-            kind = "npc+choice" if step_npcs else "choice-phrase"
-        elif step_quotes:
+        elif quote_ok:
             kind = "choice-phrase"
         elif step_npcs and step_places:
             kind = "npc+area"
-        elif step_npcs and mid:
+        elif step_npcs and support_terms:
             kind = "npc+term"
-        elif rare:
-            kind = "item-name"
         elif step_npcs:
             kind = "npc-name"
         elif mid:
@@ -618,6 +725,7 @@ def route_anchors(
         rows.append(
             {
                 "weight": ANCHOR_WEIGHTS[kind],
+                "reward": reward_hit,
                 "kind": kind,
                 "id": step["id"],
                 "area": step["area"],
@@ -636,7 +744,15 @@ def route_anchors(
     npc_best = [row for row in at_best if row["npc"]]
     rows = npc_best or at_best
     rows.sort(key=lambda row: row["order"])
-    kept = rows[:MAX_ROUTE_STEPS]
+    if len(rows) > MAX_ROUTE_STEPS:
+        # Prefer steps that name a reward this decision grants, but keep the
+        # emitted ids in route order regardless.
+        with_reward = [row for row in rows if row["reward"]]
+        without = [row for row in rows if not row["reward"]]
+        rows = sorted(
+            (with_reward + without)[:MAX_ROUTE_STEPS], key=lambda row: row["order"]
+        )
+    kept = rows
 
     confidence = "high" if best >= 4 else "medium" if best >= 2 else "low"
     area = Counter(row["area"] for row in kept).most_common(1)[0][0]
@@ -796,35 +912,85 @@ def build() -> dict:
     }
 
 
+def render(plan: dict) -> str:
+    return json.dumps(plan, indent=2, ensure_ascii=False) + "\n"
+
+
+def to_runtime(plan: dict) -> dict:
+    """Expand the research payload into the runtime shape declared by
+    ``BranchReward``: every reward carries ``retained``, ``componentItemIds``
+    and ``unresolved`` explicitly instead of relying on absence."""
+    runtime = dict(plan)
+    runtime["decisions"] = []
+    for decision in plan["decisions"]:
+        entry = dict(decision)
+        entry["rewards"] = [
+            {
+                "name": reward["name"],
+                "itemId": reward["itemId"],
+                "journey": reward["journey"],
+                "availability": reward["availability"],
+                "kind": reward["kind"],
+                "resolution": reward["resolution"],
+                "retained": reward.get("retained", True),
+                "componentItemIds": reward.get("componentItemIds", []),
+                "unresolved": reward.get("unresolved", False),
+                **({"reason": reward["reason"]} if "reason" in reward else {}),
+            }
+            for reward in decision["rewards"]
+        ]
+        runtime["decisions"].append(entry)
+    return runtime
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--check",
         action="store_true",
-        help="fail if research/branch-plan.json is not the current build output",
+        help=(
+            "fail if research/branch-plan.json or the normalized runtime copy "
+            "src/data/branch-plan.json is not the current build output"
+        ),
     )
     args = parser.parse_args()
 
     plan = build()
-    rendered = json.dumps(plan, indent=2, ensure_ascii=False) + "\n"
+    payloads = {
+        OUT_PATH: render(plan),
+        RUNTIME_PATH: render(to_runtime(plan)),
+    }
 
     if args.check:
-        if not OUT_PATH.exists():
-            print(f"missing {OUT_PATH}", file=sys.stderr)
+        stale = []
+        for path, rendered in payloads.items():
+            if not path.exists():
+                print(f"missing {path}", file=sys.stderr)
+                return 1
+            if path.read_text(encoding="utf-8") != rendered:
+                stale.append(path)
+        if stale:
+            for path in stale:
+                print(f"{path} is stale; rerun without --check", file=sys.stderr)
             return 1
-        if OUT_PATH.read_text(encoding="utf-8") != rendered:
-            print(f"{OUT_PATH} is stale; rerun without --check", file=sys.stderr)
-            return 1
-        print(f"{OUT_PATH} is current")
+        print("branch plan outputs are current")
         return 0
 
-    OUT_PATH.write_text(rendered, encoding="utf-8")
+    for path, rendered in payloads.items():
+        path.write_text(rendered, encoding="utf-8")
+
     counts = plan["counts"]
+    linked = [d for d in plan["decisions"] if d["routeStepIds"]]
+    by_confidence = Counter(d["linkConfidence"] for d in linked)
     print(
-        f"wrote {OUT_PATH.relative_to(ROOT)}: "
+        f"wrote {OUT_PATH.relative_to(ROOT)} and {RUNTIME_PATH.relative_to(ROOT)}: "
         f"{counts['decisions']} decisions, {counts['rewards']} rewards "
         f"({counts['resolvedRewards']} resolved / "
-        f"{counts['unresolvedRewards']} unresolved)"
+        f"{counts['unresolvedRewards']} unresolved), "
+        f"{len(linked)} linked to route steps "
+        f"(high {by_confidence.get('high', 0)}, "
+        f"medium {by_confidence.get('medium', 0)}, "
+        f"low {by_confidence.get('low', 0)})"
     )
     return 0
 

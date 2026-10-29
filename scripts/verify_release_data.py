@@ -197,10 +197,16 @@ if orders != sorted(orders):
     warnings.append("remembrance-plan: entries are not sorted by order")
 
 # --- Branch anchors ------------------------------------------------------
+route_step_dlc = {row["id"]: bool(row.get("dlc")) for row in route["steps"]}
 for decision in branch.get("decisions", []):
+    decision_dlc = decision.get("game") in ("DLC", "Shadow of the Erdtree")
     for step_id in decision.get("routeStepIds", []):
         if step_id not in route_steps:
             errors.append(f"branch-plan: {decision.get('decisionId')} unknown route step {step_id}")
+        elif route_step_dlc.get(step_id) != decision_dlc:
+            errors.append(
+                f"branch-plan: {decision.get('decisionId')} crosses the DLC boundary via {step_id}"
+            )
 
 # --- Tier links ----------------------------------------------------------
 tier_rows = tiers.get("entries", [])

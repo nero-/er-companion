@@ -138,12 +138,11 @@
       "notes": "Alexander's Innards is a key item absent from the item catalog.",
       "routeStepIds": [
         "RW-B-w46-59",
-        "RW-B-w49-46",
         "RW-B-w46-63"
       ],
       "area": "Crumbling Farum Azula",
       "linkConfidence": "high",
-      "linkMethod": "shared-token+title"
+      "linkMethod": "npc+item"
     },
     {
       "decisionId": "BASE-002",
@@ -181,13 +180,15 @@
       "unresolved": false,
       "notes": "Journey 1 (Gideon disposal) grants no reward item. Seluvis's Potion is a consumed key item and is not in the catalog. The Journey 3 recipient branch yields the Nepheli Loux Puppet named in BASE-003.",
       "routeStepIds": [
-        "RW-B-w15-75",
-        "RW-B-w15-72",
-        "RW-B-w23-43"
+        "RW-B-w15-54",
+        "RW-B-w15-59",
+        "RW-B-w15-65",
+        "RW-B-w15-67",
+        "RW-B-w15-75"
       ],
       "area": "Caria Manor",
       "linkConfidence": "high",
-      "linkMethod": "shared-token+title"
+      "linkMethod": "npc+item"
     },
     {
       "decisionId": "BASE-003",
@@ -226,13 +227,12 @@
       "unresolved": true,
       "notes": "Gostoc's expanded shop is a shop state, not a discrete item.",
       "routeStepIds": [
-        "RW-B-w35-130",
-        "RW-B-w15-67",
-        "RW-B-w23-47"
+        "RW-B-w15-59",
+        "RW-B-w15-67"
       ],
-      "area": "Leyndell, Royal Capital",
+      "area": "Caria Manor",
       "linkConfidence": "high",
-      "linkMethod": "shared-token+title"
+      "linkMethod": "npc+item"
     },
     {
       "decisionId": "BASE-004",
@@ -270,13 +270,12 @@
       "unresolved": false,
       "notes": "Blessing of Despair is an ending (END-004), not an item.",
       "routeStepIds": [
-        "RW-B-w45-63",
-        "RW-B-w48-6",
-        "RW-B-w15-75"
+        "RW-B-w15-64",
+        "RW-B-w45-63"
       ],
-      "area": "Elphael, Brace of the Haligtree",
+      "area": "Caria Manor",
       "linkConfidence": "high",
-      "linkMethod": "shared-token+title"
+      "linkMethod": "npc-pair+evidence"
     },
     {
       "decisionId": "BASE-005",
@@ -314,13 +313,11 @@
       "unresolved": false,
       "notes": "",
       "routeStepIds": [
-        "RW-B-w15-59",
-        "RW-B-w23-46",
-        "RW-B-w23-47"
+        "RW-B-w23-46"
       ],
-      "area": "Caria Manor",
+      "area": "Carian Study Hall",
       "linkConfidence": "high",
-      "linkMethod": "shared-token+title"
+      "linkMethod": "npc+item"
     },
     {
       "decisionId": "BASE-006",
@@ -387,13 +384,12 @@
       "unresolved": true,
       "notes": "Eccentric's Set is catalogued as four armor pieces; Shard Spiral is listed as 'access' (a shop unlock), not a direct drop; 'Sellen's full conclusion' grants no separate item.",
       "routeStepIds": [
-        "RW-B-w32-80",
         "RW-B-w32-82",
         "RW-B-w32-83"
       ],
       "area": "Mt. Gelmir",
       "linkConfidence": "high",
-      "linkMethod": "shared-token+title"
+      "linkMethod": "npc-pair+evidence"
     },
     {
       "decisionId": "BASE-007",
@@ -443,13 +439,13 @@
       "unresolved": true,
       "notes": "Miquella's Needle is named as a cure path, not as a summon-sign reward. The catalog holds only 'Note: Miquella's Needle'.",
       "routeStepIds": [
+        "RW-B-w45-41",
         "RW-B-w45-44",
-        "RW-B-w45-45",
-        "RW-B-w20-39"
+        "RW-B-w45-45"
       ],
       "area": "Elphael, Brace of the Haligtree",
       "linkConfidence": "high",
-      "linkMethod": "shared-token+title"
+      "linkMethod": "npc+item"
     },
     {
       "decisionId": "BASE-008",
@@ -463,7 +459,12 @@
       "rewards": [],
       "unresolved": false,
       "notes": "Neither branch grants an item. The Larval Tear used on the alternate branch is a consumed key item and is absent from the catalog.",
-      "routeStepIds": []
+      "routeStepIds": [
+        "RW-B-w34-110"
+      ],
+      "area": "Capital Outskirts",
+      "linkConfidence": "high",
+      "linkMethod": "choice-phrase"
     },
     {
       "decisionId": "BASE-009",
@@ -502,13 +503,14 @@
       "unresolved": true,
       "notes": "The Journey 2 Tonic of Forgetfulness outcome and the Journey 3 requested-death outcome grant no new item. The tonic itself is a consumed key item and is absent from the catalog.",
       "routeStepIds": [
-        "RW-B-w33-100",
         "RW-B-w33-79",
-        "RW-B-w10-18"
+        "RW-B-w33-96",
+        "RW-B-w33-100",
+        "RW-B-w38-45"
       ],
       "area": "Volcano Manor",
-      "linkConfidence": "medium",
-      "linkMethod": "shared-token+title"
+      "linkConfidence": "high",
+      "linkMethod": "npc+item"
     },
     {
       "decisionId": "BASE-010",
@@ -523,13 +525,11 @@
       "unresolved": false,
       "notes": "No item reward. The decision text says equipment and the bell bearing remain obtainable either way but names no item.",
       "routeStepIds": [
-        "RW-B-w47-12",
-        "RW-B-w33-79",
-        "RW-B-w33-91"
+        "RW-B-w47-11"
       ],
       "area": "Leyndell, Ashen Capital",
       "linkConfidence": "medium",
-      "linkMethod": "shared-token+title"
+      "linkMethod": "npc+area"
     },
     {
       "decisionId": "BASE-011",
@@ -544,13 +544,11 @@
       "unresolved": false,
       "notes": "No item reward; the alternate interaction is experiential only.",
       "routeStepIds": [
-        "RW-B-w48-7",
-        "RW-B-w3-41",
         "RW-B-w15-74"
       ],
-      "area": "Endings",
+      "area": "Caria Manor",
       "linkConfidence": "medium",
-      "linkMethod": "shared-token+title"
+      "linkMethod": "npc-pair"
     },
     {
       "decisionId": "BASE-012",
@@ -565,12 +563,12 @@
       "unresolved": false,
       "notes": "No item reward. Miquella's Needle is a required cure input; the catalog holds only the note about it.",
       "routeStepIds": [
-        "RW-B-w41-34",
-        "RW-B-w48-9"
+        "RW-B-w36-72",
+        "RW-B-w46-3"
       ],
-      "area": "Greyoll's Dragonbarrow",
-      "linkConfidence": "low",
-      "linkMethod": "shared-token+title"
+      "area": "Subterranean Shunning-Grounds",
+      "linkConfidence": "high",
+      "linkMethod": "npc+item"
     },
     {
       "decisionId": "END-001",
@@ -588,8 +586,8 @@
         "RW-B-w48-3"
       ],
       "area": "Endings",
-      "linkConfidence": "medium",
-      "linkMethod": "shared-token+title"
+      "linkConfidence": "high",
+      "linkMethod": "title+item"
     },
     {
       "decisionId": "END-002",
@@ -616,12 +614,11 @@
       "unresolved": false,
       "notes": "The mending rune is a prerequisite for the ending, not a reward.",
       "routeStepIds": [
-        "RW-B-w48-4",
-        "RW-B-w47-10"
+        "RW-B-w48-4"
       ],
       "area": "Endings",
       "linkConfidence": "high",
-      "linkMethod": "shared-token+title"
+      "linkMethod": "title+item"
     },
     {
       "decisionId": "END-003",
@@ -652,7 +649,7 @@
       ],
       "area": "Endings",
       "linkConfidence": "high",
-      "linkMethod": "shared-token+title"
+      "linkMethod": "title"
     },
     {
       "decisionId": "END-004",
@@ -679,12 +676,11 @@
       "unresolved": false,
       "notes": "The mending rune is a prerequisite here; BASE-004 is the acquisition decision.",
       "routeStepIds": [
-        "RW-B-w48-6",
-        "RW-B-w15-61"
+        "RW-B-w48-6"
       ],
       "area": "Endings",
       "linkConfidence": "high",
-      "linkMethod": "shared-token+title"
+      "linkMethod": "title+item"
     },
     {
       "decisionId": "END-005",
@@ -702,8 +698,8 @@
         "RW-B-w48-7"
       ],
       "area": "Endings",
-      "linkConfidence": "medium",
-      "linkMethod": "shared-token+title"
+      "linkConfidence": "high",
+      "linkMethod": "title"
     },
     {
       "decisionId": "END-006",
@@ -719,12 +715,11 @@
       "notes": "No item reward; the ending and Melina variant are experiential.",
       "routeStepIds": [
         "RW-B-w48-8",
-        "RW-B-w48-10",
-        "RW-B-w46-3"
+        "RW-B-w48-15"
       ],
       "area": "Endings",
       "linkConfidence": "high",
-      "linkMethod": "shared-token+title"
+      "linkMethod": "title"
     },
     {
       "decisionId": "DLC-001",
@@ -739,13 +734,13 @@
       "unresolved": false,
       "notes": "No item reward; this is a dialogue-state branch only.",
       "routeStepIds": [
-        "RW-B-w3-30",
-        "RW-B-w34-90",
-        "RW-B-w48-10"
+        "RW-D-d10-66",
+        "RW-D-d10-69",
+        "RW-D-d10-72"
       ],
-      "area": "Early Liurnia and Caelid",
-      "linkConfidence": "medium",
-      "linkMethod": "shared-token+title"
+      "area": "East Scadu Altus",
+      "linkConfidence": "high",
+      "linkMethod": "choice-phrase"
     },
     {
       "decisionId": "DLC-002",
@@ -783,13 +778,13 @@
       "unresolved": false,
       "notes": "",
       "routeStepIds": [
-        "RW-B-w42-32",
-        "RW-B-w49-40",
-        "RW-B-w43-42"
+        "RW-D-d12-32",
+        "RW-D-d12-36",
+        "RW-D-d12-92"
       ],
-      "area": "Consecrated Snowfield",
-      "linkConfidence": "medium",
-      "linkMethod": "shared-token+title"
+      "area": "Shadow Keep",
+      "linkConfidence": "high",
+      "linkMethod": "npc-pair+evidence"
     },
     {
       "decisionId": "DLC-003",
@@ -865,13 +860,16 @@
       "unresolved": true,
       "notes": "Ansbach's Set is catalogued as three armor pieces; 'finale summons' is an availability state, not an item.",
       "routeStepIds": [
-        "RW-B-w41-34",
-        "RW-B-w43-42",
-        "RW-B-w49-40"
+        "RW-D-d12-37",
+        "RW-D-d12-92",
+        "RW-D-d12-95",
+        "RW-D-d12-98",
+        "RW-D-d12-100",
+        "RW-D-d20-61"
       ],
-      "area": "Greyoll's Dragonbarrow",
-      "linkConfidence": "low",
-      "linkMethod": "shared-token+title"
+      "area": "Shadow Keep",
+      "linkConfidence": "high",
+      "linkMethod": "npc-pair+evidence"
     },
     {
       "decisionId": "DLC-004",
@@ -886,13 +884,12 @@
       "unresolved": false,
       "notes": "No unique permanent reward is tied to the summon choice (per the decision's completion requirement).",
       "routeStepIds": [
-        "RW-B-w4-53",
-        "RW-B-w10-48",
-        "RW-B-w8-105"
+        "RW-D-d13-57",
+        "RW-D-d19-47"
       ],
-      "area": "West Limgrave",
+      "area": "Church District",
       "linkConfidence": "medium",
-      "linkMethod": "shared-token+title"
+      "linkMethod": "npc-pair"
     },
     {
       "decisionId": "DLC-005",
@@ -930,13 +927,14 @@
       "unresolved": false,
       "notes": "The reward is the spirit ash. Iris of Grace is a consumed key item and is absent from the catalog.",
       "routeStepIds": [
-        "RW-B-w49-42",
-        "RW-B-w21-16",
-        "RW-B-w21-40"
+        "RW-D-d3-16",
+        "RW-D-d8-27",
+        "RW-D-d13-9",
+        "RW-D-d13-11"
       ],
-      "area": "New Game Plus Preparation",
-      "linkConfidence": "medium",
-      "linkMethod": "shared-token+title"
+      "area": "Church District",
+      "linkConfidence": "high",
+      "linkMethod": "npc+item"
     },
     {
       "decisionId": "DLC-006",
@@ -985,13 +983,13 @@
       "unresolved": false,
       "notes": "Journey 1's Jolán ash is spent on DLC-007's conversion. Iris items are consumed and absent from the catalog.",
       "routeStepIds": [
-        "RW-B-w34-46",
-        "RW-B-w4-69",
-        "RW-B-w6-85"
+        "RW-D-d14-23",
+        "RW-D-d14-27",
+        "RW-D-d14-28"
       ],
-      "area": "Capital Outskirts",
-      "linkConfidence": "medium",
-      "linkMethod": "shared-token+title"
+      "area": "Scaduview",
+      "linkConfidence": "high",
+      "linkMethod": "npc+item"
     },
     {
       "decisionId": "DLC-007",
@@ -1029,13 +1027,11 @@
       "unresolved": false,
       "notes": "Converting replaces the single Jolán ash with Jolán and Anna.",
       "routeStepIds": [
-        "RW-B-w49-44",
-        "RW-B-w14-109",
-        "RW-B-w35-44"
+        "RW-D-d14-28"
       ],
-      "area": "New Game Plus Preparation",
-      "linkConfidence": "medium",
-      "linkMethod": "shared-token+title"
+      "area": "Scaduview",
+      "linkConfidence": "high",
+      "linkMethod": "npc-pair+evidence"
     },
     {
       "decisionId": "DLC-008",
@@ -1095,13 +1091,13 @@
       "unresolved": false,
       "notes": "Thiollier's Concoction is a consumed key item and is absent from the catalog.",
       "routeStepIds": [
-        "RW-B-w49-41",
-        "RW-B-w3-91",
-        "RW-B-w4-52"
+        "RW-D-d18-17",
+        "RW-D-d18-21",
+        "RW-D-d18-22"
       ],
-      "area": "New Game Plus Preparation",
-      "linkConfidence": "medium",
-      "linkMethod": "shared-token+title"
+      "area": "Jagged Peak",
+      "linkConfidence": "high",
+      "linkMethod": "npc+item"
     },
     {
       "decisionId": "DLC-009",
@@ -1138,7 +1134,12 @@
       ],
       "unresolved": false,
       "notes": "Heart of Bayle is the non-duplicable exchange input and is absent from the catalog; the rewards are the two incantations.",
-      "routeStepIds": []
+      "routeStepIds": [
+        "RW-D-d18-23"
+      ],
+      "area": "Jagged Peak",
+      "linkConfidence": "high",
+      "linkMethod": "npc+item"
     }
   ]
 }

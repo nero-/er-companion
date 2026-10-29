@@ -23,7 +23,7 @@ This release replaces the dense, artwork-heavy layout with a calmer progressive-
 | `src/data/questline-route-map.json` | **431 / 587** quest steps anchored (337 high, 67 medium, 27 low); 156 unlinked, never guessed | questlink labels, NPC names, item names, rare-token overlap |
 | `src/data/lore.expanded.json` | **69** expanded journals (`overview`, `context`, `spoiler`) grounded in the workbook raw fields | `lore.json` |
 | `src/data/remembrance-plan.json` | **25** remembrances in duplication-priority order, with route anchors | `meta.json` + `route.full.json` |
-| `src/data/branch-plan.json` | **25 / 27** decisions anchored to route steps, none crossing the DLC boundary | decision copy vs route instructions |
+| `src/data/branch-plan.json` | **27 / 27** decisions anchored (24 high, 3 medium), none crossing the DLC boundary; same generator now writes the runtime copy | decision copy vs route instructions |
 | `src/data/tiers.json` | **872** rows (866 original + 6 Tarnished Pack weapons); every row has a verified wiki link | existing table + `patch_tiers_117.py` |
 
 The six 1.17 weapon placements are the user-specified ranks: Leontiel's Greatsword **Broken**, Reed Great Katana **S**, Reverse Bladed Swords (Lightning) **A**, Itinerant Sword **A**, Hefty Scimitar **B**, Golden Order Flail **B**.
@@ -33,7 +33,7 @@ The six 1.17 weapon placements are the user-specified ranks: Leontiel's Greatswo
 - Marking a route step done now resolves the atlas entries that carry its Redmaw source step id. The atlas stores `w2-1`-style ids, so `STEP_BY_SOURCE_ID` maps them to runtime `RW-*` steps first; without that map the update silently never fired.
 - Merchant purchases, farmable thresholds and finite pickups flow into the shared item count, so one acquisition marks the item everywhere.
 - Area sweeps list merchant stock, farmables, loose pickups and materials for the active area with direct ownership toggles.
-- Decision cards auto-settle when their anchored route step is done; unanchored decisions keep a manual check.
+- Decision cards auto-settle when their anchored route step is done; unanchored decisions keep a manual check. All 27 decisions are anchored today, so every one of them can settle from route progress.
 
 ## Build and state
 
