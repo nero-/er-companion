@@ -47,7 +47,7 @@ npm run test
 npm run desktop:check
 ```
 
-`npm run build` runs `tsc --noEmit` before Vite. Unit tests cover content integrity, route/catalog merge, completion scopes and the pure selectors in `src/lib/selectors.test.ts` (34 tests); Rust tests cover backup validation, file-extension handling and the HTTP/HTTPS-only link policy (3 tests). Evidence-backed audit notes and data integrity reports live in `docs/audit/`.
+`npm run build` runs `tsc --noEmit` before Vite. **41 frontend tests** cover content integrity, route/catalog merge, completion scopes, the pure selectors, soft-cap derivation and remembrance sanitisation; **3 Rust tests** cover backup validation, file-extension handling and the HTTP/HTTPS-only link policy. `python3 scripts/verify_release_data.py` recomputes every derived count and fails on a violated data contract. Evidence-backed audit notes live in `docs/audit/`.
 
 ## Full-game content
 
