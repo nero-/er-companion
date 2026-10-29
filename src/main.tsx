@@ -11,3 +11,14 @@ createRoot(document.getElementById("root")!).render(
 );
 
 window.addEventListener("pagehide", flushPersistence);
+
+// A new service worker takes control on the next navigation; reload once so the
+// running tab is never left on stale JS after an update (progress is persisted).
+if ("serviceWorker" in navigator && !("__TAURI_INTERNALS__" in window)) {
+  let reloading = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (reloading) return;
+    reloading = true;
+    window.location.reload();
+  });
+}

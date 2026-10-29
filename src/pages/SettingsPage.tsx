@@ -30,7 +30,7 @@ import {
   ROUTE_AREAS,
   ROUTE_STEPS,
 } from "../lib/data";
-import { ART, ArtBanner, OrnamentRule, UnofficialNote } from "../components/Art";
+import { OrnamentRule, UnofficialNote } from "../components/Art";
 import { DATA_BASELINE, GAME_VERSION, TARNISHED_ENCOUNTERS } from "../data/game";
 import { formatDate, formatNumber } from "../lib/format";
 import { exportDesktopBackup, getDesktopInfo, importDesktopBackup, isDesktop } from "../lib/desktop";
@@ -187,6 +187,28 @@ export function SettingsPage() {
       importJson(await file.text());
     } catch (error) {
       toast.push(error instanceof Error ? error.message : "Could not read that file.", "error");
+    }
+  };
+
+  const copyBackup = async () => {
+    try {
+      await navigator.clipboard.writeText(exportState());
+      toast.push("Backup copied. Paste it in the companion on your phone.", "success");
+    } catch {
+      toast.push("Clipboard permission was refused. Use Export backup instead.", "error");
+    }
+  };
+
+  const pasteBackup = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (!text.trim()) {
+        toast.push("The clipboard is empty.", "error");
+        return;
+      }
+      importJson(text);
+    } catch {
+      toast.push("Clipboard permission was refused. Use Import instead.", "error");
     }
   };
 
@@ -422,6 +444,52 @@ export function SettingsPage() {
               onChange={(checked) => setSettings({ reducedMotion: checked })}
               label="Prefer reduced motion"
             />
+            <label className="field">
+              <span className="field-label">Information density</span>
+              <select
+                className="select"
+                value={state.settings.disclosure}
+                onChange={(event) =>
+                  setSettings({
+                    disclosure: event.target.value === "everything" ? "everything" : "progressive",
+                  })
+                }
+              >
+                <option value="progressive">Progressive — show what matters, expand the rest</option>
+                <option value="everything">Everything — keep every panel open</option>
+              </select>
+            </label>
+            <label className="field">
+              <span className="field-label">Interface scale</span>
+              <select
+                className="select"
+                value={state.settings.interfaceScale}
+                onChange={(event) =>
+                  setSettings({
+                    interfaceScale: event.target.value === "large" ? "large" : "auto",
+                  })
+                }
+              >
+                <option value="auto">Automatic</option>
+                <option value="large">Large — 1440p / 4K displays</option>
+              </select>
+            </label>
+            <label className="field">
+              <span className="field-label">Boss &amp; NPC spoilers</span>
+              <select
+                className="select"
+                value={state.settings.bossSpoilerMode}
+                onChange={(event) =>
+                  setSettings({
+                    bossSpoilerMode:
+                      event.target.value === "show" ? "show" : "hide-until-defeated",
+                  })
+                }
+              >
+                <option value="hide-until-defeated">Hide names and lore until defeated</option>
+                <option value="show">Show everything</option>
+              </select>
+            </label>
             <Select
               label="Active character"
               value={character.id}
@@ -445,6 +513,12 @@ export function SettingsPage() {
               </Button>
               <Button variant="ghost" icon="upload" onClick={() => void openImport()}>
                 Import JSON backup
+              </Button>
+              <Button variant="ghost" icon="download" onClick={() => void copyBackup()}>
+                Copy for phone
+              </Button>
+              <Button variant="ghost" icon="upload" onClick={() => void pasteBackup()}>
+                Paste from phone
               </Button>
             </div>
             {desktopMode ? (
@@ -516,6 +590,9 @@ export function SettingsPage() {
             <Button variant="danger" icon="refresh" onClick={() => setConfirm("reset-all")}>
               Reset companion to fresh state
             </Button>
+            <p className="tiny faint" style={{ margin: 0 }} id="storage">
+              Resetting replaces characters, journeys, collection progress and settings. Export a backup first.
+            </p>
           </div>
         </section>
       </div>
@@ -528,18 +605,10 @@ export function SettingsPage() {
           note={`Generated ${formatDate(CONTENT_COVERAGE.generatedAt)} · Redmaw Completion Sheets merged with the workbook seed`}
           actions={<Badge tone="accent">{formatNumber(ROUTE_STEPS.length)} route steps</Badge>}
         />
-        <ArtBanner
-          image={ART.heroSote}
-          variant="sote"
-          caption="Shadow of the Erdtree · DLC phase"
-          title="The Shadow Realm sits between Maliketh and the Ashen Capital"
-        >
-          <p className="small muted" style={{ margin: 0 }}>
-            The route is a single ordered walkthrough across the base game, the complete expansion, and the endgame.
-            Every count on this page is read from the generated pack or the runtime arrays, not from the legacy partial
-            export.
-          </p>
-        </ArtBanner>
+        <p className="small muted" style={{ margin: 0 }}>
+          The route is a single ordered walkthrough across the base game, the complete expansion, and the endgame. Every
+          count on this page is read from the generated pack or the runtime arrays, not from the legacy partial export.
+        </p>
         <div style={{ height: 14 }} />
         <Callout tone="warning" icon="alert">
           <strong>Version boundary:</strong> live rules are App {GAME_VERSION.app} / Regulation{" "}

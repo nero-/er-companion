@@ -19,6 +19,11 @@ import materialsJson from "../data/materials.full.json";
 import resourcesJson from "../data/resources.json";
 import npcWalkthroughJson from "../data/npc-walkthrough.json";
 import branchPlanJson from "../data/branch-plan.json";
+import descriptionsJson from "../data/descriptions.json";
+import areaSweepsJson from "../data/area-sweeps.json";
+import loreExpandedJson from "../data/lore.expanded.json";
+import questlineRouteMapJson from "../data/questline-route-map.json";
+import remembrancePlanJson from "../data/remembrance-plan.json";
 import type {
   Achievement,
   AchievementRequirementGroup,
@@ -70,6 +75,16 @@ import type {
   WorldObject,
   WorldObjectCategoryStatus,
   WorldObjectGap,
+  AreaSweep,
+  AreaSweepFile,
+  DescriptionFile,
+  DescriptionEntry,
+  LoreExpandedEntry,
+  LoreExpandedFile,
+  QuestlineRouteLink,
+  QuestlineRouteMap,
+  RemembrancePlan,
+  RemembrancePlanEntry,
 } from "./types";
 
 export const META: Meta = metaJson;
@@ -132,6 +147,26 @@ export const BRANCH_REWARDS: BranchReward[] = BRANCH_PLAN_DECISIONS.flatMap(
 );
 export const BRANCH_PLAN_COUNTS = branchPlanJson.counts;
 
+export const DESCRIPTIONS: DescriptionFile = descriptionsJson as DescriptionFile;
+export const ITEM_DESCRIPTIONS: Record<string, DescriptionEntry> = DESCRIPTIONS.items;
+export const BOSS_DESCRIPTIONS: Record<string, DescriptionEntry> = DESCRIPTIONS.bosses;
+export const NPC_DESCRIPTIONS: Record<string, DescriptionEntry> = DESCRIPTIONS.npcs;
+export const AREA_DESCRIPTIONS: Record<string, DescriptionEntry> = DESCRIPTIONS.areas;
+export const AREA_SWEEPS: AreaSweep[] = (areaSweepsJson as AreaSweepFile).areas;
+export const AREA_SWEEP_FILE: AreaSweepFile = areaSweepsJson as AreaSweepFile;
+export const AREA_SWEEP_BY_AREA: Record<string, AreaSweep> = Object.fromEntries(
+  AREA_SWEEPS.map((sweep) => [sweep.area, sweep]),
+);
+export const LORE_EXPANDED: Record<string, LoreExpandedEntry> = (loreExpandedJson as LoreExpandedFile).entries;
+export const LORE_EXPANDED_FILE: LoreExpandedFile = loreExpandedJson as LoreExpandedFile;
+export const QUESTLINE_ROUTE_LINKS: Record<string, QuestlineRouteLink> = (questlineRouteMapJson as QuestlineRouteMap).links;
+export const QUESTLINE_ROUTE_MAP: QuestlineRouteMap = questlineRouteMapJson as QuestlineRouteMap;
+export const REMEMBRANCE_PLAN: RemembrancePlan = remembrancePlanJson as RemembrancePlan;
+export const REMEMBRANCE_PLAN_ENTRIES: RemembrancePlanEntry[] = REMEMBRANCE_PLAN.entries;
+export const REMEMBRANCE_PLAN_ORDER: Record<string, number> = Object.fromEntries(
+  REMEMBRANCE_PLAN_ENTRIES.map((entry) => [entry.remembranceId, entry.order]),
+);
+
 export const ARCHETYPES: Archetype[] = buildsJson.archetypes;
 export const PROFILES: BuildProfile[] = buildsJson.profiles;
 export const LOADOUTS: BuildLoadout[] = buildsJson.loadouts;
@@ -167,6 +202,10 @@ export function normalizeContentKey(value: string): string {
 
 export const STEP_BY_ID: Record<string, RouteStep> = Object.fromEntries(
   ROUTE_STEPS.map((step) => [step.id, step]),
+);
+/** World-object ledgers reference the Redmaw source step id (w2-1), not RW-*. */
+export const STEP_BY_SOURCE_ID: Record<string, RouteStep> = Object.fromEntries(
+  ROUTE_STEPS.filter((step) => step.sourceStepId).map((step) => [step.sourceStepId, step]),
 );
 export const STEP_INDEX: Record<string, number> = Object.fromEntries(
   ROUTE_STEPS.map((step) => [step.id, step.order]),

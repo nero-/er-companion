@@ -50,7 +50,8 @@ export type IconName =
   | "armor"
   | "spirit"
   | "achievement"
-  | "quest";
+  | "quest"
+  | "emblem";
 
 const PATHS: Record<IconName, ReactNode> = {
   dashboard: (
@@ -301,6 +302,14 @@ const PATHS: Record<IconName, ReactNode> = {
       <circle cx="12" cy="9" r="5.6" />
       <path d="m8.4 13.8-2 7.2 5.6-3 5.6 3-2-7.2" />
       <path d="m12 6.4.9 1.8 2 .3-1.4 1.4.3 2-1.8-1-1.8 1 .3-2-1.4-1.4 2-.3.9-1.8Z" />
+    </>
+  ),
+  emblem: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 3v18" opacity=".55" />
+      <path d="M3 12h18" opacity=".55" />
+      <path d="M12 6.5 17 12l-5 5.5L7 12Z" />
     </>
   ),
   quest: (

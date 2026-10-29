@@ -2,10 +2,6 @@
   margin-top: 16px;
 }
 
-.patch-art-banner {
-  margin-top: 16px;
-}
-
 .patch-banner .callout {
   font-size: 12.5px;
 }
@@ -253,39 +249,69 @@
   margin: 8px 0;
 }
 
-.upgrade-checklist {
+.coverage-rows {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
 }
 
-.checklist-row {
+.coverage-row {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 9px 0;
+  padding: 10px 0;
   border-bottom: 1px solid var(--border);
 }
 
-.checklist-row:last-child {
+.coverage-row:last-child {
   border-bottom: 0;
 }
 
-.checklist-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  margin-top: 6px;
-  background: var(--warning);
+.coverage-mark {
+  display: grid;
   flex: 0 0 auto;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.02);
 }
 
-.checklist-row .badge {
+.coverage-mark-success {
+  color: var(--success);
+  border-color: rgba(143, 172, 118, 0.32);
+}
+
+.coverage-mark-warning {
+  color: var(--warning);
+  border-color: rgba(216, 164, 92, 0.3);
+}
+
+.coverage-mark-info {
+  color: var(--accent);
+  border-color: rgba(198, 161, 90, 0.26);
+}
+
+.coverage-row .badge {
+  flex: 0 0 auto;
   margin-left: auto;
+  white-space: nowrap;
 }
 
 @media (max-width: 760px) {
   .pack-item-grid {
     grid-template-columns: 1fr;
+  }
+
+  .coverage-row {
+    flex-wrap: wrap;
+  }
+
+  .coverage-row .badge {
+    margin-left: 30px;
+    white-space: normal;
   }
 }

@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ART, ArtBanner } from "../components/Art";
 import { Icon, type IconName } from "../components/Icon";
 import {
   Badge,
   Button,
   Checkbox,
+  Disclosure,
   EmptyState,
+  PageHeader,
   ProgressBar,
   SearchInput,
   Select,
@@ -24,7 +25,7 @@ import { formatNumber } from "../lib/format";
 import { navigate, useRoute } from "../lib/router";
 import { worldProgress } from "../lib/selectors";
 import { setWorldCheck, useActiveJourney } from "../lib/store";
-import type { WorldObject } from "../lib/types";
+import type { WorldObject, WorldObjectGap } from "../lib/types";
 import "./atlas.css";
 
 /* ---------------------------------------------------------------------------
@@ -62,10 +63,6 @@ const CATEGORY_ROWS: Record<string, WorldObject[]> = Object.fromEntries(
   ]),
 );
 
-const REGIONS = [
-  ...new Set(WORLD_OBJECTS.map((object) => object.region).filter((region) => region.trim())),
-].sort((a, b) => a.localeCompare(b));
-
 const PAGE_SIZE = 100;
 
 const DLC_OBJECT_COUNT = WORLD_OBJECTS.filter((object) => object.dlc).length;
@@ -93,12 +90,6 @@ const STATE_LABEL: Record<CategoryState, string> = {
   resolved: "Resolved",
   partial: "Partial",
   unresolved: "Unresolved",
-};
-
-const STATE_SHORT_LABEL: Record<CategoryState, string> = {
-  resolved: "Resolved",
-  partial: "Partial",
-  unresolved: "No list",
 };
 
 const STATE_TONE: Record<CategoryState, "success" | "warning" | "danger"> = {
@@ -145,6 +136,7 @@ function categoryFromRoute(
 
 function WorldLinks({ object }: { object: WorldObject }) {
   const step = object.routeStepId ? STEP_BY_ID[object.routeStepId] : undefined;
+  const area = step?.area ?? "";
   return (
     <div className="atlas-row-links">
       {object.sourceUrl ? (
@@ -177,19 +169,48 @@ function WorldLinks({ object }: { object: WorldObject }) {
         <button
           type="button"
           className="atlas-link atlas-link-button"
-          onClick={() =>
-            navigate(
-              step
-                ? `/journey?area=${encodeURIComponent(step.area)}&step=${encodeURIComponent(step.id)}`
-                : `/journey?step=${encodeURIComponent(object.routeStepId)}`,
-            )
-          }
+          aria-label={`Open route step for ${object.name}`}
+          onClick={() => {
+            const params = new URLSearchParams();
+            params.set("step", step?.id ?? object.routeStepId ?? "");
+            if (area) params.set("area", area);
+            navigate(`/journey?${params.toString()}`);
+          }}
         >
-          Route step
+          Open route step
           <Icon name="chevronRight" size={12} />
         </button>
-      ) : null}
+      ) : (
+        <span className="atlas-link atlas-link--missing">No route step</span>
+      )}
     </div>
+  );
+}
+
+function GapDisclosure({ gap }: { gap: WorldObjectGap | undefined }) {
+  if (!gap) return null;
+  return (
+    <Disclosure
+      title={gap.issue}
+      summary="Coverage gap"
+      icon="alert"
+      className="atlas-gap-disclosure"
+    >
+      <div className="atlas-gap">
+        <p>{gap.detail}</p>
+        {gap.sourcesTried.length > 0 ? (
+          <div className="atlas-gap-sources">
+            <span className="atlas-gap-sources-label">Sources checked</span>
+            {gap.sourcesTried.map((url) => (
+              <a key={url} href={url} target="_blank" rel="noreferrer">
+                {hostLabel(url)}
+                <Icon name="external" size={10} />
+              </a>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </Disclosure>
   );
 }
 
@@ -230,6 +251,7 @@ export function AtlasPage() {
   const [region, setRegion] = useState(() => route.query.get("region") ?? "all");
   const [game, setGame] = useState("all");
   const [checkFilter, setCheckFilter] = useState("all");
+  const [routeFilter, setRouteFilter] = useState("all");
   const [limit, setLimit] = useState(PAGE_SIZE);
 
   const appliedFocus = useRef("");
@@ -260,20 +282,25 @@ export function AtlasPage() {
         const checked = Boolean(journey.worldChecks[object.id]);
         if (checkFilter === "checked" && !checked) return false;
         if (checkFilter === "unchecked" && checked) return false;
+        if (routeFilter === "linked" && !object.routeStepId) return false;
+        if (routeFilter === "unlinked" && object.routeStepId) return false;
         return matchesSearch(query, object);
       }),
-    [rows, region, game, checkFilter, query, journey.worldChecks],
+    [rows, region, game, checkFilter, routeFilter, query, journey.worldChecks],
   );
 
   const visible = filtered.slice(0, limit);
   const checkedInCategory = categoryProgress.done;
   const listedCount = status?.count ?? rows.length;
+  const linkedInCategory = rows.filter((object) => object.routeStepId).length;
+  const unlinkedInCategory = rows.length - linkedInCategory;
 
   function resetFilters() {
     setQuery("");
     setRegion("all");
     setGame("all");
     setCheckFilter("all");
+    setRouteFilter("all");
     setLimit(PAGE_SIZE);
   }
 
@@ -284,6 +311,7 @@ export function AtlasPage() {
     setRegion("all");
     setGame("all");
     setCheckFilter("all");
+    setRouteFilter("all");
     setLimit(PAGE_SIZE);
     navigate(`/atlas?category=${encodeURIComponent(next)}`);
   }
@@ -307,6 +335,7 @@ export function AtlasPage() {
     setRegion(routeRegion);
     setGame("all");
     setCheckFilter("all");
+    setRouteFilter("all");
     setLimit(PAGE_SIZE);
   }, [routeKey, routeCategory, routeRegion]);
 
@@ -340,6 +369,7 @@ export function AtlasPage() {
     );
     setGame("all");
     setCheckFilter("all");
+    setRouteFilter("all");
     const index = CATEGORY_ROWS[focusObject.category].findIndex(
       (object) => object.id === focusObject.id,
     );
@@ -360,46 +390,44 @@ export function AtlasPage() {
 
   return (
     <div className="page atlas-page">
-      <ArtBanner
-        image={ART.heroErdtree}
-        alt=""
-        caption={`World atlas · ${formatNumber(WORLD_OBJECT_COUNT)} objects`}
-        title="Every grace, monument, effigy, and spirit"
-        variant="world"
-        priority
-        className="atlas-banner"
-      >
-        <div className="atlas-banner-stats">
-          <div className="atlas-banner-stat atlas-banner-stat--hero">
-            <span className="atlas-banner-stat-label">World objects</span>
-            <strong>{formatNumber(WORLD_OBJECT_COUNT)}</strong>
-            <span className="atlas-banner-stat-detail">
-              {formatNumber(DLC_OBJECT_COUNT)} Shadow of the Erdtree
-            </span>
-          </div>
-          <div className="atlas-banner-stat atlas-banner-stat--hero">
-            <span className="atlas-banner-stat-label">Sites of Grace</span>
-            <strong>{formatNumber(WORLD_GRACE_COUNT)}</strong>
-            <span className="atlas-banner-stat-detail">resolved list</span>
-          </div>
-          {CATEGORIES.filter((entry) => entry.id !== "grace").map((entry) => (
-            <div
-              key={entry.id}
-              className={`atlas-banner-stat atlas-banner-stat--${CATEGORY_STATE[entry.id]}`}
-            >
-              <span className="atlas-banner-stat-label">{entry.label}</span>
-              <strong>{formatNumber(WORLD_CATEGORY_STATUS[entry.id]?.count ?? 0)}</strong>
-              <span className="atlas-banner-stat-detail">{STATE_SHORT_LABEL[CATEGORY_STATE[entry.id]]}</span>
-            </div>
-          ))}
+      <PageHeader
+        eyebrow="Reference · World ledger"
+        title="World atlas"
+        description={`Graces, monuments, effigies, and spirits. ${formatNumber(ROUTE_LINKED_COUNT)} of ${formatNumber(
+          WORLD_OBJECT_COUNT,
+        )} entries link to a route step.`}
+      />
+
+      <div className="atlas-summary" aria-label="Atlas summary">
+        <div className="atlas-summary-item">
+          <strong>{formatNumber(WORLD_OBJECT_COUNT)}</strong>
+          <span>World objects</span>
         </div>
-        <p className="atlas-banner-note">
-          {formatNumber(ROUTE_LINKED_COUNT)} entries link to a route step.{" "}
-          {ZERO_LIST_CATEGORIES.length > 0
-            ? `${ZERO_LIST_CATEGORIES.map((entry) => entry.label).join(" and ")} publish zero rows because no authoritative per-object list exists.`
-            : ""}
-        </p>
-      </ArtBanner>
+        <div className="atlas-summary-item">
+          <strong>{formatNumber(WORLD_GRACE_COUNT)}</strong>
+          <span>Sites of Grace</span>
+        </div>
+        <div className="atlas-summary-item">
+          <strong>{formatNumber(DLC_OBJECT_COUNT)}</strong>
+          <span>Shadow of the Erdtree</span>
+        </div>
+        <div className="atlas-summary-item">
+          <strong>{formatNumber(ROUTE_LINKED_COUNT)}</strong>
+          <span>Route-linked</span>
+        </div>
+        <div className="atlas-summary-item">
+          <strong>
+            {formatNumber(progress.done)}/{formatNumber(progress.total)}
+          </strong>
+          <span>Checked</span>
+        </div>
+        {ZERO_LIST_CATEGORIES.length > 0 ? (
+          <div className="atlas-summary-item atlas-summary-item--gap">
+            <strong>{ZERO_LIST_CATEGORIES.length}</strong>
+            <span>Categories with no authoritative list</span>
+          </div>
+        ) : null}
+      </div>
 
       <TabBar
         items={CATEGORIES.map((entry) => ({
@@ -411,44 +439,21 @@ export function AtlasPage() {
         onChange={changeCategory}
       />
 
-      <section className={`atlas-status atlas-status--${state}`}>
-        <div className="atlas-status-head">
-          <span className="atlas-status-icon" aria-hidden="true">
-            <Icon name={config.icon} size={22} />
-          </span>
-          <div className="atlas-status-copy">
-            <div className="atlas-status-eyebrow">Category status</div>
-            <h2 className="atlas-status-title">{config.label}</h2>
-            <p className="atlas-status-note">
-              {status?.note ?? "No category metadata is recorded for this ledger."}
-            </p>
-          </div>
-          <div className="atlas-status-side">
-            <div className="atlas-status-badges">
-              <Badge tone={STATE_TONE[CATEGORY_STATE[category]]}>
-                {STATE_LABEL[CATEGORY_STATE[category]]}
-              </Badge>
-              {listedCount === 0 ? (
-                <Badge tone="danger">No authoritative list</Badge>
-              ) : null}
-            </div>
-            <div className="atlas-status-metrics">
-              <div className="atlas-status-metric">
-                <strong>{formatNumber(listedCount)}</strong>
-                <span>listed</span>
-              </div>
-              <div className="atlas-status-metric">
-                <strong>{formatNumber(checkedInCategory)}</strong>
-                <span>checked</span>
-              </div>
-              <div className="atlas-status-metric">
-                <strong>
-                  {listedCount > 0
-                    ? `${Math.round((checkedInCategory / listedCount) * 100)}%`
-                    : "—"}
-                </strong>
-                <span>complete</span>
-              </div>
+      {listedCount === 0 ? (
+        <section className="atlas-status atlas-status--unresolved atlas-status--compact">
+          <div className="atlas-status-head">
+            <span className="atlas-status-icon" aria-hidden="true">
+              <Icon name={config.icon} size={18} />
+            </span>
+            <div className="atlas-status-copy">
+              <div className="atlas-status-eyebrow">No authoritative list</div>
+              <h2 className="atlas-status-title">{config.label}</h2>
+              <p className="atlas-status-note">
+                {status?.note ??
+                  "No category metadata is recorded for this ledger."}{" "}
+                0 rows are listed because no permitted source publishes a per-object list,
+                so no locations are invented. The tab stays visible for future data.
+              </p>
             </div>
             {status?.sourceUrl ? (
               <a
@@ -462,99 +467,137 @@ export function AtlasPage() {
               </a>
             ) : null}
           </div>
-        </div>
-
-        {listedCount > 0 ? (
-          <ProgressBar
-            value={listedCount > 0 ? (checkedInCategory / listedCount) * 100 : 0}
-            tone={listedCount > 0 && checkedInCategory >= listedCount ? "success" : "accent"}
-            label={`${formatNumber(checkedInCategory)} of ${formatNumber(listedCount)} checked`}
-            detail={`Overall atlas ${formatNumber(progress.done)} / ${formatNumber(progress.total)}`}
-          />
-        ) : (
-          <p className="atlas-status-zero">
-            This ledger deliberately contains <strong>0 rows</strong>. No authoritative
-            per-object list exists in the permitted sources, so no locations were invented.
-          </p>
-        )}
-
-        {gap ? (
-          <div className="atlas-gap">
-            <div className="atlas-gap-head">
-              <Icon name="alert" size={14} />
-              <strong>{gap.issue}</strong>
+          <GapDisclosure gap={gap} />
+        </section>
+      ) : (
+        <section className={`atlas-status atlas-status--${state}`}>
+          <div className="atlas-status-head">
+            <span className="atlas-status-icon" aria-hidden="true">
+              <Icon name={config.icon} size={22} />
+            </span>
+            <div className="atlas-status-copy">
+              <div className="atlas-status-eyebrow">Category status</div>
+              <h2 className="atlas-status-title">{config.label}</h2>
+              <p className="atlas-status-note">
+                {status?.note ?? "No category metadata is recorded for this ledger."}
+              </p>
             </div>
-            <p>{gap.detail}</p>
-            {gap.sourcesTried.length > 0 ? (
-              <div className="atlas-gap-sources">
-                <span className="atlas-gap-sources-label">Sources checked</span>
-                {gap.sourcesTried.map((url) => (
-                  <a key={url} href={url} target="_blank" rel="noreferrer">
-                    {hostLabel(url)}
-                    <Icon name="external" size={10} />
-                  </a>
-                ))}
+            <div className="atlas-status-side">
+              <div className="atlas-status-badges">
+                <Badge tone={STATE_TONE[CATEGORY_STATE[category]]}>
+                  {STATE_LABEL[CATEGORY_STATE[category]]}
+                </Badge>
               </div>
-            ) : null}
+              <div className="atlas-status-metrics">
+                <div className="atlas-status-metric">
+                  <strong>{formatNumber(listedCount)}</strong>
+                  <span>listed</span>
+                </div>
+                <div className="atlas-status-metric">
+                  <strong>{formatNumber(checkedInCategory)}</strong>
+                  <span>checked</span>
+                </div>
+                <div className="atlas-status-metric">
+                  <strong>{Math.round((checkedInCategory / listedCount) * 100)}%</strong>
+                  <span>complete</span>
+                </div>
+              </div>
+              {status?.sourceUrl ? (
+                <a
+                  className="atlas-source-link"
+                  href={status.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Category source
+                  <Icon name="external" size={11} />
+                </a>
+              ) : null}
+            </div>
           </div>
-        ) : null}
-      </section>
 
-      <div className="atlas-toolbar">
-        <SearchInput
-          value={query}
-          onChange={(value) => {
-            setQuery(value);
-            setLimit(PAGE_SIZE);
-          }}
-          placeholder="Search name, region, or location…"
-          className="atlas-search"
-        />
-        <Select
-          label="Region"
-          value={region}
-          onChange={(event) => {
-            setRegion(event.target.value);
-            setLimit(PAGE_SIZE);
-          }}
-        >
-          <option value="all">All regions ({regions.length})</option>
-          {regions.map((value) => (
-            <option key={value} value={value}>
-              {value}
+          <ProgressBar
+            value={(checkedInCategory / listedCount) * 100}
+            tone={checkedInCategory >= listedCount ? "success" : "accent"}
+            label={`${formatNumber(checkedInCategory)} of ${formatNumber(listedCount)} checked`}
+            detail={`${formatNumber(linkedInCategory)} route-linked · ${formatNumber(
+              unlinkedInCategory,
+            )} unlinked · overall atlas ${formatNumber(progress.done)} / ${formatNumber(progress.total)}`}
+          />
+
+          <GapDisclosure gap={gap} />
+        </section>
+      )}
+
+      {rows.length > 0 ? (
+        <div className="atlas-toolbar">
+          <SearchInput
+            value={query}
+            onChange={(value) => {
+              setQuery(value);
+              setLimit(PAGE_SIZE);
+            }}
+            placeholder="Search name, region, or location…"
+            className="atlas-search"
+          />
+          <Select
+            label="Region"
+            value={region}
+            onChange={(event) => {
+              setRegion(event.target.value);
+              setLimit(PAGE_SIZE);
+            }}
+          >
+            <option value="all">All regions ({regions.length})</option>
+            {regions.map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </Select>
+          <Select
+            label="Game"
+            value={game}
+            onChange={(event) => {
+              setGame(event.target.value);
+              setLimit(PAGE_SIZE);
+            }}
+          >
+            <option value="all">Base + Shadow of the Erdtree</option>
+            <option value="base">Base game</option>
+            <option value="dlc">Shadow of the Erdtree</option>
+          </Select>
+          <Select
+            label="Check state"
+            value={checkFilter}
+            onChange={(event) => {
+              setCheckFilter(event.target.value);
+              setLimit(PAGE_SIZE);
+            }}
+          >
+            <option value="all">All entries</option>
+            <option value="unchecked">
+              Unchecked ({formatNumber(Math.max(0, listedCount - checkedInCategory))})
             </option>
-          ))}
-        </Select>
-        <Select
-          label="Game"
-          value={game}
-          onChange={(event) => {
-            setGame(event.target.value);
-            setLimit(PAGE_SIZE);
-          }}
-        >
-          <option value="all">Base + Shadow of the Erdtree</option>
-          <option value="base">Base game</option>
-          <option value="dlc">Shadow of the Erdtree</option>
-        </Select>
-        <Select
-          label="Check state"
-          value={checkFilter}
-          onChange={(event) => {
-            setCheckFilter(event.target.value);
-            setLimit(PAGE_SIZE);
-          }}
-        >
-          <option value="all">All entries</option>
-          <option value="unchecked">
-            Unchecked ({formatNumber(Math.max(0, listedCount - checkedInCategory))})
-          </option>
-          <option value="checked">Checked ({formatNumber(checkedInCategory)})</option>
-        </Select>
-        <Button variant="ghost" icon="x" onClick={resetFilters}>
-          Reset
-        </Button>
-      </div>
+            <option value="checked">Checked ({formatNumber(checkedInCategory)})</option>
+          </Select>
+          <Select
+            label="Route link"
+            value={routeFilter}
+            onChange={(event) => {
+              setRouteFilter(event.target.value);
+              setLimit(PAGE_SIZE);
+            }}
+          >
+            <option value="all">All entries</option>
+            <option value="linked">Route-linked ({formatNumber(linkedInCategory)})</option>
+            <option value="unlinked">Unlinked ({formatNumber(unlinkedInCategory)})</option>
+          </Select>
+          <Button variant="ghost" icon="x" onClick={resetFilters}>
+            Reset
+          </Button>
+        </div>
+      ) : null}
 
       {focusId && !focusObject ? (
         <p className="atlas-focus-warning">
@@ -563,43 +606,20 @@ export function AtlasPage() {
         </p>
       ) : null}
 
-      <div className="atlas-list-head">
-        <span className="atlas-list-count">
-          <strong>{formatNumber(filtered.length)}</strong> matching{" "}
-          {filtered.length === 1 ? "entry" : "entries"}
-          {filtered.length !== rows.length ? ` of ${formatNumber(rows.length)} listed` : ""}
-        </span>
-        <span className="atlas-list-note">
-          {formatNumber(visible.length)} rendered · page size {PAGE_SIZE}
-        </span>
-      </div>
+      {rows.length > 0 ? (
+        <div className="atlas-list-head">
+          <span className="atlas-list-count">
+            <strong>{formatNumber(filtered.length)}</strong> matching{" "}
+            {filtered.length === 1 ? "entry" : "entries"}
+            {filtered.length !== rows.length ? ` of ${formatNumber(rows.length)} listed` : ""}
+          </span>
+          <span className="atlas-list-note">
+            {formatNumber(visible.length)} rendered · page size {PAGE_SIZE}
+          </span>
+        </div>
+      ) : null}
 
-      {rows.length === 0 ? (
-        <EmptyState
-          title="No entries exist for this category"
-          description={
-            <span>
-              No authoritative list of {config.label.toLowerCase()} is available. The atlas
-              keeps the category visible rather than claiming coverage that the sources do
-              not support.
-            </span>
-          }
-          icon="alert"
-          action={
-            status?.sourceUrl ? (
-              <a
-                className="btn"
-                href={status.sourceUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Check the source
-                <Icon name="external" size={14} />
-              </a>
-            ) : undefined
-          }
-        />
-      ) : filtered.length === 0 ? (
+      {rows.length === 0 ? null : filtered.length === 0 ? (
         <EmptyState
           title="No world objects match these filters"
           description="Clear the search or widen the region, game, and check-state filters."

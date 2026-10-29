@@ -4,17 +4,28 @@ import {
   Badge,
   Button,
   Callout,
+  Checkbox,
+  Disclosure,
   EmptyState,
   PageHeader,
   ProgressBar,
   SearchInput,
   SectionTitle,
+  Select,
+  StatCompare,
   TabBar,
   useToast,
 } from "../components/ui";
 import type { TabItem } from "../components/ui";
 import { Icon } from "../components/Icon";
-import { applyLoadout, applyProfile, useActiveCharacter } from "../lib/store";
+import {
+  applyLoadout,
+  applyProfile,
+  setProgressionCheck,
+  setStat,
+  useActiveCharacter,
+} from "../lib/store";
+import { ALL_SOFTCAP_STATS, softCapFor } from "../lib/gameplay";
 import {
   ARCHETYPES,
   BOSS_STRATEGIES_BY_BUILD,
@@ -31,7 +42,7 @@ import {
   profilesForArchetype,
   techProgressionForArchetype,
 } from "../lib/selectors";
-import { STAT_ORDER, STAT_SHORT, levelFromStats } from "../lib/classes";
+import { STAT_LABELS, STAT_ORDER, STAT_SHORT, levelFromStats } from "../lib/classes";
 import { itemGroupIcon } from "../lib/format";
 import { navigate, useRoute } from "../lib/router";
 import type { BuildLoadout, Character } from "../lib/types";
@@ -41,7 +52,30 @@ const LEVELS = [150, 200] as const;
 const TYPE_ORDER: Record<string, number> = { Signature: 0, Optimized: 1, Fashion: 2 };
 
 const CERTIFIED = ARCHETYPES.filter((archetype) => archetype.familyRole !== "Historical Redirect");
-const REDIRECTS = ARCHETYPES.filter((archetype) => archetype.familyRole === "Historical Redirect");
+const FAMILY_GROUP_FALLBACK = "Standalone archetypes";
+
+interface ArchetypeFamilyGroup {
+  family: string;
+  members: typeof CERTIFIED;
+}
+
+/** Group the certified archetypes by content-pack family for the picker. */
+function archetypeFamilyGroups(): ArchetypeFamilyGroup[] {
+  const grouped = new Map<string, ArchetypeFamilyGroup["members"]>();
+  for (const archetype of CERTIFIED) {
+    const family = archetype.family && archetype.family !== archetype.name ? archetype.family : FAMILY_GROUP_FALLBACK;
+    const members = grouped.get(family) ?? [];
+    members.push(archetype);
+    grouped.set(family, members);
+  }
+  return [...grouped.entries()]
+    .map(([family, members]) => ({ family, members }))
+    .sort((a, b) => {
+      if (a.family === FAMILY_GROUP_FALLBACK) return 1;
+      if (b.family === FAMILY_GROUP_FALLBACK) return -1;
+      return a.family.localeCompare(b.family);
+    });
+}
 
 type PresetTabId = "all" | "General" | "Combat Style" | "Damage Type" | "Enemy Profile" | "Boss" | "Named Boss";
 
@@ -267,18 +301,21 @@ export function BuildsPage() {
   const toast = useToast();
 
   const queryArchetype = route.query.get("archetype");
-  const requested = ARCHETYPES.find((archetype) => archetype.id === queryArchetype);
-  const redirect = requested && requested.familyRole === "Historical Redirect" ? requested : undefined;
-  const redirectParent = redirect ? ARCHETYPES.find((archetype) => archetype.id === redirect.parentId) : undefined;
+  const requested = CERTIFIED.find((archetype) => archetype.id === queryArchetype);
   const fallback =
     (character.archetypeId ? CERTIFIED.find((archetype) => archetype.id === character.archetypeId) : undefined) ??
     CERTIFIED[0];
-  const selected = redirectParent ?? requested ?? fallback;
+  const selected = requested ?? fallback;
+
+  const familyGroups = useMemo(() => archetypeFamilyGroups(), []);
 
   const requestedLevel = route.query.get("level") === "200" ? 200 : 150;
   const profiles = selected ? profilesForArchetype(selected.id) : [];
   const profile = profiles.find((entry) => entry.level === requestedLevel) ?? profiles[profiles.length - 1];
   const activeLevel = profile?.level ?? requestedLevel;
+  const ideal150 = profiles.find((entry) => entry.level === 150);
+  const ideal200 = profiles.find((entry) => entry.level === 200);
+  const characterLevel = levelFromStats(character.stats);
   const loadouts = useMemo(
     () =>
       profile
@@ -367,6 +404,14 @@ export function BuildsPage() {
     setTimelineLevel(activeLevel);
   }, [selected?.id, activeLevel]);
 
+  // Rows are checked by default when the target level is reached; a local set tracks
+  // explicit unticking so the default rule cannot immediately re-check the row.
+  const [clearedRows, setClearedRows] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    setClearedRows({});
+  }, [selected?.id]);
+
   if (!selected) {
     return (
       <div className="page">
@@ -398,16 +443,39 @@ export function BuildsPage() {
     { id: "progression", label: "Progression", count: progressionRows.length },
   ];
 
+  // Tech nodes carry no route-step link, so the route signal is the character's own
+  // derived level (the journey's progression proxy); manual checks always win.
+  const isRowChecked = (nodeId: string, levelTarget: number) => {
+    if (clearedRows[nodeId]) return false;
+    return Boolean(character.progressionChecks[nodeId]) || levelTarget <= characterLevel;
+  };
+
+  const toggleRowCheck = (nodeId: string, value: boolean) => {
+    setClearedRows((previous) => ({ ...previous, [nodeId]: !value }));
+    setProgressionCheck(nodeId, value);
+  };
+
+  const applyAllSoftcaps = () => {
+    // setStat clears the certified profile once; every stat is then written in turn.
+    for (const key of STAT_ORDER) setStat(key, ALL_SOFTCAP_STATS[key]);
+    toast.push(
+      `Reference soft-cap spread applied to ${character.name}: every stat at its first soft cap, deriving Level ${levelFromStats(
+        ALL_SOFTCAP_STATS,
+      )}. This is not a level-150 legal build and no certified profile is selected.`,
+      "success",
+    );
+  };
+
   return (
     <div className="page builds-page">
       <PageHeader
-        eyebrow="Build library · workbook profiles"
+        eyebrow="Build library · certified profiles"
         title="Builds"
         description={
           <>
-            {CERTIFIED.length} certified archetypes, each with Level 150 and Level 200 profiles, Signature / Optimized /
-            Fashion loadouts, spell packages, encounter presets and the progression path. {REDIRECTS.length} historical
-            entries are redirects into their parent family, not separate choices.
+            {CERTIFIED.length} certified archetypes with Level 150 and Level 200 profiles, Signature / Optimized /
+            Fashion loadouts, spell packages, encounter presets and the progression path. Pick a family in the dropdown
+            to open its detail below.
           </>
         }
         actions={
@@ -422,88 +490,107 @@ export function BuildsPage() {
         }
       />
 
-      <section className="card card-pad" style={{ marginBottom: 16 }}>
-        <SectionTitle
-          title="Certified archetypes"
-          note={`${CERTIFIED.length} parents · ${profilesForArchetype(selected.id).length} profiles in this family`}
-        />
-        <div className="grid-3 build-gallery">
-          {CERTIFIED.map((archetype) => {
-            const familyProfiles = profilesForArchetype(archetype.id);
-            const isActive = archetype.id === selected.id;
-            return (
-              <button
-                key={archetype.id}
-                type="button"
-                className={`archetype-card ${isActive ? "active" : ""}`.trim()}
-                onClick={() => selectArchetype(archetype.id)}
-                aria-pressed={isActive}
-              >
-                <div className="row-between wrap">
-                  <Badge tone={isActive ? "accent" : "default"}>{archetype.id}</Badge>
-                  <span className="tiny faint">{familyProfiles.length} levels</span>
-                </div>
-                <div className="archetype-name">{archetype.name}</div>
-                <div className="archetype-fantasy">{archetype.fantasy}</div>
-                <div className="tag-list">
-                  <span className="chip">{archetype.priorityStats}</span>
-                  <span className="chip">{archetype.familyRole}</span>
-                </div>
-                <div className="tiny faint">Recommended: {archetype.recommendedClass}</div>
-              </button>
-            );
-          })}
-        </div>
-
-        {REDIRECTS.length > 0 ? (
-          <>
-            <div className="divider" />
-            <SectionTitle
-              title="Historical redirects"
-              note={`${REDIRECTS.length} merged entries · informational only`}
-            />
-            <p className="small muted" style={{ marginTop: -4 }}>
-              These workbook rows were merged into a certified parent. Opening one shows the parent family so the
-              companion never presents a duplicate build as an independent choice.
-            </p>
-            <div className="redirect-list">
-              {REDIRECTS.map((entry) => {
-                const parent = ARCHETYPES.find((archetype) => archetype.id === entry.parentId);
+      <section className="card card-pad build-picker" style={{ marginBottom: 16 }}>
+        <div className="build-picker-row">
+          <Select
+            label="Archetype"
+            value={selected.id}
+            onChange={(event) => selectArchetype(event.target.value)}
+            className="build-select"
+          >
+            {familyGroups.map((group) => (
+              <optgroup key={group.family} label={group.family}>
+                {group.members.map((archetype) => (
+                  <option key={archetype.id} value={archetype.id}>
+                    {archetype.name} · {archetype.priorityStats}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </Select>
+          <div className="build-picker-level">
+            <span className="field-label">Level</span>
+            <div className="btn-group" role="group" aria-label="Certified profile level">
+              {LEVELS.map((level) => {
+                const available = profilesForArchetype(selected.id).some((entry) => entry.level === level);
                 return (
-                  <button
-                    key={entry.id}
-                    type="button"
-                    className="redirect-card"
-                    onClick={() => selectArchetype(parent?.id ?? selected.id)}
-                    aria-label={`${entry.name} redirects to ${parent?.name ?? "its parent family"}. Open the parent family.`}
+                  <Button
+                    key={level}
+                    size="sm"
+                    variant={activeLevel === level ? "primary" : "default"}
+                    onClick={() => selectArchetype(selected.id, level)}
+                    aria-pressed={activeLevel === level}
+                    disabled={!available}
                   >
-                    <div className="row-between wrap">
-                      <span className="redirect-name">{entry.name}</span>
-                      <Badge>{entry.id}</Badge>
-                    </div>
-                    <div className="tiny faint">
-                      {entry.disposition} · Parent: {parent?.name ?? entry.parentId}
-                    </div>
-                    <span className="redirect-action">
-                      Open parent family <Icon name="arrowRight" size={12} />
-                    </span>
-                  </button>
+                    {level}
+                  </Button>
                 );
               })}
             </div>
-          </>
-        ) : null}
+          </div>
+        </div>
+
+        <div className="build-summary">
+          <span className="build-summary-name">{selected.name}</span>
+          {selected.family && selected.family !== selected.name ? (
+            <span className="chip">{selected.family}</span>
+          ) : null}
+          <span className="chip">{selected.familyRole === "Parent Family" ? "Parent family" : "Standalone"}</span>
+          <span className="chip">{selected.priorityStats}</span>
+          <span className="tiny faint">
+            {profiles.length} certified {profiles.length === 1 ? "level" : "levels"} · recommended{" "}
+            {selected.recommendedClass}
+          </span>
+        </div>
       </section>
 
-      {redirect ? (
-        <div style={{ marginBottom: 16 }}>
-          <Callout tone="warning" icon="alert">
-            <strong>{redirect.name}</strong> ({redirect.id}) is a historical redirect. The companion is showing{" "}
-            {redirectParent?.name ?? "its parent family"} ({selected.id}); the redirect row itself has no certified
-            profile.
-          </Callout>
+      <section className="card card-pad softcap-reference" style={{ marginBottom: 16 }}>
+        <div className="row-between wrap">
+          <div className="grow">
+            <SectionTitle
+              title="Reference ceiling — not a level-150 legal build"
+              note="All stats at their first soft cap"
+            />
+            <p className="small muted" style={{ margin: "2px 0 0", maxWidth: 720 }}>
+              Every stat pushed to its first soft cap from the bundled resource table. This is a reference ceiling for
+              comparing spreads, not a certified archetype and not a legal level-150 build: it derives{" "}
+              {levelFromStats(ALL_SOFTCAP_STATS)} levels from the stat total.
+            </p>
+          </div>
+          <Button icon="upload" onClick={applyAllSoftcaps}>
+            Apply reference stats
+          </Button>
         </div>
-      ) : null}
+        <div className="softcap-reference-body">
+          <StatCompare
+            rows={STAT_ORDER.map((key) => ({
+              key,
+              label: STAT_LABELS[key],
+              current: character.stats[key],
+              target: ALL_SOFTCAP_STATS[key],
+              softCap: softCapFor(key),
+            }))}
+          />
+          <div className="softcap-reference-meta">
+            <div>
+              <div className="tiny faint">Derived level</div>
+              <div className="char-level">{levelFromStats(ALL_SOFTCAP_STATS)}</div>
+            </div>
+            <div>
+              <div className="tiny faint">Certified comparison</div>
+              <div className="char-level-sub">
+                {profile
+                  ? `${selected.name} · Level ${profile.level} derives ${levelFromStats(profile.stats)}`
+                  : "No certified profile for this selection"}
+              </div>
+            </div>
+          </div>
+        </div>
+        <p className="tiny faint" style={{ margin: "10px 0 0" }}>
+          Applying writes all eight stats to the character and clears the certified profile selection, exactly like
+          editing a stat by hand. Nothing else is changed.
+        </p>
+      </section>
 
       {profile ? (
         <>
@@ -511,8 +598,8 @@ export function BuildsPage() {
             <div className="row-between wrap build-detail-head">
               <div className="grow">
                 <div className="row wrap" style={{ marginBottom: 8 }}>
-                  <Badge tone="accent">{selected.id}</Badge>
-                  <Badge>{selected.familyRole}</Badge>
+                  <Badge tone="accent">{selected.priorityStats}</Badge>
+                  <Badge>{selected.familyRole === "Parent Family" ? "Parent family" : "Standalone"}</Badge>
                   <Badge tone="info">{profile.status}</Badge>
                   <span className="tiny faint">{profile.regulation}</span>
                 </div>
@@ -522,24 +609,10 @@ export function BuildsPage() {
                 </p>
               </div>
               <div className="stack" style={{ alignItems: "flex-end", gap: 8 }}>
-                <div className="btn-group" role="group" aria-label="Certified profile level">
-                  {LEVELS.map((level) => {
-                    const available = profiles.some((entry) => entry.level === level);
-                    return (
-                      <Button
-                        key={level}
-                        size="sm"
-                        variant={activeLevel === level ? "primary" : "default"}
-                        onClick={() => navigate(`/builds?archetype=${encodeURIComponent(selected.id)}&level=${level}`)}
-                        aria-pressed={activeLevel === level}
-                        disabled={!available}
-                      >
-                        Level {level}
-                      </Button>
-                    );
-                  })}
-                </div>
-                <span className="tiny faint">Profile {profile.id}</span>
+                <Badge tone="accent">Level {profile.level} profile</Badge>
+                <span className="tiny faint">
+                  {profile.calculatedLevel} certified · {levelFromStats(profile.stats)} computed
+                </span>
               </div>
             </div>
 
@@ -619,6 +692,83 @@ export function BuildsPage() {
                 The page does not claim the build is playable while indexed pieces are missing.
               </p>
             ) : null}
+          </section>
+
+          <section className="card card-pad build-section" id="ideal-stats">
+            <SectionTitle
+              title="Ideal stats"
+              note={`Current spread derives Level ${characterLevel}`}
+            />
+            <div className="ideal-stats-grid">
+              <div>
+                <div className="tiny faint" style={{ marginBottom: 6 }}>
+                  Current → Level 150 certified
+                </div>
+                {ideal150 ? (
+                  <StatCompare
+                    rows={STAT_ORDER.map((key) => ({
+                      key,
+                      label: STAT_LABELS[key],
+                      current: character.stats[key],
+                      target: ideal150.stats[key],
+                      softCap: softCapFor(key),
+                    }))}
+                  />
+                ) : (
+                  <EmptyState title="No Level 150 profile" description="This archetype has no certified Level 150 profile." icon="layers" />
+                )}
+              </div>
+              {ideal200 && characterLevel > 150 ? (
+                <div>
+                  <div className="tiny faint" style={{ marginBottom: 6 }}>
+                    Current → Level 200 certified
+                  </div>
+                  <StatCompare
+                    rows={STAT_ORDER.map((key) => ({
+                      key,
+                      label: STAT_LABELS[key],
+                      current: character.stats[key],
+                      target: ideal200.stats[key],
+                      softCap: softCapFor(key),
+                    }))}
+                  />
+                </div>
+              ) : null}
+            </div>
+            <div className="row wrap" style={{ marginTop: 12 }}>
+              <Button
+                icon="refresh"
+                disabled={!ideal150}
+                onClick={() => {
+                  if (!ideal150) return;
+                  applyProfile(ideal150.id);
+                  toast.push(
+                    `Reset ${character.name} to the ${selected.name} Level 150 certified spread.`,
+                    "success",
+                  );
+                }}
+              >
+                Reset to Level 150
+              </Button>
+              {ideal200 && characterLevel > 150 ? (
+                <Button
+                  variant="primary"
+                  icon="check"
+                  onClick={() => {
+                    applyProfile(ideal200.id);
+                    toast.push(
+                      `Applied the ${selected.name} Level 200 certified spread to ${character.name}.`,
+                      "success",
+                    );
+                  }}
+                >
+                  Apply Level 200
+                </Button>
+              ) : null}
+              <span className="tiny faint grow">
+                Ideal stats come from the certified profiles; applying one also writes its signature gear.
+              </span>
+            </div>
           </section>
 
           <section className="build-section">
@@ -702,7 +852,7 @@ export function BuildsPage() {
                     </Callout>
                     {activeLoadout ? (
                       <p className="tiny faint" style={{ margin: 0 }}>
-                        Package {activePackage.id} is attached to loadout {activeLoadout.id}. Switching loadout mode
+                        {activePackage.name} is attached to the {activeLoadout.type} loadout. Switching loadout mode
                         changes the package when the certified row uses a different package.
                       </p>
                     ) : null}
@@ -801,7 +951,7 @@ export function BuildsPage() {
                               {preset.greatRune ? <DetailLine label="Great rune" value={preset.greatRune} /> : null}
                               {preset.flask ? <DetailLine label="Flasks" value={preset.flask} /> : null}
                               {preset.consumables ? <DetailLine label="Consumables" value={preset.consumables} /> : null}
-                              {pkg ? <DetailLine label="Package" value={`${pkg.name} (${pkg.id})`} /> : null}
+                              {pkg ? <DetailLine label="Package" value={pkg.name} /> : null}
                             </div>
                           </article>
                         );
@@ -938,7 +1088,9 @@ export function BuildsPage() {
                     <h2 className="tab-heading">Progression timeline</h2>
                     <p className="small muted" style={{ margin: "2px 0 0" }}>
                       {progressionRows.length} tech-tree rows for {selected.name}, sorted by level target. The highlighted
-                      row is the nearest loadout-bearing node at or below the selected level.
+                      row is the nearest loadout-bearing node at or below the selected level. Rows default to checked
+                      when their target level is at or under your character's derived Level {characterLevel}; ticking or
+                      unticking records the checkpoint for this archetype.
                     </p>
                   </div>
                   <div className="timeline-control">
@@ -986,31 +1138,56 @@ export function BuildsPage() {
                       const unindexed = rawNames.length - names.length;
                       const owns = equipmentOwnedCount(character, names);
                       const isNearest = nearest?.node.id === node.id;
+                      const checked = isRowChecked(node.id, node.levelTarget);
                       return (
                         <article
-                          className={`timeline-row ${isNearest ? "is-nearest" : ""}`.trim()}
+                          className={`timeline-row ${isNearest ? "is-nearest" : ""} ${checked ? "is-reached" : ""}`.trim()}
                           key={node.id}
                         >
                           <div className="timeline-marker" aria-hidden="true">
                             <span>{node.levelTarget}</span>
                           </div>
                           <div className="timeline-body">
-                            <div className="row-between wrap">
+                            <div className="row-between wrap timeline-head">
                               <div className="row wrap" style={{ gap: 6 }}>
                                 <Badge tone={isNearest ? "accent" : "default"}>{node.stage}</Badge>
                                 <Badge>{node.type}</Badge>
                                 {isNearest ? <Badge tone="success">Nearest row</Badge> : null}
                               </div>
-                              <span className="tiny faint">
-                                Levels {node.levelMin}–{node.levelMax} · target {node.levelTarget}
-                                {node.exactLevel ? " · exact" : ""}
-                              </span>
+                              <div className="row wrap timeline-head-meta">
+                                <span className="tiny faint">
+                                  Levels {node.levelMin}–{node.levelMax} · target {node.levelTarget}
+                                  {node.exactLevel ? " · exact" : ""}
+                                </span>
+                                <Checkbox
+                                  checked={checked}
+                                  onChange={(value) => toggleRowCheck(node.id, value)}
+                                  label="Reached"
+                                />
+                              </div>
                             </div>
                             <h3 className="timeline-name">{node.name}</h3>
                             <div className="small muted">{node.primaryIdentity}</div>
                             <div className="tiny faint" style={{ marginBottom: 8 }}>
                               {node.secondaryIdentity} · {node.journeyScope}
                             </div>
+
+                            <Disclosure
+                              title="Ideal stats at this stage"
+                              summary={`derives Level ${levelFromStats(node.stats)}`}
+                              tone="muted"
+                              className="timeline-stats"
+                            >
+                              <StatCompare
+                                rows={STAT_ORDER.map((key) => ({
+                                  key,
+                                  label: STAT_LABELS[key],
+                                  current: character.stats[key],
+                                  target: node.stats[key] ?? 0,
+                                  softCap: softCapFor(key),
+                                }))}
+                              />
+                            </Disclosure>
 
                             {loadout ? (
                               <>

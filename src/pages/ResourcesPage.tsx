@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ART, ArtBanner } from "../components/Art";
 import { Icon } from "../components/Icon";
-import { Badge, Button, EmptyState, SearchInput, Select, TabBar } from "../components/ui";
+import {
+  Badge,
+  Button,
+  EmptyState,
+  PageHeader,
+  SearchInput,
+  Select,
+  TabBar,
+} from "../components/ui";
 import {
   RESOURCE_ROW_COUNT,
   RESOURCE_TABLE_COUNT,
@@ -299,6 +306,7 @@ export function ResourcesPage() {
   const [tableId, setTableId] = useState(() =>
     TABLE_BY_ID[initialTable] ? initialTable : "all",
   );
+  const tabBarRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState("");
 
   const needle = query.trim().toLowerCase();
@@ -341,6 +349,30 @@ export function ResourcesPage() {
 
   const activeMeta = tableId === "all" ? undefined : TABLE_META[tableId];
 
+  // Selecting a table keeps the whole table reachable: bring its block into view
+  // so the tab never appears to render nothing.
+  useEffect(() => {
+    if (tableId === "all") return;
+    const node = document.getElementById(`resource-table-${tableId}`);
+    node?.scrollIntoView({ block: "start", behavior: "smooth" });
+  }, [tableId]);
+
+  // Keep the active tab inside the scrollable bar on narrow screens.
+  useEffect(() => {
+    const active = tabBarRef.current?.querySelector<HTMLElement>(".tab.active");
+    if (!active) return;
+    const bar = tabBarRef.current;
+    if (!bar) return;
+    const barRect = bar.getBoundingClientRect();
+    const tabRect = active.getBoundingClientRect();
+    if (tabRect.left < barRect.left || tabRect.right > barRect.right) {
+      bar.scrollTo({
+        left: tabRect.left - barRect.left + bar.scrollLeft - 12,
+        behavior: "smooth",
+      });
+    }
+  }, [tableId]);
+
   const tabItems = [
     { id: "all", label: "All tables", count: RESOURCE_ROW_COUNT },
     ...RESOURCE_TABLES.map((table) => ({
@@ -352,39 +384,37 @@ export function ResourcesPage() {
 
   return (
     <div className="page resources-page">
-      <ArtBanner
-        image={ART.heroSote}
-        alt=""
-        caption={`Reference tables · ${formatNumber(RESOURCE_ROW_COUNT)} rows`}
-        title="Soft caps, stones, and rune values"
-        variant="sote"
-        priority
-        className="resources-banner"
-      >
-        <div className="resources-banner-stats">
-          <div className="resources-banner-stat">
-            <span className="resources-banner-label">Tables</span>
-            <strong>{formatNumber(RESOURCE_TABLE_COUNT)}</strong>
-            <span className="resources-banner-detail">across {SECTIONS.length} sections</span>
-          </div>
-          <div className="resources-banner-stat">
-            <span className="resources-banner-label">Rows</span>
-            <strong>{formatNumber(RESOURCE_ROW_COUNT)}</strong>
-            <span className="resources-banner-detail">nulls preserved</span>
-          </div>
-          <div className="resources-banner-stat">
-            <span className="resources-banner-label">DLC tables</span>
-            <strong>{formatNumber(DLC_TABLE_COUNT)}</strong>
-            <span className="resources-banner-detail">Scadutree and rune values</span>
-          </div>
-        </div>
-        <p className="resources-banner-note">
-          Normalized from the Redmaw Resources sheet. Blank cells stay blank: a dash means
-          the source does not state a value, not that the value is zero.
-        </p>
-      </ArtBanner>
+      <PageHeader
+        eyebrow={`Reference · ${formatNumber(RESOURCE_TABLE_COUNT)} tables`}
+        title="Resources"
+        description={`Soft caps, upgrade costs, rune values, and remembrances from the Redmaw Resources sheet. Blank cells stay blank: a dash means the source does not state a value, not that the value is zero.`}
+      />
 
-      <TabBar items={tabItems} value={tableId} onChange={selectTable} />
+      <div className="resources-summary" aria-label="Reference summary">
+        <div className="resources-summary-item">
+          <strong>{formatNumber(RESOURCE_TABLE_COUNT)}</strong>
+          <span>Tables</span>
+        </div>
+        <div className="resources-summary-item">
+          <strong>{formatNumber(RESOURCE_ROW_COUNT)}</strong>
+          <span>Rows</span>
+        </div>
+        <div className="resources-summary-item">
+          <strong>{formatNumber(SECTIONS.length)}</strong>
+          <span>Sections</span>
+        </div>
+        <div className="resources-summary-item">
+          <strong>{formatNumber(DLC_TABLE_COUNT)}</strong>
+          <span>DLC tables</span>
+        </div>
+        <div className="resources-summary-item resources-summary-item--note">
+          <span>Nulls preserved · values never inferred</span>
+        </div>
+      </div>
+
+      <div className="resources-tabbar" ref={tabBarRef}>
+        <TabBar items={tabItems} value={tableId} onChange={selectTable} />
+      </div>
 
       <div className="resources-toolbar">
         <SearchInput

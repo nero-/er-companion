@@ -467,7 +467,12 @@
   }
 
   .dashboard-hero .art-hero-title {
-    font-size: clamp(22px, 5.4vw, 30px);
+    font-size: clamp(19px, 4.4vw, 25px);
+    line-height: 1.22;
+  }
+
+  .dashboard-hero .art-hero-body {
+    padding: 20px 18px 22px;
   }
 
   .dashboard-phase-grid,
@@ -501,5 +506,67 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 3px;
+  }
+}
+
+
+/* ---------- Progressive disclosure additions ---------- */
+
+.dashboard-next-missable {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px 12px;
+  border: 1px solid rgba(205, 112, 89, 0.35);
+  border-radius: 9px;
+  background: rgba(205, 112, 89, 0.08);
+  color: var(--fg-soft);
+  text-align: left;
+  cursor: pointer;
+}
+
+.dashboard-next-missable:hover {
+  border-color: rgba(205, 112, 89, 0.55);
+}
+
+.dashboard-next-missable-title {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--danger);
+}
+
+.dashboard-next-missable-copy {
+  display: block;
+  margin-top: 3px;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.dashboard-next-missable-warning {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.dashboard-build-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.dashboard-build-stats .stat-compare {
+  max-width: 620px;
+}
+
+@media (max-width: 760px) {
+  .dashboard-build-stats-grid {
+    grid-template-columns: 1fr;
   }
 }

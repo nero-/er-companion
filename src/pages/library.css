@@ -1,33 +1,137 @@
 /* ---------- Farms & tiers: shared ledger surfaces ---------- */
 
-.library-progress {
+.farm-summary-strip {
   display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.farm-summary-cell {
+  display: flex;
+  flex: 1 1 150px;
   flex-direction: column;
+  gap: 4px;
+  min-width: 148px;
+  padding: 11px 14px;
+  border: 0;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.farm-summary-cell:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.farm-summary-cell.is-active {
+  background: rgba(212, 176, 106, 0.07);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.farm-summary-cell strong {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.farm-summary-track {
+  display: block;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.farm-summary-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #a98445, var(--accent), #ead29b);
+}
+
+.farm-summary-track > span.is-complete {
+  background: var(--success);
+}
+
+.farm-summary-scope {
+  color: var(--faint);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.farm-summary-focus {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-left: 1px solid var(--border);
+}
+
+.farm-filter-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
-  padding: 15px 16px;
+  padding: 11px 16px;
   border-bottom: 1px solid var(--border);
   background: linear-gradient(180deg, rgba(212, 176, 106, 0.035), transparent 90%);
 }
 
-.library-progress-head {
-  display: flex;
+.farm-filter-note .disclosure {
+  flex: 0 1 320px;
+  background: transparent;
+}
+
+.farm-filter-note .disclosure-summary {
+  padding: 6px 10px;
+  font-size: 11px;
+}
+
+.farm-filter-note .disclosure-body {
+  padding: 0 10px 10px;
+}
+
+.check-locked {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.library-route-link {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.library-progress-note {
+  gap: 5px;
+  margin-top: 5px;
+  padding: 3px 7px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.02);
   color: var(--muted);
-  font-size: 11.5px;
-  line-height: 1.45;
-  max-width: 780px;
+  font-size: 10.5px;
+  cursor: pointer;
 }
 
-.library-progress-count {
-  color: var(--faint);
-  font-size: 10.5px;
-  white-space: nowrap;
+.library-route-link:hover {
+  border-color: rgba(212, 176, 106, 0.4);
+  color: var(--accent);
+}
+
+.data-table.library-table tr.is-collected td {
+  background: rgba(143, 172, 118, 0.045);
+}
+
+.data-table.library-table tr.is-collected td:first-child {
+  box-shadow: inset 2px 0 0 var(--success);
 }
 
 .library-toolbar {
@@ -88,23 +192,12 @@
   background: rgba(0, 0, 0, 0.08);
 }
 
-.merchant-roster-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 8px;
-  color: var(--muted);
-  font-size: 11px;
+.merchant-roster .disclosure {
+  background: rgba(255, 255, 255, 0.012);
 }
 
-.merchant-roster-title {
-  color: var(--faint);
-  font-size: 9px;
-  font-weight: 650;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+.merchant-roster .disclosure-body {
+  padding: 0 12px 12px;
 }
 
 .merchant-roster-grid {
@@ -470,8 +563,23 @@
     max-height: 250px;
   }
 
-  .library-progress {
-    padding: 13px 12px;
+  .farm-summary-cell {
+    flex: 1 1 45%;
+    min-width: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .farm-summary-focus {
+    flex: 1 1 100%;
+    border-left: 0;
+  }
+
+  .farm-filter-note {
+    padding: 10px 12px;
+  }
+
+  .farm-filter-note .disclosure {
+    flex: 1 1 100%;
   }
 
   .table-wrap.library-table-wrap {
@@ -568,5 +676,228 @@
 
   .library-more {
     padding: 13px 12px;
+  }
+}
+
+/* ---------- Tiers: wiki links & 1.17 additions ---------- */
+
+.tier-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tier-link-icon {
+  flex: 0 0 auto;
+  color: var(--faint);
+}
+
+.tier-link:hover .tier-link-icon {
+  color: var(--accent);
+}
+
+.tier-heading-tight {
+  padding-top: 0;
+}
+
+.tier-tarnished-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- Remembrances: ordered plan ---------- */
+
+.remembrance-plan-wrap {
+  border: 0;
+  border-radius: 0;
+  max-height: none;
+  overflow-x: auto;
+}
+
+.remembrance-plan-table {
+  min-width: 1080px;
+  font-size: 11.5px;
+}
+
+.remembrance-plan-table td {
+  vertical-align: top;
+}
+
+.remembrance-plan-table tr.is-duplicate-now td:first-child {
+  box-shadow: inset 2px 0 0 var(--warning);
+}
+
+.remembrance-order {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 5px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.remembrance-plan-name {
+  color: var(--fg);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.remembrance-plan-detail {
+  margin-top: 4px;
+}
+
+.remembrance-plan-empty {
+  padding: 14px 16px;
+}
+
+.remembrance-entity-link {
+  color: var(--accent);
+  border-bottom: 1px dotted rgba(201, 163, 93, 0.4);
+}
+
+.remembrance-entity-link:hover {
+  color: var(--accent-strong);
+  border-bottom-color: var(--accent);
+}
+
+.remembrance-route-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.remembrance-route-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.remembrance-route-link:hover {
+  border-color: rgba(212, 176, 106, 0.4);
+  color: var(--accent);
+}
+
+.remembrance-plan-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.remembrance-plan-summary strong {
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+.remembrance-plan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.remembrance-plan-item {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.014);
+}
+
+.remembrance-plan-index {
+  display: grid;
+  place-items: center;
+  height: 24px;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.remembrance-plan-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.remembrance-plan-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.remembrance-plan-title {
+  color: var(--fg);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.remembrance-plan-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.remembrance-plan-priority {
+  margin: 0;
+  color: var(--fg-soft);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+.remembrance-plan-picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 11px;
+  color: var(--fg-soft);
+}
+
+.remembrance-plan-pick {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.remembrance-plan-pick-label {
+  color: var(--faint);
+  font-size: 8.5px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 760px) {
+  .remembrance-plan-wrap {
+    overflow: visible;
   }
 }

@@ -1,951 +1,1144 @@
 {
- "source": {
-  "decisions": "src/data/meta.json -> decisions (workbook 'Choices & Consequences')",
-  "catalog": "src/data/items.full.json -> items",
-  "decisionMatrixGeneratedAt": "2026-10-22T10:11:27.522487+00:00"
- },
- "availabilityRule": "journey-* values come only from the decision matrix's journey1/futureOutcome/futureJourney text; no branch is scheduled on a journey the matrix does not state.",
- "aliases": [
-  {
-   "sourceName": "Fire Knight Queelign Spirit Ash",
-   "catalogName": "Fire Knight Queelign",
-   "reason": "decision text appends an item-type suffix"
+  "source": {
+    "decisions": "src/data/meta.json -> decisions (workbook 'Choices & Consequences')",
+    "catalog": "src/data/items.full.json -> items",
+    "decisionMatrixGeneratedAt": "2026-10-22T10:11:27.522487+00:00"
   },
-  {
-   "sourceName": "Swordhand of Night Jolán Spirit Ash",
-   "catalogName": "Swordhand of Night Jolan",
-   "reason": "decision text appends an item-type suffix"
-  },
-  {
-   "sourceName": "Jolán and Anna Spirit Ash",
-   "catalogName": "Jolan and Anna",
-   "reason": "decision text appends an item-type suffix"
-  }
- ],
- "counts": {
-  "decisions": 27,
-  "decisionsWithRewards": 18,
-  "decisionsWithoutRewards": 9,
-  "decisionsWithUnresolvedRewards": 6,
-  "decisionsFullyResolved": 21,
-  "decisionsWithRewardsFullyResolved": 12,
-  "rewards": 43,
-  "resolvedRewards": 36,
-  "unresolvedRewards": 7,
-  "transientRewards": 1,
-  "exactMatches": 31,
-  "aliasMatches": 5,
-  "distinctRewardItemIds": 30,
-  "setComponentItemIds": 7,
-  "distinctCatalogItemIds": 37,
-  "byAvailability": {
-   "journey-1": 26,
-   "journey-2": 12,
-   "journey-3": 5,
-   "optional": 0,
-   "unresolved": 0
-  },
-  "byKind": {
-   "reward": 38,
-   "set": 2,
-   "required": 3
-  }
- },
- "unresolvedRewards": [
-  {
-   "decisionId": "BASE-001",
-   "name": "Alexander's Innards",
-   "reason": "key item absent from items.full.json"
-  },
-  {
-   "decisionId": "BASE-003",
-   "name": "Ancient Dragon Smithing Stone",
-   "reason": "smithing stones are absent from items.full.json; they belong to the separate upgrade ledger"
-  },
-  {
-   "decisionId": "BASE-006",
-   "name": "Eccentric's Set",
-   "reason": "catalog has no set-level item; component armor pieces resolved"
-  },
-  {
-   "decisionId": "BASE-006",
-   "name": "Ancient Dragon Smithing Stone",
-   "reason": "smithing stones are absent from items.full.json; they belong to the separate upgrade ledger"
-  },
-  {
-   "decisionId": "BASE-007",
-   "name": "Unalloyed Gold Needle",
-   "reason": "key item absent from items.full.json"
-  },
-  {
-   "decisionId": "BASE-009",
-   "name": "Zorayas's Letter",
-   "reason": "key item absent from items.full.json"
-  },
-  {
-   "decisionId": "DLC-003",
-   "name": "Ansbach's Set",
-   "reason": "catalog has no set-level item; component armor pieces resolved"
-  }
- ],
- "decisions": [
-  {
-   "decisionId": "BASE-001",
-   "title": "Alexander, Warrior Jar",
-   "game": "Base Game",
-   "category": "Collection",
-   "journey1": "Journey 1 — complete Alexander’s quest and final Farum Azula duel.",
-   "journey1Result": "Shard of Alexander; Alexander’s Innards; full dialogue and Jar-Bairn continuation.",
-   "futureOutcome": "Kill Alexander early for Warrior Jar Shard.",
-   "futureJourney": "NG+ — Journey 2",
-   "rewards": [
+  "availabilityRule": "journey-* values come only from the decision matrix's journey1/futureOutcome/futureJourney text; no branch is scheduled on a journey the matrix does not state.",
+  "aliases": [
     {
-     "name": "Shard of Alexander",
-     "itemId": "GKI-PERM-BG-TAL-8B9A9A70FBDA88",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
+      "sourceName": "Fire Knight Queelign Spirit Ash",
+      "catalogName": "Fire Knight Queelign",
+      "reason": "decision text appends an item-type suffix"
     },
     {
-     "name": "Alexander's Innards",
-     "itemId": "",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "unresolved",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": true,
-     "reason": "key item absent from items.full.json"
+      "sourceName": "Swordhand of Night Jolán Spirit Ash",
+      "catalogName": "Swordhand of Night Jolan",
+      "reason": "decision text appends an item-type suffix"
     },
     {
-     "name": "Warrior Jar Shard",
-     "itemId": "GKI-PERM-BG-TAL-3C928FD065C94B",
-     "journey": 2,
-     "availability": "journey-2",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
+      "sourceName": "Jolán and Anna Spirit Ash",
+      "catalogName": "Jolan and Anna",
+      "reason": "decision text appends an item-type suffix"
     }
-   ],
-   "unresolved": true,
-   "notes": "Alexander's Innards is a key item absent from the item catalog."
-  },
-  {
-   "decisionId": "BASE-002",
-   "title": "Seluvis's Potion — Recipient",
-   "game": "Base Game",
-   "category": "Hybrid",
-   "journey1": "Journey 1 — give Seluvis’s Potion to Gideon for disposal.",
-   "journey1Result": "Preserves Nepheli’s ruler path and leaves Dung Eater available for the Fell Curse path required by the Journey 1 Six Futures sequence.",
-   "futureOutcome": "Journey 2: give the potion to Dung Eater for his Puppet. Journey 3: give it to Nepheli for the third persistent branch/experience.",
-   "futureJourney": "NG+ — Journey 2; NG++ — Journey 3",
-   "rewards": [
-    {
-     "name": "Dung Eater Puppet",
-     "itemId": "GKI-PERM-BG-SPA-EDA61B283B875D",
-     "journey": 2,
-     "availability": "journey-2",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
+  ],
+  "counts": {
+    "decisions": 27,
+    "decisionsWithRewards": 18,
+    "decisionsWithoutRewards": 9,
+    "decisionsWithUnresolvedRewards": 6,
+    "decisionsFullyResolved": 21,
+    "decisionsWithRewardsFullyResolved": 12,
+    "rewards": 43,
+    "resolvedRewards": 36,
+    "unresolvedRewards": 7,
+    "transientRewards": 1,
+    "exactMatches": 31,
+    "aliasMatches": 5,
+    "distinctRewardItemIds": 30,
+    "setComponentItemIds": 7,
+    "distinctCatalogItemIds": 37,
+    "byAvailability": {
+      "journey-1": 26,
+      "journey-2": 12,
+      "journey-3": 5,
+      "optional": 0,
+      "unresolved": 0
     },
-    {
-     "name": "Nepheli Loux Puppet",
-     "itemId": "GKI-PERM-BG-SPA-EC4FC094083CF1",
-     "journey": 3,
-     "availability": "journey-3",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
+    "byKind": {
+      "reward": 38,
+      "set": 2,
+      "required": 3
     }
-   ],
-   "unresolved": false,
-   "notes": "Journey 1 (Gideon disposal) grants no reward item. Seluvis's Potion is a consumed key item and is not in the catalog. The Journey 3 recipient branch yields the Nepheli Loux Puppet named in BASE-003."
   },
-  {
-   "decisionId": "BASE-003",
-   "title": "Nepheli Loux — Ruler or Puppet",
-   "game": "Base Game",
-   "category": "Hybrid",
-   "journey1": "Journey 1 — give Nepheli the Stormhawk King and complete her throne-room/ruler conclusion.",
-   "journey1Result": "Nepheli end-state dialogue; Ancient Dragon Smithing Stone; Gostoc expanded shop while preserving her non-puppet outcome.",
-   "futureOutcome": "Create the Nepheli Loux Puppet on the Journey 3 Seluvis-potion branch.",
-   "futureJourney": "NG++ — Journey 3",
-   "rewards": [
+  "unresolvedRewards": [
     {
-     "name": "Ancient Dragon Smithing Stone",
-     "itemId": "",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "unresolved",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": true,
-     "reason": "smithing stones are absent from items.full.json; they belong to the separate upgrade ledger"
+      "decisionId": "BASE-001",
+      "name": "Alexander's Innards",
+      "reason": "key item absent from items.full.json"
     },
     {
-     "name": "Nepheli Loux Puppet",
-     "itemId": "GKI-PERM-BG-SPA-EC4FC094083CF1",
-     "journey": 3,
-     "availability": "journey-3",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
+      "decisionId": "BASE-003",
+      "name": "Ancient Dragon Smithing Stone",
+      "reason": "smithing stones are absent from items.full.json; they belong to the separate upgrade ledger"
+    },
+    {
+      "decisionId": "BASE-006",
+      "name": "Eccentric's Set",
+      "reason": "catalog has no set-level item; component armor pieces resolved"
+    },
+    {
+      "decisionId": "BASE-006",
+      "name": "Ancient Dragon Smithing Stone",
+      "reason": "smithing stones are absent from items.full.json; they belong to the separate upgrade ledger"
+    },
+    {
+      "decisionId": "BASE-007",
+      "name": "Unalloyed Gold Needle",
+      "reason": "key item absent from items.full.json"
+    },
+    {
+      "decisionId": "BASE-009",
+      "name": "Zorayas's Letter",
+      "reason": "key item absent from items.full.json"
+    },
+    {
+      "decisionId": "DLC-003",
+      "name": "Ansbach's Set",
+      "reason": "catalog has no set-level item; component armor pieces resolved"
     }
-   ],
-   "unresolved": true,
-   "notes": "Gostoc's expanded shop is a shop state, not a discrete item."
-  },
-  {
-   "decisionId": "BASE-004",
-   "title": "Dung Eater — Puppet or Fell Curse",
-   "game": "Base Game",
-   "category": "Hybrid",
-   "journey1": "Journey 1 — complete the Seedbed Curse path and obtain the Mending Rune of the Fell Curse.",
-   "journey1Result": "Mending Rune of the Fell Curse and Blessing of Despair eligibility for Six Futures ending #3.",
-   "futureOutcome": "Administer Seluvis’s Potion to Dung Eater and obtain the Dung Eater Puppet branch.",
-   "futureJourney": "NG+ — Journey 2",
-   "rewards": [
+  ],
+  "decisions": [
     {
-     "name": "Mending Rune of the Fell Curse",
-     "itemId": "RW-ITEM-mending-rune-of-the-fell-curse",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
+      "decisionId": "BASE-001",
+      "title": "Alexander, Warrior Jar",
+      "game": "Base Game",
+      "category": "Collection",
+      "journey1": "Journey 1 — complete Alexander’s quest and final Farum Azula duel.",
+      "journey1Result": "Shard of Alexander; Alexander’s Innards; full dialogue and Jar-Bairn continuation.",
+      "futureOutcome": "Kill Alexander early for Warrior Jar Shard.",
+      "futureJourney": "NG+ — Journey 2",
+      "rewards": [
+        {
+          "name": "Shard of Alexander",
+          "itemId": "GKI-PERM-BG-TAL-8B9A9A70FBDA88",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Alexander's Innards",
+          "itemId": "",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "unresolved",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": true,
+          "reason": "key item absent from items.full.json"
+        },
+        {
+          "name": "Warrior Jar Shard",
+          "itemId": "GKI-PERM-BG-TAL-3C928FD065C94B",
+          "journey": 2,
+          "availability": "journey-2",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": true,
+      "notes": "Alexander's Innards is a key item absent from the item catalog.",
+      "routeStepIds": [
+        "RW-B-w46-59",
+        "RW-B-w49-46",
+        "RW-B-w46-63"
+      ],
+      "area": "Crumbling Farum Azula",
+      "linkConfidence": "high",
+      "linkMethod": "shared-token+title"
     },
     {
-     "name": "Dung Eater Puppet",
-     "itemId": "GKI-PERM-BG-SPA-EDA61B283B875D",
-     "journey": 2,
-     "availability": "journey-2",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
+      "decisionId": "BASE-002",
+      "title": "Seluvis's Potion — Recipient",
+      "game": "Base Game",
+      "category": "Hybrid",
+      "journey1": "Journey 1 — give Seluvis’s Potion to Gideon for disposal.",
+      "journey1Result": "Preserves Nepheli’s ruler path and leaves Dung Eater available for the Fell Curse path required by the Journey 1 Six Futures sequence.",
+      "futureOutcome": "Journey 2: give the potion to Dung Eater for his Puppet. Journey 3: give it to Nepheli for the third persistent branch/experience.",
+      "futureJourney": "NG+ — Journey 2; NG++ — Journey 3",
+      "rewards": [
+        {
+          "name": "Dung Eater Puppet",
+          "itemId": "GKI-PERM-BG-SPA-EDA61B283B875D",
+          "journey": 2,
+          "availability": "journey-2",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Nepheli Loux Puppet",
+          "itemId": "GKI-PERM-BG-SPA-EC4FC094083CF1",
+          "journey": 3,
+          "availability": "journey-3",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": false,
+      "notes": "Journey 1 (Gideon disposal) grants no reward item. Seluvis's Potion is a consumed key item and is not in the catalog. The Journey 3 recipient branch yields the Nepheli Loux Puppet named in BASE-003.",
+      "routeStepIds": [
+        "RW-B-w15-75",
+        "RW-B-w15-72",
+        "RW-B-w23-43"
+      ],
+      "area": "Caria Manor",
+      "linkConfidence": "high",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "BASE-003",
+      "title": "Nepheli Loux — Ruler or Puppet",
+      "game": "Base Game",
+      "category": "Hybrid",
+      "journey1": "Journey 1 — give Nepheli the Stormhawk King and complete her throne-room/ruler conclusion.",
+      "journey1Result": "Nepheli end-state dialogue; Ancient Dragon Smithing Stone; Gostoc expanded shop while preserving her non-puppet outcome.",
+      "futureOutcome": "Create the Nepheli Loux Puppet on the Journey 3 Seluvis-potion branch.",
+      "futureJourney": "NG++ — Journey 3",
+      "rewards": [
+        {
+          "name": "Ancient Dragon Smithing Stone",
+          "itemId": "",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "unresolved",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": true,
+          "reason": "smithing stones are absent from items.full.json; they belong to the separate upgrade ledger"
+        },
+        {
+          "name": "Nepheli Loux Puppet",
+          "itemId": "GKI-PERM-BG-SPA-EC4FC094083CF1",
+          "journey": 3,
+          "availability": "journey-3",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": true,
+      "notes": "Gostoc's expanded shop is a shop state, not a discrete item.",
+      "routeStepIds": [
+        "RW-B-w35-130",
+        "RW-B-w15-67",
+        "RW-B-w23-47"
+      ],
+      "area": "Leyndell, Royal Capital",
+      "linkConfidence": "high",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "BASE-004",
+      "title": "Dung Eater — Puppet or Fell Curse",
+      "game": "Base Game",
+      "category": "Hybrid",
+      "journey1": "Journey 1 — complete the Seedbed Curse path and obtain the Mending Rune of the Fell Curse.",
+      "journey1Result": "Mending Rune of the Fell Curse and Blessing of Despair eligibility for Six Futures ending #3.",
+      "futureOutcome": "Administer Seluvis’s Potion to Dung Eater and obtain the Dung Eater Puppet branch.",
+      "futureJourney": "NG+ — Journey 2",
+      "rewards": [
+        {
+          "name": "Mending Rune of the Fell Curse",
+          "itemId": "RW-ITEM-mending-rune-of-the-fell-curse",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Dung Eater Puppet",
+          "itemId": "GKI-PERM-BG-SPA-EDA61B283B875D",
+          "journey": 2,
+          "availability": "journey-2",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": false,
+      "notes": "Blessing of Despair is an ending (END-004), not an item.",
+      "routeStepIds": [
+        "RW-B-w45-63",
+        "RW-B-w48-6",
+        "RW-B-w15-75"
+      ],
+      "area": "Elphael, Brace of the Haligtree",
+      "linkConfidence": "high",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "BASE-005",
+      "title": "Pidia — Final Puppet Drop",
+      "game": "Base Game",
+      "category": "Collection",
+      "journey1": "Journey 1 — keep Nepheli free so Pidia resolves to the Dolores branch.",
+      "journey1Result": "Dolores the Sleeping Arrow Puppet while Nepheli remains available for her ruler conclusion.",
+      "futureOutcome": "Use the Journey 3 Nepheli-potion branch to resolve the alternate Pidia/Nepheli Puppet state.",
+      "futureJourney": "NG++ — Journey 3",
+      "rewards": [
+        {
+          "name": "Dolores the Sleeping Arrow Puppet",
+          "itemId": "GKI-PERM-BG-SPA-D55EA6C09FDCC2",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Nepheli Loux Puppet",
+          "itemId": "GKI-PERM-BG-SPA-EC4FC094083CF1",
+          "journey": 3,
+          "availability": "journey-3",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": false,
+      "notes": "",
+      "routeStepIds": [
+        "RW-B-w15-59",
+        "RW-B-w23-46",
+        "RW-B-w23-47"
+      ],
+      "area": "Caria Manor",
+      "linkConfidence": "high",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "BASE-006",
+      "title": "Sorceress Sellen and Jerren",
+      "game": "Base Game",
+      "category": "Hybrid",
+      "journey1": "Journey 1 — assist Sellen.",
+      "journey1Result": "Glintstone Kris; Shard Spiral access; Eccentric’s Set; Sellen’s full conclusion.",
+      "futureOutcome": "Assist Jerren for his alternate dialogue and Ancient Dragon Smithing Stone reward.",
+      "futureJourney": "NG+ — Journey 2",
+      "rewards": [
+        {
+          "name": "Glintstone Kris",
+          "itemId": "GKI-PERM-BG-WPN-118150FFC08838",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Shard Spiral",
+          "itemId": "GKI-PERM-BG-SOR-7774DC6555A2B6",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Eccentric's Set",
+          "itemId": "",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "set",
+          "resolution": "unresolved",
+          "retained": true,
+          "componentItemIds": [
+            "GKI-PERM-BG-ARM-A264646AC9A649",
+            "GKI-PERM-BG-ARM-72BECCFF6AE36E",
+            "GKI-PERM-BG-ARM-9FE6AE75802791",
+            "GKI-PERM-BG-ARM-13FF5E49B55B51"
+          ],
+          "unresolved": true,
+          "reason": "catalog has no set-level item; component armor pieces resolved"
+        },
+        {
+          "name": "Ancient Dragon Smithing Stone",
+          "itemId": "",
+          "journey": 2,
+          "availability": "journey-2",
+          "kind": "reward",
+          "resolution": "unresolved",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": true,
+          "reason": "smithing stones are absent from items.full.json; they belong to the separate upgrade ledger"
+        }
+      ],
+      "unresolved": true,
+      "notes": "Eccentric's Set is catalogued as four armor pieces; Shard Spiral is listed as 'access' (a shop unlock), not a direct drop; 'Sellen's full conclusion' grants no separate item.",
+      "routeStepIds": [
+        "RW-B-w32-80",
+        "RW-B-w32-82",
+        "RW-B-w32-83"
+      ],
+      "area": "Mt. Gelmir",
+      "linkConfidence": "high",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "BASE-007",
+      "title": "Millicent — Assist or Challenge",
+      "game": "Base Game",
+      "category": "Collection",
+      "journey1": "Journey 1 — assist Millicent.",
+      "journey1Result": "Rotten Winged Sword Insignia; Unalloyed Gold Needle; Miquella’s Needle cure path.",
+      "futureOutcome": "Challenge Millicent for Millicent’s Prosthesis.",
+      "futureJourney": "NG+ — Journey 2",
+      "rewards": [
+        {
+          "name": "Rotten Winged Sword Insignia",
+          "itemId": "GKI-PERM-BG-TAL-09A3072D9892E4",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Unalloyed Gold Needle",
+          "itemId": "",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "unresolved",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": true,
+          "reason": "key item absent from items.full.json"
+        },
+        {
+          "name": "Millicent's Prosthesis",
+          "itemId": "GKI-PERM-BG-TAL-CB6ED16869215F",
+          "journey": 2,
+          "availability": "journey-2",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": true,
+      "notes": "Miquella's Needle is named as a cure path, not as a summon-sign reward. The catalog holds only 'Note: Miquella's Needle'.",
+      "routeStepIds": [
+        "RW-B-w45-44",
+        "RW-B-w45-45",
+        "RW-B-w20-39"
+      ],
+      "area": "Elphael, Brace of the Haligtree",
+      "linkConfidence": "high",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "BASE-008",
+      "title": "Boc the Seamster — Rebirth",
+      "game": "Base Game",
+      "category": "Story",
+      "journey1": "Journey 1 — use Prattling Pate “You’re beautiful” and affirm Boc.",
+      "journey1Result": "Boc survives as royal seamster with maximum later dialogue.",
+      "futureOutcome": "Experience the Larval Tear rebirth outcome only as an optional later/backup story branch.",
+      "futureJourney": "NG+ — Journey 2 or controlled backup",
+      "rewards": [],
+      "unresolved": false,
+      "notes": "Neither branch grants an item. The Larval Tear used on the alternate branch is a consumed key item and is absent from the catalog.",
+      "routeStepIds": []
+    },
+    {
+      "decisionId": "BASE-009",
+      "title": "Rya / Zorayas — Final Request",
+      "game": "Base Game",
+      "category": "Hybrid",
+      "journey1": "Journey 1 — spare Rya / Zorayas and do not give the Tonic of Forgetfulness.",
+      "journey1Result": "Daedicar’s Woe; Zorayas’s Letter; independent departure and fullest first-run conclusion.",
+      "futureOutcome": "Journey 2: Tonic of Forgetfulness outcome. Journey 3: requested-death outcome, unless viewed from a controlled backup.",
+      "futureJourney": "NG+ — Journey 2; NG++ — Journey 3 or controlled backups",
+      "rewards": [
+        {
+          "name": "Daedicar's Woe",
+          "itemId": "GKI-PERM-BG-TAL-6BE67255DE98E0",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Zorayas's Letter",
+          "itemId": "",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "unresolved",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": true,
+          "reason": "key item absent from items.full.json"
+        }
+      ],
+      "unresolved": true,
+      "notes": "The Journey 2 Tonic of Forgetfulness outcome and the Journey 3 requested-death outcome grant no new item. The tonic itself is a consumed key item and is absent from the catalog.",
+      "routeStepIds": [
+        "RW-B-w33-100",
+        "RW-B-w33-79",
+        "RW-B-w10-18"
+      ],
+      "area": "Volcano Manor",
+      "linkConfidence": "medium",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "BASE-010",
+      "title": "Brother Corhyn — Tonic of Forgetfulness",
+      "game": "Base Game",
+      "category": "Story",
+      "journey1": "Journey 1 — do not offer Corhyn the Tonic of Forgetfulness.",
+      "journey1Result": "Corhyn’s normal late-game / Ashen Capital dialogue path.",
+      "futureOutcome": "Offer the tonic for his alternate Mountaintops conclusion/dialogue.",
+      "futureJourney": "NG+ — Journey 2",
+      "rewards": [],
+      "unresolved": false,
+      "notes": "No item reward. The decision text says equipment and the bell bearing remain obtainable either way but names no item.",
+      "routeStepIds": [
+        "RW-B-w47-12",
+        "RW-B-w33-79",
+        "RW-B-w33-91"
+      ],
+      "area": "Leyndell, Ashen Capital",
+      "linkConfidence": "medium",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "BASE-011",
+      "title": "Seluvis — Amber Draught for Ranni",
+      "game": "Base Game",
+      "category": "Story",
+      "journey1": "Journey 1 — do not administer Seluvis’s Amber Draught to Ranni.",
+      "journey1Result": "Ranni’s quest proceeds without hostility or interruption to the permanent Age of Stars conclusion.",
+      "futureOutcome": "Experience Ranni’s rejection, Seluvis’s consequence, and absolution recovery only on a later/controlled branch.",
+      "futureJourney": "NG+ — Journey 2 or controlled backup",
+      "rewards": [],
+      "unresolved": false,
+      "notes": "No item reward; the alternate interaction is experiential only.",
+      "routeStepIds": [
+        "RW-B-w48-7",
+        "RW-B-w3-41",
+        "RW-B-w15-74"
+      ],
+      "area": "Endings",
+      "linkConfidence": "medium",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "BASE-012",
+      "title": "Three Fingers — Inheritance Timing",
+      "game": "Base Game",
+      "category": "Hybrid",
+      "journey1": "Journey 1 — do not inherit the Frenzied Flame before the Forge. After Melina’s Forge sacrifice, and only once the Miquella’s Needle cure route is secured, inherit the Flame before the final Six Futures ending sequence.",
+      "journey1Result": "Preserves Melina’s normal Forge conclusion while enabling Lord of Frenzied Flame as ending #1; Backup A is then restored, the Flame is cured, and Backup A2 supports endings #2–#6.",
+      "futureOutcome": "Optional later experience: pre-Forge inheritance branch for the alternate Melina Frenzied Flame scene.",
+      "futureJourney": "NG+ — Journey 2 or controlled backup (optional experience)",
+      "rewards": [],
+      "unresolved": false,
+      "notes": "No item reward. Miquella's Needle is a required cure input; the catalog holds only the note about it.",
+      "routeStepIds": [
+        "RW-B-w41-34",
+        "RW-B-w48-9"
+      ],
+      "area": "Greyoll's Dragonbarrow",
+      "linkConfidence": "low",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "END-001",
+      "title": "Age of Fracture",
+      "game": "Base Game",
+      "category": "Ending",
+      "journey1": "Journey 1 — Six Futures #2: Age of Fracture from Backup A2.",
+      "journey1Result": "Age of Fracture viewed; Elden Lord Steam achievement satisfied if not already earned.",
+      "futureOutcome": "None — ending experience is completed in Journey 1.",
+      "futureJourney": "None — no later ending journey required",
+      "rewards": [],
+      "unresolved": false,
+      "notes": "No Mending Rune is used, so there is no associated reward item.",
+      "routeStepIds": [
+        "RW-B-w48-3"
+      ],
+      "area": "Endings",
+      "linkConfidence": "medium",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "END-002",
+      "title": "Age of Order",
+      "game": "Base Game",
+      "category": "Ending",
+      "journey1": "Journey 1 — Six Futures #5: Age of Order from Backup A2.",
+      "journey1Result": "Age of Order viewed.",
+      "futureOutcome": "None — ending experience is completed in Journey 1.",
+      "futureJourney": "None — no later ending journey required",
+      "rewards": [
+        {
+          "name": "Mending Rune of Perfect Order",
+          "itemId": "RW-ITEM-mending-rune-of-perfect-order",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "required",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": false,
+      "notes": "The mending rune is a prerequisite for the ending, not a reward.",
+      "routeStepIds": [
+        "RW-B-w48-4",
+        "RW-B-w47-10"
+      ],
+      "area": "Endings",
+      "linkConfidence": "high",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "END-003",
+      "title": "Age of the Duskborn",
+      "game": "Base Game",
+      "category": "Ending",
+      "journey1": "Journey 1 — Six Futures #4: Age of the Duskborn from Backup A2.",
+      "journey1Result": "Age of the Duskborn viewed.",
+      "futureOutcome": "None — ending experience is completed in Journey 1.",
+      "futureJourney": "None — no later ending journey required",
+      "rewards": [
+        {
+          "name": "Mending Rune of the Death-Prince",
+          "itemId": "RW-ITEM-mending-rune-of-the-death-prince",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "required",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": false,
+      "notes": "The mending rune is a prerequisite for the ending, not a reward.",
+      "routeStepIds": [
+        "RW-B-w48-5"
+      ],
+      "area": "Endings",
+      "linkConfidence": "high",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "END-004",
+      "title": "Blessing of Despair",
+      "game": "Base Game",
+      "category": "Ending",
+      "journey1": "Journey 1 — Six Futures #3: Blessing of Despair from Backup A2.",
+      "journey1Result": "Blessing of Despair viewed using the Journey 1 Mending Rune of the Fell Curse.",
+      "futureOutcome": "None for the ending; the mutually exclusive Dung Eater Puppet reward is assigned to Journey 2.",
+      "futureJourney": "NG+ — Journey 2 only for Dung Eater Puppet, not for the ending",
+      "rewards": [
+        {
+          "name": "Mending Rune of the Fell Curse",
+          "itemId": "RW-ITEM-mending-rune-of-the-fell-curse",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "required",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": false,
+      "notes": "The mending rune is a prerequisite here; BASE-004 is the acquisition decision.",
+      "routeStepIds": [
+        "RW-B-w48-6",
+        "RW-B-w15-61"
+      ],
+      "area": "Endings",
+      "linkConfidence": "high",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "END-005",
+      "title": "Age of the Stars",
+      "game": "Base Game",
+      "category": "Ending",
+      "journey1": "Journey 1 — Six Futures #6: Age of Stars from Backup A2; PERMANENT Journey 1 conclusion.",
+      "journey1Result": "Age of the Stars Steam achievement; permanent postgame world retained for Journey 1 museum/cleanup state.",
+      "futureOutcome": "None — do not repeat this ending for completion.",
+      "futureJourney": "None — permanent Journey 1 ending",
+      "rewards": [],
+      "unresolved": false,
+      "notes": "No item reward; Ranni's blue summon sign is an interaction.",
+      "routeStepIds": [
+        "RW-B-w48-7"
+      ],
+      "area": "Endings",
+      "linkConfidence": "medium",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "END-006",
+      "title": "Lord of Frenzied Flame",
+      "game": "Base Game",
+      "category": "Ending",
+      "journey1": "Journey 1 — Six Futures #1: Lord of Frenzied Flame while Backup A preserves the active-Flame state.",
+      "journey1Result": "Lord of Frenzied Flame Steam achievement and ending viewed first.",
+      "futureOutcome": "None — ending experience is completed in Journey 1. Optional pre-Forge Melina variant remains a story-experience branch only.",
+      "futureJourney": "None for the ending; optional NG+/backup only for alternate Melina scene",
+      "rewards": [],
+      "unresolved": false,
+      "notes": "No item reward; the ending and Melina variant are experiential.",
+      "routeStepIds": [
+        "RW-B-w48-8",
+        "RW-B-w48-10",
+        "RW-B-w46-3"
+      ],
+      "area": "Endings",
+      "linkConfidence": "high",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "DLC-001",
+      "title": "Moore — After Miquella's Rune Breaks",
+      "game": "DLC",
+      "category": "Story",
+      "journey1": "Journey 1 — tell Moore to “put it behind you.”",
+      "journey1Result": "Moore continues to the later follower battle; fullest continuation is retained on the first run.",
+      "futureOutcome": "Journey 2: “remain sad forever.” Journey 3: “I don’t know” only if the optional dialogue/state variant is still desired.",
+      "futureJourney": "NG+ — Journey 2; optional NG++ — Journey 3",
+      "rewards": [],
+      "unresolved": false,
+      "notes": "No item reward; this is a dialogue-state branch only.",
+      "routeStepIds": [
+        "RW-B-w3-30",
+        "RW-B-w34-90",
+        "RW-B-w48-10"
+      ],
+      "area": "Early Liurnia and Caelid",
+      "linkConfidence": "medium",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "DLC-002",
+      "title": "Leda and Hornsent — Shadow Keep Signs",
+      "game": "DLC",
+      "category": "Collection",
+      "journey1": "Journey 1 — help Hornsent against Leda.",
+      "journey1Result": "Ash of War: Swift Slash; Hornsent remains available for Messmer and later story.",
+      "futureOutcome": "Help Leda against Hornsent for Lacerating Crossed-Tree.",
+      "futureJourney": "NG+ — Journey 2",
+      "rewards": [
+        {
+          "name": "Swift Slash",
+          "itemId": "GKI-PERM-SOTE-AOW-B8B0D8D91BF242",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Lacerating Crossed-Tree",
+          "itemId": "GKI-PERM-SOTE-TAL-746311C0CF4857",
+          "journey": 2,
+          "availability": "journey-2",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": false,
+      "notes": "",
+      "routeStepIds": [
+        "RW-B-w42-32",
+        "RW-B-w49-40",
+        "RW-B-w43-42"
+      ],
+      "area": "Consecrated Snowfield",
+      "linkConfidence": "medium",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "DLC-003",
+      "title": "Leda and Ansbach — Shadow Keep Signs",
+      "game": "DLC",
+      "category": "Collection",
+      "journey1": "Journey 1 — preserve and help Ansbach.",
+      "journey1Result": "Ansbach’s Longbow; Obsidian Lamina; Furious Blade of Ansbach; Ansbach’s Set and finale summons.",
+      "futureOutcome": "Invade/oppose Ansbach with Leda for Retaliatory Crossed-Tree.",
+      "futureJourney": "NG+ — Journey 2",
+      "rewards": [
+        {
+          "name": "Ansbach's Longbow",
+          "itemId": "GKI-PERM-SOTE-WPN-9562A2C4F675F4",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Obsidian Lamina",
+          "itemId": "GKI-PERM-SOTE-WPN-3B2E2A0FB6B0C3",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Furious Blade of Ansbach",
+          "itemId": "GKI-PERM-SOTE-INC-9F726ADDA5BC9D",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Ansbach's Set",
+          "itemId": "",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "set",
+          "resolution": "unresolved",
+          "retained": true,
+          "componentItemIds": [
+            "GKI-PERM-SOTE-ARM-501B07BE26226B",
+            "GKI-PERM-SOTE-ARM-87935C181AFC02",
+            "GKI-PERM-SOTE-ARM-A4C986FB283F98"
+          ],
+          "unresolved": true,
+          "reason": "catalog has no set-level item; component armor pieces resolved"
+        },
+        {
+          "name": "Retaliatory Crossed-Tree",
+          "itemId": "GKI-PERM-SOTE-TAL-3A6D62C1721B58",
+          "journey": 2,
+          "availability": "journey-2",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": true,
+      "notes": "Ansbach's Set is catalogued as three armor pieces; 'finale summons' is an availability state, not an item.",
+      "routeStepIds": [
+        "RW-B-w41-34",
+        "RW-B-w43-42",
+        "RW-B-w49-40"
+      ],
+      "area": "Greyoll's Dragonbarrow",
+      "linkConfidence": "low",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "DLC-004",
+      "title": "Messmer — NPC Summon",
+      "game": "DLC",
+      "category": "Story",
+      "journey1": "Journey 1 — summon Hornsent for Messmer and exhaust his post-boss dialogue.",
+      "journey1Result": "Hornsent participation and later Rauh route/dialogue.",
+      "futureOutcome": "Journey 2: summon Jolán. Journey 3: no-summon variant only if still desired for complete combat/story experience.",
+      "futureJourney": "NG+ — Journey 2; optional NG++ — Journey 3",
+      "rewards": [],
+      "unresolved": false,
+      "notes": "No unique permanent reward is tied to the summon choice (per the decision's completion requirement).",
+      "routeStepIds": [
+        "RW-B-w4-53",
+        "RW-B-w10-48",
+        "RW-B-w8-105"
+      ],
+      "area": "West Limgrave",
+      "linkConfidence": "medium",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "DLC-005",
+      "title": "Fire Knight Queelign — Iris",
+      "game": "DLC",
+      "category": "Collection",
+      "journey1": "Journey 1 — give Fire Knight Queelign an Iris of Grace.",
+      "journey1Result": "Fire Knight Queelign Spirit Ash.",
+      "futureOutcome": "Give an Iris of Occultation for Queelign’s Greatsword.",
+      "futureJourney": "NG+ — Journey 2",
+      "rewards": [
+        {
+          "name": "Fire Knight Queelign Spirit Ash",
+          "itemId": "GKI-PERM-SOTE-SPA-BB2D0B644B670A",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "alias",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Queelign's Greatsword",
+          "itemId": "GKI-PERM-SOTE-WPN-1B731125BE939E",
+          "journey": 2,
+          "availability": "journey-2",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": false,
+      "notes": "The reward is the spirit ash. Iris of Grace is a consumed key item and is absent from the catalog.",
+      "routeStepIds": [
+        "RW-B-w49-42",
+        "RW-B-w21-16",
+        "RW-B-w21-40"
+      ],
+      "area": "New Game Plus Preparation",
+      "linkConfidence": "medium",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "DLC-006",
+      "title": "Swordhand of Night Jolán — Iris",
+      "game": "DLC",
+      "category": "Collection",
+      "journey1": "Journey 1 — give Jolán an Iris of Grace, then use that ash for the DLC-007 Jolán-and-Anna conversion.",
+      "journey1Result": "Swordhand of Night Jolán Spirit Ash acquired, then converted so Jolán and Anna can be retained.",
+      "futureOutcome": "Journey 2: Iris of Occultation for Sword of Night. Journey 3: Iris of Grace again to reacquire a single Jolán Spirit Ash and leave it unconverted.",
+      "futureJourney": "NG+ — Journey 2; NG++ — Journey 3",
+      "rewards": [
+        {
+          "name": "Swordhand of Night Jolán Spirit Ash",
+          "itemId": "GKI-PERM-SOTE-SPA-0BB824A4BE5236",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "alias",
+          "retained": false,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Sword of Night",
+          "itemId": "GKI-PERM-SOTE-WPN-EE142E066D5B96",
+          "journey": 2,
+          "availability": "journey-2",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Swordhand of Night Jolán Spirit Ash",
+          "itemId": "GKI-PERM-SOTE-SPA-0BB824A4BE5236",
+          "journey": 3,
+          "availability": "journey-3",
+          "kind": "reward",
+          "resolution": "alias",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": false,
+      "notes": "Journey 1's Jolán ash is spent on DLC-007's conversion. Iris items are consumed and absent from the catalog.",
+      "routeStepIds": [
+        "RW-B-w34-46",
+        "RW-B-w4-69",
+        "RW-B-w6-85"
+      ],
+      "area": "Capital Outskirts",
+      "linkConfidence": "medium",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "DLC-007",
+      "title": "Jolán and Anna — Spirit Ash Conversion",
+      "game": "DLC",
+      "category": "Collection",
+      "journey1": "Journey 1 — convert the first Jolán Spirit Ash into Jolán and Anna.",
+      "journey1Result": "Jolán and Anna Spirit Ash retained on the permanent collection.",
+      "futureOutcome": "Reacquire Jolán Spirit Ash in Journey 3 and leave that copy unconverted.",
+      "futureJourney": "NG++ — Journey 3",
+      "rewards": [
+        {
+          "name": "Jolán and Anna Spirit Ash",
+          "itemId": "GKI-PERM-SOTE-SPA-EB2DCCA70A5BA1",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "alias",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Swordhand of Night Jolán Spirit Ash",
+          "itemId": "GKI-PERM-SOTE-SPA-0BB824A4BE5236",
+          "journey": 3,
+          "availability": "journey-3",
+          "kind": "reward",
+          "resolution": "alias",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": false,
+      "notes": "Converting replaces the single Jolán ash with Jolán and Anna.",
+      "routeStepIds": [
+        "RW-B-w49-44",
+        "RW-B-w14-109",
+        "RW-B-w35-44"
+      ],
+      "area": "New Game Plus Preparation",
+      "linkConfidence": "medium",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "DLC-008",
+      "title": "Dragon Communion Priestess — Concoction",
+      "game": "DLC",
+      "category": "Collection",
+      "journey1": "Journey 1 — leave the Dragon Communion Priestess undrugged.",
+      "journey1Result": "Flowerstone Gavel + Priestess Heart, preserving the certified first-acquisition recommendation used by the Dragon Communion / lightning build ecosystem.",
+      "futureOutcome": "Use Thiollier’s Concoction before Bayle for Dragonbolt of Florissax + Ancient Dragon Florissax.",
+      "futureJourney": "NG+ — Journey 2",
+      "rewards": [
+        {
+          "name": "Flowerstone Gavel",
+          "itemId": "GKI-PERM-SOTE-WPN-202A04E9ED67EC",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Priestess Heart",
+          "itemId": "GKI-PERM-SOTE-TOL-B2C4EAA7708F59",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Dragonbolt of Florissax",
+          "itemId": "GKI-PERM-SOTE-INC-B68054C9C28B2F",
+          "journey": 2,
+          "availability": "journey-2",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Ancient Dragon Florissax",
+          "itemId": "GKI-PERM-SOTE-SPA-AEDC1CF118B95F",
+          "journey": 2,
+          "availability": "journey-2",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": false,
+      "notes": "Thiollier's Concoction is a consumed key item and is absent from the catalog.",
+      "routeStepIds": [
+        "RW-B-w49-41",
+        "RW-B-w3-91",
+        "RW-B-w4-52"
+      ],
+      "area": "New Game Plus Preparation",
+      "linkConfidence": "medium",
+      "linkMethod": "shared-token+title"
+    },
+    {
+      "decisionId": "DLC-009",
+      "title": "Heart of Bayle — Communion Reward",
+      "game": "DLC",
+      "category": "Collection",
+      "journey1": "Journey 1 — exchange the first Heart of Bayle for Bayle’s Flame Lightning.",
+      "journey1Result": "Bayle’s Flame Lightning acquired as the first Heart reward.",
+      "futureOutcome": "Exchange Journey 2’s Heart of Bayle for Bayle’s Tyranny.",
+      "futureJourney": "NG+ — Journey 2",
+      "rewards": [
+        {
+          "name": "Bayle's Flame Lightning",
+          "itemId": "GKI-PERM-SOTE-INC-BA8D805BA62701",
+          "journey": 1,
+          "availability": "journey-1",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        },
+        {
+          "name": "Bayle's Tyranny",
+          "itemId": "GKI-PERM-SOTE-INC-F77981F4C0C802",
+          "journey": 2,
+          "availability": "journey-2",
+          "kind": "reward",
+          "resolution": "exact",
+          "retained": true,
+          "componentItemIds": [],
+          "unresolved": false
+        }
+      ],
+      "unresolved": false,
+      "notes": "Heart of Bayle is the non-duplicable exchange input and is absent from the catalog; the rewards are the two incantations.",
+      "routeStepIds": []
     }
-   ],
-   "unresolved": false,
-   "notes": "Blessing of Despair is an ending (END-004), not an item."
-  },
-  {
-   "decisionId": "BASE-005",
-   "title": "Pidia — Final Puppet Drop",
-   "game": "Base Game",
-   "category": "Collection",
-   "journey1": "Journey 1 — keep Nepheli free so Pidia resolves to the Dolores branch.",
-   "journey1Result": "Dolores the Sleeping Arrow Puppet while Nepheli remains available for her ruler conclusion.",
-   "futureOutcome": "Use the Journey 3 Nepheli-potion branch to resolve the alternate Pidia/Nepheli Puppet state.",
-   "futureJourney": "NG++ — Journey 3",
-   "rewards": [
-    {
-     "name": "Dolores the Sleeping Arrow Puppet",
-     "itemId": "GKI-PERM-BG-SPA-D55EA6C09FDCC2",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Nepheli Loux Puppet",
-     "itemId": "GKI-PERM-BG-SPA-EC4FC094083CF1",
-     "journey": 3,
-     "availability": "journey-3",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    }
-   ],
-   "unresolved": false,
-   "notes": ""
-  },
-  {
-   "decisionId": "BASE-006",
-   "title": "Sorceress Sellen and Jerren",
-   "game": "Base Game",
-   "category": "Hybrid",
-   "journey1": "Journey 1 — assist Sellen.",
-   "journey1Result": "Glintstone Kris; Shard Spiral access; Eccentric’s Set; Sellen’s full conclusion.",
-   "futureOutcome": "Assist Jerren for his alternate dialogue and Ancient Dragon Smithing Stone reward.",
-   "futureJourney": "NG+ — Journey 2",
-   "rewards": [
-    {
-     "name": "Glintstone Kris",
-     "itemId": "GKI-PERM-BG-WPN-118150FFC08838",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Shard Spiral",
-     "itemId": "GKI-PERM-BG-SOR-7774DC6555A2B6",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Eccentric's Set",
-     "itemId": "",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "set",
-     "resolution": "unresolved",
-     "retained": true,
-     "componentItemIds": [
-      "GKI-PERM-BG-ARM-A264646AC9A649",
-      "GKI-PERM-BG-ARM-72BECCFF6AE36E",
-      "GKI-PERM-BG-ARM-9FE6AE75802791",
-      "GKI-PERM-BG-ARM-13FF5E49B55B51"
-     ],
-     "unresolved": true,
-     "reason": "catalog has no set-level item; component armor pieces resolved"
-    },
-    {
-     "name": "Ancient Dragon Smithing Stone",
-     "itemId": "",
-     "journey": 2,
-     "availability": "journey-2",
-     "kind": "reward",
-     "resolution": "unresolved",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": true,
-     "reason": "smithing stones are absent from items.full.json; they belong to the separate upgrade ledger"
-    }
-   ],
-   "unresolved": true,
-   "notes": "Eccentric's Set is catalogued as four armor pieces; Shard Spiral is listed as 'access' (a shop unlock), not a direct drop; 'Sellen's full conclusion' grants no separate item."
-  },
-  {
-   "decisionId": "BASE-007",
-   "title": "Millicent — Assist or Challenge",
-   "game": "Base Game",
-   "category": "Collection",
-   "journey1": "Journey 1 — assist Millicent.",
-   "journey1Result": "Rotten Winged Sword Insignia; Unalloyed Gold Needle; Miquella’s Needle cure path.",
-   "futureOutcome": "Challenge Millicent for Millicent’s Prosthesis.",
-   "futureJourney": "NG+ — Journey 2",
-   "rewards": [
-    {
-     "name": "Rotten Winged Sword Insignia",
-     "itemId": "GKI-PERM-BG-TAL-09A3072D9892E4",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Unalloyed Gold Needle",
-     "itemId": "",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "unresolved",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": true,
-     "reason": "key item absent from items.full.json"
-    },
-    {
-     "name": "Millicent's Prosthesis",
-     "itemId": "GKI-PERM-BG-TAL-CB6ED16869215F",
-     "journey": 2,
-     "availability": "journey-2",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    }
-   ],
-   "unresolved": true,
-   "notes": "Miquella's Needle is named as a cure path, not as a summon-sign reward. The catalog holds only 'Note: Miquella's Needle'."
-  },
-  {
-   "decisionId": "BASE-008",
-   "title": "Boc the Seamster — Rebirth",
-   "game": "Base Game",
-   "category": "Story",
-   "journey1": "Journey 1 — use Prattling Pate “You’re beautiful” and affirm Boc.",
-   "journey1Result": "Boc survives as royal seamster with maximum later dialogue.",
-   "futureOutcome": "Experience the Larval Tear rebirth outcome only as an optional later/backup story branch.",
-   "futureJourney": "NG+ — Journey 2 or controlled backup",
-   "rewards": [],
-   "unresolved": false,
-   "notes": "Neither branch grants an item. The Larval Tear used on the alternate branch is a consumed key item and is absent from the catalog."
-  },
-  {
-   "decisionId": "BASE-009",
-   "title": "Rya / Zorayas — Final Request",
-   "game": "Base Game",
-   "category": "Hybrid",
-   "journey1": "Journey 1 — spare Rya / Zorayas and do not give the Tonic of Forgetfulness.",
-   "journey1Result": "Daedicar’s Woe; Zorayas’s Letter; independent departure and fullest first-run conclusion.",
-   "futureOutcome": "Journey 2: Tonic of Forgetfulness outcome. Journey 3: requested-death outcome, unless viewed from a controlled backup.",
-   "futureJourney": "NG+ — Journey 2; NG++ — Journey 3 or controlled backups",
-   "rewards": [
-    {
-     "name": "Daedicar's Woe",
-     "itemId": "GKI-PERM-BG-TAL-6BE67255DE98E0",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Zorayas's Letter",
-     "itemId": "",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "unresolved",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": true,
-     "reason": "key item absent from items.full.json"
-    }
-   ],
-   "unresolved": true,
-   "notes": "The Journey 2 Tonic of Forgetfulness outcome and the Journey 3 requested-death outcome grant no new item. The tonic itself is a consumed key item and is absent from the catalog."
-  },
-  {
-   "decisionId": "BASE-010",
-   "title": "Brother Corhyn — Tonic of Forgetfulness",
-   "game": "Base Game",
-   "category": "Story",
-   "journey1": "Journey 1 — do not offer Corhyn the Tonic of Forgetfulness.",
-   "journey1Result": "Corhyn’s normal late-game / Ashen Capital dialogue path.",
-   "futureOutcome": "Offer the tonic for his alternate Mountaintops conclusion/dialogue.",
-   "futureJourney": "NG+ — Journey 2",
-   "rewards": [],
-   "unresolved": false,
-   "notes": "No item reward. The decision text says equipment and the bell bearing remain obtainable either way but names no item."
-  },
-  {
-   "decisionId": "BASE-011",
-   "title": "Seluvis — Amber Draught for Ranni",
-   "game": "Base Game",
-   "category": "Story",
-   "journey1": "Journey 1 — do not administer Seluvis’s Amber Draught to Ranni.",
-   "journey1Result": "Ranni’s quest proceeds without hostility or interruption to the permanent Age of Stars conclusion.",
-   "futureOutcome": "Experience Ranni’s rejection, Seluvis’s consequence, and absolution recovery only on a later/controlled branch.",
-   "futureJourney": "NG+ — Journey 2 or controlled backup",
-   "rewards": [],
-   "unresolved": false,
-   "notes": "No item reward; the alternate interaction is experiential only."
-  },
-  {
-   "decisionId": "BASE-012",
-   "title": "Three Fingers — Inheritance Timing",
-   "game": "Base Game",
-   "category": "Hybrid",
-   "journey1": "Journey 1 — do not inherit the Frenzied Flame before the Forge. After Melina’s Forge sacrifice, and only once the Miquella’s Needle cure route is secured, inherit the Flame before the final Six Futures ending sequence.",
-   "journey1Result": "Preserves Melina’s normal Forge conclusion while enabling Lord of Frenzied Flame as ending #1; Backup A is then restored, the Flame is cured, and Backup A2 supports endings #2–#6.",
-   "futureOutcome": "Optional later experience: pre-Forge inheritance branch for the alternate Melina Frenzied Flame scene.",
-   "futureJourney": "NG+ — Journey 2 or controlled backup (optional experience)",
-   "rewards": [],
-   "unresolved": false,
-   "notes": "No item reward. Miquella's Needle is a required cure input; the catalog holds only the note about it."
-  },
-  {
-   "decisionId": "END-001",
-   "title": "Age of Fracture",
-   "game": "Base Game",
-   "category": "Ending",
-   "journey1": "Journey 1 — Six Futures #2: Age of Fracture from Backup A2.",
-   "journey1Result": "Age of Fracture viewed; Elden Lord Steam achievement satisfied if not already earned.",
-   "futureOutcome": "None — ending experience is completed in Journey 1.",
-   "futureJourney": "None — no later ending journey required",
-   "rewards": [],
-   "unresolved": false,
-   "notes": "No Mending Rune is used, so there is no associated reward item."
-  },
-  {
-   "decisionId": "END-002",
-   "title": "Age of Order",
-   "game": "Base Game",
-   "category": "Ending",
-   "journey1": "Journey 1 — Six Futures #5: Age of Order from Backup A2.",
-   "journey1Result": "Age of Order viewed.",
-   "futureOutcome": "None — ending experience is completed in Journey 1.",
-   "futureJourney": "None — no later ending journey required",
-   "rewards": [
-    {
-     "name": "Mending Rune of Perfect Order",
-     "itemId": "RW-ITEM-mending-rune-of-perfect-order",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "required",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    }
-   ],
-   "unresolved": false,
-   "notes": "The mending rune is a prerequisite for the ending, not a reward."
-  },
-  {
-   "decisionId": "END-003",
-   "title": "Age of the Duskborn",
-   "game": "Base Game",
-   "category": "Ending",
-   "journey1": "Journey 1 — Six Futures #4: Age of the Duskborn from Backup A2.",
-   "journey1Result": "Age of the Duskborn viewed.",
-   "futureOutcome": "None — ending experience is completed in Journey 1.",
-   "futureJourney": "None — no later ending journey required",
-   "rewards": [
-    {
-     "name": "Mending Rune of the Death-Prince",
-     "itemId": "RW-ITEM-mending-rune-of-the-death-prince",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "required",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    }
-   ],
-   "unresolved": false,
-   "notes": "The mending rune is a prerequisite for the ending, not a reward."
-  },
-  {
-   "decisionId": "END-004",
-   "title": "Blessing of Despair",
-   "game": "Base Game",
-   "category": "Ending",
-   "journey1": "Journey 1 — Six Futures #3: Blessing of Despair from Backup A2.",
-   "journey1Result": "Blessing of Despair viewed using the Journey 1 Mending Rune of the Fell Curse.",
-   "futureOutcome": "None for the ending; the mutually exclusive Dung Eater Puppet reward is assigned to Journey 2.",
-   "futureJourney": "NG+ — Journey 2 only for Dung Eater Puppet, not for the ending",
-   "rewards": [
-    {
-     "name": "Mending Rune of the Fell Curse",
-     "itemId": "RW-ITEM-mending-rune-of-the-fell-curse",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "required",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    }
-   ],
-   "unresolved": false,
-   "notes": "The mending rune is a prerequisite here; BASE-004 is the acquisition decision."
-  },
-  {
-   "decisionId": "END-005",
-   "title": "Age of the Stars",
-   "game": "Base Game",
-   "category": "Ending",
-   "journey1": "Journey 1 — Six Futures #6: Age of Stars from Backup A2; PERMANENT Journey 1 conclusion.",
-   "journey1Result": "Age of the Stars Steam achievement; permanent postgame world retained for Journey 1 museum/cleanup state.",
-   "futureOutcome": "None — do not repeat this ending for completion.",
-   "futureJourney": "None — permanent Journey 1 ending",
-   "rewards": [],
-   "unresolved": false,
-   "notes": "No item reward; Ranni's blue summon sign is an interaction."
-  },
-  {
-   "decisionId": "END-006",
-   "title": "Lord of Frenzied Flame",
-   "game": "Base Game",
-   "category": "Ending",
-   "journey1": "Journey 1 — Six Futures #1: Lord of Frenzied Flame while Backup A preserves the active-Flame state.",
-   "journey1Result": "Lord of Frenzied Flame Steam achievement and ending viewed first.",
-   "futureOutcome": "None — ending experience is completed in Journey 1. Optional pre-Forge Melina variant remains a story-experience branch only.",
-   "futureJourney": "None for the ending; optional NG+/backup only for alternate Melina scene",
-   "rewards": [],
-   "unresolved": false,
-   "notes": "No item reward; the ending and Melina variant are experiential."
-  },
-  {
-   "decisionId": "DLC-001",
-   "title": "Moore — After Miquella's Rune Breaks",
-   "game": "DLC",
-   "category": "Story",
-   "journey1": "Journey 1 — tell Moore to “put it behind you.”",
-   "journey1Result": "Moore continues to the later follower battle; fullest continuation is retained on the first run.",
-   "futureOutcome": "Journey 2: “remain sad forever.” Journey 3: “I don’t know” only if the optional dialogue/state variant is still desired.",
-   "futureJourney": "NG+ — Journey 2; optional NG++ — Journey 3",
-   "rewards": [],
-   "unresolved": false,
-   "notes": "No item reward; this is a dialogue-state branch only."
-  },
-  {
-   "decisionId": "DLC-002",
-   "title": "Leda and Hornsent — Shadow Keep Signs",
-   "game": "DLC",
-   "category": "Collection",
-   "journey1": "Journey 1 — help Hornsent against Leda.",
-   "journey1Result": "Ash of War: Swift Slash; Hornsent remains available for Messmer and later story.",
-   "futureOutcome": "Help Leda against Hornsent for Lacerating Crossed-Tree.",
-   "futureJourney": "NG+ — Journey 2",
-   "rewards": [
-    {
-     "name": "Swift Slash",
-     "itemId": "GKI-PERM-SOTE-AOW-B8B0D8D91BF242",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Lacerating Crossed-Tree",
-     "itemId": "GKI-PERM-SOTE-TAL-746311C0CF4857",
-     "journey": 2,
-     "availability": "journey-2",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    }
-   ],
-   "unresolved": false,
-   "notes": ""
-  },
-  {
-   "decisionId": "DLC-003",
-   "title": "Leda and Ansbach — Shadow Keep Signs",
-   "game": "DLC",
-   "category": "Collection",
-   "journey1": "Journey 1 — preserve and help Ansbach.",
-   "journey1Result": "Ansbach’s Longbow; Obsidian Lamina; Furious Blade of Ansbach; Ansbach’s Set and finale summons.",
-   "futureOutcome": "Invade/oppose Ansbach with Leda for Retaliatory Crossed-Tree.",
-   "futureJourney": "NG+ — Journey 2",
-   "rewards": [
-    {
-     "name": "Ansbach's Longbow",
-     "itemId": "GKI-PERM-SOTE-WPN-9562A2C4F675F4",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Obsidian Lamina",
-     "itemId": "GKI-PERM-SOTE-WPN-3B2E2A0FB6B0C3",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Furious Blade of Ansbach",
-     "itemId": "GKI-PERM-SOTE-INC-9F726ADDA5BC9D",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Ansbach's Set",
-     "itemId": "",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "set",
-     "resolution": "unresolved",
-     "retained": true,
-     "componentItemIds": [
-      "GKI-PERM-SOTE-ARM-501B07BE26226B",
-      "GKI-PERM-SOTE-ARM-87935C181AFC02",
-      "GKI-PERM-SOTE-ARM-A4C986FB283F98"
-     ],
-     "unresolved": true,
-     "reason": "catalog has no set-level item; component armor pieces resolved"
-    },
-    {
-     "name": "Retaliatory Crossed-Tree",
-     "itemId": "GKI-PERM-SOTE-TAL-3A6D62C1721B58",
-     "journey": 2,
-     "availability": "journey-2",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    }
-   ],
-   "unresolved": true,
-   "notes": "Ansbach's Set is catalogued as three armor pieces; 'finale summons' is an availability state, not an item."
-  },
-  {
-   "decisionId": "DLC-004",
-   "title": "Messmer — NPC Summon",
-   "game": "DLC",
-   "category": "Story",
-   "journey1": "Journey 1 — summon Hornsent for Messmer and exhaust his post-boss dialogue.",
-   "journey1Result": "Hornsent participation and later Rauh route/dialogue.",
-   "futureOutcome": "Journey 2: summon Jolán. Journey 3: no-summon variant only if still desired for complete combat/story experience.",
-   "futureJourney": "NG+ — Journey 2; optional NG++ — Journey 3",
-   "rewards": [],
-   "unresolved": false,
-   "notes": "No unique permanent reward is tied to the summon choice (per the decision's completion requirement)."
-  },
-  {
-   "decisionId": "DLC-005",
-   "title": "Fire Knight Queelign — Iris",
-   "game": "DLC",
-   "category": "Collection",
-   "journey1": "Journey 1 — give Fire Knight Queelign an Iris of Grace.",
-   "journey1Result": "Fire Knight Queelign Spirit Ash.",
-   "futureOutcome": "Give an Iris of Occultation for Queelign’s Greatsword.",
-   "futureJourney": "NG+ — Journey 2",
-   "rewards": [
-    {
-     "name": "Fire Knight Queelign Spirit Ash",
-     "itemId": "GKI-PERM-SOTE-SPA-BB2D0B644B670A",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "alias",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Queelign's Greatsword",
-     "itemId": "GKI-PERM-SOTE-WPN-1B731125BE939E",
-     "journey": 2,
-     "availability": "journey-2",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    }
-   ],
-   "unresolved": false,
-   "notes": "The reward is the spirit ash. Iris of Grace is a consumed key item and is absent from the catalog."
-  },
-  {
-   "decisionId": "DLC-006",
-   "title": "Swordhand of Night Jolán — Iris",
-   "game": "DLC",
-   "category": "Collection",
-   "journey1": "Journey 1 — give Jolán an Iris of Grace, then use that ash for the DLC-007 Jolán-and-Anna conversion.",
-   "journey1Result": "Swordhand of Night Jolán Spirit Ash acquired, then converted so Jolán and Anna can be retained.",
-   "futureOutcome": "Journey 2: Iris of Occultation for Sword of Night. Journey 3: Iris of Grace again to reacquire a single Jolán Spirit Ash and leave it unconverted.",
-   "futureJourney": "NG+ — Journey 2; NG++ — Journey 3",
-   "rewards": [
-    {
-     "name": "Swordhand of Night Jolán Spirit Ash",
-     "itemId": "GKI-PERM-SOTE-SPA-0BB824A4BE5236",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "alias",
-     "retained": false,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Sword of Night",
-     "itemId": "GKI-PERM-SOTE-WPN-EE142E066D5B96",
-     "journey": 2,
-     "availability": "journey-2",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Swordhand of Night Jolán Spirit Ash",
-     "itemId": "GKI-PERM-SOTE-SPA-0BB824A4BE5236",
-     "journey": 3,
-     "availability": "journey-3",
-     "kind": "reward",
-     "resolution": "alias",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    }
-   ],
-   "unresolved": false,
-   "notes": "Journey 1's Jolán ash is spent on DLC-007's conversion. Iris items are consumed and absent from the catalog."
-  },
-  {
-   "decisionId": "DLC-007",
-   "title": "Jolán and Anna — Spirit Ash Conversion",
-   "game": "DLC",
-   "category": "Collection",
-   "journey1": "Journey 1 — convert the first Jolán Spirit Ash into Jolán and Anna.",
-   "journey1Result": "Jolán and Anna Spirit Ash retained on the permanent collection.",
-   "futureOutcome": "Reacquire Jolán Spirit Ash in Journey 3 and leave that copy unconverted.",
-   "futureJourney": "NG++ — Journey 3",
-   "rewards": [
-    {
-     "name": "Jolán and Anna Spirit Ash",
-     "itemId": "GKI-PERM-SOTE-SPA-EB2DCCA70A5BA1",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "alias",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Swordhand of Night Jolán Spirit Ash",
-     "itemId": "GKI-PERM-SOTE-SPA-0BB824A4BE5236",
-     "journey": 3,
-     "availability": "journey-3",
-     "kind": "reward",
-     "resolution": "alias",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    }
-   ],
-   "unresolved": false,
-   "notes": "Converting replaces the single Jolán ash with Jolán and Anna."
-  },
-  {
-   "decisionId": "DLC-008",
-   "title": "Dragon Communion Priestess — Concoction",
-   "game": "DLC",
-   "category": "Collection",
-   "journey1": "Journey 1 — leave the Dragon Communion Priestess undrugged.",
-   "journey1Result": "Flowerstone Gavel + Priestess Heart, preserving the certified first-acquisition recommendation used by the Dragon Communion / lightning build ecosystem.",
-   "futureOutcome": "Use Thiollier’s Concoction before Bayle for Dragonbolt of Florissax + Ancient Dragon Florissax.",
-   "futureJourney": "NG+ — Journey 2",
-   "rewards": [
-    {
-     "name": "Flowerstone Gavel",
-     "itemId": "GKI-PERM-SOTE-WPN-202A04E9ED67EC",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Priestess Heart",
-     "itemId": "GKI-PERM-SOTE-TOL-B2C4EAA7708F59",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Dragonbolt of Florissax",
-     "itemId": "GKI-PERM-SOTE-INC-B68054C9C28B2F",
-     "journey": 2,
-     "availability": "journey-2",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Ancient Dragon Florissax",
-     "itemId": "GKI-PERM-SOTE-SPA-AEDC1CF118B95F",
-     "journey": 2,
-     "availability": "journey-2",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    }
-   ],
-   "unresolved": false,
-   "notes": "Thiollier's Concoction is a consumed key item and is absent from the catalog."
-  },
-  {
-   "decisionId": "DLC-009",
-   "title": "Heart of Bayle — Communion Reward",
-   "game": "DLC",
-   "category": "Collection",
-   "journey1": "Journey 1 — exchange the first Heart of Bayle for Bayle’s Flame Lightning.",
-   "journey1Result": "Bayle’s Flame Lightning acquired as the first Heart reward.",
-   "futureOutcome": "Exchange Journey 2’s Heart of Bayle for Bayle’s Tyranny.",
-   "futureJourney": "NG+ — Journey 2",
-   "rewards": [
-    {
-     "name": "Bayle's Flame Lightning",
-     "itemId": "GKI-PERM-SOTE-INC-BA8D805BA62701",
-     "journey": 1,
-     "availability": "journey-1",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    },
-    {
-     "name": "Bayle's Tyranny",
-     "itemId": "GKI-PERM-SOTE-INC-F77981F4C0C802",
-     "journey": 2,
-     "availability": "journey-2",
-     "kind": "reward",
-     "resolution": "exact",
-     "retained": true,
-     "componentItemIds": [],
-     "unresolved": false
-    }
-   ],
-   "unresolved": false,
-   "notes": "Heart of Bayle is the non-duplicable exchange input and is absent from the catalog; the rewards are the two incantations."
-  }
- ]
+  ]
 }

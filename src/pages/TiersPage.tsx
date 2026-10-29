@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Icon } from "../components/Icon";
 import {
   Badge,
   Button,
+  Callout,
   EmptyState,
   PageHeader,
   SearchInput,
@@ -12,6 +14,11 @@ import {
 import { ITEMS_BY_NAME, TIERS, TIERS_BY_LIST } from "../lib/data";
 import { PATCH_IMPACT_BY_NAME } from "../data/game";
 import { formatNumber } from "../lib/format";
+import {
+  RemembrancePlanSummary,
+  RemembrancePlanTable,
+} from "../components/RemembrancePlan";
+import { remembrancePlanRows } from "../lib/remembrance";
 import { navigate, useRoute } from "../lib/router";
 import type { TierEntry } from "../lib/types";
 import "./library.css";
@@ -60,11 +67,25 @@ const TIER_LISTS: TierListDefinition[] = [
   },
 ];
 
-const TAB_ITEMS = TIER_LISTS.map((list) => ({
-  id: list.id,
-  label: list.label,
-  count: (TIERS_BY_LIST[list.id] ?? []).length,
-}));
+const REMEMBRANCE_TAB_ID = "remembrances";
+
+const TAB_ITEMS = [
+  ...TIER_LISTS.map((list) => ({
+    id: list.id,
+    label: list.label,
+    count: (TIERS_BY_LIST[list.id] ?? []).length,
+  })),
+  {
+    id: REMEMBRANCE_TAB_ID,
+    label: "Remembrances",
+    count: remembrancePlanRows().length || undefined,
+  },
+];
+
+const TARNISHED_PATTERN = /1\.17|tarnished\s+(pack|edition)/i;
+
+/** How many ranked entries the 1.17 / Tarnished Pack pass touched. */
+const TARNISHED_TOTAL = TIERS.filter((entry) => TARNISHED_PATTERN.test(entry.source ?? "")).length;
 
 interface Column {
   key: string;
@@ -80,6 +101,31 @@ function DetailLine({ label, value }: { label: string; value?: string }) {
       <span className="library-label">{label}</span>
       <span>{value}</span>
     </div>
+  );
+}
+
+/**
+ * Names link to the wiki whenever the row carries a `wikiUrl`; otherwise the
+ * collection entry is the closest in-app destination. The external icon marks
+ * links that leave the companion.
+ */
+function TierName({ entry }: { entry: TierEntry }) {
+  const itemMatch = ITEMS_BY_NAME[entry.name]?.[0];
+  const href = entry.wikiUrl
+    ? entry.wikiUrl
+    : itemMatch
+      ? `#/collection?item=${encodeURIComponent(itemMatch.id)}`
+      : `#/collection?q=${encodeURIComponent(entry.name)}`;
+  return (
+    <a
+      className="tier-link"
+      href={href}
+      {...(entry.wikiUrl ? { target: "_blank", rel: "noreferrer noopener" } : {})}
+      title={entry.wikiUrl ? `${entry.name} on the wiki` : `Open ${entry.name} in the collection`}
+    >
+      {entry.name}
+      {entry.wikiUrl ? <Icon name="external" size={10} className="tier-link-icon" /> : null}
+    </a>
   );
 }
 
@@ -127,9 +173,39 @@ function TierTable({
   );
 }
 
+/**
+ * Remembrance tab body: the ordered duplication plan rendered on the tiers
+ * page, so the ranking context lives next to the tier tables.
+ */
+export function RemembrancePlanSection() {
+  const rows = remembrancePlanRows();
+  return (
+    <>
+      <div className="tier-heading">
+        <div className="tier-heading-row">
+          <h2>Remembrances</h2>
+          <Badge tone="accent">{formatNumber(rows.length)} entries</Badge>
+          <Badge tone="info">Ordered by duplicate priority</Badge>
+        </div>
+        <p className="tier-description">
+          Most likely to duplicate first. Each row records the boss, the duplicate decision, the Journey 1 and
+          Journey 2 reward picks, and the area the remembrance drops in.
+        </p>
+      </div>
+
+      <div className="tier-heading tier-heading-tight">
+        <RemembrancePlanSummary rows={rows} />
+      </div>
+
+      <RemembrancePlanTable rows={rows} />
+    </>
+  );
+}
+
 export function TiersPage() {
   const route = useRoute();
   const listParam = route.query.get("list");
+  const isRemembranceTab = listParam === REMEMBRANCE_TAB_ID;
   const activeList = TIER_LISTS.find((list) => list.id === listParam) ?? TIER_LISTS[0];
   const routeQuery = route.query.get("q") ?? "";
   const baseRows = TIERS_BY_LIST[activeList.id] ?? [];
@@ -137,8 +213,10 @@ export function TiersPage() {
   const [query, setQuery] = useState(routeQuery);
   const [tier, setTier] = useState("all");
   const [sort, setSort] = useState<"asc" | "desc">("asc");
+  const [tarnishedOnly, setTarnishedOnly] = useState(false);
   const [limit, setLimit] = useState(PAGE_SIZE);
   const previousList = useRef(activeList.id);
+  const previousTab = useRef(isRemembranceTab);
 
   useEffect(() => {
     setQuery(routeQuery);
@@ -149,18 +227,30 @@ export function TiersPage() {
     previousList.current = activeList.id;
     setTier("all");
     setSort("asc");
+    setTarnishedOnly(false);
     setLimit(PAGE_SIZE);
   }, [activeList.id]);
 
   useEffect(() => {
+    if (previousTab.current === isRemembranceTab) return;
+    previousTab.current = isRemembranceTab;
+    setQuery("");
+    setTier("all");
+    setSort("asc");
+    setTarnishedOnly(false);
     setLimit(PAGE_SIZE);
-  }, [activeList.id, query, tier, sort]);
+  }, [isRemembranceTab]);
+
+  useEffect(() => {
+    setLimit(PAGE_SIZE);
+  }, [activeList.id, query, tier, sort, tarnishedOnly]);
 
   const tierOptions = useMemo(() => [...new Set(baseRows.map((entry) => entry.tier))], [baseRows]);
 
   const filteredRows = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return baseRows.filter((entry) => {
+      if (tarnishedOnly && !TARNISHED_PATTERN.test(entry.source ?? "")) return false;
       if (tier !== "all" && entry.tier !== tier) return false;
       if (!needle) return true;
       return [
@@ -175,9 +265,10 @@ export function TiersPage() {
         entry.limitation,
         entry.tier,
         entry.list,
+        entry.source,
       ].some((value) => String(value ?? "").toLowerCase().includes(needle));
     });
-  }, [baseRows, query, tier]);
+  }, [baseRows, query, tier, tarnishedOnly]);
 
   const sortedRows = useMemo(
     () => [...filteredRows].sort((a, b) => (sort === "asc" ? a.rank - b.rank : b.rank - a.rank)),
@@ -188,10 +279,11 @@ export function TiersPage() {
   const tears = activeList.id === "Crystal Tears";
 
   function changeList(id: string) {
-    if (!TIER_LISTS.some((list) => list.id === id)) return;
+    if (id !== REMEMBRANCE_TAB_ID && !TIER_LISTS.some((list) => list.id === id)) return;
     setQuery("");
     setTier("all");
     setSort("asc");
+    setTarnishedOnly(false);
     navigate(`/tiers?list=${encodeURIComponent(id)}`);
   }
 
@@ -199,6 +291,7 @@ export function TiersPage() {
     setQuery("");
     setTier("all");
     setSort("asc");
+    setTarnishedOnly(false);
     setLimit(PAGE_SIZE);
     navigate(`/tiers?list=${encodeURIComponent(activeList.id)}`);
   }
@@ -221,21 +314,18 @@ export function TiersPage() {
       label: "Name",
       width: "20%",
       render: (entry) => {
-        const itemMatch = ITEMS_BY_NAME[entry.name]?.[0];
-        const href = itemMatch
-          ? `#/collection?item=${encodeURIComponent(itemMatch.id)}`
-          : `#/collection?q=${encodeURIComponent(entry.name)}`;
         const patchImpact = PATCH_IMPACT_BY_NAME[entry.name];
         return (
           <>
             <span className="row wrap" style={{ gap: 6 }}>
-              <a className="tier-link" href={href}>
-                {entry.name}
-              </a>
+              <TierName entry={entry} />
               {patchImpact ? (
                 <span title={`${patchImpact.category}: ${patchImpact.summary}`}>
                   <Badge tone="warning">1.17</Badge>
                 </span>
+              ) : null}
+              {!patchImpact && TARNISHED_PATTERN.test(entry.source ?? "") ? (
+                <Badge tone="info">Tarnished Pack</Badge>
               ) : null}
             </span>
             {entry.poolType ? <div className="library-sub">{entry.poolType}</div> : null}
@@ -303,6 +393,39 @@ export function TiersPage() {
     </div>
   );
 
+  const tarnishedRows = baseRows.filter((entry) => TARNISHED_PATTERN.test(entry.source ?? ""));
+
+  if (isRemembranceTab) {
+    return (
+      <div className="page">
+        <PageHeader
+          eyebrow="Journey plan · Remembrance duplication"
+          title="Tiers"
+          description={
+            <>
+              Remembrances ranked by how likely each one is to need a duplicate: the entries at the top are the
+              ones where spending a mausoleum now protects a build or a paired reward. The ranking below is the
+              recorded order, not a percentage.
+            </>
+          }
+          actions={
+            <>
+              <Badge tone="accent">{formatNumber(remembrancePlanRows().length)} remembrances</Badge>
+              <Button icon="sword" onClick={() => navigate("/collection")}>
+                Collection
+              </Button>
+            </>
+          }
+        />
+
+        <section className="card">
+          <TabBar items={TAB_ITEMS} value={REMEMBRANCE_TAB_ID} onChange={changeList} />
+          <RemembrancePlanSection />
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="page">
       <PageHeader
@@ -359,10 +482,37 @@ export function TiersPage() {
             <option value="asc">Rank: low to high</option>
             <option value="desc">Rank: high to low</option>
           </Select>
+          <Select
+            label="Patch"
+            value={tarnishedOnly ? "tarnished" : "all"}
+            onChange={(event) => setTarnishedOnly(event.target.value === "tarnished")}
+          >
+            <option value="all">All entries</option>
+            <option value="tarnished">1.17 additions ({formatNumber(TARNISHED_TOTAL)})</option>
+          </Select>
           <span className="library-count" style={{ marginLeft: "auto", paddingBottom: 10 }}>
             {formatNumber(filteredRows.length)} matching
           </span>
         </div>
+
+        {tarnishedRows.length ? (
+          <Callout tone="default" icon="spark">
+            <div className="tier-tarnished-note">
+              <span>
+                <strong>{formatNumber(tarnishedRows.length)} entries</strong> come from the 1.17 / Tarnished Pack
+                pass and are labeled in the name column. Use the Patch filter to isolate them from the older
+                rankings.
+              </span>
+              <span className="tag-list">
+                {tarnishedRows.map((entry) => (
+                  <Badge key={`${entry.list}-${entry.name}`} tone="warning">
+                    {entry.name}
+                  </Badge>
+                ))}
+              </span>
+            </div>
+          </Callout>
+        ) : null}
 
         <TierTable rows={visibleRows} columns={columns} tears={tears} empty={empty} />
 

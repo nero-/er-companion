@@ -9,3 +9,4 @@ __pycache__/
 *.pyc
 research/raw/upgrades-*
 research/raw/world-objects-*
+research/raw/descriptions/

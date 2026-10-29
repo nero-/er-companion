@@ -3,5 +3,5 @@
   "identifier": "default",
   "description": "Core window access for the companion.",
   "windows": ["main"],
-  "permissions": ["core:default"]
+  "permissions": ["core:default", "global-shortcut:default"]
 }

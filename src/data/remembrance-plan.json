@@ -1,0 +1,514 @@
+{
+  "generatedAt": "2026-10-29T14:15:07Z",
+  "source": "src/data/meta.json -> remembrances (rewards, journey selections, duplication assignments, duplication class, completion protection); src/data/route.full.json -> steps (boss kill step that drops each remembrance, and its area); src/data/bosses.full.json -> encounters (area fallback only).",
+  "method": "Entries follow the user's duplication-priority order (most likely to need a second reward first). Each entry is resolved from meta.json remembrances by id: rewards, Journey 1/Journey 2 selections, and duplication assignments are copied verbatim; the duplicatePlan text states which reward to take first and which duplicate site to use. routeStepIds are the route.full.json steps whose instruction names that remembrance (the boss kill that drops it); area is that step's area. counts.duplicateNow = entries whose meta journey1Duplication is an assigned J1 DUP site; counts.noDuplicate = entries whose duplicateTarget states no duplicate copy is needed and that have no J1 assignment; counts.defer = the remaining entries, whose second reward waits for Journey 2 with the duplicate held in reserve. rewards lists the Journey 1 selection first, then the remaining unique rewards, in meta.json order. Heart of Bayle (user priority 26) is not a remembrance: the Heart is a non-duplicable exchange input documented in branch-plan.json, so it does not appear here. Remembrances are never consumed for runes before both rewards are secured.",
+  "entries": [
+    {
+      "order": 1,
+      "remembranceId": "elden-remembrance",
+      "remembrance": "Elden Remembrance",
+      "boss": "Elden Beast",
+      "game": "Base Game",
+      "priority": "Duplication priority 1 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Radagon / Elden Beast. Sacred Relic Sword is build/farming relevant; J1 coffin duplication closes Marika's Hammer before endings/NG+.",
+      "duplicatePlan": "Take Sacred Relic Sword first — never duplicate before the unique reward is secured. Then spend the duplicate at Finger Ruins of Dheo coffin on Marika's Hammer. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Sacred Relic Sword. Duplication: J1 DUP-10 — Finger Ruins of Dheo coffin → Marika's Hammer",
+      "journey2": "Journey 2 — Optional second Sacred Relic Sword — unique pair already complete in Journey 1. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Sacred Relic Sword",
+        "Marika's Hammer"
+      ],
+      "routeStepIds": [
+        "RW-B-w47-21"
+      ],
+      "area": "Leyndell, Ashen Capital",
+      "notes": "The Realm of Shadow coffins remain valid remembrance duplicators; use the reserved Dheo coffin after Elden Beast and before NG+ readiness certification. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Elden Throne — obtained from Elden Beast; exchange with Enia before completing the Six Futures sequence. Source: https://eldenring.wiki.gg/wiki/Elden_Remembrance"
+    },
+    {
+      "order": 2,
+      "remembranceId": "remembrance-of-the-wild-boar-rider",
+      "remembrance": "Remembrance of the Wild Boar Rider",
+      "boss": "Commander Gaius",
+      "game": "Shadow of the Erdtree",
+      "priority": "Duplication priority 2 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Gaius. Build-critical sorcery first; Sword Lance completes in Journey 2.",
+      "duplicatePlan": "Take Blades of Stone first; Sword Lance is the Journey 2 redemption, so the Journey 1 duplicate stays in reserve. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Blades of Stone. Duplication: None — preserve Journey 1 coffin capacity",
+      "journey2": "Journey 2 — Sword Lance. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Blades of Stone",
+        "Sword Lance"
+      ],
+      "routeStepIds": [
+        "RW-D-d13-51"
+      ],
+      "area": "Church District",
+      "notes": "Blades of Stone is explicitly used by certified gravity/intelligence systems, so it is the Journey 1 choice. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Scaduview / Shadow Keep hinterland — obtained from Commander Gaius; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Wild_Boar_Rider"
+    },
+    {
+      "order": 3,
+      "remembranceId": "remembrance-of-the-black-blade",
+      "remembrance": "Remembrance of the Black Blade",
+      "boss": "Maliketh, the Black Blade",
+      "game": "Base Game",
+      "priority": "Duplication priority 3 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Maliketh. Black Blade incantation is broadly build-relevant; weapon is closed by the second no-bell mausoleum.",
+      "duplicatePlan": "Take Black Blade first — never duplicate before the unique reward is secured. Then spend the duplicate at Mausoleum Compound no-bell B on Maliketh's Black Blade. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Black Blade. Duplication: J1 DUP-07 — Mausoleum Compound no-bell B → Maliketh's Black Blade",
+      "journey2": "Journey 2 — Optional second Maliketh's Black Blade — unique pair already complete in Journey 1. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Black Blade",
+        "Maliketh's Black Blade"
+      ],
+      "routeStepIds": [
+        "RW-B-w46-95"
+      ],
+      "area": "Crumbling Farum Azula",
+      "notes": "Maliketh remains the base-game → DLC transition gate; complete all Phase 22C pre-Maliketh checks first. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Crumbling Farum Azula — obtained from Maliketh; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Black_Blade"
+    },
+    {
+      "order": 4,
+      "remembranceId": "remembrance-of-the-starscourge",
+      "remembrance": "Remembrance of the Starscourge",
+      "boss": "Starscourge Radahn",
+      "game": "Base Game",
+      "priority": "Duplication priority 4 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Starscourge Radahn. Build-relevant paired colossal weapon first; bow completes in Journey 2.",
+      "duplicatePlan": "Take Starscourge Greatsword first; Lion Greatbow waits for Journey 2 and needs no duplicate. Second-copy rule: the reward is already a paired/dual weapon; no extra copy is required for its native paired moveset. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Starscourge Greatsword. Duplication: None — preserve Journey 1 duplication capacity",
+      "journey2": "Journey 2 — Lion Greatbow. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Starscourge Greatsword",
+        "Lion Greatbow"
+      ],
+      "routeStepIds": [
+        "RW-B-w21-35"
+      ],
+      "area": "Redmane Castle",
+      "notes": "Starscourge Greatsword is itself a paired weapon when two-handed; a second physical copy is not required for its paired moveset. Duplication class: Shardbearer — bell mausoleum or DLC coffin only. Consumed for runes: No — Completion Protected. Location: Redmane Castle / Wailing Dunes — obtained from Starscourge Radahn; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Starscourge"
+    },
+    {
+      "order": 5,
+      "remembranceId": "remembrance-of-the-impaler",
+      "remembrance": "Remembrance of the Impaler",
+      "boss": "Messmer the Impaler",
+      "game": "Shadow of the Erdtree",
+      "priority": "Duplication priority 5 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Messmer. Completion pair; first choice favors the unique weapon.",
+      "duplicatePlan": "Take Spear of the Impaler first; Messmer's Orb is the Journey 2 redemption, so the Journey 1 duplicate stays in reserve. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Spear of the Impaler. Duplication: None — preserve Journey 1 coffin capacity",
+      "journey2": "Journey 2 — Messmer's Orb. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Spear of the Impaler",
+        "Messmer's Orb"
+      ],
+      "routeStepIds": [
+        "RW-D-d13-56"
+      ],
+      "area": "Church District",
+      "notes": "The Messmer transition remains governed by Phase 22C; reward allocation does not change the lockout gate. Duplication class: Shardbearer — bell mausoleum or DLC coffin only. Consumed for runes: No — Completion Protected. Location: Shadow Keep — obtained from Messmer; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Impaler"
+    },
+    {
+      "order": 6,
+      "remembranceId": "remembrance-of-the-mother-of-fingers",
+      "remembrance": "Remembrance of the Mother of Fingers",
+      "boss": "Metyr, Mother of Fingers",
+      "game": "Shadow of the Erdtree",
+      "priority": "Duplication priority 6 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Metyr. Build-critical: Staff of the Great Beyond is a certified hybrid catalyst; Gazing Finger closes the competing reward.",
+      "duplicatePlan": "Take Staff of the Great Beyond first — never duplicate before the unique reward is secured. Then spend the duplicate at Cathedral of Manus Metyr coffin on Gazing Finger. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Staff of the Great Beyond. Duplication: J1 DUP-09 — Cathedral of Manus Metyr coffin → Gazing Finger",
+      "journey2": "Journey 2 — Optional second Staff of the Great Beyond — unique pair already complete in Journey 1. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Staff of the Great Beyond",
+        "Gazing Finger"
+      ],
+      "routeStepIds": [
+        "RW-D-d14-21"
+      ],
+      "area": "Scaduview",
+      "notes": "This exact pair is already referenced by Golden Order Paladin acquisition gates; Journey 1 secures both. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Finger Ruins / Cathedral of Manus Metyr questline — obtained from Metyr; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Mother_of_Fingers"
+    },
+    {
+      "order": 7,
+      "remembranceId": "remembrance-of-the-dancing-lion",
+      "remembrance": "Remembrance of the Dancing Lion",
+      "boss": "Divine Beast Dancing Lion",
+      "game": "Shadow of the Erdtree",
+      "priority": "Duplication priority 7 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Divine Beast. DLC completion pair; no certified need for both before Journey 2.",
+      "duplicatePlan": "Take Enraged Divine Beast first; Ash of War: Divine Beast Frost Stomp waits for Journey 2 and needs no duplicate. Second-copy rule: no duplicate physical weapon target. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Enraged Divine Beast. Duplication: None — preserve Journey 1 coffin capacity",
+      "journey2": "Journey 2 — Ash of War: Divine Beast Frost Stomp. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Enraged Divine Beast",
+        "Ash of War: Divine Beast Frost Stomp"
+      ],
+      "routeStepIds": [
+        "RW-D-d3-50"
+      ],
+      "area": "Belurat, Tower Settlement",
+      "notes": "DLC reward planning begins only after the Maliketh transition under the approved route. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Belurat, Tower Settlement — obtained from Divine Beast Dancing Lion; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Dancing_Lion"
+    },
+    {
+      "order": 8,
+      "remembranceId": "remembrance-of-the-saint-of-the-bud",
+      "remembrance": "Remembrance of the Saint of the Bud",
+      "boss": "Romina, Saint of the Bud",
+      "game": "Shadow of the Erdtree",
+      "priority": "Duplication priority 8 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Romina. Build-relevant weapon first; incantation completes in Journey 2.",
+      "duplicatePlan": "Take Poleblade of the Bud first; Rotten Butterflies is the Journey 2 redemption, so the Journey 1 duplicate stays in reserve. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Poleblade of the Bud. Duplication: None — preserve Journey 1 coffin capacity",
+      "journey2": "Journey 2 — Rotten Butterflies. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Poleblade of the Bud",
+        "Rotten Butterflies"
+      ],
+      "routeStepIds": [
+        "RW-D-d19-65"
+      ],
+      "area": "Ancient Ruins of Rauh",
+      "notes": "Resolve all pre-sealing-tree cleanup before progressing beyond the DLC cutoff. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Church of the Bud — obtained from Romina; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Saint_of_the_Bud"
+    },
+    {
+      "order": 9,
+      "remembranceId": "remembrance-of-a-god-and-a-lord",
+      "remembrance": "Remembrance of a God and a Lord",
+      "boss": "Promised Consort Radahn",
+      "game": "Shadow of the Erdtree",
+      "priority": "Duplication priority 9 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Promised Consort Radahn. Three-reward exception: Light of Miquella is build-relevant; one J1 duplicate + J2 original completes all three unique rewards.",
+      "duplicatePlan": "Take Light of Miquella first — never duplicate before the unique reward is secured. Then spend the duplicate at Deeproot Depths bell mausoleum on Greatsword of Radahn (Lord). Second-copy rule: both Radahn greatsword rewards are paired weapons; no extra copy required for native dual wield. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Light of Miquella. Duplication: J1 DUP-05 — Deeproot Depths bell mausoleum → Greatsword of Radahn (Lord)",
+      "journey2": "Journey 2 — Greatsword of Radahn (Light) — final unique remembrance reward. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Light of Miquella",
+        "Greatsword of Radahn (Lord)",
+        "Greatsword of Radahn (Light)"
+      ],
+      "routeStepIds": [
+        "RW-D-d20-57"
+      ],
+      "area": "Enir-Ilim",
+      "notes": "This is the only three-reward remembrance. Do not force an NG++ remembrance run: two different rewards in Journey 1 plus the third in Journey 2 completes the set. Duplication class: Shardbearer — bell mausoleum or DLC coffin only. Consumed for runes: No — Completion Protected. Location: Enir-Ilim — obtained from Promised Consort Radahn; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_a_God_and_a_Lord"
+    },
+    {
+      "order": 10,
+      "remembranceId": "remembrance-of-the-rot-goddess",
+      "remembrance": "Remembrance of the Rot Goddess",
+      "boss": "Malenia, Goddess of Rot",
+      "game": "Base Game",
+      "priority": "Duplication priority 10 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Malenia. Build-critical weapon and incantation pair; both are secured in Journey 1.",
+      "duplicatePlan": "Take Hand of Malenia first — never duplicate before the unique reward is secured. Then spend the duplicate at Consecrated Snowfield bell mausoleum on Scarlet Aeonia. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Hand of Malenia. Duplication: J1 DUP-04 — Consecrated Snowfield bell mausoleum → Scarlet Aeonia",
+      "journey2": "Journey 2 — Optional second Hand of Malenia — unique pair already complete in Journey 1. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Hand of Malenia",
+        "Scarlet Aeonia"
+      ],
+      "routeStepIds": [
+        "RW-B-w45-58"
+      ],
+      "area": "Elphael, Brace of the Haligtree",
+      "notes": "Duplication is prioritized over less build-relevant pairs. Duplication class: Shardbearer — bell mausoleum or DLC coffin only. Consumed for runes: No — Completion Protected. Location: Elphael, Brace of the Haligtree — obtained from Malenia; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Rot_Goddess"
+    },
+    {
+      "order": 11,
+      "remembranceId": "remembrance-of-the-shadow-sunflower",
+      "remembrance": "Remembrance of the Shadow Sunflower",
+      "boss": "Scadutree Avatar",
+      "game": "Shadow of the Erdtree",
+      "priority": "Duplication priority 11 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Scadutree Avatar. Weapon first; incantation completes in Journey 2.",
+      "duplicatePlan": "Take Shadow Sunflower Blossom first; Land of Shadow is the Journey 2 redemption, so the Journey 1 duplicate stays in reserve. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Shadow Sunflower Blossom. Duplication: None — preserve Journey 1 coffin capacity",
+      "journey2": "Journey 2 — Land of Shadow. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Shadow Sunflower Blossom",
+        "Land of Shadow"
+      ],
+      "routeStepIds": [
+        "RW-D-d13-36"
+      ],
+      "area": "Church District",
+      "notes": "No Journey 1 duplication required. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Scadutree Base — obtained from Scadutree Avatar; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Shadow_Sunflower"
+    },
+    {
+      "order": 12,
+      "remembranceId": "remembrance-of-the-dragonlord",
+      "remembrance": "Remembrance of the Dragonlord",
+      "boss": "Dragonlord Placidusax",
+      "game": "Base Game",
+      "priority": "Duplication priority 12 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Placidusax. Build-critical Cragblade plus incantation; ideal use of a Legend-only no-bell mausoleum.",
+      "duplicatePlan": "Take Dragon King's Cragblade first — never duplicate before the unique reward is secured. Then spend the duplicate at Mausoleum Compound no-bell A on Placidusax's Ruin. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Dragon King's Cragblade. Duplication: J1 DUP-06 — Mausoleum Compound no-bell A → Placidusax's Ruin",
+      "journey2": "Journey 2 — Optional second Dragon King's Cragblade — unique pair already complete in Journey 1. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Dragon King's Cragblade",
+        "Placidusax's Ruin"
+      ],
+      "routeStepIds": [
+        "RW-B-w46-88"
+      ],
+      "area": "Crumbling Farum Azula",
+      "notes": "No-bell assignment is legal because Dragonlord is a Legend remembrance. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Crumbling Farum Azula — obtained from Dragonlord Placidusax; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Dragonlord"
+    },
+    {
+      "order": 13,
+      "remembranceId": "remembrance-of-putrescence",
+      "remembrance": "Remembrance of Putrescence",
+      "boss": "Putrescent Knight",
+      "game": "Shadow of the Erdtree",
+      "priority": "Duplication priority 13 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Putrescent Knight. Weapon first; sorcery completes in Journey 2.",
+      "duplicatePlan": "Take Putrescence Cleaver first; Vortex of Putrescence is the Journey 2 redemption, so the Journey 1 duplicate stays in reserve. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Putrescence Cleaver. Duplication: None — preserve Journey 1 coffin capacity",
+      "journey2": "Journey 2 — Vortex of Putrescence. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Putrescence Cleaver",
+        "Vortex of Putrescence"
+      ],
+      "routeStepIds": [
+        "RW-D-d11-21"
+      ],
+      "area": "Stone Coffin Fissure",
+      "notes": "No Journey 1 duplicate is required for the certified parent architecture. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Stone Coffin Fissure — obtained from Putrescent Knight; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_Putrescence"
+    },
+    {
+      "order": 14,
+      "remembranceId": "remembrance-of-the-twin-moon-knight",
+      "remembrance": "Remembrance of the Twin Moon Knight",
+      "boss": "Rellana, Twin Moon Knight",
+      "game": "Shadow of the Erdtree",
+      "priority": "Duplication priority 14 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Rellana. Build-critical: both rewards are referenced by certified hybrid/INT systems.",
+      "duplicatePlan": "Take Rellana's Twin Blades first — never duplicate before the unique reward is secured. Then spend the duplicate at Finger Ruins of Rhia coffin on Rellana's Twin Moons. Second-copy rule: the reward is already a paired/dual weapon; no extra copy is required for its native paired moveset. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Rellana's Twin Blades. Duplication: J1 DUP-08 — Finger Ruins of Rhia coffin → Rellana's Twin Moons",
+      "journey2": "Journey 2 — No required redemption — unique pair complete in Journey 1. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Rellana's Twin Blades",
+        "Rellana's Twin Moons"
+      ],
+      "routeStepIds": [
+        "RW-D-d7-36"
+      ],
+      "area": "Castle Ensis",
+      "notes": "The Twin Blades are a paired weapon; an additional physical copy is not required for their native dual moveset. Duplication class: Shardbearer — bell mausoleum or DLC coffin only. Consumed for runes: No — Completion Protected. Location: Castle Ensis — obtained from Rellana; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Twin_Moon_Knight"
+    },
+    {
+      "order": 15,
+      "remembranceId": "remembrance-of-hoarah-loux",
+      "remembrance": "Remembrance of Hoarah Loux",
+      "boss": "Godfrey, First Elden Lord / Hoarah Loux",
+      "game": "Base Game",
+      "priority": "Duplication priority 15 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Godfrey. Weapon first; Ash of War completes in Journey 2.",
+      "duplicatePlan": "Take Axe of Godfrey first; Ash of War: Hoarah Loux's Earthshaker is the Journey 2 redemption, so the Journey 1 duplicate stays in reserve. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Axe of Godfrey. Duplication: None — preserve Journey 1 duplication capacity",
+      "journey2": "Journey 2 — Ash of War: Hoarah Loux's Earthshaker. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Axe of Godfrey",
+        "Ash of War: Hoarah Loux's Earthshaker"
+      ],
+      "routeStepIds": [
+        "RW-B-w47-17"
+      ],
+      "area": "Leyndell, Ashen Capital",
+      "notes": "Placed after the DLC block to preserve the approved DLC-before-Ashen-Capital chronology. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Leyndell, Ashen Capital — obtained from Godfrey / Hoarah Loux; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_Hoarah_Loux"
+    },
+    {
+      "order": 16,
+      "remembranceId": "remembrance-of-the-regal-ancestor",
+      "remembrance": "Remembrance of the Regal Ancestor",
+      "boss": "Regal Ancestor Spirit",
+      "game": "Base Game",
+      "priority": "Duplication priority 16 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Regal Ancestor Spirit. Utility talisman first; weapon completes in Journey 2.",
+      "duplicatePlan": "Take Ancestral Spirit's Horn first; Winged Greathorn is the Journey 2 redemption, so the Journey 1 duplicate stays in reserve. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Ancestral Spirit's Horn. Duplication: None — preserve Journey 1 duplication capacity",
+      "journey2": "Journey 2 — Winged Greathorn. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Ancestral Spirit's Horn",
+        "Winged Greathorn"
+      ],
+      "routeStepIds": [
+        "RW-B-w22-59"
+      ],
+      "area": "Nokron",
+      "notes": "No Journey 1 duplication is required for a certified parent dependency. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Nokron — obtained from Regal Ancestor Spirit; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Regal_Ancestor"
+    },
+    {
+      "order": 17,
+      "remembranceId": "remembrance-of-the-naturalborn",
+      "remembrance": "Remembrance of the Naturalborn",
+      "boss": "Astel, Naturalborn of the Void",
+      "game": "Base Game",
+      "priority": "Duplication priority 17 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Astel. Weapon first; Ash of War completes in Journey 2.",
+      "duplicatePlan": "Take Bastard's Stars first; Ash of War: Waves of Darkness is the Journey 2 redemption, so the Journey 1 duplicate stays in reserve. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Bastard's Stars. Duplication: None — preserve Journey 1 duplication capacity",
+      "journey2": "Journey 2 — Ash of War: Waves of Darkness. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Bastard's Stars",
+        "Ash of War: Waves of Darkness"
+      ],
+      "routeStepIds": [
+        "RW-B-w26-29"
+      ],
+      "area": "Lake of Rot",
+      "notes": "The Ash is a unique remembrance reward even though it is not a physical weapon. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Grand Cloister / Lake of Rot route — obtained from Astel; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Naturalborn"
+    },
+    {
+      "order": 18,
+      "remembranceId": "remembrance-of-the-grafted",
+      "remembrance": "Remembrance of the Grafted",
+      "boss": "Godrick the Grafted",
+      "game": "Base Game",
+      "priority": "Duplication priority 18 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Godrick. Completion-first; no certified build requires both rewards during Journey 1.",
+      "duplicatePlan": "Take Axe of Godrick first; Grafted Dragon is the Journey 2 redemption, so the Journey 1 duplicate stays in reserve. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Axe of Godrick. Duplication: None — preserve Journey 1 duplication capacity",
+      "journey2": "Journey 2 — Grafted Dragon. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Axe of Godrick",
+        "Grafted Dragon"
+      ],
+      "routeStepIds": [
+        "RW-B-w8-104"
+      ],
+      "area": "Stormveil Castle",
+      "notes": "Take the weapon first; the fist/dragon reward is the Journey 2 complement. Duplication class: Shardbearer — bell mausoleum or DLC coffin only. Consumed for runes: No — Completion Protected. Location: Stormveil Castle — obtained from Godrick; exchange with Finger Reader Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Grafted"
+    },
+    {
+      "order": 19,
+      "remembranceId": "remembrance-of-the-full-moon-queen",
+      "remembrance": "Remembrance of the Full Moon Queen",
+      "boss": "Rennala, Queen of the Full Moon",
+      "game": "Base Game",
+      "priority": "Duplication priority 19 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Rennala. Build-critical: Carian Regal Scepter and Full Moon are used across certified Intelligence parents.",
+      "duplicatePlan": "Take Carian Regal Scepter first — never duplicate before the unique reward is secured. Then spend the duplicate at Weeping Peninsula bell mausoleum on Rennala's Full Moon. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Carian Regal Scepter. Duplication: J1 DUP-01 — Weeping Peninsula bell mausoleum → Rennala's Full Moon",
+      "journey2": "Journey 2 — Optional second Carian Regal Scepter — unique pair already complete in Journey 1. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Carian Regal Scepter",
+        "Rennala's Full Moon"
+      ],
+      "routeStepIds": [
+        "RW-B-w13-71"
+      ],
+      "area": "Academy of Raya Lucaria",
+      "notes": "Both rewards are deliberately secured in Journey 1 because both participate in certified INT build packages. Duplication class: Shardbearer — bell mausoleum or DLC coffin only. Consumed for runes: No — Completion Protected. Location: Academy of Raya Lucaria — obtained from Rennala; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Full_Moon_Queen"
+    },
+    {
+      "order": 20,
+      "remembranceId": "remembrance-of-the-blasphemous",
+      "remembrance": "Remembrance of the Blasphemous",
+      "boss": "Rykard, Lord of Blasphemy",
+      "game": "Base Game",
+      "priority": "Duplication priority 20 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Rykard. Build-critical weapon; Journey 1 duplicate closes the competing sorcery reward immediately.",
+      "duplicatePlan": "Take Blasphemous Blade first — never duplicate before the unique reward is secured. Then spend the duplicate at Northeast Liurnia bell mausoleum on Rykard's Rancor. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Blasphemous Blade. Duplication: J1 DUP-02 — Northeast Liurnia bell mausoleum → Rykard's Rancor",
+      "journey2": "Journey 2 — Optional second Blasphemous Blade — unique pair already complete in Journey 1. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Blasphemous Blade",
+        "Rykard's Rancor"
+      ],
+      "routeStepIds": [
+        "RW-B-w38-40"
+      ],
+      "area": "West Mountaintops",
+      "notes": "Do not defeat Rykard until the Phase 22C Volcano Manor lockout gate is satisfied. Duplication class: Shardbearer — bell mausoleum or DLC coffin only. Consumed for runes: No — Completion Protected. Location: Volcano Manor — obtained from Rykard; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Blasphemous"
+    },
+    {
+      "order": 21,
+      "remembranceId": "remembrance-of-the-blood-lord",
+      "remembrance": "Remembrance of the Blood Lord",
+      "boss": "Mohg, Lord of Blood",
+      "game": "Base Game",
+      "priority": "Duplication priority 21 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Mohg. Build-critical: Sacred Spear and Bloodboon are both represented in certified Arcane parent systems.",
+      "duplicatePlan": "Take Mohgwyn's Sacred Spear first — never duplicate before the unique reward is secured. Then spend the duplicate at Castle Sol bell mausoleum on Bloodboon. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Mohgwyn's Sacred Spear. Duplication: J1 DUP-03 — Castle Sol bell mausoleum → Bloodboon",
+      "journey2": "Journey 2 — Optional second Mohgwyn's Sacred Spear — unique pair already complete in Journey 1. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Mohgwyn's Sacred Spear",
+        "Bloodboon"
+      ],
+      "routeStepIds": [
+        "RW-B-w43-39"
+      ],
+      "area": "Mohgwyn Palace",
+      "notes": "Journey 1 duplication keeps the complete Blood Lord reward pair available before NG+. Duplication class: Shardbearer — bell mausoleum or DLC coffin only. Consumed for runes: No — Completion Protected. Location: Mohgwyn Palace — obtained from Mohg; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Blood_Lord"
+    },
+    {
+      "order": 22,
+      "remembranceId": "remembrance-of-the-fire-giant",
+      "remembrance": "Remembrance of the Fire Giant",
+      "boss": "Fire Giant",
+      "game": "Base Game",
+      "priority": "Duplication priority 22 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Fire Giant. Incantation first for broader build utility; whip completes in Journey 2.",
+      "duplicatePlan": "Take “Burn, O Flame!” first; Giant's Red Braid is the Journey 2 redemption, so the Journey 1 duplicate stays in reserve. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Burn, O Flame!. Duplication: None — preserve Journey 1 duplication capacity",
+      "journey2": "Journey 2 — Giant's Red Braid. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Burn, O Flame!",
+        "Giant's Red Braid"
+      ],
+      "routeStepIds": [
+        "RW-B-w40-63"
+      ],
+      "area": "East Mountaintops",
+      "notes": "This reward choice does not alter the Forge / Three Fingers ordering contract. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Mountaintops of the Giants — obtained from Fire Giant; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Fire_Giant"
+    },
+    {
+      "order": 23,
+      "remembranceId": "remembrance-of-the-lichdragon",
+      "remembrance": "Remembrance of the Lichdragon",
+      "boss": "Lichdragon Fortissax",
+      "game": "Base Game",
+      "priority": "Duplication priority 23 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Fortissax. Incantation pair; second spell completes in Journey 2.",
+      "duplicatePlan": "Take Fortissax's Lightning Spear first; Death Lightning waits for Journey 2 and needs no duplicate. Second-copy rule: both rewards are incantations. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Fortissax's Lightning Spear. Duplication: None — preserve Journey 1 duplication capacity",
+      "journey2": "Journey 2 — Death Lightning. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Fortissax's Lightning Spear",
+        "Death Lightning"
+      ],
+      "routeStepIds": [
+        "RW-B-w24-59"
+      ],
+      "area": "Deeproot Depths",
+      "notes": "Preserve the Fia/D route required to access Fortissax. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Deeproot Depths / Fia dream — obtained from Lichdragon Fortissax; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Lichdragon"
+    },
+    {
+      "order": 24,
+      "remembranceId": "remembrance-of-the-omen-king",
+      "remembrance": "Remembrance of the Omen King",
+      "boss": "Morgott, the Omen King",
+      "game": "Base Game",
+      "priority": "Duplication priority 24 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Morgott. Weapon first; tool completes in Journey 2.",
+      "duplicatePlan": "Take Morgott's Cursed Sword first; Regal Omen Bairn is the Journey 2 redemption, so the Journey 1 duplicate stays in reserve. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Morgott's Cursed Sword. Duplication: None — preserve Journey 1 duplication capacity",
+      "journey2": "Journey 2 — Regal Omen Bairn. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Morgott's Cursed Sword",
+        "Regal Omen Bairn"
+      ],
+      "routeStepIds": [
+        "RW-B-w35-121"
+      ],
+      "area": "Leyndell, Royal Capital",
+      "notes": "No second identical sword is required by the canonical 100% contract. Duplication class: Shardbearer — bell mausoleum or DLC coffin only. Consumed for runes: No — Completion Protected. Location: Leyndell, Royal Capital — obtained from Morgott; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Omen_King"
+    },
+    {
+      "order": 25,
+      "remembranceId": "remembrance-of-the-lord-of-frenzied-flame",
+      "remembrance": "Remembrance of the Lord of Frenzied Flame",
+      "boss": "Midra, Lord of Frenzied Flame",
+      "game": "Shadow of the Erdtree",
+      "priority": "Duplication priority 25 of 25 (user order, most-likely-to-duplicate first; the user's 26th line, Heart of Bayle, is not a remembrance) — Midra. Weapon first; incantation completes in Journey 2.",
+      "duplicatePlan": "Take Greatsword of Damnation first; Midra's Flame of Frenzy is the Journey 2 redemption, so the Journey 1 duplicate stays in reserve. Second-copy rule: no second identical copy is required for 100% completion. Do not consume this remembrance for runes until both unique rewards are held.",
+      "journey1": "Journey 1 — take Greatsword of Damnation. Duplication: None — preserve Journey 1 coffin capacity",
+      "journey2": "Journey 2 — Midra's Flame of Frenzy. Duplication: Reserve — no unique-reward requirement; use only for an approved optional duplicate copy",
+      "rewards": [
+        "Greatsword of Damnation",
+        "Midra's Flame of Frenzy"
+      ],
+      "routeStepIds": [
+        "RW-D-d17-20"
+      ],
+      "area": "Midra's Manse",
+      "notes": "This remembrance is unrelated to the base-game Lord of Frenzied Flame ending state. Duplication class: Legend — any mausoleum or DLC coffin. Consumed for runes: No — Completion Protected. Location: Midra's Manse — obtained from Midra; exchange with Enia. Source: https://eldenring.wiki.gg/wiki/Remembrance_of_the_Lord_of_Frenzied_Flame"
+    }
+  ],
+  "counts": {
+    "entries": 25,
+    "duplicateNow": 10,
+    "defer": 12,
+    "noDuplicate": 3
+  }
+}

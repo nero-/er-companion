@@ -1,0 +1,564 @@
+{
+  "generatedAt": "2026-10-29T14:34:24Z",
+  "source": "src/data/lore.json (workbook Lore Companion journals) + route.full.json area names",
+  "entries": {
+    "LOR-J1-001": {
+      "id": "LOR-J1-001",
+      "overview": "A returned Tarnished awakens at the edge of the Lands Between, where Grace, death, and the promise of an Elden Lord are introduced before the wider world opens. The chapter closes with a chronicle note: The Tarnished enters the story as an exile returned by Grace, with no lordly status yet earned.",
+      "context": "People and factions: The Tarnished; the dead Tarnished of the Chapel; the unseen guidance of Grace. Evidence and places: Chapel of Anticipation; Cave of Knowledge; Sites of Grace; the Stranded Graveyard; the Grafted Scion as an early image of grafting. Open questions: Why were the Tarnished called back now, and who is directing the guidance that points them toward the Elden Ring?",
+      "spoiler": "Later echoes, Melina, and Marika-related revelations complicate the simple idea that Grace is merely a neutral command from the Golden Order.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Tutorial"
+    },
+    "LOR-J1-002": {
+      "id": "LOR-J1-002",
+      "overview": "Limgrave establishes a fractured kingdom in miniature: the Erdtree still dominates the horizon, but soldiers, nobles, demi-humans, and wandering survivors live amid the debris of the Shattering. The chapter closes with a chronicle note: The Tarnished accepts Melina’s accord, gains the means to grow stronger, and begins following Grace as an active claimant rather than a castaway.",
+      "context": "People and factions: White Mask Varré; Merchant Kalé; Melina; Gatefront soldiers; local demi-humans and nobles. Evidence and places: The First Step; Church of Elleh; Gatefront Ruins; early Sites of Grace; Melina’s accord; the Erdtree visible over a broken countryside. Open questions: What does it mean for Grace to guide one Tarnished while so many other Tarnished have lost sight of it?",
+      "spoiler": "Later encounters show that the Tarnished are not a unified faction and that the path toward lordship is entangled with Marika, the Fingers, and competing interpretations of Order.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "First steps in Limgrave"
+    },
+    "LOR-J1-003": {
+      "id": "LOR-J1-003",
+      "overview": "This early detour reveals how radically the Lands Between differ beyond Limgrave: Liurnia bears the legacy of sorcery and Caria, while Caelid displays the catastrophic ecological wound of Scarlet Rot. The chapter closes with a chronicle note: The Tarnished learns early that the Shattering was not one battle but a network of dynastic, magical, and divine conflicts.",
+      "context": "People and factions: Finger Reader Crones; Liurnian scholars and soldiers; Caelid survivors; servants of the Golden Order and rot alike. Evidence and places: Liurnian roads and academy-facing ruins; Caelid’s scarlet landscape; Finger Reader prophecies; early medallion and regional-map clues. Open questions: How did political conflicts among the demigods become wars that permanently transformed entire regions?",
+      "spoiler": "Radagon and Rennala’s union, Radahn and Malenia’s war, and the demigods’ competing Great Runes eventually explain much of the contrast introduced here.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Early Liurnia and Caelid"
+    },
+    "LOR-J1-004": {
+      "id": "LOR-J1-004",
+      "overview": "West Limgrave is a frontier under Godrick’s shadow, where ordinary soldiers, ruined settlements, coastal caves, and old burial grounds show how little protection the Golden Lineage now provides. The chapter closes with a chronicle note: The Tarnished begins building a network of allies and rivals while seeing the human cost of Godrick’s rule.",
+      "context": "People and factions: Godrick’s soldiers; Boc; Yura; Patches; local merchants; demi-humans; Limgrave’s common dead. Evidence and places: Stormfoot and coastal catacombs; Agheel Lake; Murkwater; Stormveil looming over the region; local graves and churches. Open questions: Why does Godrick seek strength through grafting instead of inspiring loyalty or restoring his lands?",
+      "spoiler": "Stormveil and later Golden Lineage history reveal Godrick as a diminished descendant clinging to prestige through borrowed flesh.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "West Limgrave"
+    },
+    "LOR-J1-005": {
+      "id": "LOR-J1-005",
+      "overview": "Stormhill turns the road to Stormveil into a lesson about contested succession: Godrick’s forces hold the castle, yet Margit appears as a far more formidable guardian of the path to a Great Rune. The chapter closes with a chronicle note: The Tarnished meets the first major ideological gatekeeper on the road toward becoming Elden Lord.",
+      "context": "People and factions: Margit; Roderika; Bernahl; Stormveil soldiers; trolls and war-beasts on Stormhill. Evidence and places: Stormhill Shack; Warmaster’s Shack; the castle approach; Margit’s appearance; scattered war camps beneath Stormveil. Open questions: Why does Margit defend Stormveil so fiercely when Godrick is only one lesser member of the Golden Lineage?",
+      "spoiler": "Leyndell later reframes Margit’s identity and shows why defending the Erdtree’s order matters more to him than loyalty to Godrick personally.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "North Limgrave"
+    },
+    "LOR-J1-006": {
+      "id": "LOR-J1-006",
+      "overview": "The Weeping Peninsula shows a peripheral lordship collapsing from within: Castle Morne’s servants and Misbegotten revolt while common people are caught between noble duty and accumulated resentment. The chapter closes with a chronicle note: The Tarnished becomes involved in a tragedy where loyalty cannot restore a household already destroyed by rebellion.",
+      "context": "People and factions: Irina; Edgar; Misbegotten rebels; Castle Morne soldiers; peninsula villagers. Evidence and places: Irina’s letter; Bridge of Sacrifice; ruined churches; Ailing Village; Castle Morne’s rebellion visible from the roads. Open questions: Is the Morne revolt simply monstrous violence, or the result of a social order that treated the Misbegotten as disposable labor?",
+      "spoiler": "Later treatment of Misbegotten, Omens, Albinaurics, and other marginalized peoples broadens the pattern of exclusion visible here.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Weeping Peninsula"
+    },
+    "LOR-J1-007": {
+      "id": "LOR-J1-007",
+      "overview": "Castle Morne preserves the memory of conquest under Godfrey while simultaneously showing a newer lordly house overwhelmed by the people it was meant to command. The chapter closes with a chronicle note: The Tarnished witnesses duty outliving the people it was supposed to protect.",
+      "context": "People and factions: Edgar; Irina; Leonine Misbegotten; House Morne’s soldiers; the Misbegotten uprising. Evidence and places: Sword monument of Morne’s conquest; Grafted Blade Greatsword; corpses and gallows throughout the castle; Edgar’s defense of the treasured blade. Open questions: What does the castle’s treasured weapon say about how defeated peoples and conquered strength are absorbed into later lordly myths?",
+      "spoiler": "Godfrey’s later history makes Morne’s conquest part of the broader story of the Golden Order’s expansion by force.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Castle Morne"
+    },
+    "LOR-J1-008": {
+      "id": "LOR-J1-008",
+      "overview": "Stormveil is the decaying seat of Godrick the Grafted, where the Golden Lineage’s prestige has collapsed into grafting, corpse harvesting, and fear. The chapter closes with a chronicle note: The Tarnished defeats the first shardbearer and sees that possession of a Great Rune does not make its bearer worthy of lordship.",
+      "context": "People and factions: Godrick; Nepheli Loux; Gatekeeper Gostoc; Rogier; Banished Knights; Exile Soldiers. Evidence and places: Grafted bodies; the castle’s throne and lineage symbols; Godwyn-like growth beneath the castle; Godrick’s Great Rune and remembrance. Open questions: Why has something resembling deathroot or a divine corpse-form appeared beneath Stormveil, far from the source later found underground?",
+      "spoiler": "Deeproot Depths and Deathroot lore connect Stormveil’s buried horror to the spread of Godwyn’s death through the roots of the Lands Between.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Stormveil Castle"
+    },
+    "LOR-J1-009": {
+      "id": "LOR-J1-009",
+      "overview": "The grave beneath the starting region memorializes an older heroic culture through brutal funerary machinery, spirit guardians, and Erdtree-burial imagery. The chapter closes with a chronicle note: The Tarnished learns that the Golden Order’s relationship with death is ritualized, controlled, and no longer functioning cleanly.",
+      "context": "People and factions: Banished Knight Oleg’s spirit; Ulcerated Tree Spirit; unnamed heroes and guardians of the grave. Evidence and places: Chariot defenses; grave glovewort; spirit ash rewards; Erdtree-root burial architecture; Golden Seed reward. Open questions: Who was considered worthy of a hero’s burial, and why are these tombs defended with mechanisms as deadly as any fortress?",
+      "spoiler": "Catacombs, root burial, and Deathroot later show that burial beneath the Erdtree became both a religious privilege and a system vulnerable to corruption.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Fringefolk Hero's Grave"
+    },
+    "LOR-J1-010": {
+      "id": "LOR-J1-010",
+      "overview": "Southern Liurnia introduces a flooded realm whose roads, churches, and villages sit between Golden Order influence and the Academy’s glintstone culture. The chapter closes with a chronicle note: The Tarnished enters a region where scholarship, dynasty, and faith overlap instead of following a single authority.",
+      "context": "People and factions: Thops; Hyetta; wandering nobles; Liurnian soldiers; Albinauric communities encountered along the southern routes. Evidence and places: Church of Irith; Lake-Facing Cliffs; flooded highways; Academy silhouettes; Shabriri Grape progression. Open questions: How did Liurnia’s alliance with the Erdtree coexist with its older loyalty to the moon, Caria, and glintstone sorcery?",
+      "spoiler": "The Radagon–Rennala marriage, Academy revolt, and Ranni’s path reveal how fragile that political and religious synthesis became.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "South Liurnia"
+    },
+    "LOR-J1-011": {
+      "id": "LOR-J1-011",
+      "overview": "Western Liurnia preserves Carian, Albinauric, and manor-linked histories along a shore where the Academy’s power is visible but not absolute. The chapter closes with a chronicle note: The Tarnished becomes connected to hidden peoples and to the Carian household that will shape one of the game’s central alternative futures.",
+      "context": "People and factions: Albus; Latenna; Rya; Iji; Carian retainers; Albinaurics. Evidence and places: Village of the Albinaurics; Kingsrealm Ruins; Road to the Manor; Carian defenses; secret-medallion clues. Open questions: Why are artificial peoples such as the Albinaurics persecuted, and why does the Haligtree become a destination of hope for them?",
+      "spoiler": "The Consecrated Snowfield and Haligtree later make the Albinaurics’ pilgrimage one part of Miquella’s broader promise of sanctuary.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "West Liurnia"
+    },
+    "LOR-J1-012": {
+      "id": "LOR-J1-012",
+      "overview": "Central Liurnia places the Academy, the Church of Vows, and the ruined lake settlements within the same landscape, highlighting the old reconciliation between Erdtree and moon that followed the Liurnian wars. The chapter closes with a chronicle note: The Tarnished gains a historical framework for understanding why Liurnia’s civil fractures matter to the larger struggle for Order.",
+      "context": "People and factions: Miriel; Finger Reader Crones; Academy scholars; Carian and Leyndell historical figures remembered in monuments. Evidence and places: Church of Vows; Academy Gate Town; sword monuments of the Liurnian wars; celestial-dew and absolution traditions. Open questions: Was the marriage of Radagon and Rennala a true reconciliation, a political settlement, or both?",
+      "spoiler": "Later revelations about Radagon, Marika, Rennala’s abandonment, and Ranni complicate every simple explanation of the marriage.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Central Liurnia"
+    },
+    "LOR-J1-013": {
+      "id": "LOR-J1-013",
+      "overview": "Raya Lucaria is both a university and a political power: its scholars revere glintstone and the stars, while its sealed halls preserve the aftermath of conflict with Queen Rennala and Caria. The chapter closes with a chronicle note: The Tarnished defeats Rennala without ending her life and gains access to rebirth, turning a fallen queen into an enduring non-hostile presence.",
+      "context": "People and factions: Rennala; the academy scholars; the Red Wolf of Radagon; Carian loyalists remembered through the institution’s history. Evidence and places: Primeval-current scholarship; glintstone crowns; the Grand Library; the amber egg; portraits and architecture linking Rennala and Radagon. Open questions: Why did the Academy turn on the Carian royal family after once accepting Rennala as its champion?",
+      "spoiler": "Sellen, Azur, Lusat, Ranni, and the fate of the stars reveal competing schools of sorcery far beyond ordinary academy doctrine.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Academy of Raya Lucaria"
+    },
+    "LOR-J1-014": {
+      "id": "LOR-J1-014",
+      "overview": "Eastern Liurnia contains the roads, towers, and uplands where Carian secrets, Golden Order pilgrims, and routes toward Altus intersect. The chapter closes with a chronicle note: The Tarnished’s route through Liurnia begins tying minor characters and hidden towers into longer quest lines.",
+      "context": "People and factions: Jar-Bairn; Alexander’s wider circle; Carian scholars; Leyndell travelers; local Cuckoo and Academy forces. Evidence and places: Divine Tower approaches; Artist’s Shack; eastern roads; Jarburg; Dectus-facing infrastructure and Carian study sites. Open questions: How much of Liurnia’s present disorder comes from the Academy–Caria split, and how much comes from the larger collapse after the Shattering?",
+      "spoiler": "The Carian Study Hall, Ranni’s cursemark, and Alexander/Jar-Bairn threads later make several quiet eastern locations unexpectedly important.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "East Liurnia"
+    },
+    "LOR-J1-015": {
+      "id": "LOR-J1-015",
+      "overview": "Caria Manor is the fortified remnant of a lunar dynasty that survived both war with Leyndell and later estrangement from the Academy. The chapter closes with a chronicle note: The Tarnished can enter Ranni’s service, transforming a regional Carian story into a journey toward a radically different cosmic order.",
+      "context": "People and factions: Ranni; Rennala’s family; Royal Knight Loretta; War Counselor Iji; Preceptor Seluvis; Carian servants and hand-creatures. Evidence and places: Royal Moongazing Grounds; Three Sisters; Carian sorceries and weapons; manor defenses; Ranni’s rise above the estate. Open questions: Why does Ranni recruit Tarnished servants while simultaneously pursuing a plan built on secrecy and separation from the existing Order?",
+      "spoiler": "Nokron, the Fingerslayer Blade, Nokstella, Astel, and the Moonlight Altar reveal the scale of Ranni’s rebellion against her Two Fingers.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Caria Manor"
+    },
+    "LOR-J1-016": {
+      "id": "LOR-J1-016",
+      "overview": "The precipice is an older, rougher route to Altus where miners, bats, and a magma wyrm occupy the broken industrial path between Liurnia and the plateau. The chapter closes with a chronicle note: The Tarnished reaches Altus by a path that emphasizes the material infrastructure beneath the Lands Between’s divine politics.",
+      "context": "People and factions: Ruin miners; Vulgar Militia; Magma Wyrm Makar; travelers who avoid the Grand Lift. Evidence and places: Old lift works; smithing-stone mines; ruined galleries; magma-wyrm occupation; the alternate ascent to Altus. Open questions: What does the survival of this route imply about trade and movement before the Grand Lift became the dominant ceremonial passage?",
+      "spoiler": "Altus reveals that roads, lifts, mines, and military checkpoints were all parts of a highly connected pre-Shattering realm now fractured by war.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Ruin-Strewn Precipice"
+    },
+    "LOR-J1-017": {
+      "id": "LOR-J1-017",
+      "overview": "Ainsel River exposes buried civilizations older than the present surface kingdoms, with Uhl ruins, claymen, and a false night sky beneath the Lands Between. The chapter closes with a chronicle note: The Tarnished discovers that the Lands Between has a second historical world beneath its surface kingdoms.",
+      "context": "People and factions: Claymen; Dragonkin Soldier of Nokstella; ancient Uhl/Nox-linked peoples; malformed underground fauna. Evidence and places: Uhl Palace Ruins; hanging star-like lights; clayman relics; Dragonkin; underground river architecture. Open questions: How are the Uhl ruins, the Nox, and the later Eternal Cities related across the different underground river systems?",
+      "spoiler": "Nokstella, Astel, and the Fingerslayer Blade make the underground world central to the Nox’s punishment and Ranni’s quest.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Ainsel River"
+    },
+    "LOR-J1-018": {
+      "id": "LOR-J1-018",
+      "overview": "Siofra River combines Eternal City ruins with the living ritual culture of the Ancestral Followers, whose worship centers on spirits, horned remains, and cycles of budding life. The chapter closes with a chronicle note: The Tarnished encounters a functioning spiritual tradition that does not require the Erdtree as its center.",
+      "context": "People and factions: Ancestral Followers; ancestral spirits; Nox/Eternal City remnants; Mohgwyn forces glimpsed beyond the river. Evidence and places: Ancestral Woods; Hallowhorn Grounds; obelisks; aqueduct and city ruins; stars visible in the underground cavern. Open questions: How does ancestral spirit worship relate to Erdtree rebirth, and does it represent a tradition outside the Golden Order rather than a corrupted form of it?",
+      "spoiler": "Nokron and the Regal Ancestor Spirit deepen the contrast between ancestral cycles and Erdtree-centered life and death.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Siofra River"
+    },
+    "LOR-J1-019": {
+      "id": "LOR-J1-019",
+      "overview": "Caelid is the lasting scar of the battle between Malenia and Radahn: Scarlet Rot has transformed land, wildlife, soldiers, and settlements into a diseased war zone. The chapter closes with a chronicle note: The Tarnished sees perhaps the clearest proof that demigod conflict can permanently rewrite the ecology of the world.",
+      "context": "People and factions: Redmane soldiers; Cleanrot Knights; Millicent and Gowry’s quest sphere; rot creatures; Radahn and Malenia as absent causes. Evidence and places: Aeonia Swamp; battle monuments; rot blooms; abandoned roads and forts; diseased wildlife; Redmane fire defenses. Open questions: Why did Malenia unleash the scarlet bloom against Radahn, and what agency did she retain over the power of rot within her?",
+      "spoiler": "Elphael and Malenia’s later fight show that her identity as the Goddess of Rot remains both resisted and inseparable from her fate.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Caelid"
+    },
+    "LOR-J1-020": {
+      "id": "LOR-J1-020",
+      "overview": "Sellia is a town of sorcery shaped by secrecy, night magic, and connections to both the Nox tradition and powerful exiled sorcerers. The chapter closes with a chronicle note: The Tarnished learns that sorcery has dissident lineages outside Raya Lucaria’s formal academy.",
+      "context": "People and factions: Gowry; Lusat; Sellian sorcerers; Nox-influenced assassins and mages. Evidence and places: Magic seals and braziers; Night sorceries; Sellia Hideaway; Lusat’s prison; architectural echoes of Eternal City traditions. Open questions: How directly did Sellia inherit Nox practices, and why did techniques associated with invisibility and night flourish here?",
+      "spoiler": "Sellen’s quest and Lusat/Azur lore reveal how Sellia participates in conflicts over the primeval current and forbidden sorcery.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Sellia"
+    },
+    "LOR-J1-021": {
+      "id": "LOR-J1-021",
+      "overview": "Redmane Castle transforms from a fortress into a ritualized war camp for the Radahn Festival, where champions gather to grant a once-great demigod an honorable death. The chapter closes with a chronicle note: The Tarnished joins a communal act of mercy and, by defeating Radahn, changes the movement of fate itself.",
+      "context": "People and factions: Starscourge Radahn; Jerren; Alexander; Blaidd; festival champions; Redmane soldiers. Evidence and places: Festival proclamations; Radahn’s battlefield; gravity magic; his tiny horse Leonard; the post-battle falling-star event. Open questions: How did Radahn’s admiration for Godfrey, his study of gravity, and his loyalty to Sellia shape the hero remembered by the festival?",
+      "spoiler": "Radahn’s death releases the stars, opening Nokron and advancing Ranni’s fate; the DLC later adds another layer to his relationship with Miquella.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Redmane Castle"
+    },
+    "LOR-J1-022": {
+      "id": "LOR-J1-022",
+      "overview": "Nokron is an Eternal City cast underground, where Nox civilization pursued artificial life and a weapon capable of harming the Fingers. The chapter closes with a chronicle note: The Tarnished retrieves the weapon Ranni needs, becoming an active participant in a rebellion against divine intermediaries.",
+      "context": "People and factions: The Nox; Silver Tears and Mimic Tears; ancestral followers; Ranni’s agents seeking the Fingerslayer Blade. Evidence and places: Fingerslayer Blade; Mimic Tear; Night’s Sacred Ground; Nox architecture; artificial silver life. Open questions: What offense led to the Nox’s banishment underground, and how were their attempts to create a lord connected to opposition against the Greater Will and its Fingers?",
+      "spoiler": "Ranni uses the Fingerslayer Blade to sever her relationship with her Two Fingers, while later Eternal City material links the Nox to stars, Night, and failed lord-making.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Nokron"
+    },
+    "LOR-J1-023": {
+      "id": "LOR-J1-023",
+      "overview": "The Carian Study Hall conceals a path to Liurnia’s Divine Tower that only becomes fully intelligible through Ranni’s inverted statue and the history surrounding her discarded body. The chapter closes with a chronicle note: The Tarnished uncovers physical evidence that Ranni’s rebellion began long before the present journey.",
+      "context": "People and factions: Preceptor Miriam; Ranni; the Carian royal family; Godwyn as the paired victim of the Night of Black Knives. Evidence and places: Carian Inverted Statue; inverted architecture; Divine Tower of Liurnia; Cursemark of Death on Ranni’s corpse. Open questions: Why did Ranni arrange for her flesh and Godwyn’s soul to die at the same moment, producing two incomplete forms of death?",
+      "spoiler": "Fia, Deeproot Depths, and the Mending Rune of the Death-Prince reveal the larger consequences of the split death created on the Night of Black Knives.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Carian Study Hall"
+    },
+    "LOR-J1-024": {
+      "id": "LOR-J1-024",
+      "overview": "Deeproot Depths reveals the corrupted underside of Erdtree burial: Godwyn’s dead body has spread through the roots, producing Deathroot and the condition of Those Who Live in Death. The chapter closes with a chronicle note: The Tarnished can help transform Godwyn’s corruption from a hidden failure of Order into the basis of an alternate ending.",
+      "context": "People and factions: Godwyn the Golden; Fia; Lichdragon Fortissax; Those Who Live in Death; Crucible and root-linked guardians. Evidence and places: Prince of Death’s Throne; Godwyn’s corpse; Deathroot growth; Fia’s champions; Fortissax’s dream-battle. Open questions: Can a new order incorporate Death rather than merely suppressing it, and what would that mean for Erdtree burial?",
+      "spoiler": "Fia’s Mending Rune creates the Age of the Duskborn option, while the DLC adds new evidence about older forms of death and burial outside the Erdtree.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Deeproot Depths"
+    },
+    "LOR-J1-025": {
+      "id": "LOR-J1-025",
+      "overview": "Nokstella continues the Nox story through a ruined Eternal City tied directly to Ranni’s route, artificial life, and the shadow sent to police an Empyrean who rebels against her Fingers. The chapter closes with a chronicle note: The Tarnished follows Ranni beyond service into intimate companionship, hearing truths she does not reveal in ordinary courtly dialogue.",
+      "context": "People and factions: Ranni; the Baleful Shadow; Nox inhabitants; Silver Tears; Blaidd by implication through the shadow system. Evidence and places: Nokstella architecture; Moon of Nokstella; Silver Tears; miniature Ranni; Baleful Shadow encounter. Open questions: What exactly is a shadow’s intended relationship to an Empyrean, and what happens when that Empyrean rejects the Fingers that assigned it?",
+      "spoiler": "Blaidd’s later fate and Ranni’s confrontation with her Two Fingers show the tragic cost built into the shadow system.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Nokstella"
+    },
+    "LOR-J1-026": {
+      "id": "LOR-J1-026",
+      "overview": "The Lake of Rot presents Scarlet Rot not as a battlefield accident but as an ancient cosmic or divine force with roots deeper than Malenia’s war in Caelid. The chapter closes with a chronicle note: The Tarnished passes through an ancient source of rot on the way to Ranni’s final hidden threshold.",
+      "context": "People and factions: Kindred of Rot; servants of rot; the distant legacy of the blind swordsman who opposed a rot deity. Evidence and places: Vast underground rot lake; Grand Cloister; pests and rot worship; Blue Dancer and rot-related item descriptions encountered across the game. Open questions: How old is the Outer God or divine principle of Rot, and why was Malenia chosen or born as its vessel?",
+      "spoiler": "Malenia’s final bloom and Romina’s DLC story show distinct ways mortals can become centers for Scarlet Rot.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Lake of Rot"
+    },
+    "LOR-J1-027": {
+      "id": "LOR-J1-027",
+      "overview": "The Moonlight Altar is the secluded culmination of Ranni’s Carian quest, linking lunar inheritance, the Dark Moon, Astel’s fallen-star horror, and a marriage-like covenant with the Tarnished. The chapter closes with a chronicle note: The Tarnished becomes Ranni’s consort and acquires the right to summon her after the final battle.",
+      "context": "People and factions: Ranni; Astel as the gatekeeper already defeated; Adula; Carian retainers and the legacy of Rennala. Evidence and places: Cathedral of Manus Celes; Ranni’s Two Fingers; Dark Moon Ring; Dark Moon Greatsword; moonlit plateau and dragon Adula. Open questions: What does Ranni mean by an order kept far from the senses, and how would ordinary life experience an Age of Stars?",
+      "spoiler": "The Age of Stars ending is the direct political/cosmic consequence of the covenant formed here and remains the Companion’s permanent final ending.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Moonlight Altar"
+    },
+    "LOR-J1-028": {
+      "id": "LOR-J1-028",
+      "overview": "Western Altus shows the wealthy plateau outside Leyndell as a patchwork of noble estates, caravans, battlefields, and Erdtree institutions sustained by an old imperial center. The chapter closes with a chronicle note: The Tarnished enters the political heartland of the Golden Order rather than its distant frontiers.",
+      "context": "People and factions: Leyndell soldiers and knights; perfumers; noble houses; traveling merchants and pilgrims. Evidence and places: Golden roads; minor Erdtrees; perfumer sites; military camps; noble ruins; proximity to the capital and Mt. Gelmir front. Open questions: How much of Altus’s prosperity survived the Shattering, and how much of its present order is merely the inertia of Leyndell’s former power?",
+      "spoiler": "Shaded Castle, Gelmir, and Leyndell show different ways noble houses either served, resisted, or decayed alongside the capital.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "West Altus"
+    },
+    "LOR-J1-029": {
+      "id": "LOR-J1-029",
+      "overview": "The Shaded Castle is the diseased seat of House Marais, a family of executioners whose last lord became obsessed with Malenia and lost the castle to Elemer of the Briar. The chapter closes with a chronicle note: The Tarnished collects a prosthesis that will materially affect Millicent’s path and sees Malenia’s influence far beyond the Haligtree.",
+      "context": "People and factions: Maleigh Marais; Elemer of the Briar; House Marais; Cleanrot/Malenia-associated relics and worshippers. Evidence and places: Marais family equipment; Valkyrie’s Prosthesis; poison-filled fortifications; Elemer’s presence; Malenia imagery and relics. Open questions: Why did Malenia inspire such intense devotion in people who were not members of her army or Haligtree household?",
+      "spoiler": "Millicent and Elphael later turn the prosthesis and Malenia devotion into part of a personal struggle over rot, identity, and inheritance.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "The Shaded Castle"
+    },
+    "LOR-J1-030": {
+      "id": "LOR-J1-030",
+      "overview": "Central Altus combines Erdtree worship, aristocratic settlement, and surviving local rites, showing that Leyndell’s cultural sphere never erased every older custom. The chapter closes with a chronicle note: The Tarnished sees the capital’s heartland as culturally layered rather than religiously uniform.",
+      "context": "People and factions: Leyndell nobles and soldiers; perfumers; celebrants of Dominula; Golden Order clergy and pilgrims. Evidence and places: Altus highways; churches; Dominula windmill rites; minor Erdtree sites; Golden Order monuments and noble ruins. Open questions: Which local practices were tolerated by the Golden Order, and which survived only because central authority weakened after the Shattering?",
+      "spoiler": "Later areas repeatedly show the Golden Order absorbing some traditions while violently excluding others, especially when they threaten its concept of purity or order.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Central Altus"
+    },
+    "LOR-J1-031": {
+      "id": "LOR-J1-031",
+      "overview": "Eastern Altus approaches Leyndell through battle-scarred roads and dragon-linked traditions, where the capital’s military history and its remarkable accommodation with ancient dragons become increasingly visible. The chapter closes with a chronicle note: The Tarnished approaches the capital with evidence that the Golden Order could incorporate former enemies when accommodation served a new order.",
+      "context": "People and factions: Leyndell knights; Dragon Cult practitioners; ancient-dragon legacy; capital defenders. Evidence and places: Sword monuments near the capital; dragon-cult incantations and equipment; fortified approaches; battle remains from Leyndell’s defenses. Open questions: How did enemies as destructive as the ancient dragons become sources of sanctioned worship inside the Golden Order?",
+      "spoiler": "Fortissax, Lansseax, Godwyn, and Farum Azula show that dragon friendship and dragon war both shaped Leyndell’s theology.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "East Altus"
+    },
+    "LOR-J1-032": {
+      "id": "LOR-J1-032",
+      "overview": "Mt. Gelmir is a landscape of siege and recusancy where Leyndell’s assault on Rykard’s forces became one of the Shattering’s most brutal and apparently futile campaigns. The chapter closes with a chronicle note: The Tarnished crosses the physical front line between Leyndell’s order and Rykard’s blasphemous alternative.",
+      "context": "People and factions: Volcano Manor forces; Leyndell soldiers; recusants; demi-human and serpent-associated inhabitants; Rykard’s followers. Evidence and places: Battle monuments; ruined camps; siege works; Fort Laiedd; volcanic corpses and machinery; paths toward the Manor. Open questions: Why did Rykard’s rebellion provoke such a destructive response, and when did principled resistance become the Manor’s predatory recusant creed?",
+      "spoiler": "Volcano Manor reveals Rykard’s union with the serpent and how opposition to the Erdtree became a theology of devouring champions and gods.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Mt. Gelmir"
+    },
+    "LOR-J1-033": {
+      "id": "LOR-J1-033",
+      "overview": "Volcano Manor turns rebellion against the Erdtree into an organized creed: recusants hunt other Tarnished while Rykard seeks strength through union with the immortal serpent. The chapter closes with a chronicle note: The Tarnished can infiltrate or join the recusants while ultimately confronting the demigod who made blasphemy bodily and literal.",
+      "context": "People and factions: Praetor Rykard; Tanith; Rya/Zorayas; Bernahl; Patches; Diallos; recusant assassins. Evidence and places: Recusant contracts; serpent imagery; Rya’s birth secret; God-Devouring Serpent; Rykard’s remembrance; blasphemous weapons and rites. Open questions: Can resistance to a coercive order remain liberating when it adopts a philosophy in which strength literally consumes others?",
+      "spoiler": "Rykard’s defeat does not neatly end the Manor’s ideology; Tanith, Patches, Bernahl, and the serpent’s persistence all show unfinished consequences.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Volcano Manor"
+    },
+    "LOR-J1-034": {
+      "id": "LOR-J1-034",
+      "overview": "The Capital Outskirts present Leyndell as a fortress-city still defended by layered walls, battlefield relics, sentinels, and Erdtree-aligned institutions despite the wider collapse of the realm. The chapter closes with a chronicle note: The Tarnished reaches the last great functioning center of Golden Order political power.",
+      "context": "People and factions: Draconic Tree Sentinel; Leyndell knights; perfumers; Tree Sentinels; defenders of the capital. Evidence and places: Outer Wall battlegrounds; sealed gates; minor Erdtree; grave sites; capital ramparts; dragon-cult defender at the main approach. Open questions: Why has Leyndell remained more institutionally intact than most demigod territories after the Shattering?",
+      "spoiler": "Morgott’s rule, the sealing thorns, and the later ashen transformation show that the capital’s stability depends on both fierce defense and an impossible status quo.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Capital Outskirts"
+    },
+    "LOR-J1-035": {
+      "id": "LOR-J1-035",
+      "overview": "Leyndell is the monumental center of the Golden Order, but beneath its golden architecture lie contradictions: sealed access to the Erdtree, forgotten Omens, a copy of the Roundtable, and evidence of older faiths incorporated into the capital. The chapter closes with a chronicle note: The Tarnished defeats Morgott and learns that becoming Elden Lord requires breaking through the very order the capital is built to preserve.",
+      "context": "People and factions: Morgott; Godfrey’s legacy; Radagon and Marika; Goldmask/Corhyn; Leyndell knights; dragon-cult clergy; Omens hidden below. Evidence and places: Erdtree Sanctuary; Queen’s Bedchamber; Fortified Manor; dragon corpse; Golden Order seals; Morgott’s Great Rune and throne. Open questions: Why does the Erdtree reject even a successful Tarnished who has gathered Great Runes and reached its door?",
+      "spoiler": "The thorns force the journey toward the Flame of Ruin; later revelation that Radagon and Marika share one divine body destabilizes the capital’s official theology.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Leyndell, Royal Capital"
+    },
+    "LOR-J1-036": {
+      "id": "LOR-J1-036",
+      "overview": "Beneath Leyndell, the Golden Order hides the people and ideas it rejects: Omens are confined in sewers while the buried merchants and Three Fingers preserve a path toward Frenzied Flame. The chapter closes with a chronicle note: The Tarnished discovers that the capital’s brightest ideology is built directly above the peoples it condemned and hid.",
+      "context": "People and factions: Mohg the Omen; the Omen population; imprisoned Nomadic Merchants; Hyetta’s quest; the Three Fingers. Evidence and places: Sewer-gaols; Cathedral of the Forsaken; merchant corpses; Frenzied Flame Proscription; Omen imagery; Mohg’s projection. Open questions: What does Leyndell’s treatment of Omens and merchants reveal about the cost of defining a supposedly perfect order through exclusion?",
+      "spoiler": "Morgott and Mohg embody two radically different responses to Omen persecution, while the Frenzied Flame ending offers annihilation of distinction as its own terrible answer.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Subterranean Shunning-Grounds"
+    },
+    "LOR-J1-037": {
+      "id": "LOR-J1-037",
+      "overview": "The Forbidden Lands are a liminal military corridor beyond Leyndell, marking the transition from the Erdtree’s settled heartland to the frozen territory of the defeated Fire Giants. The chapter closes with a chronicle note: The Tarnished leaves the Golden Order’s populated center for a place preserved largely as a strategic boundary around forbidden fire.",
+      "context": "People and factions: Black Blade Kindred; Militia; Rold-route defenders; remnants of Leyndell’s control. Evidence and places: Grand Lift of Rold; restricted road; spectral landscape; Kindred guardian; boundary architecture. Open questions: Why was access to the Mountaintops so tightly controlled after the war against the giants?",
+      "spoiler": "The Flame of Ruin remains the one force capable of burning the Erdtree’s thorns, explaining why the Golden Order both conquered the giants and guarded their mountain.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Forbidden Lands"
+    },
+    "LOR-J1-038": {
+      "id": "LOR-J1-038",
+      "overview": "The western Mountaintops preserve the aftermath of the war against the Fire Giants and the cultures that fought around it, including Zamor warriors and Golden Order forces that never fully erased the land’s older identities. The chapter closes with a chronicle note: The Tarnished walks through a landscape where the Golden Order’s founding wars remain physically visible.",
+      "context": "People and factions: Zamor warriors; Fire Monk traditions; Leyndell forces; echoes of Godfrey’s war against the giants. Evidence and places: Ancient snowfield ruins; Zamor settlement; giant corpses; war memorials; Fire Monk camps; Rold road. Open questions: What alliances and rivalries existed among Zamor, giants, and the forces of the Erdtree before the war ended?",
+      "spoiler": "The Forge and Fire Giant reveal that the Golden Order’s victory deliberately left one giant alive to tend the flame it could not extinguish.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "West Mountaintops"
+    },
+    "LOR-J1-039": {
+      "id": "LOR-J1-039",
+      "overview": "Castle Sol links the Mountaintops to Miquella’s failed attempts to help his family: its eclipse ritual sought a soulless demigod’s revival, while its commander guards the path toward the secret Haligtree route. The chapter closes with a chronicle note: The Tarnished secures a route to the Consecrated Snowfield while uncovering one more unfinished Miquellan project.",
+      "context": "People and factions: Commander Niall; Castle Sol soldiers; Miquella’s followers; the unnamed soulless demigod associated with the eclipse. Evidence and places: Eclipse Shotel; Church of the Eclipse; spirit dialogue; Haligtree Secret Medallion half; spectral Banished Knights. Open questions: Was the eclipse ritual intended specifically for Godwyn, another soulless demigod, or a broader attempt to restore a demigod whose soul had been lost?",
+      "spoiler": "Miquella’s concern with Godwyn, unalloyed gold, Malenia, and the Haligtree forms a repeated pattern of trying to solve failures the Golden Order could not heal.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Castle Sol"
+    },
+    "LOR-J1-040": {
+      "id": "LOR-J1-040",
+      "overview": "The eastern Mountaintops culminate in the last Fire Giant and the Forge of the Giants, where the supposedly defeated flame survives because it could be contained but not destroyed. The chapter closes with a chronicle note: The Tarnished crosses from seeking permission to become Elden Lord into actively committing the cardinal sin required to open the path.",
+      "context": "People and factions: Fire Giant; Melina; Fire Monks; giant corpses; the Fell God tradition. Evidence and places: Forge of the Giants; giant graveyard; Flame of Ruin; Fire Giant’s eye and ritual imagery; Melina’s decision at the forge. Open questions: Why can the Erdtree be burned only by a flame the Golden Order spent an age trying to suppress?",
+      "spoiler": "Kindling the forge sends the Tarnished to Farum Azula, where Destined Death must also be released before the Erdtree can truly burn.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "East Mountaintops"
+    },
+    "LOR-J1-041": {
+      "id": "LOR-J1-041",
+      "overview": "Dragonbarrow is a harsh sanctuary of draconic and bestial power, centered on Greyoll’s brood and the Bestial Sanctum where Gurranq consumes Deathroot. The chapter closes with a chronicle note: The Tarnished builds a relationship with a penitent beast whose true historical role will become central at the end of the base-game route.",
+      "context": "People and factions: Greyoll; lesser dragons; Gurranq; Black Blade Kindred; Beastmen-linked clergy and hunters. Evidence and places: Greyoll’s resting place; Bestial Sanctum; Deathroot handoffs; dragon graves and roosts; Farum-style beast architecture. Open questions: Why does Gurranq hunger for Deathroot, and what connects this bestial priest to the sealed power of Destined Death?",
+      "spoiler": "Farum Azula reveals Gurranq’s identity as Maliketh, Marika’s shadow and keeper of Destined Death.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Greyoll's Dragonbarrow"
+    },
+    "LOR-J1-042": {
+      "id": "LOR-J1-042",
+      "overview": "The hidden snowfield is a pilgrimage corridor outside ordinary Erdtree routes, carrying Albinaurics and other seekers toward Miquella’s Haligtree while concealing Ordina and a path to Mohgwyn Palace. The chapter closes with a chronicle note: The Tarnished follows the same hidden path used by peoples seeking a promised sanctuary beyond Leyndell’s order.",
+      "context": "People and factions: Albinauric pilgrims; Latenna; Ordina’s inhabitants and assassins; Miquella’s distant followers. Evidence and places: Haligtree Secret Medallion route; Ordina Evergaol; Albinauric processions; apostate church; portal to Mohgwyn Palace. Open questions: Why did Miquella’s refuge require secrecy, and who was meant to be welcomed there that the Golden Order had failed or rejected?",
+      "spoiler": "The Haligtree reveals an unfinished sanctuary built around Miquella’s absence, while Mohgwyn shows another faction exploiting that absence for an entirely different dynasty.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Consecrated Snowfield"
+    },
+    "LOR-J1-043": {
+      "id": "LOR-J1-043",
+      "overview": "Mohgwyn Palace is Mohg’s attempt to found a blood dynasty around the abducted Miquella, combining Omen resentment, the Formless Mother’s bloodflame, and a plan to raise an Empyrean as divine consort. The chapter closes with a chronicle note: The Tarnished destroys Mohg’s attempted dynasty but leaves the mystery of Miquella’s cocoon unresolved until the DLC.",
+      "context": "People and factions: Mohg, Lord of Blood; Miquella in the cocoon; White Mask Varré; Bloody Fingers; Albinaurics caught within the dynasty. Evidence and places: Cocoon of the Empyrean; blood marshes; Mohg’s trident rites; Formless Mother bloodflame; dynasty mausoleum. Open questions: How much agency does the cocooned Miquella retain, and why does Mohg’s repeated communion fail to produce the dynasty he imagines?",
+      "spoiler": "Shadow of the Erdtree reveals that Miquella’s plans extend far beyond Mohg’s understanding and reframes why Mohg’s body and death matter afterward.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Mohgwyn Palace"
+    },
+    "LOR-J1-044": {
+      "id": "LOR-J1-044",
+      "overview": "The Haligtree is Miquella’s alternative sacred project: a vast but incomplete tree that became a refuge for peoples marginalized by the Golden Order and a home for those awaiting his return. The chapter closes with a chronicle note: The Tarnished enters a failed sanctuary whose inclusive promise remains visible even in Miquella’s absence.",
+      "context": "People and factions: Miquella; Loretta; Albinaurics; Misbegotten; Haligtree soldiers; envoys and pilgrims. Evidence and places: Haligtree architecture grown around the tree; Loretta’s defense; mixed populations; unalloyed-gold themes; Miquella statues. Open questions: Was the Haligtree meant to become a replacement Erdtree, a sanctuary without universal rule, or both?",
+      "spoiler": "Elphael, Malenia, Mohgwyn, and the DLC show that Miquella abandoned this project while pursuing increasingly radical solutions elsewhere.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Miquella's Haligtree"
+    },
+    "LOR-J1-045": {
+      "id": "LOR-J1-045",
+      "overview": "Elphael is the fortified heart of the Haligtree, where Malenia waits for Miquella amid Cleanrot devotion, scarlet decay, and evidence of a cure that was never completed. The chapter closes with a chronicle note: The Tarnished confronts Malenia and gains the means to preserve a future ending branch that would otherwise be locked by Frenzied Flame.",
+      "context": "People and factions: Malenia; Miquella; Millicent; Cleanrot Knights; Haligtree soldiers; servants tending the rotting sanctuary. Evidence and places: Malenia’s chamber; Haligtree roots; unalloyed-gold needle path; scarlet bloom; Cleanrot relics; Miquella’s empty cocoon site. Open questions: Can Malenia be understood apart from the Rot that inhabits her, and what did Miquella’s absence do to the identity she built around being his blade?",
+      "spoiler": "Miquella’s Needle can cure Frenzied Flame only after this quest path, while the DLC explains that Miquella deliberately left the Haligtree behind for the Realm of Shadow.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Elphael, Brace of the Haligtree"
+    },
+    "LOR-J1-046": {
+      "id": "LOR-J1-046",
+      "overview": "Farum Azula is a storm-wrapped ruin of ancient dragon and beast civilization, suspended outside ordinary time around a history that predates the Erdtree’s current order. The chapter closes with a chronicle note: The Tarnished defeats Marika’s shadow, releases Destined Death, and crosses the Companion’s largest base-game point of no return before entering the Realm of Shadow.",
+      "context": "People and factions: Maliketh/Gurranq; Dragonlord Placidusax; Beastmen; ancient dragons; Bernahl; Alexander. Evidence and places: Ancient dragon architecture; Placidusax’s storm; beast clergy; Maliketh and Destined Death; dragon graves; time-displaced ruins. Open questions: What caused Farum Azula to crumble, and how should its temporal distortion be understood relative to the history of Placidusax and the ancient dragons?",
+      "spoiler": "Releasing Destined Death makes the burning Erdtree’s destruction irreversible and transforms Leyndell into the Ashen Capital after the DLC detour.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Crumbling Farum Azula"
+    },
+    "LOR-J1-047": {
+      "id": "LOR-J1-047",
+      "overview": "The Realm of Shadow opens on the aftermath of Messmer’s crusade: burned settlements, hornsent resentment, graves, and Miquella’s first crosses immediately frame the DLC as both a pilgrimage and an excavation of hidden violence. The chapter closes with a chronicle note: The Tarnished joins Miquella’s scattered followers while beginning to read the physical record of a suppressed war.",
+      "context": "People and factions: Miquella’s followers; Needle Knight Leda; Hornsent; Redmane Freyja; Sir Ansbach; Moore; Messmer’s crusaders and hornsent survivors. Evidence and places: Scorched Ruins; Gravesite Plain monuments; Three-Path and Main Gate crosses; stranded spirits describing the crusade; shadowed gravefields. Open questions: Why did Marika send Messmer to wage a crusade that was later hidden from the Lands Between’s dominant history?",
+      "spoiler": "Belurat, Shadow Keep, Shaman Village, and Enir-Ilim reveal the crusade’s connection to hornsent power, Marika’s origins, and Miquella’s plan to reach divinity.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "West Gravesite Plain"
+    },
+    "LOR-J1-048": {
+      "id": "LOR-J1-048",
+      "overview": "Eastern Gravesite Plain expands the DLC’s buried histories through ruined forges, dragon-bound roads, and survivors whose dialogue links Bayle, ancient dragons, and Messmer’s devastated countryside. The chapter closes with a chronicle note: The Tarnished sees that the Realm of Shadow preserves conflicts far older than Messmer’s crusade alongside the scars of that newer war.",
+      "context": "People and factions: Igon; Dragon Communion Priestess by later connection; Messmer’s victims; forge pilgrims; ancient-dragon and drake traditions. Evidence and places: Ruined Forge Lava Intake; Elder’s Hovel; Pillar Path Cross; dragon corpses and drake encounters; stranded-soul testimony. Open questions: How did Bayle’s rebellion against Placidusax reshape dragon communion and the distinction between ancient dragons and drakes?",
+      "spoiler": "Jagged Peak provides the direct history of Bayle, Placidusax’s wound, and the Priestess’s loyalty to the ancient dragon lord.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "East Gravesite Plain"
+    },
+    "LOR-J1-049": {
+      "id": "LOR-J1-049",
+      "overview": "Belurat is a hornsent sacred city built around spiral imagery, divine-beast worship, and the old culture that once dominated this hidden land before Messmer’s purge. The chapter closes with a chronicle note: The Tarnished experiences the crusade from the perspective of a civilization that remembers itself as sacred rather than as the enemy in Marika’s history.",
+      "context": "People and factions: Hornsent; Divine Beast Dancing Lion; tower priests and inquisitors; hornsent civilians and warriors; Miquella’s passing presence. Evidence and places: Spiral towers; divine-beast ritual; graves and burned districts; hornsent statuary; Belurat Gaol; nearby Miquella crosses. Open questions: What did hornsent “divinity” mean before Marika’s order, and how did the Gate of Divinity relate to the tower culture centered here?",
+      "spoiler": "Enir-Ilim and the Gate of Divinity reveal the political and ritual summit of the hornsent culture; Shaman Village later reframes why Marika opposed it so violently.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "Belurat, Tower Settlement"
+    },
+    "LOR-J1-050": {
+      "id": "LOR-J1-050",
+      "overview": "Ellac River is a connective wilderness where the Realm of Shadow’s layered ecology, coffins, spirits, and hidden routes expose histories not organized around a single kingdom or army. The chapter closes with a chronicle note: The Tarnished moves from the crusade’s political history into deeper geological and funerary mysteries.",
+      "context": "People and factions: Forager Brood; hornsent survivors; stranded spirits; travelers moving between Gravesite Plain and the southern shore. Evidence and places: River caves and waterfalls; giant stone-coffin vistas; Forager Brood encounters; spirits foreshadowing the Fissure and St. Trina. Open questions: What are the enormous stone coffins, and why are so many ancient death-related sites concentrated along the southern waterways?",
+      "spoiler": "Cerulean Coast and Stone Coffin Fissure make the coffins central evidence for an ancient form of death and arrival predating the present cultures of the Shadow Realm.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "Ellac River"
+    },
+    "LOR-J1-051": {
+      "id": "LOR-J1-051",
+      "overview": "The Cerulean Coast is dominated by enormous stone coffins and blue grave-fields, presenting death as something ancient, maritime, and materially different from Erdtree burial. The chapter closes with a chronicle note: The Tarnished reaches a landscape where environmental evidence carries more history than surviving institutions do.",
+      "context": "People and factions: Ancient coffin-builders or arrivals whose identities are not fully named; Finger Ruins-linked spirits; St. Trina’s distant quest sphere. Evidence and places: Giant stone coffins; blue grave flowers; Finger-Weaver’s Hovel; Finger Ruins of Rhia; paths toward the Fissure. Open questions: Who made or traveled in the stone coffins, and what does their scale imply about life and death before the cultures now visible in the Realm of Shadow?",
+      "spoiler": "Stone Coffin Fissure and the Putrescent Knight connect the coffins to ancient death, putrescence, and the place where Miquella discarded St. Trina.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "Cerulean Coast"
+    },
+    "LOR-J1-052": {
+      "id": "LOR-J1-052",
+      "overview": "Charo’s Hidden Grave overlays vivid red grave-fields, deathbird imagery, prisons, and ritual remains, reinforcing that the Shadow Realm accumulated multiple funerary traditions long before the present crusade. The chapter closes with a chronicle note: The Tarnished encounters another independent death tradition that broadens the Companion’s post-area understanding of the Shadow Realm.",
+      "context": "People and factions: Gravebirds; Death Rite-linked creatures; prisoners of Lamenter’s Gaol; unnamed dead and mourners. Evidence and places: Red grave flowers; Tibia/Death-related enemies; Lamenter’s Gaol; gravebird sites; proximity to the Cerulean coffin landscape. Open questions: How do the gravebird and death-rite traditions here relate to the older death systems represented by the stone coffins and the base game’s Deathbirds?",
+      "spoiler": "Later DLC and base-game death lore together suggest that Erdtree burial is only one relatively recent layer in a much older history of death rites.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "Charo's Hidden Grave"
+    },
+    "LOR-J1-053": {
+      "id": "LOR-J1-053",
+      "overview": "Castle Ensis is the military seat of Rellana, a Carian princess who followed Messmer into the Realm of Shadow and fused lunar swordsmanship with a new allegiance. The chapter closes with a chronicle note: The Tarnished defeats a Carian royal whose path shows how the Realm of Shadow drew important figures away from the histories preserved above.",
+      "context": "People and factions: Rellana, Twin Moon Knight; Messmer’s forces; Carian retainers; scholars and knights serving at Ensis. Evidence and places: Castle Cross; Rellana’s twin blades and moons; Carian architecture mixed with Messmer-aligned troops; moon-and-flame symbolism. Open questions: What personal or political bond caused Rellana to leave Caria and become Messmer’s sword in a hidden war?",
+      "spoiler": "Shadow Keep and Messmer’s wider history place Rellana’s loyalty inside a crusade that her homeland in the Lands Between barely remembers.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "Castle Ensis"
+    },
+    "LOR-J1-054": {
+      "id": "LOR-J1-054",
+      "overview": "West Scadu Altus broadens the followers’ pilgrimage across a region where Miquella’s crosses, hornsent settlements, crusade roads, and old shrines overlap without yet revealing the full purpose of his self-divestment. The chapter closes with a chronicle note: The Tarnished’s alliance with Miquella’s followers begins to fracture as the pilgrimage’s cost becomes more visible.",
+      "context": "People and factions: Miquella’s followers; Hornsent; Leda’s company; local crusade soldiers; Dryleaf and monk traditions encountered across the plateau. Evidence and places: Miquella crosses; ruined shrines; roads toward Shadow Keep; Moorth/Scadu Altus settlements; messages from the follower group. Open questions: Why is Miquella abandoning parts of himself rather than simply traveling toward a destination?",
+      "spoiler": "The Fissure reveals that love itself is among what Miquella discards, while Enir-Ilim reveals that the stripping-away is preparation for godhood.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "West Scadu Altus"
+    },
+    "LOR-J1-055": {
+      "id": "LOR-J1-055",
+      "overview": "Rauh Base exposes monumental ruins from a civilization older than the hornsent city-states, suggesting that the Realm of Shadow contains cultural layers far deeper than Marika’s crusade. The chapter closes with a chronicle note: The Tarnished gains direct evidence that “ancient” in the Shadow Realm refers to multiple eras, not a single lost civilization.",
+      "context": "People and factions: Ancient Rauh builders; guardian golems and spirits; hornsent and crusade-era peoples living among older ruins. Evidence and places: Massive Rauh architecture; golems; verdant ruins; ancient furnaces and conduits; paths leading beneath the later Ancient Ruins of Rauh. Open questions: Who built Rauh’s monumental structures, and how did their culture relate to later hornsent practices involving spirits, crucible traits, and sacred towers?",
+      "spoiler": "Ancient Ruins of Rauh and Romina’s region show later religious cultures occupying and repurposing a landscape whose original civilization remains only partly explained.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "Rauh Base"
+    },
+    "LOR-J1-056": {
+      "id": "LOR-J1-056",
+      "overview": "East Scadu Altus connects the broken follower quest lines to darker evidence about jars, shamans, Fingers, and the social machinery that preceded Marika’s rise. The chapter closes with a chronicle note: The Tarnished’s investigation shifts from the crusade’s battlefield victims to the institutions and traumas that preceded the crusade itself.",
+      "context": "People and factions: Count Ymir; Swordhand of Night Jolán; hornsent jar-keepers; shamans remembered through whipping and jar practices; Miquella’s followers after the Great Rune break. Evidence and places: Bonny Village and Whipping Hut context; Cathedral of Manus Metyr; Finger Ruins route; jar rituals; post–Great Rune follower dialogue. Open questions: How did hornsent jar practices and the treatment of shamans shape Marika’s later rejection of this land and its people?",
+      "spoiler": "Scaduview’s Shaman Village makes Marika’s personal origin explicit, while Metyr reframes the Fingers as descendants of a wounded cosmic mother rather than perfect messengers.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "East Scadu Altus"
+    },
+    "LOR-J1-057": {
+      "id": "LOR-J1-057",
+      "overview": "The Fissure turns the southern coffin mystery into an intimate part of Miquella’s story: beneath ancient putrescent remains lies St. Trina, the aspect of love Miquella cast away. The chapter closes with a chronicle note: The Tarnished learns that Miquella’s sacrifice is psychological and moral, not merely physical.",
+      "context": "People and factions: St. Trina; Thiollier; Putrescent Knight; Miquella by the evidence of his cross and discarded self. Evidence and places: Fissure Cross; stone coffins; putrescence; Garden of Deep Purple; St. Trina’s nectar and dialogue path. Open questions: If Miquella discarded his love to become a god, what human restraint or empathy was lost with St. Trina?",
+      "spoiler": "St. Trina ultimately opposes Miquella’s godhood, warning that divinity would become a prison rather than the liberation he seeks.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "Stone Coffin Fissure"
+    },
+    "LOR-J1-058": {
+      "id": "LOR-J1-058",
+      "overview": "Shadow Keep is both Messmer’s fortress and an archive of conquest, storing hornsent specimens and evidence that the crusade was studied, categorized, and administered as well as fought. The chapter closes with a chronicle note: The Tarnished reaches the administrative center of the hidden war and must resolve several follower alliances before defeating its central demigod.",
+      "context": "People and factions: Messmer; Sir Ansbach; Redmane Freyja; Leda and Hornsent; Fire Knights; specimen keepers; Miquella’s followers. Evidence and places: Specimen Storehouse; preserved hornsent bodies; Storehouse Cross; Messmer’s army; follower letters and branch signs; crusade records. Open questions: Was Messmer only an executioner carrying Marika’s command, or did exile and abandonment produce an identity distinct from the mission he was given?",
+      "spoiler": "Messmer’s remembrance and Marika-linked items reveal a son hidden from public history; Enir-Ilim shows the crusade’s target was tied to the very mechanism Miquella later uses for ascension.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "Shadow Keep"
+    },
+    "LOR-J1-059": {
+      "id": "LOR-J1-059",
+      "overview": "The flooded Church District reveals a devotional and military quarter of Shadow Keep where Fire Knights, Queelign’s fanaticism, and access to the Scadutree’s roots sit beside the crusade’s formal institutions. The chapter closes with a chronicle note: The Tarnished resolves faith-driven NPC fates while opening access to one of the Shadow Realm’s deepest sacred roots.",
+      "context": "People and factions: Fire Knight Queelign; Messmer’s Fire Knights; Jolán/Ymir quest sphere by nearby progression; Scadutree Avatar. Evidence and places: Flooded churches; Queelign prayer states; Iris choices; path to Scadutree Base; Fire Knight gear and liturgy. Open questions: What did religious devotion to Messmer mean to his followers after Marika had effectively erased him from the history of the Lands Between?",
+      "spoiler": "Messmer’s hidden lineage and the Scadutree’s damaged sacred role show that devotion in the Realm of Shadow developed under abandonment rather than public divine legitimacy.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "Church District"
+    },
+    "LOR-J1-060": {
+      "id": "LOR-J1-060",
+      "overview": "Scaduview contains some of the DLC’s most consequential origin evidence: Marika’s Shaman Village, the Finger Ruins and Metyr quest, and the hinterland behind Shadow Keep. The chapter closes with a chronicle note: The Tarnished acquires the strongest source-grounded context for both Marika’s beginnings and the fallibility of the Fingers.",
+      "context": "People and factions: Marika’s shaman kin; Count Ymir; Jolán and Anna; Metyr, Mother of Fingers; Commander Gaius; Messmer’s inner circle by association. Evidence and places: Shaman Village; Minor Erdtree incantation; Golden Braid; Finger Ruins; Cathedral quest; Metyr; O Mother gesture access. Open questions: How should Marika’s later empire be judged in light of the violence committed against her people before she became a god?",
+      "spoiler": "Metyr’s damaged relationship with the Greater Will complicates the authority of the Fingers, while Shaman Village gives Marika’s crusade a personal origin without excusing its scale.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "Scaduview"
+    },
+    "LOR-J1-061": {
+      "id": "LOR-J1-061",
+      "overview": "Recluses’ River is a descent away from the plateau’s institutions into isolated grave-country and natural corridors that lead toward the sealed horror of the Abyssal Woods. The chapter closes with a chronicle note: The Tarnished leaves the political centers of the DLC and enters a landscape defined by deliberate isolation.",
+      "context": "People and factions: Reclusive travelers; gravebirds and local spirits; hornsent or crusade remnants along the river approaches. Evidence and places: Cliffside river paths; tombs and gravebirds; waterfalls; secluded ruins; route descending toward Darklight Catacombs and the Abyss. Open questions: Why is the Abyssal region separated so dramatically from ordinary travel, even within a land already hidden from the wider world?",
+      "spoiler": "The Abyssal Woods reveal that Frenzied Flame is treated as a contamination so dangerous that even Torrent refuses ordinary passage there.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "Recluses' River"
+    },
+    "LOR-J1-062": {
+      "id": "LOR-J1-062",
+      "overview": "The Abyssal Woods embody the terror of Frenzied Flame as a living condition: ordinary traversal breaks down, madness dominates the landscape, and the surviving inhabitants fear beings that cannot be fought normally. The chapter closes with a chronicle note: The Tarnished enters a region where the promise to erase all distinctions is presented not as abstract philosophy but as environmental horror.",
+      "context": "People and factions: Midra’s distant household; Aging Untouchables; Frenzied Flame worshippers and victims; Nanaya by the history leading to the manse. Evidence and places: Maddening forest; Untouchables; abandoned church and inquisitorial traces; Torrent’s refusal; route toward Midra’s Manse. Open questions: Why did hornsent inquisitors choose prolonged suffering as the way to contain Midra, and did that suffering itself help create the Lord they feared?",
+      "spoiler": "Midra’s Manse shows how punishment, endurance, and despair culminate in a Lord of Frenzied Flame rather than successfully suppressing the threat.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "Abyssal Woods"
+    },
+    "LOR-J1-063": {
+      "id": "LOR-J1-063",
+      "overview": "Midra’s Manse preserves a failed containment story: Midra was subjected to horrific punishment and ordered to endure, while the Frenzied Flame remained latent until despair and confrontation finally transformed him. The chapter closes with a chronicle note: The Tarnished defeats a Lord of Frenzied Flame whose history mirrors, but does not replace, the Tarnished’s own optional Frenzied Flame branch.",
+      "context": "People and factions: Midra; Nanaya; hornsent inquisitors; followers and victims of the Frenzied Flame. Evidence and places: Greatsword of Damnation imagery; paintings and ruined household rooms; Nanaya’s remains; inquisitorial punishment; Midra’s transformation. Open questions: What did Nanaya intend by urging Midra to endure, and was the goal to prevent his transformation or to preserve the conditions for it?",
+      "spoiler": "The base-game Three Fingers and Lord of Frenzied Flame ending show Midra as another example of a recurring cosmic force seeking a lord through suffering and negation.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "Midra's Manse"
+    },
+    "LOR-J1-064": {
+      "id": "LOR-J1-064",
+      "overview": "Jagged Peak reveals the ancient civil war behind drake-hunting and dragon communion: Bayle rebelled against Dragonlord Placidusax and left both sides permanently scarred. The chapter closes with a chronicle note: The Tarnished completes a draconic vendetta older than the Golden Order and determines the first-cycle fate of the Priestess reward branch.",
+      "context": "People and factions: Bayle the Dread; Dragonlord Placidusax by history; Ancient Dragon Florissax/Dragon Communion Priestess; Igon; ancient dragons and drakes. Evidence and places: Bayle’s wounds and severed heads; Senessax; Grand Altar of Dragon Communion; Priestess dialogue; Igon’s hunt; Heart of Bayle. Open questions: What drove Bayle’s rebellion, and how did Placidusax’s followers turn vengeance against Bayle’s descendants into the institution of dragon communion?",
+      "spoiler": "Bayle’s heart yields mutually exclusive communion rewards across journeys, while Placidusax’s own ancient-lord history remains rooted in Farum Azula.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/dlc-walkthrough",
+      "sourceTitle": "Jagged Peak"
+    },
+    "LOR-J1-065": {
+      "id": "LOR-J1-065",
+      "overview": "The upper Rauh ruins combine a pre-hornsent civilization with later rot worship and the sealing-tree route, making the region both archaeological and a direct gateway to the DLC’s final sacred tower. The chapter closes with a chronicle note: The Tarnished closes the last major exploration region before deliberately breaking the seal that protects Enir-Ilim.",
+      "context": "People and factions: Ancient Rauh builders; Romina, Saint of the Bud; Hornsent by his late quest path; rot servants; Miquella’s followers by consequence. Evidence and places: Monumental overgrown ruins; rot buds and scarlet church; Miquella cross; sealing tree; Hornsent invasion route; ancient stone structures. Open questions: How did Romina’s Scarlet Rot arise from the destruction of her church, and why did rot take root in a region built atop a much older civilization?",
+      "spoiler": "Burning the sealing tree opens Enir-Ilim and crosses the DLC’s major final lockout, while Romina demonstrates another mortal-centered expression of Scarlet Rot distinct from Malenia.",
+      "sourceUrl": "https://roundtablehold.net/checklists/dlc_walkthrough.html",
+      "sourceTitle": "Ancient Ruins of Rauh"
+    },
+    "LOR-J1-066": {
+      "id": "LOR-J1-066",
+      "overview": "Enir-Ilim is the hornsent sacred tower and site of the Gate of Divinity, where Miquella completes his ascent and attempts to establish a new order through a promised consort. The chapter closes with a chronicle note: The Tarnished ends Miquella’s attempted age, completes the Realm of Shadow, and returns to the Lands Between before finishing the base game.",
+      "context": "People and factions: Miquella; Promised Consort Radahn; Needle Knight Leda; Sir Ansbach; Thiollier; surviving follower factions; hornsent divine-tower clergy. Evidence and places: Spiral tower architecture; Gate of Divinity; final follower battle; Miquella’s memory; final boss remembrance; hornsent sacred imagery. Open questions: Does Miquella’s goal of compassion survive the abandonment of love, doubt, and other parts of himself, or does the method undermine the ideal?",
+      "spoiler": "Miquella’s final memory and defeat leave the Lands Between without the new god he intended to become; the Companion then returns to the base-game endgame and preserves Age of Stars as the permanent conclusion.",
+      "sourceUrl": "https://roundtablehold.net/checklists/dlc_walkthrough.html",
+      "sourceTitle": "Enir-Ilim & DLC Finale"
+    },
+    "LOR-J1-067": {
+      "id": "LOR-J1-067",
+      "overview": "Leyndell’s ashen form reveals the irreversible consequence of releasing Destined Death: the once-golden capital is buried, routes are erased, and the last defenders stand between the Tarnished and the Erdtree. The chapter closes with a chronicle note: The Tarnished defeats the last human claimants and reaches the threshold where the future of Order itself can finally be chosen.",
+      "context": "People and factions: Gideon Ofnir; Godfrey/Hoarah Loux; Morgott’s memory; Marika/Radagon; surviving Roundtable figures by prior dialogue. Evidence and places: Ash-buried streets; exposed Erdtree entrance; Gideon’s confrontation; Godfrey’s return; final remembrance rewards; altered capital geography. Open questions: Why does Gideon conclude that a Tarnished cannot kill a god, and what does Godfrey’s return say about Marika’s original plan for the Tarnished?",
+      "spoiler": "The final Erdtree encounter reveals Radagon and Marika’s shared divine body and the Elden Beast as the final embodiment/guardian of the Order being contested.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Leyndell, Ashen Capital"
+    },
+    "LOR-J1-068": {
+      "id": "LOR-J1-068",
+      "overview": "The endings convert the journey’s accumulated quest lines into competing answers to the same question: preserve, reform, corrupt, dissolve, or remove the existing order from direct worldly rule. The chapter closes with a chronicle note: The Tarnished experiences every ending branch for completion but keeps the Ranni/Age of Stars conclusion as the permanent Journey 1 state.",
+      "context": "People and factions: Marika/Radagon’s legacy; Ranni; Goldmask; Fia; Dung Eater; the Three Fingers/Frenzied Flame; the Tarnished as final chooser. Evidence and places: Fractured Marika; three Mending Runes; Ranni’s blue summon sign; Frenzied Flame state; Backup A/A2 workflow; Elden Lord throne imagery. Open questions: Which ending best addresses the failures witnessed across the journey without reproducing a different form of coercion?",
+      "spoiler": "The Companion deliberately experiences Lord of Frenzied Flame and all Elden Lord variants by reload, then preserves Age of Stars as the final world state; this is a completion strategy, not a claim that all endings occur in one canon timeline.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "Endings"
+    },
+    "LOR-J1-069": {
+      "id": "LOR-J1-069",
+      "overview": "This section is primarily a completion boundary rather than an in-world lore chapter: it preserves the finished Journey 1 world before beginning targeted alternate-cycle collection work. The chapter closes with a chronicle note: The Tarnished’s definitive Journey 1 is frozen as a museum save before Journey 2 begins only for cycle-limited or mutually exclusive goals.",
+      "context": "People and factions: The Tarnished; surviving NPC/merchant states already resolved; future alternate-branch versions encountered only through gameplay cycles. Evidence and places: Backup B museum save; Master Completion certification; remembrance and merchant closeout; inventory audit; Journey Planner assignments. Open questions: Which unresolved rewards genuinely require another cycle, and which goals are optional duplicates or alternate experiences rather than missing completion?",
+      "spoiler": "New Game Plus is treated here as a gameplay/completion framework; the Companion does not assert that repeated journeys are a canonical time-loop in Elden Ring’s story.",
+      "sourceUrl": "https://eldenring.redmaw.dev/sheets/walkthrough",
+      "sourceTitle": "New Game Plus Preparation"
+    }
+  },
+  "counts": {
+    "entries": 69,
+    "withOverview": 69,
+    "withContext": 69
+  },
+  "gaps": []
+}

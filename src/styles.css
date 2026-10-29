@@ -36,6 +36,16 @@
   --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
   --shadow: 0 24px 70px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.025) inset;
   --sidebar: 256px;
+  --ui-scale: 1;
+}
+
+/* Larger default type and spacing on high-density displays. */
+html[data-scale="large"] {
+  font-size: 17.5px;
+}
+
+html[data-scale="large"] .page {
+  max-width: 1520px;
 }
 
 * {
@@ -58,7 +68,7 @@ body {
     linear-gradient(180deg, #080706 0%, #0a0907 42%, #080706 100%);
   color: var(--fg);
   font-family: var(--font-body);
-  font-size: 15.5px;
+  font-size: calc(15.5px * var(--ui-scale));
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -535,7 +545,21 @@ kbd {
 }
 
 .menu-btn {
-  display: none;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.app.sidebar-collapsed .sidebar {
+  transform: translateX(-104%);
+}
+
+.app.sidebar-collapsed .main {
+  width: 100%;
+  margin-left: 0;
+}
+
+.main {
+  transition: margin-left 200ms ease;
 }
 
 .page {
@@ -706,6 +730,8 @@ kbd {
 
 .card {
   position: relative;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 240px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background:
@@ -1004,6 +1030,18 @@ kbd {
   background-position: calc(100% - 15px) 16px, calc(100% - 11px) 16px;
   background-size: 4px 4px, 4px 4px;
   background-repeat: no-repeat;
+}
+
+/* Native option lists inherit the platform palette; force a dark, legible one. */
+.select option,
+.select optgroup {
+  background: #17140f;
+  color: var(--fg);
+}
+
+.select optgroup {
+  color: var(--accent);
+  font-style: normal;
 }
 
 .field {
@@ -2047,6 +2085,30 @@ kbd {
 
 /* ---------- Responsive ---------- */
 
+@media (min-width: 1900px) {
+  html[data-scale="auto"] {
+    font-size: 17px;
+  }
+
+  html[data-scale="auto"] .page {
+    max-width: 1480px;
+  }
+}
+
+@media (min-width: 2500px) {
+  html[data-scale="auto"] {
+    font-size: 18.5px;
+  }
+
+  html[data-scale="auto"] .page {
+    max-width: 1680px;
+  }
+
+  html[data-scale="auto"] {
+    --sidebar: 296px;
+  }
+}
+
 @media (max-width: 1180px) {
   .grid-4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2085,6 +2147,10 @@ kbd {
 
   .menu-btn {
     display: inline-flex;
+  }
+
+  .app.sidebar-collapsed .sidebar {
+    transform: translateX(-104%);
   }
 
   .topbar {
@@ -2952,5 +3018,243 @@ kbd {
 
   .art-banner--tall {
     min-height: 200px;
+  }
+}
+
+
+/* ---------- Progressive disclosure ---------- */
+
+.disclosure {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.014);
+  overflow: hidden;
+}
+
+.disclosure-summary,
+.collapsible-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  list-style: none;
+  color: var(--fg-soft);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.disclosure-summary::-webkit-details-marker,
+.collapsible-summary::-webkit-details-marker {
+  display: none;
+}
+
+.disclosure-summary:hover,
+.collapsible-summary:hover {
+  color: var(--accent-strong);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.disclosure-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.disclosure-meta {
+  color: var(--faint);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.disclosure-chevron {
+  color: var(--faint);
+  transition: transform 160ms ease;
+  flex: 0 0 auto;
+}
+
+.disclosure[open] > .disclosure-summary .disclosure-chevron,
+.collapsible-card[open] > .collapsible-summary .disclosure-chevron {
+  transform: rotate(180deg);
+}
+
+.disclosure-body {
+  padding: 0 14px 14px;
+}
+
+.disclosure-accent {
+  border-color: rgba(201, 163, 93, 0.25);
+}
+
+.disclosure-muted {
+  background: transparent;
+}
+
+.collapsible-card {
+  padding: 0;
+}
+
+.collapsible-card > .collapsible-summary {
+  padding: 16px 18px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.collapsible-summary h2 {
+  font-size: 17px;
+  letter-spacing: 0.04em;
+}
+
+.collapsible-body {
+  padding: 0 18px 18px;
+}
+
+/* "Show everything" mode opens every panel for readers who want the whole
+   ledger. The DOM cannot flip the `open` attribute via CSS, so the shell
+   applies it with a single effect and keeps summaries clickable to collapse. */
+.disclosure-everything details > summary {
+  cursor: default;
+}
+
+.disclosure-everything details > summary .disclosure-chevron {
+  display: none;
+}
+
+/* ---------- Stat comparison ---------- */
+
+.stat-compare {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12.5px;
+}
+
+.stat-compare-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 54px 64px 50px;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 8px;
+  border-radius: 6px;
+}
+
+.stat-compare-row:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.stat-compare-head {
+  color: var(--faint);
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.stat-compare-label {
+  color: var(--fg-soft);
+}
+
+/* ---------- Calmer page chrome ---------- */
+
+.page {
+  max-width: 1280px;
+}
+
+.card {
+  box-shadow: none;
+}
+
+.brand-emblem {
+  width: 34px;
+  height: 34px;
+  filter: drop-shadow(0 0 9px rgba(201, 163, 93, 0.22));
+}
+
+.offline-dot {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.offline-dot.is-warning {
+  color: var(--warning);
+}
+
+@media (max-width: 760px) {
+  .stat-compare-row {
+    grid-template-columns: minmax(0, 1fr) 44px 52px 42px;
+  }
+}
+
+
+/* ---------- Handheld quick navigation ---------- */
+
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .mobile-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 3px;
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    background: rgba(10, 9, 7, 0.97);
+    border-top: 1px solid var(--gold-line);
+    backdrop-filter: blur(14px);
+  }
+
+  .mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+    min-height: 48px;
+    padding: 5px 1px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--faint);
+    font-family: var(--font-ui);
+    font-size: 8px;
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .mobile-nav-item > span {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mobile-nav-item.active {
+    color: var(--accent-strong);
+    background: rgba(201, 163, 93, 0.1);
+  }
+
+  .page {
+    padding-bottom: 104px;
+  }
+
+  .toast-stack {
+    bottom: 78px;
   }
 }

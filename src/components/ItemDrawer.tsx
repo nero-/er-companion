@@ -1,12 +1,22 @@
 import { useEffect, useState } from "react";
 import { Badge, Button, Callout, Drawer, SectionTitle, Switch, TierBadge, useToast } from "./ui";
 import { Icon } from "./Icon";
-import { setItemOwned, useActiveCharacter, useActiveJourney } from "../lib/store";
-import { ACHIEVEMENT_BY_ID, REQUIREMENT_GROUPS, ROUTE_AREAS, STEP_BY_ID, TIERS_BY_NAME } from "../lib/data";
+import { setItemCount, setItemOwned, useActiveCharacter, useActiveJourney } from "../lib/store";
+import {
+  ACHIEVEMENT_BY_ID,
+  AREA_SWEEPS,
+  ITEM_DESCRIPTIONS,
+  REQUIREMENT_GROUPS,
+  ROUTE_AREAS,
+  STEP_BY_ID,
+  TIERS_BY_NAME,
+} from "../lib/data";
 import { PATCH_IMPACT_BY_NAME } from "../data/game";
+import { areaSweep } from "../lib/gameplay";
+import { formatNumber } from "../lib/format";
 import { stepStatusLabel, stepStatusTone } from "../lib/selectors";
 import { navigate } from "../lib/router";
-import type { Achievement, Item, RouteStep, StepStatus } from "../lib/types";
+import type { Achievement, AreaSweep, Item, RouteStep, StepStatus } from "../lib/types";
 
 interface ItemDrawerProps {
   item: Item | null;
@@ -62,6 +72,90 @@ export function isItemRouteLinked(item: Item): boolean {
 export function itemRegionName(item: Item): string | null {
   const region = item.region.trim();
   return region && GAME_NAMES[region] !== true ? region : null;
+}
+
+/** Groups/categories whose entries stack in the inventory, so one press moves more than one. */
+const STACKABLE_GROUPS: Record<string, true> = {
+  Consumable: true,
+  Material: true,
+  Upgrade: true,
+};
+
+const STACK_STEP = 5;
+const MAX_ITEM_COUNT = 999;
+
+/** How many units one +/- press moves for this item. */
+export function itemCountStep(item: Item): number {
+  const stackable = STACKABLE_GROUPS[item.group] === true || STACKABLE_GROUPS[item.category] === true;
+  return stackable ? STACK_STEP : 1;
+}
+
+const SWEEP_BY_ITEM: Map<string, AreaSweep> = new Map();
+for (const sweep of AREA_SWEEPS) {
+  const rows = [
+    ...sweep.unlinkedItems,
+    ...sweep.farmables,
+    ...sweep.merchants.flatMap((merchant) => merchant.items),
+  ];
+  for (const row of rows) {
+    if (row.itemId && !SWEEP_BY_ITEM.has(row.itemId)) SWEEP_BY_ITEM.set(row.itemId, sweep);
+  }
+}
+
+/**
+ * The area sweep that covers this item: the recorded region/location/section
+ * lookup first, then explicit membership in a sweep's item rows. Never guesses
+ * — an unrecorded location stays unrecorded and yields no badge.
+ */
+export function itemSweep(item: Item): AreaSweep | undefined {
+  for (const candidate of [itemRegionName(item) ?? undefined, item.location, item.section]) {
+    const sweep = areaSweep(candidate?.trim());
+    if (sweep) return sweep;
+  }
+  return SWEEP_BY_ITEM.get(item.id);
+}
+
+interface ItemQuantityProps {
+  item: Item;
+  count: number;
+  className?: string;
+}
+
+/**
+ * Stepper shared by the catalogue grid and the drawer. `setItemCount(0)` marks
+ * the item missing, so the count is the single source of ownership truth.
+ */
+export function ItemQuantity({ item, count, className = "" }: ItemQuantityProps) {
+  const step = itemCountStep(item);
+  const value = Math.max(0, Math.min(MAX_ITEM_COUNT, count));
+  const set = (next: number) => setItemCount(item.id, Math.max(0, Math.min(MAX_ITEM_COUNT, next)));
+  const label = `${item.name} quantity`;
+
+  return (
+    <div className={`col-qty ${className}`.trim()} role="group" aria-label={label}>
+      <button
+        type="button"
+        className="col-qty-btn"
+        onClick={() => set(value - step)}
+        disabled={value <= 0}
+        aria-label={`Decrease ${item.name} quantity by ${step}`}
+      >
+        <Icon name="minus" size={12} />
+      </button>
+      <span className={`col-qty-value${value > 0 ? " is-owned" : ""}`} aria-live="polite">
+        {value > 0 ? `×${value}` : "—"}
+      </span>
+      <button
+        type="button"
+        className="col-qty-btn"
+        onClick={() => set(value === 0 ? step : value + step)}
+        disabled={value >= MAX_ITEM_COUNT}
+        aria-label={`Increase ${item.name} quantity by ${step}`}
+      >
+        <Icon name="plus" size={12} />
+      </button>
+    </div>
+  );
 }
 
 interface ItemAchievementLink {
@@ -137,6 +231,10 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
   if (!item) return null;
 
   const owned = character.items[item.id] === true;
+  const count = Math.max(0, character.itemCounts[item.id] ?? (owned ? 1 : 0));
+  const description = ITEM_DESCRIPTIONS[item.id];
+  const routeLinked = isItemRouteLinked(item);
+  const sweep = routeLinked ? undefined : itemSweep(item);
   const patchImpact = PATCH_IMPACT_BY_NAME[item.name];
   const tierEntries = Object.prototype.hasOwnProperty.call(TIERS_BY_NAME, item.name)
     ? TIERS_BY_NAME[item.name]
@@ -172,6 +270,10 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
     navigate(`/journey?area=${encodeURIComponent(step.area)}&step=${encodeURIComponent(step.id)}`);
   };
 
+  const openSweepArea = (entry: AreaSweep) => {
+    navigate(`/journey?area=${encodeURIComponent(entry.area)}`);
+  };
+
   return (
     <Drawer
       open
@@ -189,7 +291,10 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
             {timingSensitive ? <Badge tone="warning">Timing</Badge> : null}
             {isItemRouteLinked(item) ? <Badge tone="success">Route-linked</Badge> : null}
           </span>
-          <Switch checked={owned} onChange={toggleOwned} label="Owned" />
+          <div className="row wrap col-drawer-owned">
+            <ItemQuantity item={item} count={count} />
+            <Switch checked={owned} onChange={toggleOwned} label="Owned" />
+          </div>
         </div>
       }
       onClose={onClose}
@@ -234,6 +339,20 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
           ) : null}
         </div>
       ) : null}
+
+      {description?.text ? (
+        <section className="col-desc" aria-label="In-game description">
+          <SectionTitle title="Description" note="In-game item text" />
+          <p className="col-desc-text">{description.text}</p>
+          {description.sourceUrl ? <SourceLink url={description.sourceUrl} label="Description source" /> : null}
+        </section>
+      ) : (
+        <p className="col-desc-missing small faint">No in-game description recorded.</p>
+      )}
+
+      <p className="tiny faint col-shared-note">
+        Owned items are shared across every area and route step.
+      </p>
 
       <dl className="kv col-kv">
         <dt>Section</dt>
@@ -343,6 +462,31 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
         </div>
       ) : null}
 
+      {sweep ? (
+        <div className="col-drawer-section">
+          <SectionTitle title="Sweep area" note="Covered by an area sweep" />
+          <div className="col-sweep-card">
+            <div className="row-between wrap">
+              <span className="row wrap">
+                <Icon name="map" size={14} />
+                <strong>{sweep.area}</strong>
+                <Badge>{sweep.phase}</Badge>
+                <Badge tone="info">{sweep.game}</Badge>
+              </span>
+              <Button size="sm" variant="ghost" icon="map" onClick={() => openSweepArea(sweep)}>
+                Open in journey
+              </Button>
+            </div>
+            <p className="tiny faint">
+              {formatNumber(sweep.counts.merchantItems)} merchant items · {formatNumber(sweep.counts.farmables)}{" "}
+              farmables · {formatNumber(sweep.counts.unlinkedItems)} unlinked pickups ·{" "}
+              {formatNumber(sweep.counts.materials)} materials · confidence {sweep.confidence}
+            </p>
+            {sweep.notes.length ? <p className="small muted col-sweep-notes">{sweep.notes[0]}</p> : null}
+          </div>
+        </div>
+      ) : null}
+
       <div className="col-drawer-section">
         <SectionTitle
           title="Linked route steps"
@@ -409,6 +553,7 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
         ) : (
           <p className="small faint">
             No route step in the current content pack links this item, so the route-linked filter will not include it.
+            {sweep ? ` It still falls inside the ${sweep.area} area sweep above.` : ""}
             {locationKind === "unrecorded" ? " Its location is also unrecorded — use the wiki source above." : ""}
           </p>
         )}

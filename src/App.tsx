@@ -2,7 +2,7 @@ import { Shell } from "./components/Shell";
 import { ToastProvider } from "./components/ui";
 import { useRoute } from "./lib/router";
 import { useEffect } from "react";
-import { isDesktop, openExternal } from "./lib/desktop";
+import { isDesktop, onQuickLog, openExternal } from "./lib/desktop";
 import { DashboardPage } from "./pages/DashboardPage";
 import { JourneyPage } from "./pages/JourneyPage";
 import { CollectionPage } from "./pages/CollectionPage";
@@ -75,7 +75,20 @@ export function App() {
       });
     };
     document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
+    let unlisten: (() => void) | undefined;
+    onQuickLog(() => {
+      window.dispatchEvent(new Event("er-companion:quick-log"));
+    })
+      .then((off) => {
+        unlisten = off;
+      })
+      .catch(() => {
+        /* global shortcut is desktop-only; ignore in the browser build. */
+      });
+    return () => {
+      document.removeEventListener("click", onClick);
+      unlisten?.();
+    };
   }, []);
 
   return (

@@ -1,45 +1,84 @@
 /* ---------- Materials & upgrades ledger ---------- */
 
-.mat-banner {
+.mat-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
   margin-bottom: 16px;
 }
 
-.mat-banner-note {
-  margin: 4px 0 0;
-  max-width: 84ch;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--fg-soft);
-}
-
-.mat-banner-warn {
+.mat-summary-block {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
   gap: 6px;
-  margin: 7px 0 0;
-  max-width: 84ch;
-  font-size: 11px;
-  line-height: 1.45;
-  color: var(--accent-strong);
+  min-width: 0;
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
 }
 
-.mat-banner-warn svg {
-  flex: none;
-  margin-top: 1px;
+.mat-summary-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.mat-summary-label {
+  flex: 1 1 auto;
+  overflow: hidden;
+  color: var(--faint);
+  font-size: 8.5px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.mat-summary-head strong {
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.mat-summary-pct {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.mat-summary-note {
+  margin: 0;
+  color: var(--faint);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.mat-summary-more {
+  grid-column: 1 / -1;
+  align-self: start;
+}
+
+.mat-summary-more .mat-stats--inline {
+  margin-top: 2px;
 }
 
 .mat-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
   gap: 10px;
-  margin-bottom: 16px;
+}
+
+.mat-stats--inline {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  margin-bottom: 0;
 }
 
 .mat-tabs {
-  margin-bottom: 14px;
-}
-
-.mat-progress {
   margin-bottom: 14px;
 }
 
@@ -317,6 +356,71 @@
   flex-wrap: wrap;
 }
 
+/* ---------- Area / sweep links ---------- */
+
+.mat-sweep-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+}
+
+.mat-sweep-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  max-width: 100%;
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 9.5px;
+  line-height: 1.6;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mat-sweep-link:hover {
+  border-color: var(--border-strong);
+  color: var(--accent-strong);
+}
+
+.mat-sweep-kind {
+  color: var(--faint);
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mat-loc-missing {
+  color: var(--faint);
+  font-size: 10.5px;
+  font-style: italic;
+}
+
+.mat-material-track {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mat-material-track .mat-note {
+  margin-top: 0;
+}
+
+.mat-material-loc {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 7px 9px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.14);
+}
+
 /* ---------- Count stepper ---------- */
 
 .mat-stepper {
@@ -543,6 +647,10 @@
 }
 
 @media (max-width: 760px) {
+  .mat-summary {
+    grid-template-columns: 1fr;
+  }
+
   .mat-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

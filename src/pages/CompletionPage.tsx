@@ -5,6 +5,7 @@ import {
   Button,
   Callout,
   Checkbox,
+  Disclosure,
   Drawer,
   EmptyState,
   Modal,
@@ -19,7 +20,6 @@ import {
 import { Icon } from "../components/Icon";
 import type { IconName } from "../components/Icon";
 import { formatNumber } from "../lib/format";
-import { ART, ArtBanner } from "../components/Art";
 import {
   ACHIEVEMENTS,
   BRANCH_PLAN_DECISIONS,
@@ -37,7 +37,9 @@ import {
   REQUIREMENT_GROUPS,
   REQUIREMENT_GROUP_BY_ID,
   SCARABS,
+  STEP_BY_ID,
   SUPPLEMENTAL,
+  normalizeContentKey,
 } from "../lib/data";
 import {
   achievementProgress,
@@ -54,11 +56,17 @@ import {
   supplementalProgress,
 } from "../lib/selectors";
 import { navigate, useRoute } from "../lib/router";
+import { remembrancePlanRows, remembranceRowFor } from "../lib/remembrance";
+import {
+  RemembrancePlanList,
+  RemembrancePlanSummary,
+} from "../components/RemembrancePlan";
 import {
   newJourney,
   resetJourney,
   setAchievement,
   setCertification,
+  setDecisionCheck,
   setEnding,
   setNgPlusItem,
   setRemembrance,
@@ -161,6 +169,105 @@ const CATALOG_COUNTS = {
   merchants: MERCHANTS.length,
   scarabs: SCARABS.length,
 };
+
+const SCOPE_GROUPS = [
+  {
+    id: "route",
+    label: "Route & collection",
+    note: "Steps, items, quests, NPC walkthrough, achievements",
+    ids: ["route", "collection", "quests", "npc-walkthrough", "achievements"],
+  },
+  {
+    id: "world",
+    label: "World ledgers",
+    note: "Bosses, graces, objects, upgrades, materials, merchants, lore",
+    ids: ["bosses", "graces", "world", "upgrades", "materials", "merchants", "lore"],
+  },
+  {
+    id: "build",
+    label: "Build & endings",
+    note: "Endings, remembrances, NG+, branch rewards",
+    ids: ["endings", "remembrances", "ngplus", "branch-rewards"],
+  },
+] as const;
+
+/**
+ * Reader-facing name for every internal record id that workbook prose cites.
+ * Decisions use their short title in quotes; gates, certifications, and
+ * supplemental actions read naturally as plain place names.
+ */
+const ID_LABELS: Record<string, { label: string; quoted: boolean }> = {
+  ...Object.fromEntries(
+    BRANCH_PLAN_DECISIONS.map((decision) => [
+      decision.decisionId,
+      { label: decision.title.split(" — ")[0], quoted: true },
+    ]),
+  ),
+  ...Object.fromEntries(
+    META.certifications.map((certification) => [
+      certification.id,
+      { label: certification.name, quoted: false },
+    ]),
+  ),
+  ...Object.fromEntries(
+    META.transitionGates.map((gate) => [gate.id, { label: gate.area, quoted: false }]),
+  ),
+  ...Object.fromEntries(
+    SUPPLEMENTAL.map((action) => [action.id, { label: action.area, quoted: false }]),
+  ),
+};
+
+/** Research-phase markers are internal bookkeeping and never render. */
+const INTERNAL_PHASE = /\bPhase\s+\d+[A-Z]?\b/;
+/** Workbook / research identifiers that must never reach the screen. */
+const INTERNAL_ID =
+  /\b(?:ARC|DLC|BASE|END|LCK|MCO|CERT|B|SUP|FRM|MAT|NPC)-[A-Z0-9][A-Z0-9]*(?:-[A-Z0-9]+)*\b/g;
+/** Shorthand ranges such as BASE-002/003/004. */
+const ID_RANGE = /\b([A-Z]+)-(\d+)((?:\/\d+)+)\b/g;
+
+/** Substitutes a record id with its reader-facing name when the sentence needs it. */
+function idLabel(id: string, text: string): string {
+  const entry = ID_LABELS[id];
+  if (!entry) return "";
+  const key = normalizeContentKey(entry.label);
+  if (key.length > 3 && normalizeContentKey(text).includes(key)) return "";
+  return entry.quoted ? `“${entry.label}”` : entry.label;
+}
+
+/**
+ * Renders workbook prose without leaking internal identifiers. Record ids are
+ * swapped for their names when the sentence does not already name the record;
+ * phase markers drop the sentence they annotate.
+ */
+function plainText(value?: string): string {
+  if (!value) return "";
+  return value
+    .split(/(?<=[.!?])\s+/)
+    .filter((sentence) => !INTERNAL_PHASE.test(sentence))
+    .map((sentence) => {
+      let text = sentence.replace(/\s*\(([A-Z]+-[0-9][0-9A-Z-]*)\)/g, (match, id: string) =>
+        ID_LABELS[id] ? "" : match,
+      );
+      text = text.replace(ID_RANGE, (_match, prefix: string, first: string, rest: string) =>
+        [first, ...rest.split("/").filter(Boolean)]
+          .map((part) => ID_LABELS[`${prefix}-${part}`]?.label ?? "")
+          .filter(Boolean)
+          .join(" / "),
+      );
+      return text.replace(INTERNAL_ID, (id) => idLabel(id, text));
+    })
+    .filter((sentence) => /[\p{L}\p{N}]/u.test(sentence))
+    .join(" ")
+    .replace(/”'s\b/g, "”")
+    .replace(/\(\s*\)/g, "")
+    .replace(/\s+([,.;:])/g, "$1")
+    .replace(/([,;:])\s*([.;,])/g, "$2")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+/** Journey-plan status labels drop the internal research phase suffix. */
+const PLAN_STATUS_PHASE = /\s*[—–-]\s*Canonical Phase\s+\d+[A-Z]?.*$/i;
 
 interface ReadinessCheck {
   id: string;
@@ -274,10 +381,8 @@ function BranchRewardChip({
       ) : null}
 
       <span className="branch-reward-foot">
-        <span className="mono">
-          {reward.kind} · {reward.resolution}
-        </span>
-        <span className="mono">{reward.itemId ? reward.itemId : "no catalog id"}</span>
+        <span>{reward.retained ? "Retained on the character" : "Not retained after the run"}</span>
+        <span>{reward.itemId ? "In catalog" : "No catalog entry"}</span>
       </span>
     </div>
   );
@@ -322,6 +427,12 @@ export function CompletionPage() {
   const scopesComplete = scopes.filter((scopeRow) => scopeRow.complete).length;
   const branchProgress = branchRewardProgress(character);
   const branchResolvedDecisions = BRANCH_PLAN_DECISIONS.filter((decision) => !decision.unresolved).length;
+  const branchSettledDecisions = BRANCH_PLAN_DECISIONS.filter((decision) => {
+    const anchoredSteps = (decision.routeStepIds ?? []).filter((stepId) => STEP_BY_ID[stepId]);
+    const autoDone =
+      anchoredSteps.length > 0 && anchoredSteps.every((stepId) => journey.steps[stepId] === "done");
+    return autoDone || Boolean(journey.decisionChecks[decision.decisionId]);
+  }).length;
   const ngplusTotal = NGPLUS_SECTIONS.reduce((total, section) => total + section.stepCount, 0);
   const missableAchievements = ACHIEVEMENTS.filter((achievement) => achievement.missable).length;
   const achievementItems = REQUIREMENT_GROUPS.reduce((total, group) => total + group.items.length, 0);
@@ -535,27 +646,14 @@ export function CompletionPage() {
 
   return (
     <div className="page">
-      <ArtBanner
-        image={ART.heroSote}
-        variant="sote"
-        caption={`Shadow of the Erdtree · endgame · ${NGPLUS_SECTIONS.length} NG+ sections`}
-        title={`${scopes.length} ledgers, one closeout`}
-        className="completion-banner"
-      >
-        <p className="completion-banner-note">
-          The route pauses after Maliketh for the whole DLC, then returns for the Ashen Capital, endings, and NG+ prep.
-          Each scope below keeps its own denominator — no blended percentage can hide an unfinished ledger.
-        </p>
-      </ArtBanner>
-
       <PageHeader
         eyebrow={`${journey.label} · Whole-game closeout`}
         title="Completion"
         description={
           <>
-            Route, collection, achievements, bosses, quests, lore, endings, remembrances, NG+, graces, world objects,
-            upgrades, materials, merchants, NPC walkthrough, and branch rewards each report their own numerator and
-            denominator. Stored companion state drives every row; nothing here claims platform-level completion.
+            {scopes.length} ledgers covering the base game, Shadow of the Erdtree, and the Ashen Capital endgame. Each
+            reports its own numerator and denominator from stored companion state — no blended percentage can hide an
+            unfinished ledger, and nothing here claims platform-level completion.
           </>
         }
         actions={
@@ -586,37 +684,55 @@ export function CompletionPage() {
             {scopes.length - scopesComplete} open {scopes.length - scopesComplete === 1 ? "scope" : "scopes"}
           </Badge>
         </div>
-        <div className="scope-grid">
-          {scopes.map((scopeRow) => (
-            <button
-              key={scopeRow.id}
-              type="button"
-              className={`scope-card${scopeRow.complete ? " is-complete" : ""}`}
-              onClick={() => navigate(SCOPE_LINKS[scopeRow.id] ?? "/completion")}
-              aria-label={`Open ${scopeRow.label}: ${scopeRow.numerator} of ${scopeRow.denominator}`}
-            >
-              <span className="scope-card-head">
-                <span className="scope-icon" aria-hidden="true">
-                  <Icon
-                    name={SCOPE_ICONS[scopeRow.id as keyof typeof SCOPE_ICONS] ?? "target"}
-                    size={15}
-                  />
-                </span>
-                <span className="scope-label">{scopeRow.label}</span>
-                {scopeRow.complete ? <Icon name="check" size={13} /> : null}
-              </span>
-              <span className="scope-value">
-                {formatNumber(scopeRow.numerator)} <span className="faint">/ {formatNumber(scopeRow.denominator)}</span>
-              </span>
-              <span className="scope-meta">
-                <span>{scopeRow.percent}%</span>
-                <span className="faint">{scopeRow.complete ? "complete" : "in progress"}</span>
-              </span>
-              <span className={`scope-track${scopeRow.complete ? " is-complete" : ""}`} aria-hidden="true">
-                <span className="scope-fill" style={{ width: `${scopeRow.percent}%` }} />
-              </span>
-            </button>
-          ))}
+        <div className="scope-groups">
+          {SCOPE_GROUPS.map((group) => {
+            const rows = group.ids.flatMap((id) => {
+              const found = scopes.find((scopeRow) => scopeRow.id === id);
+              return found ? [found] : [];
+            });
+            if (rows.length === 0) return null;
+            const groupDone = rows.filter((row) => row.complete).length;
+            return (
+              <Disclosure
+                key={group.id}
+                title={group.label}
+                summary={`${groupDone} / ${rows.length} complete · ${group.note}`}
+                icon={group.id === "world" ? "layers" : group.id === "build" ? "flame" : "map"}
+                defaultOpen={group.id === "route"}
+              >
+                <div className="scope-grid">
+                  {rows.map((scopeRow) => (
+                    <button
+                      key={scopeRow.id}
+                      type="button"
+                      className={`scope-card${scopeRow.complete ? " is-complete" : ""}`}
+                      onClick={() => navigate(SCOPE_LINKS[scopeRow.id] ?? "/completion")}
+                      aria-label={`Open ${scopeRow.label}: ${scopeRow.numerator} of ${scopeRow.denominator}`}
+                    >
+                      <span className="scope-card-head">
+                        <span className="scope-icon" aria-hidden="true">
+                          <Icon name={SCOPE_ICONS[scopeRow.id] ?? "target"} size={15} />
+                        </span>
+                        <span className="scope-label">{scopeRow.label}</span>
+                        {scopeRow.complete ? <Icon name="check" size={13} /> : null}
+                      </span>
+                      <span className="scope-value">
+                        {formatNumber(scopeRow.numerator)}{" "}
+                        <span className="faint">/ {formatNumber(scopeRow.denominator)}</span>
+                      </span>
+                      <span className="scope-meta">
+                        <span>{scopeRow.percent}%</span>
+                        <span className="faint">{scopeRow.complete ? "complete" : "in progress"}</span>
+                      </span>
+                      <span className={`scope-track${scopeRow.complete ? " is-complete" : ""}`} aria-hidden="true">
+                        <span className="scope-fill" style={{ width: `${scopeRow.percent}%` }} />
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </Disclosure>
+            );
+          })}
         </div>
       </section>
 
@@ -719,29 +835,29 @@ export function CompletionPage() {
                             : "info"
                       }
                     >
-                      {plan.status}
+                      {plan.status.replace(PLAN_STATUS_PHASE, "").trim() || plan.status}
                     </Badge>
                   </div>
                   <dl className="plan-fields">
                     <div>
                       <dt>Purpose</dt>
-                      <dd>{plan.purpose}</dd>
+                      <dd>{plainText(plan.purpose) || "—"}</dd>
                     </div>
                     <div>
                       <dt>Route scope</dt>
-                      <dd>{plan.routeScope}</dd>
+                      <dd>{plainText(plan.routeScope) || "—"}</dd>
                     </div>
                     <div>
                       <dt>Ending target</dt>
-                      <dd>{plan.endingTarget}</dd>
+                      <dd>{plainText(plan.endingTarget) || "—"}</dd>
                     </div>
                     <div>
                       <dt>Cleanup</dt>
-                      <dd>{plan.cleanup}</dd>
+                      <dd>{plainText(plan.cleanup) || "—"}</dd>
                     </div>
                     <div>
                       <dt>Entry requirements</dt>
-                      <dd>{plan.entryRequirements}</dd>
+                      <dd>{plainText(plan.entryRequirements) || "—"}</dd>
                     </div>
                   </dl>
                   <Button
@@ -761,23 +877,40 @@ export function CompletionPage() {
           <div className="completion-section">
             <SectionTitle title="Trophy route cues" note={`${META.trophyCues.length} cues · route progress only`} />
             <div className="card card-pad trophy-list">
-              {META.trophyCues.map((cue) => (
-                <div className="trophy-row" key={`${cue.order}-${cue.sourceStepId}`}>
-                  <span className="trophy-order mono">{String(cue.order).padStart(2, "0")}</span>
-                  <div className="grow">
-                    <div className="row wrap" style={{ gap: 7 }}>
-                      <Badge tone="accent">{cue.area}</Badge>
-                      <Badge>{cue.flags.join(" · ")}</Badge>
+              {META.trophyCues.map((cue) => {
+                const step = STEP_BY_ID[cue.sourceStepId];
+                return (
+                  <div className="trophy-row" key={`${cue.order}-${cue.sourceStepId}`}>
+                    <span className="trophy-order mono">{String(cue.order).padStart(2, "0")}</span>
+                    <div className="grow">
+                      <div className="row wrap" style={{ gap: 7 }}>
+                        <Badge tone="accent">{cue.area}</Badge>
+                        <Badge>{cue.flags.join(" · ")}</Badge>
+                      </div>
+                      <p className="trophy-cue">{cue.cue}</p>
+                      <p className="tiny faint">{cue.boundary}</p>
                     </div>
-                    <p className="trophy-cue">{cue.cue}</p>
-                    <p className="tiny faint">{cue.boundary}</p>
+                    <div className="trophy-source">
+                      {step ? (
+                        <button
+                          type="button"
+                          className="lore-inline-link tiny"
+                          onClick={() =>
+                            navigate(
+                              `/journey?area=${encodeURIComponent(step.area)}&step=${encodeURIComponent(step.id)}`,
+                            )
+                          }
+                        >
+                          Route step {step.order}
+                        </button>
+                      ) : (
+                        <span className="tiny faint">{cue.area}</span>
+                      )}
+                      <span className="tiny faint">Source step</span>
+                    </div>
                   </div>
-                  <div className="trophy-source">
-                    <span className="tiny faint mono">{cue.sourceStepId}</span>
-                    <span className="tiny faint">Source step</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -812,20 +945,17 @@ export function CompletionPage() {
                           {reviewed ? <Badge tone="success">Reviewed</Badge> : null}
                         </div>
                       </div>
-                      <p className="gate-trigger">{gate.trigger}</p>
+                      <p className="gate-trigger">{plainText(gate.trigger)}</p>
                       <dl className="gate-details">
                         <div>
                           <dt>Safe window</dt>
-                          <dd>{gate.safeWindow}</dd>
+                          <dd>{plainText(gate.safeWindow) || "—"}</dd>
                         </div>
                         <div>
                           <dt>Pre-check</dt>
-                          <dd>{gate.preCheck}</dd>
+                          <dd>{plainText(gate.preCheck) || "—"}</dd>
                         </div>
                       </dl>
-                      <div className="tiny faint gate-source">
-                        {gate.sourceStatus} · {gate.id}
-                      </div>
                     </div>
                   </article>
                 );
@@ -851,8 +981,8 @@ export function CompletionPage() {
                       <Badge>{entry.scope}</Badge>
                       <Badge tone="info">{entry.coverage}</Badge>
                     </div>
-                    <p className="small muted closeout-obligation">{entry.obligation}</p>
-                    <div className="tiny faint">{entry.deadline}</div>
+                    <p className="small muted closeout-obligation">{plainText(entry.obligation) || "—"}</p>
+                    <div className="tiny faint">{plainText(entry.deadline) || "Review before the gate"}</div>
                   </div>
                   <Button
                     size="sm"
@@ -1030,7 +1160,8 @@ export function CompletionPage() {
                                 Wiki <Icon name="external" size={11} />
                               </a>
                               <span className="tiny faint">
-                                {achievement.section} · {achievement.sourceId}
+                                {achievement.section}
+                                {achievement.missable ? " · missable" : ""}
                               </span>
                             </div>
                           </div>
@@ -1215,7 +1346,22 @@ export function CompletionPage() {
       ) : null}
 
       {activeTab === "remembrances" ? (
-        <div className="completion-tab">
+        <div className="completion-tab remembrance-tab">
+          <Callout tone="default" icon="scroll">
+            The plan below is ordered by duplication priority: the remembrances most likely to need a duplicate come
+            first, with the reward to take and whether to spend a mausoleum now or defer to the next journey. The
+            ledger under it records what actually happened on the active journey.
+          </Callout>
+
+          <div className="completion-section remembrance-plan-section">
+            <SectionTitle
+              title="Duplication plan"
+              note={`${remembrancePlanRows().length} remembrances · ordered by duplicate priority`}
+            />
+            <RemembrancePlanSummary rows={remembrancePlanRows()} />
+            <RemembrancePlanList rows={remembrancePlanRows()} />
+          </div>
+
           <div className="row-between wrap remembrance-header">
             <SectionTitle
               title="Remembrance ledger"
@@ -1255,18 +1401,38 @@ export function CompletionPage() {
                 const selectedReward = current?.selectedReward ?? "";
                 const rewards = remembrance.rewards.filter((reward) => reward !== "—");
                 const processed = Boolean(current && (current.selectedReward || current.duplicated || current.consumed));
+                const planRow = remembranceRowFor(remembrance.id);
                 return (
                   <article className={`card card-pad remembrance-card${processed ? " is-processed" : ""}`} key={remembrance.id}>
                     <div className="remembrance-head">
                       <div className="grow">
                         <h3 className="card-title">{remembrance.name}</h3>
-                        <div className="small muted">{remembrance.boss}</div>
+                        <div className="small muted">
+                          {planRow?.bossHref ? (
+                            <a className="remembrance-entity-link" href={planRow.bossHref}>
+                              {remembrance.boss}
+                            </a>
+                          ) : (
+                            remembrance.boss
+                          )}
+                        </div>
                       </div>
                       <div className="tag-list">
                         <Badge tone="info">{remembrance.game}</Badge>
+                        {planRow ? <Badge>#{planRow.order}</Badge> : null}
                         {processed ? <Badge tone="success">Processed</Badge> : null}
                       </div>
                     </div>
+
+                    {planRow?.routeLinks.length ? (
+                      <div className="remembrance-route-links">
+                        {planRow.routeLinks.map((link) => (
+                          <a className="remembrance-route-link" href={link.href} key={link.stepId}>
+                            <Icon name="map" size={11} /> {link.label}
+                          </a>
+                        ))}
+                      </div>
+                    ) : null}
 
                     <div className="tag-list">
                       {rewards.map((reward) => (
@@ -1360,7 +1526,7 @@ export function CompletionPage() {
           <div className="row-between wrap branch-header-row">
             <SectionTitle
               title="Journey plan"
-              note={`${BRANCH_PLAN_DECISIONS.length} decisions · ${BRANCH_REWARDS.length} rewards · ${branchResolvedDecisions} decisions fully resolved`}
+              note={`${BRANCH_PLAN_DECISIONS.length} decisions · ${branchSettledDecisions} settled · ${BRANCH_REWARDS.length} rewards`}
             />
             <span className="tiny faint" aria-live="polite">
               {filteredBranchDecisions.length} / {BRANCH_PLAN_DECISIONS.length} decisions shown
@@ -1368,16 +1534,20 @@ export function CompletionPage() {
           </div>
 
           <Callout tone="default" icon="quest">
-            Each decision records the Journey 1 outcome and the stated future-journey alternative. Reward chips resolve
-            to the permanent collection; unresolved rewards stay labeled with the reason they cannot be linked. Branch
-            rewards are counted from character ownership, so they survive new journeys.
+            Each decision records the Journey 1 outcome and the stated future-journey alternative. Decisions with a
+            linked route step settle automatically once that step is done, so nothing is entered twice. Decisions
+            without a route anchor keep a manual check. Reward chips resolve to the permanent collection; unresolved
+            rewards stay labeled with the reason they cannot be linked, and reward progress is counted from character
+            ownership so it survives new journeys.
           </Callout>
 
           <div className="branch-summary" aria-label="Branch reward summary">
             <div className="branch-summary-cell">
               <span className="stat-label">Decisions</span>
-              <strong>{BRANCH_PLAN_DECISIONS.length}</strong>
-              <span className="tiny faint">{branchResolvedDecisions} fully resolved</span>
+              <strong>
+                {branchSettledDecisions} <span className="faint">/ {BRANCH_PLAN_DECISIONS.length}</span>
+              </strong>
+              <span className="tiny faint">{branchResolvedDecisions} with fully resolved rewards</span>
             </div>
             <div className="branch-summary-cell">
               <span className="stat-label">Rewards</span>
@@ -1450,22 +1620,34 @@ export function CompletionPage() {
             <div className="branch-grid">
               {filteredBranchDecisions.map((decision) => {
                 const resolvedRewards = decision.rewards.filter((reward) => !reward.unresolved).length;
+                const anchors = (decision.routeStepIds ?? []).flatMap((stepId) => {
+                  const step = STEP_BY_ID[stepId];
+                  return step ? [step] : [];
+                });
+                const anchorsDone = anchors.filter((step) => journey.steps[step.id] === "done").length;
+                const autoComplete = anchors.length > 0 && anchorsDone === anchors.length;
+                const manuallyChecked = Boolean(journey.decisionChecks[decision.decisionId]);
+                const settled = autoComplete || manuallyChecked;
                 return (
                   <article
-                    className={`card card-pad branch-card${decision.unresolved ? " is-unresolved" : " is-resolved"}`}
+                    className={`card card-pad branch-card${decision.unresolved ? " is-unresolved" : " is-resolved"}${settled ? " is-settled" : ""}`}
                     key={decision.decisionId}
                     id={`branch-${decision.decisionId}`}
                   >
                     <div className="branch-card-head">
                       <div className="grow">
                         <div className="tag-list branch-tags">
-                          <span className="mono tiny faint">{decision.decisionId}</span>
                           <Badge tone="info">{decision.game}</Badge>
                           <Badge>{decision.category}</Badge>
                           {decision.unresolved ? (
                             <Badge tone="warning">Unresolved rewards</Badge>
                           ) : (
-                            <Badge tone="success">Resolved</Badge>
+                            <Badge tone="success">Rewards resolved</Badge>
+                          )}
+                          {settled ? (
+                            <Badge tone="success">{autoComplete ? "Auto" : "Checked"}</Badge>
+                          ) : (
+                            <Badge>Open</Badge>
                           )}
                         </div>
                         <h3 className="card-title branch-title">{decision.title}</h3>
@@ -1475,22 +1657,85 @@ export function CompletionPage() {
                       </span>
                     </div>
 
+                    <div className="branch-status">
+                      {anchors.length > 0 ? (
+                        <>
+                          <div className="branch-anchors">
+                            <span className="branch-set-label">
+                              Route {anchors.length === 1 ? "step" : "steps"} · {anchorsDone} / {anchors.length} done
+                            </span>
+                            <div className="branch-set-items">
+                              {anchors.map((step) => {
+                                const done = journey.steps[step.id] === "done";
+                                return (
+                                  <button
+                                    key={step.id}
+                                    type="button"
+                                    className={`branch-component${done ? " is-owned" : ""}`}
+                                    onClick={() =>
+                                      navigate(
+                                        `/journey?area=${encodeURIComponent(step.area)}&step=${encodeURIComponent(step.id)}`,
+                                      )
+                                    }
+                                    aria-label={`Open route step ${step.order} in ${step.area}${done ? " (done)" : ""}`}
+                                  >
+                                    <Icon name={done ? "check" : "map"} size={11} />
+                                    {step.area} · step {step.order}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                          <div className="branch-check-row">
+                            {autoComplete ? (
+                              <span className="branch-auto-note">Auto — linked route step is done.</span>
+                            ) : (
+                              <Checkbox
+                                checked={manuallyChecked}
+                                onChange={(value) => setDecisionCheck(decision.decisionId, value)}
+                                label={
+                                  <>
+                                    <span className="sr-only">Mark {decision.title} resolved</span>
+                                    <span aria-hidden="true">Mark resolved manually</span>
+                                  </>
+                                }
+                              />
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="branch-check-row">
+                          <Checkbox
+                            checked={manuallyChecked}
+                            onChange={(value) => setDecisionCheck(decision.decisionId, value)}
+                            label={
+                              <>
+                                <span className="sr-only">Mark {decision.title} resolved</span>
+                                <span aria-hidden="true">Mark resolved manually</span>
+                              </>
+                            }
+                          />
+                          <span className="tiny faint">No route anchor — tracked by hand.</span>
+                        </div>
+                      )}
+                    </div>
+
                     <dl className="branch-outcomes">
                       <div>
                         <dt>Journey 1</dt>
-                        <dd>{decision.journey1}</dd>
+                        <dd>{plainText(decision.journey1) || "—"}</dd>
                       </div>
                       <div>
                         <dt>Journey 1 result</dt>
-                        <dd>{decision.journey1Result}</dd>
+                        <dd>{plainText(decision.journey1Result) || "—"}</dd>
                       </div>
                       <div>
                         <dt>Future outcome</dt>
-                        <dd>{decision.futureOutcome}</dd>
+                        <dd>{plainText(decision.futureOutcome) || "—"}</dd>
                       </div>
                       <div>
                         <dt>Future journey</dt>
-                        <dd>{decision.futureJourney}</dd>
+                        <dd>{plainText(decision.futureJourney) || "—"}</dd>
                       </div>
                     </dl>
 
@@ -1510,7 +1755,7 @@ export function CompletionPage() {
                       </p>
                     )}
 
-                    {decision.notes ? <p className="branch-note">{decision.notes}</p> : null}
+                    {plainText(decision.notes) ? <p className="branch-note">{plainText(decision.notes)}</p> : null}
                   </article>
                 );
               })}
@@ -1703,31 +1948,29 @@ export function CompletionPage() {
       <Drawer
         open={Boolean(activePlan)}
         title={activePlan?.name ?? "Journey plan"}
-        subtitle={activePlan?.status}
+        subtitle={activePlan ? activePlan.status.replace(PLAN_STATUS_PHASE, "").trim() : undefined}
         onClose={() => setPlanIndex(null)}
       >
         {activePlan ? (
           <dl className="kv plan-detail">
             <dt>Purpose</dt>
-            <dd>{activePlan.purpose}</dd>
+            <dd>{plainText(activePlan.purpose) || "—"}</dd>
             <dt>Route scope</dt>
-            <dd>{activePlan.routeScope}</dd>
+            <dd>{plainText(activePlan.routeScope) || "—"}</dd>
             <dt>Ending target</dt>
-            <dd>{activePlan.endingTarget}</dd>
+            <dd>{plainText(activePlan.endingTarget) || "—"}</dd>
             <dt>Alternate choices</dt>
-            <dd>{activePlan.alternateChoices}</dd>
+            <dd>{plainText(activePlan.alternateChoices) || "—"}</dd>
             <dt>Remembrance plan</dt>
-            <dd>{activePlan.remembrancePlan}</dd>
+            <dd>{plainText(activePlan.remembrancePlan) || "—"}</dd>
             <dt>Duplicate plan</dt>
-            <dd>{activePlan.duplicatePlan}</dd>
+            <dd>{plainText(activePlan.duplicatePlan) || "—"}</dd>
             <dt>Cleanup</dt>
-            <dd>{activePlan.cleanup}</dd>
+            <dd>{plainText(activePlan.cleanup) || "—"}</dd>
             <dt>Entry requirements</dt>
-            <dd>{activePlan.entryRequirements}</dd>
+            <dd>{plainText(activePlan.entryRequirements) || "—"}</dd>
             <dt>Notes</dt>
-            <dd>{activePlan.notes}</dd>
-            <dt>Source row</dt>
-            <dd className="mono">{activePlan.sourceRow}</dd>
+            <dd>{plainText(activePlan.notes) || "—"}</dd>
           </dl>
         ) : null}
       </Drawer>
@@ -1745,17 +1988,15 @@ export function CompletionPage() {
             </Callout>
             <dl className="kv">
               <dt>Obligation</dt>
-              <dd>{activeMerchant.obligation}</dd>
+              <dd>{plainText(activeMerchant.obligation) || "—"}</dd>
               <dt>Deadline</dt>
-              <dd>{activeMerchant.deadline}</dd>
+              <dd>{plainText(activeMerchant.deadline) || "—"}</dd>
               <dt>Authority</dt>
-              <dd>{activeMerchant.authority}</dd>
+              <dd>{plainText(activeMerchant.authority) || "—"}</dd>
               <dt>Validation</dt>
-              <dd>{activeMerchant.validation}</dd>
+              <dd>{plainText(activeMerchant.validation) || "—"}</dd>
               <dt>Notes</dt>
-              <dd>{activeMerchant.notes}</dd>
-              <dt>Source row</dt>
-              <dd className="mono">{activeMerchant.sourceRow}</dd>
+              <dd>{plainText(activeMerchant.notes) || "—"}</dd>
             </dl>
           </div>
         ) : null}

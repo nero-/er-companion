@@ -41,7 +41,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 META_PATH = ROOT / "src" / "data" / "meta.json"
 ITEMS_PATH = ROOT / "src" / "data" / "items.full.json"
+ROUTE_PATH = ROOT / "src" / "data" / "route.full.json"
 OUT_PATH = ROOT / "research" / "branch-plan.json"
+RUNTIME_PATH = ROOT / "src" / "data" / "branch-plan.json"
 
 EXPECTED_DECISIONS = 27
 
@@ -288,10 +290,365 @@ def resolve(
     return "", "unresolved", [], "no exact catalog name match"
 
 
+# ---------------------------------------------------------------------------
+# Route anchors
+# ---------------------------------------------------------------------------
+# Anchors are derived, never hand-written. Each decision is matched against the
+# step instructions in ``src/data/route.full.json`` using only names the
+# decision matrix itself states: NPC names, reward names, catalog item names
+# quoted in the decision text, area names, and the decision title. Steps are
+# filtered by game and (for endings) by the route's "Endings" area, and note
+# steps ("Note: ...") cannot carry an anchor because they describe
+# consequences rather than the acquisition itself.
+
+STOPWORDS = frozenset(
+    {
+        "a", "all", "an", "and", "as", "at", "by", "de", "for", "from", "his",
+        "her", "in", "its", "la", "no", "none", "of", "on", "or", "s", "the",
+        "their", "to", "with", "your",
+    }
+)
+
+# Questline display name -> spellings used inside route instructions. The route
+# uses short names ("Seluvis", "Millicent"); the questline table uses titles.
+ROUTE_NPC_NAMES: dict[str, tuple[str, ...]] = {
+    "Alexander, Warrior Jar": ("Alexander",),
+    "Boc the Seamster": ("Boc",),
+    "Kenneth Haight": ("Kenneth Haight",),
+    "Nepheli Loux": ("Nepheli",),
+    "Gatekeeper Gostoc": ("Gostoc",),
+    "Roderika, Spirit Tuner": ("Roderika",),
+    "Smithing Master Hewg": ("Hewg",),
+    "Ensha of the Royal Remains": ("Ensha",),
+    "Sir Gideon Ofnir, the All-Knowing": ("Gideon Ofnir", "Gideon"),
+    "Latenna the Albinauric": ("Latenna",),
+    "Irina of Morne": ("Irina",),
+    "Lightseeker Hyetta": ("Hyetta",),
+    "White Mask Varre": ("Varre",),
+    "Finger Reader Enia": ("Enia",),
+    "Gurranq, Beast Clergyman": ("Gurranq",),
+    "D, Hunter of the Dead": ("D, Hunter of the Dead",),
+    "D, Beholder of Death": ("D, Beholder of Death",),
+    "Fia, Deathbed Companion": ("Fia",),
+    "Sorcerer Rogier": ("Rogier",),
+    "Ranni the Witch": ("Ranni",),
+    "Blaidd the Half-Wolf": ("Blaidd",),
+    "War Counselor Iji": ("Iji",),
+    "Preceptor Seluvis": ("Seluvis",),
+    "Sorceress Sellen": ("Sellen",),
+    "Witch-Hunter Jerren": ("Jerren",),
+    "Sage Gowry": ("Gowry",),
+    "Millicent": ("Millicent",),
+    "Brother Corhyn": ("Corhyn",),
+    "Dung Eater": ("Dung Eater",),
+    "Blackguard Big Boggart": ("Blackguard",),
+    "Rya the Scout": ("Rya",),
+    "Tanith, Volcano Manor Proprietress": ("Tanith",),
+    "Patches": ("Patches",),
+    "Knight Bernahl": ("Bernahl",),
+    "Knight Diallos": ("Diallos",),
+    "Jar-Bairn": ("Jar-Bairn",),
+    "Yura, Hunter of Bloody Fingers": ("Yura",),
+    "Sorcerer Thops": ("Thops",),
+    "Needle Knight Leda": ("Leda",),
+    "Dryleaf Dane": ("Dane",),
+    "Hornsent": ("Hornsent",),
+    "Hornsent Grandam": ("Hornsent Grandam",),
+    "Redmane Freyja": ("Freyja",),
+    "Sir Ansbach": ("Ansbach",),
+    "Moore": ("Moore",),
+    "Thiollier": ("Thiollier",),
+    "Igon": ("Igon",),
+    "Florissax, Dragon Communion Priestess": ("Florissax",),
+    "Count Ymir, High Priest": ("Ymir",),
+    "Swordhand of Night Jolan": ("Jolan",),
+    "Fire Knight Queelign": ("Queelign",),
+    "Melina": ("Melina",),
+    # NPCs named by decisions but not carried by the questline table.
+    "Pidia": ("Pidia",),
+    "Zorayas": ("Zorayas",),
+    "Swordhand of Night Anna": ("Anna",),
+    "Messmer the Impaler": ("Messmer",),
+    "Bayle the Dread": ("Bayle",),
+}
+
+# Evidence weight and label per match kind. High confidence needs either a
+# reward name next to its NPC or an exact title/choice phrase; a bare NPC name
+# never leaves ``low``.
+ANCHOR_WEIGHTS: dict[str, int] = {
+    "npc+item": 5,
+    "npc-pair+evidence": 5,
+    "title+item": 5,
+    "npc+choice": 5,
+    "title": 4,
+    "choice-phrase": 4,
+    "npc-pair": 3,
+    "npc+area": 2,
+    "npc+term": 2,
+    "item-name": 2,
+    "npc-name": 1,
+}
+
+MAX_ROUTE_STEPS = 6
+
+
+def fold_ascii(value: str) -> str:
+    return unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode()
+
+
+def match_key(value: str) -> str:
+    """Accent/apostrophe-insensitive key; apostrophes become separators."""
+    folded = fold_ascii(value).lower()
+    folded = re.sub(r"[\u2018\u2019'`]", " ", folded)
+    return re.sub(r"[^a-z0-9]+", " ", folded).strip()
+
+
+def compact_key(value: str) -> str:
+    """Like :func:`match_key` but apostrophes are deleted ("Zorayas's" ->
+    "zorayass"), which is how the route and the decision matrix differ."""
+    folded = fold_ascii(value).lower()
+    folded = re.sub(r"[\u2018\u2019'`]", "", folded)
+    return re.sub(r"[^a-z0-9]+", " ", folded).strip()
+
+
+class RouteIndex:
+    """Route steps indexed for phrase lookups in both key variants."""
+
+    def __init__(self, route: dict, items: list[dict]) -> None:
+        self.steps: list[dict] = route["steps"]
+        self.areas: list[str] = [area["name"] for area in route["areas"]]
+        self.spaces = [" " + match_key(step["instruction"]) + " " for step in self.steps]
+        self.compacts = [
+            " " + compact_key(step["instruction"]) + " " for step in self.steps
+        ]
+        self._freq: dict[str, int] = {}
+        self.catalog_names = [item["name"] for item in items]
+        self.area_keys = {match_key(area) for area in self.areas}
+        self.npc_names = sorted(
+            {n for names in ROUTE_NPC_NAMES.values() for n in names},
+            key=len,
+            reverse=True,
+        )
+
+    def frequency(self, phrase: str) -> int:
+        key = match_key(phrase)
+        if key not in self._freq:
+            needle = f" {key} "
+            self._freq[key] = sum(1 for text in self.spaces if needle in text)
+        return self._freq[key]
+
+    @staticmethod
+    def occurs(phrase: str, space: str, compact: str) -> bool:
+        key = match_key(phrase)
+        if key and f" {key} " in space:
+            return True
+        alt = compact_key(phrase)
+        return bool(alt) and f" {alt} " in compact
+
+    def is_area_name(self, phrase: str) -> bool:
+        key = match_key(phrase)
+        if not key:
+            return False
+        return any(key == area or f" {key} " in f" {area} " for area in self.area_keys)
+
+
+def decision_text(decision: dict) -> str:
+    return " ".join(
+        [
+            decision["title"],
+            decision["journey1"],
+            decision["journey1Result"],
+            decision["futureOutcome"],
+            decision["futureJourney"],
+            decision["notes"],
+        ]
+    )
+
+
+def decision_npcs(text: str, index: RouteIndex) -> list[str]:
+    space = " " + match_key(text) + " "
+    found: list[str] = []
+    for display, spellings in ROUTE_NPC_NAMES.items():
+        if any(f" {match_key(name)} " in space for name in (display, *spellings)):
+            for name in spellings:
+                found.append(name)
+    return [
+        name
+        for name in found
+        if not any(name != other and f" {match_key(name)} " in f" {match_key(other)} " for other in found)
+    ]
+
+
+def decision_places(text: str, index: RouteIndex) -> list[str]:
+    space = " " + match_key(text) + " "
+    found: list[str] = []
+    for area in index.areas:
+        tokens = match_key(area).split()
+        runs = {
+            " ".join(tokens[i : i + size])
+            for size in range(2, len(tokens) + 1)
+            for i in range(len(tokens) - size + 1)
+            if not all(token in STOPWORDS for token in tokens[i : i + size])
+        }
+        if any(f" {run} " in space for run in runs):
+            found.append(area)
+    return found
+
+
+def decision_terms(
+    decision: dict, index: RouteIndex
+) -> tuple[list[tuple[str, int]], set[str]]:
+    """Return (phrase, route frequency) pairs plus the reward-name keys."""
+    text = decision_text(decision)
+    space = " " + match_key(text) + " "
+    compact = " " + compact_key(text) + " "
+    reward_names = [reward["name"] for reward in decision["rewards"]]
+    candidates: set[str] = set(reward_names)
+    for name in index.catalog_names:
+        if RouteIndex.occurs(name, space, compact):
+            candidates.add(name)
+    candidates.update(re.findall(r"[\u201c\"]([^\u201d\"]{4,60})[\u201d\"]", text))
+
+    kept: list[tuple[str, int]] = []
+    for candidate in sorted(candidates, key=lambda value: (-len(match_key(value).split()), value)):
+        key = match_key(candidate)
+        tokens = key.split()
+        if len(tokens) < 2 or tokens[0] in STOPWORDS or tokens[-1] in STOPWORDS:
+            continue
+        if index.is_area_name(candidate):
+            continue
+        if any(
+            f" {key} " in f" {match_key(other)} " or compact_key(candidate) == compact_key(other)
+            for other, _ in kept
+        ):
+            continue
+        if not RouteIndex.occurs(candidate, space, compact):
+            continue
+        frequency = index.frequency(candidate)
+        if frequency == 0:
+            continue
+        kept.append((candidate, frequency))
+    return kept, {match_key(name) for name in reward_names}
+
+
+def title_stem(decision: dict) -> str:
+    stem = re.split(r"\s+[\u2014\u2013]\s+", decision["title"])[0].strip()
+    return stem if len(match_key(stem).split()) >= 2 else ""
+
+
+def route_anchors(
+    decision: dict, index: RouteIndex
+) -> tuple[list[str], str, str, str]:
+    """Return (routeStepIds, area, linkConfidence, linkMethod) for a decision."""
+    text = decision_text(decision)
+    npcs = decision_npcs(text, index)
+    places = decision_places(text, index)
+    terms, reward_keys = decision_terms(decision, index)
+    stem = title_stem(decision)
+    stem_key = match_key(stem)
+    stem_freq = index.frequency(stem) if stem else 0
+    quotes = {
+        match_key(quote)
+        for quote in re.findall(r"[\u201c\"]([^\u201d\"]{4,60})[\u201d\"]", text)
+    }
+    is_ending = decision["category"] == "Ending"
+    is_dlc = decision["game"] == "DLC"
+
+    rows: list[dict] = []
+    for step, space, compact in zip(index.steps, index.spaces, index.compacts):
+        if step["area"] == "New Game Plus Preparation":
+            continue
+        if step["instruction"].strip().lower().startswith("note:"):
+            continue
+        if is_ending and step["area"] != "Endings":
+            continue
+        if (step["game"] == "Shadow of the Erdtree") != is_dlc:
+            continue
+
+        step_npcs = [n for n in npcs if RouteIndex.occurs(n, space, compact)]
+        step_terms = [
+            (name, frequency)
+            for name, frequency in terms
+            if RouteIndex.occurs(name, space, compact)
+        ]
+        reward_terms = [
+            name
+            for name, frequency in step_terms
+            if frequency <= 12 or match_key(name) in reward_keys
+        ]
+        rare = [name for name, frequency in step_terms if frequency <= 4]
+        mid = [name for name, frequency in step_terms if frequency <= 12]
+        step_places = [
+            area
+            for area in places
+            if RouteIndex.occurs(area, space, compact)
+            or match_key(area) == match_key(step["area"])
+        ]
+        step_quotes = [q for q in quotes if f" {q} " in space]
+        title_hit = bool(stem) and f" {stem_key} " in space and stem_freq <= MAX_ROUTE_STEPS
+
+        kind = ""
+        if len(step_npcs) >= 2 and (reward_terms or step_places or step_quotes):
+            kind = "npc-pair+evidence"
+        elif len(step_npcs) >= 2:
+            kind = "npc-pair"
+        elif step_npcs and reward_terms:
+            kind = "npc+item"
+        elif title_hit and rare:
+            kind = "title+item"
+        elif title_hit:
+            kind = "title"
+        elif step_quotes and reward_terms:
+            kind = "npc+choice" if step_npcs else "choice-phrase"
+        elif step_quotes:
+            kind = "choice-phrase"
+        elif step_npcs and step_places:
+            kind = "npc+area"
+        elif step_npcs and mid:
+            kind = "npc+term"
+        elif rare:
+            kind = "item-name"
+        elif step_npcs:
+            kind = "npc-name"
+        elif mid:
+            kind = "item-name"
+        if not kind:
+            continue
+
+        rows.append(
+            {
+                "weight": ANCHOR_WEIGHTS[kind],
+                "kind": kind,
+                "id": step["id"],
+                "area": step["area"],
+                "order": step["order"],
+                "npc": bool(step_npcs),
+            }
+        )
+
+    if not rows:
+        return [], "", "", ""
+
+    best = max(row["weight"] for row in rows)
+    # On a tie between NPC-backed and item-only steps, keep the NPC-backed ones:
+    # the decision names a person, so a step naming that person is stronger.
+    at_best = [row for row in rows if row["weight"] == best]
+    npc_best = [row for row in at_best if row["npc"]]
+    rows = npc_best or at_best
+    rows.sort(key=lambda row: row["order"])
+    kept = rows[:MAX_ROUTE_STEPS]
+
+    confidence = "high" if best >= 4 else "medium" if best >= 2 else "low"
+    area = Counter(row["area"] for row in kept).most_common(1)[0][0]
+    return [row["id"] for row in kept], area, confidence, kept[0]["kind"]
+
+
 def build() -> dict:
     meta = json.loads(META_PATH.read_text(encoding="utf-8"))
     items = json.loads(ITEMS_PATH.read_text(encoding="utf-8"))["items"]
     index = build_index(items)
+    route = json.loads(ROUTE_PATH.read_text(encoding="utf-8"))
+    route_index = RouteIndex(route, items)
 
     decisions = meta["decisions"]
     if len(decisions) != EXPECTED_DECISIONS:
@@ -373,6 +730,15 @@ def build() -> dict:
                 "notes": NOTES[did],
             }
         )
+
+    # Route anchors: derived from route.full.json step instructions. See
+    # route_anchors() for the evidence rules.
+    for entry in out_decisions:
+        step_ids, area, confidence, method = route_anchors(entry, route_index)
+        entry["routeStepIds"] = step_ids
+        entry["area"] = area
+        entry["linkConfidence"] = confidence
+        entry["linkMethod"] = method
 
     with_rewards = sum(1 for d in out_decisions if d["rewards"])
     without_rewards = len(out_decisions) - with_rewards

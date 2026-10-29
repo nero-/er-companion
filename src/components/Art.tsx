@@ -26,6 +26,7 @@ export const ART = {
   world: "/art/bg-world.jpg",
   cover: "/art/vertical-erdtree.jpg",
   logo: "/art/logo-elden-ring.png",
+  emblem: "/emblem.svg",
   soteCapsule: "/art/sotet-capsule.jpg",
   soteHeader: "/art/sotet-header.jpg",
   erdtreeShots: [

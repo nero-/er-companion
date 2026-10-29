@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import type { ReactNode } from "react";
 import { Icon } from "./Icon";
 import type { IconName } from "./Icon";
@@ -49,8 +50,10 @@ export function Shell({ children }: { children: ReactNode }) {
   const character = useActiveCharacter();
   const journey = useActiveJourney();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
+  const [storage, setStorage] = useState<"ok" | "tight" | "unavailable">("ok");
   const routeStats = routeProgress(journey);
   const collection = collectionSummary(character);
   const level = levelFromStats(character.stats);
@@ -102,14 +105,49 @@ export function Shell({ children }: { children: ReactNode }) {
   ];
 
   useEffect(() => {
+    try {
+      const probe = "er-companion.probe";
+      localStorage.setItem(probe, "1");
+      localStorage.removeItem(probe);
+      setStorage("ok");
+    } catch {
+      setStorage("unavailable");
+    }
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.scale = state.settings.interfaceScale;
+  }, [state.settings.interfaceScale]);
+
+  // "Everything" opens every disclosure in the current page. Re-runs on route
+  // changes so newly mounted panels open too.
+  useEffect(() => {
+    if (state.settings.disclosure !== "everything") return;
+    const openAll = () => {
+      for (const node of document.querySelectorAll("details")) {
+        if (!node.open) node.open = true;
+      }
+    };
+    openAll();
+    const observer = new MutationObserver(openAll);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [state.settings.disclosure, route.path]);
+
+  useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setSearchOpen((open) => !open);
       }
     };
+    const onSearchRequest = () => setSearchOpen(true);
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    window.addEventListener("er-companion:search", onSearchRequest);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      window.removeEventListener("er-companion:search", onSearchRequest);
+    };
   }, []);
 
   useEffect(() => {
@@ -120,12 +158,24 @@ export function Shell({ children }: { children: ReactNode }) {
 
   const pageTitle = PAGE_TITLES[route.path] ?? "Companion";
 
+  const scaleStyle =
+    state.settings.interfaceScale === "large"
+      ? ({ ["--ui-scale" as string]: "1.14" } as CSSProperties)
+      : undefined;
+  const statusText = storage === "unavailable" ? "Storage blocked" : isDesktop() ? "Desktop · offline" : "Offline ready";
+  const statusTone = storage === "unavailable" ? " is-warning" : "";
+
   return (
-    <div className={`app density-${state.settings.density}`}>
+    <div
+      className={`app density-${state.settings.density} disclosure-${state.settings.disclosure}${
+        sidebarCollapsed ? " sidebar-collapsed" : ""
+      }`}
+      style={scaleStyle}
+    >
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`} aria-label="Primary navigation">
         <div className="sidebar-brand">
           <div className="brand-mark" aria-hidden="true">
-            <Icon name="flame" size={20} />
+            <img src={ART.emblem} alt="" width={40} height={40} className="brand-emblem" />
           </div>
           <div className="brand-text">
             {logoFailed ? (
@@ -206,10 +256,17 @@ export function Shell({ children }: { children: ReactNode }) {
         <header className="topbar">
           <button
             className="btn btn-ghost btn-icon menu-btn"
-            onClick={() => setSidebarOpen(true)}
-            aria-label="Open navigation"
+            onClick={() => {
+              if (window.matchMedia("(max-width: 960px)").matches) {
+                setSidebarOpen((open) => !open);
+              } else {
+                setSidebarCollapsed((collapsed) => !collapsed);
+              }
+            }}
+            aria-label={sidebarCollapsed ? "Show navigation" : "Hide navigation"}
+            aria-expanded={!sidebarCollapsed}
           >
-            <Icon name="menu" size={18} />
+            <Icon name={sidebarCollapsed ? "menu" : "x"} size={18} />
           </button>
           <div className="topbar-title">{pageTitle}</div>
           <div className="topbar-spacer" />
@@ -218,7 +275,18 @@ export function Shell({ children }: { children: ReactNode }) {
             <span>Search the companion</span>
             <kbd>{commandKey}</kbd>
           </button>
-          <span className="offline-dot">{isDesktop() ? "Desktop · offline" : "Offline ready"}</span>
+          <button
+            type="button"
+            className={`offline-dot${statusTone}`}
+            onClick={() => navigate("/settings#storage")}
+            title={
+              storage === "unavailable"
+                ? "Browser storage is unavailable; progress cannot be saved. Open settings."
+                : "Progress is stored locally. Open data settings."
+            }
+          >
+            {statusText}
+          </button>
           <div className="avatar" title={`${character.name} · Level ${level}`}>
             {initials(character.name)}
           </div>
@@ -228,6 +296,34 @@ export function Shell({ children }: { children: ReactNode }) {
         </div>
         {children}
       </div>
+
+      <nav className="mobile-nav" aria-label="Quick navigation">
+        {[
+          { path: "/", label: "Home", icon: "grace" as const },
+          { path: "/journey", label: "Journey", icon: "map" as const },
+          { path: "/collection", label: "Collection", icon: "bag" as const },
+        ].map((item) => (
+          <button
+            key={item.path}
+            type="button"
+            className={`mobile-nav-item${route.path === item.path ? " active" : ""}`}
+            onClick={() => navigate(item.path)}
+            aria-current={route.path === item.path ? "page" : undefined}
+          >
+            <Icon name={item.icon} size={19} />
+            <span>{item.label}</span>
+          </button>
+        ))}
+        <button
+          type="button"
+          className="mobile-nav-item"
+          onClick={() => setSearchOpen(true)}
+          aria-label="Search the companion"
+        >
+          <Icon name="search" size={19} />
+          <span>Search</span>
+        </button>
+      </nav>
 
       <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>

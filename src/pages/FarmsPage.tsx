@@ -3,9 +3,9 @@ import {
   Badge,
   Button,
   Checkbox,
+  Disclosure,
   EmptyState,
   PageHeader,
-  ProgressBar,
   SearchInput,
   Select,
   TabBar,
@@ -15,19 +15,22 @@ import { Icon } from "../components/Icon";
 import {
   FINITE_RESOURCES,
   FARMABLES,
+  ITEMS,
+  ITEMS_BY_NAME,
   MATERIALS,
   MERCHANT_INVENTORIES,
-  MERCHANT_INVENTORY_COUNTS,
   MERCHANTS,
   SCARABS,
+  STEP_BY_ID,
+  remapStepId,
 } from "../lib/data";
 import { formatNumber, itemGroupIcon } from "../lib/format";
-import { navigate, useRoute } from "../lib/router";
-import { farmSummary } from "../lib/selectors";
+import { navigate, queryString, useRoute } from "../lib/router";
 import {
   setFarmable,
   setFiniteAcquired,
-  setMaterialStock,
+  setItemCount,
+  setMaterialCount,
   setMerchant,
   setScarabCollected,
   useActiveCharacter,
@@ -36,6 +39,7 @@ import {
 import type {
   Farmable,
   FiniteResource,
+  JourneyState,
   Material,
   MerchantInventoryItem,
   MerchantRecord,
@@ -70,6 +74,7 @@ interface Filters {
   merchant: string;
   missable: string;
   rewardType: string;
+  stock: string;
 }
 
 const PAGE_SIZE = 120;
@@ -114,6 +119,7 @@ const DEFAULT_FILTERS: Filters = {
   merchant: "all",
   missable: "all",
   rewardType: "all",
+  stock: "all",
 };
 
 const TIMING_OPTIONS: { value: TimingGroup; label: string }[] = [
@@ -139,6 +145,48 @@ const MERCHANT_PRIORITIES = uniqueSorted(MERCHANTS.map((entry) => entry.priority
 const MERCHANT_MISSABLE = uniqueSorted(MERCHANTS.map((entry) => entry.missable));
 const SCARAB_REGIONS = uniqueSorted(SCARABS.map((entry) => entry.region));
 const SCARAB_REWARDS = uniqueSorted(SCARABS.map((entry) => entry.rewardType));
+
+const FARMABLE_NAMES = new Set(FARMABLES.map((entry) => entry.item));
+const LOOSE_PICKUP_NAMES = new Set(
+  ITEMS.filter(
+    (item) =>
+      /pickup|corpse|chest|boss reward|enemy reward|scarab/i.test(item.acquisitionType) &&
+      !/catalog|purchase/i.test(item.acquisitionType),
+  ).map((item) => item.name),
+);
+
+function materialOnHand(journey: JourneyState, id: string): number {
+  const count = journey.materialCounts[id] ?? 0;
+  if (count > 0) return count;
+  return journey.materials[id] ? 1 : 0;
+}
+
+function overlapBadge(name: string): { label: string; tone: "accent" | "info" | "default" } {
+  if (FARMABLE_NAMES.has(name)) return { label: "Farmable", tone: "accent" };
+  if (LOOSE_PICKUP_NAMES.has(name)) return { label: "Loose pickup", tone: "info" };
+  return { label: "Merchant only", tone: "default" };
+}
+
+interface RouteLink {
+  stepId: string | null;
+  ids: string[];
+  area: string;
+}
+
+function routeStepFor(entry: FiniteResource): RouteLink | null {
+  const candidates = [entry.autoStepId ?? "", ...entry.routeStepIds].filter(Boolean);
+  if (!candidates.length) return null;
+  for (const raw of candidates) {
+    const step = STEP_BY_ID[remapStepId(raw) ?? raw] ?? STEP_BY_ID[raw];
+    if (step) return { stepId: step.id, ids: [...new Set([step.id, raw])], area: step.area };
+  }
+  const viaItem = (ITEMS_BY_NAME[entry.name] ?? [])
+    .flatMap((item) => item.routeStepIds)
+    .map((id) => STEP_BY_ID[id])
+    .find(Boolean);
+  if (viaItem) return { stepId: viaItem.id, ids: [...candidates, viaItem.id], area: viaItem.area };
+  return { stepId: null, ids: candidates, area: entry.region };
+}
 
 function isFarmTab(value: string | null): value is FarmTabId {
   return value === "farmables" || value === "materials" || value === "finite" || value === "merchants" || value === "scarabs";
@@ -229,12 +277,14 @@ function LedgerTable<T extends { id: string }>({
   focusId,
   empty,
   className = "",
+  rowClassName,
 }: {
   rows: T[];
   columns: Column<T>[];
   focusId: string;
   empty: ReactNode;
   className?: string;
+  rowClassName?: (row: T) => string | undefined;
 }) {
   if (!rows.length) return <>{empty}</>;
   return (
@@ -251,7 +301,11 @@ function LedgerTable<T extends { id: string }>({
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.id} id={`farm-row-${row.id}`} className={row.id === focusId ? "is-focus" : undefined}>
+            <tr
+              key={row.id}
+              id={`farm-row-${row.id}`}
+              className={[row.id === focusId ? "is-focus" : "", rowClassName?.(row)].filter(Boolean).join(" ") || undefined}
+            >
               {columns.map((column, index) => (
                 <td
                   key={column.key}
@@ -294,53 +348,113 @@ function LoadMore({
   );
 }
 
-function ListProgress({
-  owned,
-  total,
-  unit,
-  scope,
-  note,
-  matching,
+function QuantityStepper({
+  value,
+  max,
+  label,
+  onChange,
+}: {
+  value: number;
+  max: number;
+  label: string;
+  onChange: (next: number) => void;
+}) {
+  const clamp = (next: number) => Math.max(0, Math.min(max, Number.isFinite(next) ? Math.floor(next) : 0));
+  return (
+    <div className="library-stepper">
+      <button
+        type="button"
+        aria-label={`Decrease ${label} quantity`}
+        disabled={value <= 0}
+        onClick={() => onChange(clamp(value - 1))}
+      >
+        <Icon name="minus" size={12} />
+      </button>
+      <input
+        type="number"
+        min={0}
+        max={max}
+        value={value}
+        aria-label={`${label} quantity, maximum ${max}`}
+        onChange={(event) => onChange(clamp(Number(event.target.value)))}
+      />
+      <button
+        type="button"
+        aria-label={`Increase ${label} quantity`}
+        disabled={value >= max}
+        onClick={() => onChange(clamp(value + 1))}
+      >
+        <Icon name="plus" size={12} />
+      </button>
+    </div>
+  );
+}
+
+function LockedCheckbox({ label }: { label: string }) {
+  return (
+    <span className="check check-locked" aria-disabled="true">
+      <input type="checkbox" defaultChecked disabled />
+      <span className="check-box">
+        <Icon name="check" size={12} strokeWidth={2.4} />
+      </span>
+      <span>{label}</span>
+    </span>
+  );
+}
+
+interface SummaryCell {
+  id: FarmTabId;
+  label: string;
+  done: number;
+  total: number;
+  scope: "Lifetime" | "Journey";
+}
+
+function FarmSummaryStrip({
+  cells,
+  active,
   focus,
+  onSelect,
   onClearFocus,
 }: {
-  owned: number;
-  total: number;
-  unit: string;
-  scope: "Lifetime" | "Journey";
-  note: string;
-  matching: number;
+  cells: SummaryCell[];
+  active: FarmTabId;
   focus: string;
+  onSelect: (id: FarmTabId) => void;
   onClearFocus: () => void;
 }) {
-  const percent = total ? (owned / total) * 100 : 0;
   return (
-    <div className="library-progress">
-      <div className="library-progress-head">
-        <div className="row wrap" style={{ gap: 8 }}>
-          <Badge tone={scope === "Lifetime" ? "accent" : "info"}>{scope}</Badge>
-          <span className="library-progress-note">{note}</span>
-        </div>
-        <span className="library-count">
-          {formatNumber(owned)} / {formatNumber(total)}
-        </span>
-      </div>
-      <ProgressBar
-        value={percent}
-        tone={total > 0 && owned >= total ? "success" : "accent"}
-        label={`${formatNumber(owned)} of ${formatNumber(total)} ${unit}`}
-        detail={`${Math.round(percent)}%`}
-      />
-      <div className="row-between wrap">
-        <span className="library-progress-count">
-          {formatNumber(matching)} {matching === 1 ? "record matches" : "records match"} the current filters
-        </span>
-        {focus ? (
+    <div className="farm-summary-strip">
+      {cells.map((cell) => {
+        const percent = cell.total ? Math.round((cell.done / cell.total) * 100) : 0;
+        const complete = cell.total > 0 && cell.done >= cell.total;
+        return (
+          <button
+            key={cell.id}
+            type="button"
+            className={`farm-summary-cell ${cell.id === active ? "is-active" : ""}`.trim()}
+            aria-pressed={cell.id === active}
+            onClick={() => onSelect(cell.id)}
+          >
+            <span className="stat-label">{cell.label}</span>
+            <strong>
+              {formatNumber(cell.done)} <span className="faint">/ {formatNumber(cell.total)}</span>
+            </strong>
+            <span className="farm-summary-track" aria-hidden="true">
+              <span className={complete ? "is-complete" : undefined} style={{ width: `${percent}%` }} />
+            </span>
+            <span className="farm-summary-scope">{cell.scope}</span>
+          </button>
+        );
+      })}
+      {focus ? (
+        <div className="farm-summary-focus">
+          <span className="tiny faint">Focused record</span>
           <Button size="sm" variant="ghost" icon="x" onClick={onClearFocus}>
             Clear focus
           </Button>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -348,7 +462,6 @@ function ListProgress({
 export function FarmsPage() {
   const character = useActiveCharacter();
   const journey = useActiveJourney();
-  const summary = farmSummary(character, journey);
   const route = useRoute();
   const toast = useToast();
 
@@ -450,6 +563,9 @@ export function FarmsPage() {
         if (filters.game !== "all" && entry.game !== filters.game) return false;
         if (filters.category !== "all" && entry.category !== filters.category) return false;
         if (filters.priority !== "all" && entry.priority !== filters.priority) return false;
+        const stocked = materialOnHand(journey, entry.id) > 0;
+        if (filters.stock === "stocked" && !stocked) return false;
+        if (filters.stock === "missing" && stocked) return false;
         return matchesSearch(filters.query, [
           entry.name,
           entry.category,
@@ -464,7 +580,7 @@ export function FarmsPage() {
           entry.notes,
         ]);
       }),
-    [filters],
+    [filters, journey.materialCounts, journey.materials],
   );
 
   const finiteRows = useMemo(
@@ -538,13 +654,17 @@ export function FarmsPage() {
     [journey.merchants],
   );
 
-  const workbookPurchased = useMemo(
-    () => MERCHANTS.filter((row) => journey.merchants[row.id]).length,
-    [journey.merchants],
-  );
-
   const selectedInventoryMerchant =
     filters.merchant === "all" ? undefined : MERCHANT_INVENTORIES.find((entry) => entry.name === filters.merchant);
+
+  const finiteStepsDone = useMemo(() => {
+    const done: Record<string, boolean> = {};
+    for (const entry of FINITE_RESOURCES) {
+      const link = routeStepFor(entry);
+      if (link?.ids.some((id) => journey.steps[id] === "done")) done[entry.id] = true;
+    }
+    return done;
+  }, [journey.steps]);
 
   const scarabRows = useMemo(
     () =>
@@ -587,52 +707,43 @@ export function FarmsPage() {
     scarabs: visibleScarabs.length,
   }[activeTab];
 
-  const progress = {
-    farmables: {
-      owned: summary.farmablesOwned,
-      total: summary.farmablesTotal,
-      unit: "owned",
-      scope: "Lifetime" as const,
-      note: "Permanent character quantities. Reaching a target also marks the matching collection item.",
+  const summaryCells: SummaryCell[] = [
+    {
+      id: "farmables",
+      label: "Farmables",
+      done: Object.values(character.farmables).filter((value) => value > 0).length,
+      total: FARMABLES.length,
+      scope: "Lifetime",
     },
-    materials: {
-      owned: summary.materialsStocked,
-      total: summary.materialsTotal,
-      unit: "stocked",
-      scope: "Journey" as const,
-      note: "Per-journey material stock. Toggle what is currently on hand for this run.",
+    {
+      id: "materials",
+      label: "Materials",
+      done: MATERIALS.filter((entry) => materialOnHand(journey, entry.id) > 0).length,
+      total: MATERIALS.length,
+      scope: "Journey",
     },
-    finite: {
-      owned: summary.finiteCollected,
-      total: summary.finiteTotal,
-      unit: "collected",
-      scope: "Journey" as const,
-      note: "One-time pickups for this journey. These are not lifetime inventory quantities.",
+    {
+      id: "finite",
+      label: "Finite pickups",
+      done: FINITE_RESOURCES.filter((entry) => finiteStepsDone[entry.id] || journey.finite[entry.id]).length,
+      total: FINITE_RESOURCES.length,
+      scope: "Journey",
     },
-    merchants:
-      merchantScope === "inventory"
-        ? {
-            owned: inventoryPurchased,
-            total: INVENTORY_ROWS.length,
-            unit: "purchased",
-            scope: "Journey" as const,
-            note: `Full Redmaw merchant inventory: ${MERCHANT_INVENTORIES.length} merchants, ${formatNumber(MERCHANT_INVENTORY_COUNTS.items)} item rows parsed from ${formatNumber(MERCHANT_INVENTORY_COUNTS.sheetRows)} sheet rows (${formatNumber(MERCHANT_INVENTORY_COUNTS.headingsSkipped)} unlock group headings). Buying also records matching item ownership on the character.`,
-          }
-        : {
-            owned: workbookPurchased,
-            total: MERCHANTS.length,
-            unit: "purchased",
-            scope: "Journey" as const,
-            note: `Workbook merchant ledger: ${formatNumber(MERCHANTS.length)} curated purchase rows. Switch to Full inventory for every row on the merchant sheet.`,
-          },
-    scarabs: {
-      owned: summary.scarabsCollected,
-      total: summary.scarabsTotal,
-      unit: "collected",
-      scope: "Journey" as const,
-      note: "Scarab collection for this journey, with the linked collection record where one exists.",
+    {
+      id: "merchants",
+      label: "Merchants",
+      done: INVENTORY_ROWS.filter((row) => journey.merchants[row.id]).length,
+      total: INVENTORY_ROWS.length,
+      scope: "Journey",
     },
-  }[activeTab];
+    {
+      id: "scarabs",
+      label: "Scarabs",
+      done: Object.values(journey.scarabs).filter(Boolean).length,
+      total: SCARABS.length,
+      scope: "Journey",
+    },
+  ];
 
   function changeTab(id: string) {
     if (!isFarmTab(id)) return;
@@ -656,34 +767,46 @@ export function FarmsPage() {
     const target = entry.targetQuantity > 0 ? entry.targetQuantity : 1;
     const value = Math.max(0, Math.min(target, Number.isFinite(next) ? Math.floor(next) : 0));
     const previous = character.farmables[entry.id] ?? 0;
-    const acquired = setFarmable(entry.id, value, target, entry.item);
-    if (value >= target && previous < target) {
-      if (acquired.length) {
-        toast.push(`${acquired.join(", ")} added to the collection.`, "success");
-      } else {
-        toast.push(`${entry.item} target reached. No matching collection record was added.`);
-      }
+    setFarmable(entry.id, value, target, entry.item);
+    if (value < target || previous >= target) return;
+    const matches = ITEMS_BY_NAME[entry.item] ?? [];
+    const match = matches.find((item) => !character.items[item.id]) ?? matches[0];
+    if (!match) {
+      toast.push(`${entry.item} target reached. No matching collection record was added.`);
+      return;
     }
+    const count = Math.max(value, character.itemCounts[match.id] ?? 0);
+    setItemCount(match.id, count);
+    toast.push(`${match.name} now ×${formatNumber(count)} in the collection.`, "success");
+  }
+
+  function changeMaterial(entry: Material, next: number) {
+    setMaterialCount(entry.id, Math.max(0, Math.min(999, Number.isFinite(next) ? Math.floor(next) : 0)));
   }
 
   function toggleMerchant(entry: MerchantRecord, purchased: boolean) {
     const acquired = setMerchant(entry.id, purchased, entry.item);
-    if (!purchased) return;
-    if (acquired.length) {
-      toast.push(`${acquired.join(", ")} added to the collection.`, "success");
-    } else {
-      toast.push(`${entry.item} marked purchased.`);
-    }
+    recordPurchase(entry.item, acquired, purchased);
   }
 
   function toggleInventory(entry: InventoryRow, purchased: boolean) {
     const acquired = setMerchant(entry.id, purchased, entry.name);
-    if (!purchased) return;
-    if (acquired.length) {
-      toast.push(`${acquired.join(", ")} added to the collection.`, "success");
-    } else {
-      toast.push(`${entry.name} marked purchased.`);
+    recordPurchase(entry.name, acquired, purchased);
+  }
+
+  function recordPurchase(itemName: string, acquired: string[], purchased: boolean) {
+    const matches = ITEMS_BY_NAME[acquired[0] ?? itemName] ?? [];
+    const target = purchased
+      ? matches.find((item) => character.items[item.id]) ?? matches[0]
+      : matches.find((item) => character.items[item.id]);
+    if (!target) {
+      if (purchased) toast.push(`${itemName} marked purchased. No matching collection record.`);
+      return;
     }
+    const count = character.items[target.id] ? Math.max(1, character.itemCounts[target.id] ?? 1) : 0;
+    const next = purchased ? count + 1 : Math.max(1, count - 1);
+    setItemCount(target.id, next);
+    if (purchased) toast.push(`${target.name} owned ×${formatNumber(next)} in the collection.`, "success");
   }
 
   const filterEmpty = (title: string) => (
@@ -729,40 +852,23 @@ export function FarmsPage() {
       width: "145px",
       render: (entry) => {
         const quantity = character.farmables[entry.id] ?? 0;
-        const target = entry.targetQuantity;
-        const reached = target > 0 && quantity >= target;
+        const target = entry.targetQuantity > 0 ? entry.targetQuantity : 1;
+        const reached = quantity >= target;
+        const match = (ITEMS_BY_NAME[entry.item] ?? [])[0];
+        const itemCount = match ? character.itemCounts[match.id] ?? 0 : 0;
         return (
           <>
-            <div className="library-stepper">
-              <button
-                type="button"
-                aria-label={`Decrease ${entry.item} quantity`}
-                disabled={quantity <= 0}
-                onClick={() => changeFarmable(entry, quantity - 1)}
-              >
-                <Icon name="minus" size={12} />
-              </button>
-              <input
-                type="number"
-                min={0}
-                max={target}
-                value={quantity}
-                aria-label={`${entry.item} quantity, target ${formatQuantity(target)}`}
-                onChange={(event) => changeFarmable(entry, Number(event.target.value))}
-              />
-              <button
-                type="button"
-                aria-label={`Increase ${entry.item} quantity`}
-                disabled={target > 0 && quantity >= target}
-                onClick={() => changeFarmable(entry, quantity + 1)}
-              >
-                <Icon name="plus" size={12} />
-              </button>
-            </div>
+            <QuantityStepper
+              value={Math.min(quantity, target)}
+              max={target}
+              label={entry.item}
+              onChange={(next) => changeFarmable(entry, next)}
+            />
             <div className={`library-sub ${reached ? "success" : ""}`}>
               {quantity} / {formatQuantity(target)}
               {reached ? " · Target reached" : ""}
             </div>
+            {itemCount > 0 ? <Badge tone="success">×{formatNumber(itemCount)} owned</Badge> : null}
           </>
         );
       },
@@ -827,17 +933,32 @@ export function FarmsPage() {
     },
     {
       key: "stock",
-      label: "Stock",
-      width: "100px",
-      render: (entry) => (
-        <div className="library-check-cell">
-          <Checkbox
-            checked={journey.materials[entry.id] ?? false}
-            onChange={(checked) => setMaterialStock(entry.id, checked)}
-            label="Stocked"
-          />
-        </div>
-      ),
+      label: "On hand",
+      width: "148px",
+      render: (entry) => {
+        const count = materialOnHand(journey, entry.id);
+        return (
+          <>
+            <QuantityStepper
+              value={count}
+              max={999}
+              label={entry.name}
+              onChange={(next) => changeMaterial(entry, next)}
+            />
+            <div className={`library-sub ${count > 0 ? "success" : ""}`}>
+              {count > 0 ? `×${formatNumber(count)} stocked` : "Not stocked"}
+            </div>
+            <Button
+              size="sm"
+              variant="ghost"
+              icon={count > 0 ? "refresh" : "check"}
+              onClick={() => changeMaterial(entry, count > 0 ? 0 : Math.max(1, count))}
+            >
+              {count > 0 ? "Clear" : "Mark stocked"}
+            </Button>
+          </>
+        );
+      },
     },
     {
       key: "sources",
@@ -883,30 +1004,59 @@ export function FarmsPage() {
       key: "pickup",
       label: "Pickup",
       width: "24%",
-      render: (entry) => (
-        <>
-          <div className="library-title">{entry.name}</div>
-          <div className="library-badges">
-            <Badge>{entry.type}</Badge>
-            {entry.tier ? <Badge tone="accent">{entry.tier}</Badge> : null}
-            <Badge tone="info">×{formatQuantity(entry.quantity)}</Badge>
-          </div>
-        </>
-      ),
+      render: (entry) => {
+        const link = routeStepFor(entry);
+        const byRoute = Boolean(finiteStepsDone[entry.id]);
+        return (
+          <>
+            <div className="library-title">{entry.name}</div>
+            <div className="library-badges">
+              <Badge>{entry.type}</Badge>
+              {entry.tier ? <Badge tone="accent">{entry.tier}</Badge> : null}
+              <Badge tone="info">×{formatQuantity(entry.quantity)}</Badge>
+              {link ? <Badge>Route step</Badge> : null}
+              {byRoute ? <Badge tone="success">Collected</Badge> : null}
+            </div>
+            {link ? (
+              <button
+                type="button"
+                className="library-route-link"
+                onClick={() =>
+                  navigate(
+                    `/journey${queryString({
+                      step: link.stepId ?? undefined,
+                      area: link.area || undefined,
+                    })}`,
+                  )
+                }
+                aria-label={`Open route step for ${entry.name}`}
+              >
+                <Icon name="map" size={12} /> {link.area}
+              </button>
+            ) : null}
+          </>
+        );
+      },
     },
     {
       key: "acquired",
       label: "Acquired",
-      width: "100px",
-      render: (entry) => (
-        <div className="library-check-cell">
-          <Checkbox
-            checked={journey.finite[entry.id] ?? false}
-            onChange={(checked) => setFiniteAcquired(entry.id, checked)}
-            label="Acquired"
-          />
-        </div>
-      ),
+      width: "150px",
+      render: (entry) =>
+        finiteStepsDone[entry.id] ? (
+          <div className="library-check-cell">
+            <LockedCheckbox label="Acquired" />
+            <div className="library-sub">Collected by route step</div>
+          </div>
+        ) : (
+          <div className="library-check-cell">
+            <Checkbox
+              checked={journey.finite[entry.id] ?? false}
+              onChange={(checked) => setFiniteAcquired(entry.id, checked)}
+              label="Acquired"
+            />
+          </div>
+        ),
     },
     {
       key: "location",
@@ -949,10 +1099,12 @@ export function FarmsPage() {
       width: "24%",
       render: (entry) => {
         const unlock = unlockBadge(entry.note, entry.cost);
+        const overlap = overlapBadge(entry.name);
         return (
           <>
             <div className="library-title">{entry.name}</div>
             <div className="library-badges">
+              <Badge tone={overlap.tone}>{overlap.label}</Badge>
               {entry.price != null ? <Badge tone="accent">Runes</Badge> : null}
               {entry.cost ? (
                 <Badge tone="info">
@@ -1024,15 +1176,19 @@ export function FarmsPage() {
       key: "item",
       label: "Item",
       width: "23%",
-      render: (entry) => (
-        <>
-          <div className="library-title">{entry.item}</div>
-          <div className="library-badges">
-            <Badge>{entry.category}</Badge>
-            <Badge tone={priorityTone(entry.priority)}>{entry.priority}</Badge>
-          </div>
-        </>
-      ),
+      render: (entry) => {
+        const overlap = overlapBadge(entry.item);
+        return (
+          <>
+            <div className="library-title">{entry.item}</div>
+            <div className="library-badges">
+              <Badge>{entry.category}</Badge>
+              <Badge tone={priorityTone(entry.priority)}>{entry.priority}</Badge>
+              <Badge tone={overlap.tone}>{overlap.label}</Badge>
+            </div>
+          </>
+        );
+      },
     },
     {
       key: "purchased",
@@ -1158,13 +1314,7 @@ export function FarmsPage() {
       <PageHeader
         eyebrow={`${journey.label} · Supply ledger`}
         title="Farms"
-        description={
-          <>
-            Farmable quantities are permanent character records; materials, finite pickups, merchant purchases, and
-            scarabs are tracked per journey. The Merchants tab offers the full sheet inventory and the workbook ledger,
-            and reaching a farmable target also marks the matching collection item.
-          </>
-        }
+        description={`${formatNumber(summaryCells[0].done)} farmables owned, ${formatNumber(summaryCells[1].done)} materials stocked, ${formatNumber(summaryCells[2].done)} pickups collected on ${journey.label}.`}
         actions={
           <>
             <Button variant="primary" icon="bag" onClick={() => navigate("/collection")}>
@@ -1177,18 +1327,30 @@ export function FarmsPage() {
         }
       />
 
+      <FarmSummaryStrip
+        cells={summaryCells}
+        active={activeTab}
+        focus={focusId}
+        onSelect={changeTab}
+        onClearFocus={() => navigate(`/farms?tab=${activeTab}`)}
+      />
+
       <section className="card">
         <TabBar items={FARM_TABS} value={activeTab} onChange={changeTab} />
-        <ListProgress
-          owned={progress.owned}
-          total={progress.total}
-          unit={progress.unit}
-          scope={progress.scope}
-          note={progress.note}
-          matching={matchingCount}
-          focus={focusId}
-          onClearFocus={() => navigate(`/farms?tab=${activeTab}`)}
-        />
+        <div className="farm-filter-note">
+          <span className="library-count">
+            {formatNumber(matchingCount)} {matchingCount === 1 ? "record matches" : "records match"} the current filters
+          </span>
+          <Disclosure title="How tracking works" summary="Lifetime vs. journey state" icon="lock">
+            <p className="small muted" style={{ margin: 0 }}>
+              Farmable quantities are permanent: they belong to the character and survive a new journey. Reaching a
+              farmable target also records the matching collection item with a duplicate count. Materials, finite
+              pickups, merchant purchases, and scarabs are journey state and reset when you start a new run. A finite
+              pickup linked to a route step is collected automatically when that step is marked done, so it never needs
+              a second checkbox.
+            </p>
+          </Disclosure>
+        </div>
 
         <div className="library-toolbar">
           {activeTab === "farmables" ? (
@@ -1271,6 +1433,15 @@ export function FarmsPage() {
                     {value}
                   </option>
                 ))}
+              </Select>
+              <Select
+                label="Stock"
+                value={filters.stock}
+                onChange={(event) => updateFilter("stock", event.target.value)}
+              >
+                <option value="all">All stock states</option>
+                <option value="stocked">In stock</option>
+                <option value="missing">Not stocked</option>
               </Select>
             </>
           ) : null}
@@ -1424,38 +1595,38 @@ export function FarmsPage() {
 
         {activeTab === "merchants" && merchantScope === "inventory" ? (
           <div className="merchant-roster">
-            <div className="merchant-roster-head">
-              <span className="merchant-roster-title">Merchant roster</span>
-              <span>
-                {formatNumber(inventoryPurchased)} / {formatNumber(INVENTORY_ROWS.length)} purchased overall
-              </span>
-            </div>
-            <div className="merchant-roster-grid">
-              {MERCHANT_INVENTORIES.map((merchant) => {
-                const stats = inventoryStats[merchant.id];
-                const percent = stats.total ? (stats.owned / stats.total) * 100 : 0;
-                const selected = filters.merchant === merchant.name;
-                return (
-                  <button
-                    key={merchant.id}
-                    type="button"
-                    className={`merchant-roster-card ${selected ? "is-active" : ""}`.trim()}
-                    onClick={() => selectInventoryMerchant(merchant.name)}
-                    aria-pressed={selected}
-                  >
-                    <span className="merchant-roster-row">
-                      <span className="merchant-roster-name">{merchant.name}</span>
-                      <span className="merchant-roster-count">
-                        {formatNumber(stats.owned)}/{formatNumber(stats.total)}
+            <Disclosure
+              title="Merchant roster"
+              summary={`${formatNumber(inventoryPurchased)} / ${formatNumber(INVENTORY_ROWS.length)} purchased overall`}
+              icon="users"
+            >
+              <div className="merchant-roster-grid">
+                {MERCHANT_INVENTORIES.map((merchant) => {
+                  const stats = inventoryStats[merchant.id];
+                  const percent = stats.total ? (stats.owned / stats.total) * 100 : 0;
+                  const selected = filters.merchant === merchant.name;
+                  return (
+                    <button
+                      key={merchant.id}
+                      type="button"
+                      className={`merchant-roster-card ${selected ? "is-active" : ""}`.trim()}
+                      onClick={() => selectInventoryMerchant(merchant.name)}
+                      aria-pressed={selected}
+                    >
+                      <span className="merchant-roster-row">
+                        <span className="merchant-roster-name">{merchant.name}</span>
+                        <span className="merchant-roster-count">
+                          {formatNumber(stats.owned)}/{formatNumber(stats.total)}
+                        </span>
                       </span>
-                    </span>
-                    <span className="merchant-roster-track" aria-hidden="true">
-                      <span style={{ width: `${Math.round(percent)}%` }} />
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+                      <span className="merchant-roster-track" aria-hidden="true">
+                        <span style={{ width: `${Math.round(percent)}%` }} />
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </Disclosure>
           </div>
         ) : null}
 
@@ -1492,6 +1663,7 @@ export function FarmsPage() {
               columns={finiteColumns}
               focusId={focusId}
               className="farm-table"
+              rowClassName={(entry) => (finiteStepsDone[entry.id] ? "is-collected" : undefined)}
               empty={filterEmpty("No finite pickups match these filters")}
             />
             <LoadMore shown={shownCount} total={matchingCount} onMore={() => setLimit((current) => current + PAGE_SIZE)} />

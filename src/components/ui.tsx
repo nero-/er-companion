@@ -344,9 +344,10 @@ interface ModalProps {
   onClose: () => void;
   children: ReactNode;
   actions?: ReactNode;
+  className?: string;
 }
 
-export function Modal({ open, title, onClose, children, actions }: ModalProps) {
+export function Modal({ open, title, onClose, children, actions, className = "" }: ModalProps) {
   useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
@@ -359,7 +360,7 @@ export function Modal({ open, title, onClose, children, actions }: ModalProps) {
   if (!open) return null;
   return createPortal(
     <div className="overlay" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-      <div className="modal" role="dialog" aria-modal="true" aria-label={title}>
+      <div className={`modal ${className}`.trim()} role="dialog" aria-modal="true" aria-label={title}>
         <div className="row-between" style={{ marginBottom: 12 }}>
           <h2 style={{ fontSize: 22 }}>{title}</h2>
           <Button variant="ghost" size="sm" icon="x" onClick={onClose} aria-label="Close" />
@@ -459,4 +460,126 @@ export function useToast(): ToastContextValue {
   const value = useContext(ToastContext);
   if (!value) throw new Error("useToast must be used inside ToastProvider");
   return value;
+}
+
+
+/* ---------- Progressive disclosure ---------- */
+
+interface DisclosureProps {
+  title: ReactNode;
+  summary?: ReactNode;
+  children: ReactNode;
+  defaultOpen?: boolean;
+  open?: boolean;
+  onToggle?: (open: boolean) => void;
+  className?: string;
+  tone?: "default" | "accent" | "muted";
+  icon?: IconName;
+}
+
+/**
+ * A native <details> disclosure. Native semantics keep keyboard and screen
+ * reader behavior correct without extra JS, while the page stays quiet until
+ * the player asks for the rest of the ledger.
+ */
+export function Disclosure({
+  title,
+  summary,
+  children,
+  defaultOpen = false,
+  open,
+  onToggle,
+  className = "",
+  tone = "default",
+  icon,
+}: DisclosureProps) {
+  return (
+    <details
+      className={`disclosure disclosure-${tone} ${className}`.trim()}
+      open={open}
+      onToggle={onToggle ? (event) => onToggle(event.currentTarget.open) : undefined}
+    >
+      <summary className="disclosure-summary">
+        {icon ? <Icon name={icon} size={15} /> : null}
+        <span className="disclosure-title">{title}</span>
+        {summary ? <span className="disclosure-meta">{summary}</span> : null}
+        <Icon name="chevronDown" size={14} className="disclosure-chevron" />
+      </summary>
+      <div className="disclosure-body">{children}</div>
+    </details>
+  );
+}
+
+interface CollapsibleCardProps {
+  title: string;
+  note?: ReactNode;
+  actions?: ReactNode;
+  children: ReactNode;
+  defaultOpen?: boolean;
+  className?: string;
+}
+
+export function CollapsibleCard({
+  title,
+  note,
+  actions,
+  children,
+  defaultOpen = false,
+  className = "",
+}: CollapsibleCardProps) {
+  return (
+    <details className={`card card-pad collapsible-card ${className}`.trim()} open={defaultOpen}>
+      <summary className="collapsible-summary">
+        <span className="row" style={{ gap: 10 }}>
+          <h2>{title}</h2>
+          {note ? <span className="section-note">{note}</span> : null}
+        </span>
+        <span className="row" style={{ gap: 8 }}>
+          {actions}
+          <Icon name="chevronDown" size={15} className="disclosure-chevron" />
+        </span>
+      </summary>
+      <div className="collapsible-body">{children}</div>
+    </details>
+  );
+}
+
+/* ---------- Stat comparison ---------- */
+
+export interface StatCompareRow {
+  key: string;
+  label: string;
+  current: number;
+  target: number;
+  softCap?: number;
+}
+
+export function StatCompare({ rows }: { rows: StatCompareRow[] }) {
+  return (
+    <div className="stat-compare" role="table" aria-label="Current and planned stats">
+      <div className="stat-compare-row stat-compare-head" role="row">
+        <span role="columnheader">Stat</span>
+        <span role="columnheader">Now</span>
+        <span role="columnheader">Target</span>
+        <span role="columnheader">Δ</span>
+      </div>
+      {rows.map((row) => {
+        const delta = row.target - row.current;
+        const capped = row.softCap ? row.target >= row.softCap : false;
+        return (
+          <div className="stat-compare-row" role="row" key={row.key}>
+            <span className="stat-compare-label" role="cell">
+              {row.label}
+              {row.softCap ? <span className="tiny faint"> cap {row.softCap}</span> : null}
+            </span>
+            <span role="cell">{row.current}</span>
+            <span role="cell" className={capped ? "success" : undefined}>{row.target}</span>
+            <span role="cell" className={delta > 0 ? "warning" : delta < 0 ? "danger" : "faint"}>
+              {delta > 0 ? `+${delta}` : delta}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
 }

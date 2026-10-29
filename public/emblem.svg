@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Elden Ring emblem">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="42%" r="62%">
+      <stop offset="0" stop-color="#f2ddaa"/>
+      <stop offset="0.55" stop-color="#c9a35d"/>
+      <stop offset="1" stop-color="#8a6a33"/>
+    </radialGradient>
+  </defs>
+  <circle cx="64" cy="64" r="52" fill="none" stroke="url(#g)" stroke-width="3.2"/>
+  <circle cx="64" cy="64" r="43" fill="none" stroke="#c9a35d" stroke-width="1.1" opacity=".55"/>
+  <path d="M64 12v104M12 64h104" stroke="#c9a35d" stroke-width="1.4" opacity=".38"/>
+  <path d="M64 34 88 64 64 94 40 64Z" fill="none" stroke="url(#g)" stroke-width="3"/>
+  <path d="M64 46 76 64 64 82 52 64Z" fill="none" stroke="#e3c88b" stroke-width="1.6" opacity=".8"/>
+  <circle cx="64" cy="64" r="5.4" fill="#e8cd93"/>
+</svg>

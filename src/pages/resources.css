@@ -1,64 +1,74 @@
 /* ---------- Resources reference tables ---------- */
 
-.resources-banner {
+.resources-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(124px, 1fr));
+  gap: 8px;
   margin-bottom: 16px;
 }
 
-.resources-banner .art-banner-body {
-  align-items: flex-end;
-}
-
-.resources-banner .art-banner-copy {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.resources-banner-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 8px;
-  margin-top: 16px;
-}
-
-.resources-banner-stat {
+.resources-summary-item {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   min-width: 0;
   padding: 9px 11px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
   border-radius: 9px;
-  background: rgba(6, 8, 9, 0.52);
-  backdrop-filter: blur(4px);
+  background: var(--surface);
 }
 
-.resources-banner-label {
-  color: rgba(232, 226, 212, 0.65);
+.resources-summary-item strong {
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.resources-summary-item span {
+  overflow: hidden;
+  color: var(--faint);
   font-size: 8.5px;
   font-weight: 650;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.11em;
+  text-overflow: ellipsis;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.resources-banner-stat strong {
-  color: var(--parchment, #efe7d6);
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 1.15;
+.resources-summary-item--note {
+  justify-content: center;
+  grid-column: span 2;
 }
 
-.resources-banner-detail {
-  color: rgba(232, 226, 212, 0.52);
-  font-size: 9.5px;
+.resources-summary-item--note span {
+  white-space: normal;
+  line-height: 1.45;
+  letter-spacing: 0.06em;
 }
 
-.resources-banner-note {
-  max-width: 900px;
-  margin-top: 12px;
-  color: rgba(232, 226, 212, 0.7);
-  font-size: 11px;
-  line-height: 1.55;
+/* ---------- Tab bar ---------- */
+
+.resources-tabbar {
+  margin-bottom: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline-end: 18px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.resources-tabbar .tabs {
+  /* Size to content inside the scroll container so the last tab can always be
+     scrolled fully into view instead of being clipped at the page edge. */
+  width: max-content;
+  min-width: 100%;
+  padding-right: 18px;
+  padding-bottom: 1px;
+  overflow: visible;
+  scrollbar-width: none;
 }
 
 /* ---------- Toolbar ---------- */
@@ -209,8 +219,11 @@
   text-decoration: underline;
 }
 
+/* Reference tables must never clip: full height, horizontal scroll only. */
 .table-wrap.resources-table-wrap {
   max-height: none;
+  overflow-x: auto;
+  overflow-y: hidden;
   border-radius: 9px;
 }
 
@@ -333,12 +346,12 @@
 }
 
 @media (max-width: 760px) {
-  .resources-banner-stats {
+  .resources-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .resources-banner-stat strong {
-    font-size: 19px;
+  .resources-summary-item--note {
+    grid-column: 1 / -1;
   }
 
   .resources-toolbar {

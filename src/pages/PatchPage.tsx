@@ -1,6 +1,5 @@
 import { Badge, Button, Callout, PageHeader, SectionTitle } from "../components/ui";
 import { Icon } from "../components/Icon";
-import { ART, ArtBanner } from "../components/Art";
 import { CLASSES, STAT_SHORT, STAT_ORDER } from "../lib/classes";
 import { formatDate, formatNumber } from "../lib/format";
 import {
@@ -64,9 +63,9 @@ export function PatchPage() {
         description={
           <>
             Route, catalog, quests, bosses, achievements, and NG+ now cover the full game. The live rules are{" "}
-            <strong>{GAME_VERSION.app}</strong> / Regulation <strong>{GAME_VERSION.regulation}</strong>. The workbook
-            was authored against Regulation {DATA_BASELINE.regulation}, so build and tier recommendations are explicitly
-            marked as baseline data.
+            <strong>{GAME_VERSION.app}</strong> / Regulation <strong>{GAME_VERSION.regulation}</strong>. Build and tier
+            data was authored against Regulation {DATA_BASELINE.regulation}, so those recommendations are labeled as
+            baseline wherever they appear.
           </>
         }
         actions={
@@ -81,22 +80,7 @@ export function PatchPage() {
         }
       />
 
-      <ArtBanner
-        className="patch-art-banner"
-        image={ART.heroSote}
-        variant="sote"
-        caption={`Shadow of the Erdtree · ${CONTENT_COVERAGE.route.dlcSections} sections · ${formatNumber(
-          CONTENT_COVERAGE.route.dlcSteps,
-        )} steps`}
-        title="The expansion sits between Maliketh and the Ashen Capital"
-      >
-        <p className="small muted" style={{ margin: "4px 0 0" }}>
-          The full route pauses after Maliketh, plays every DLC section, then returns to Leyndell, Ashen Capital,
-          endings, and NG+ preparation.
-        </p>
-      </ArtBanner>
-
-      <div className="grid-4">
+      <div className="grid-4" style={{ marginTop: 16 }}>
         <div className="stat">
           <div className="stat-label">Live app version</div>
           <div className="stat-value">{GAME_VERSION.app}</div>
@@ -105,7 +89,7 @@ export function PatchPage() {
         <div className="stat">
           <div className="stat-label">Content baseline</div>
           <div className="stat-value">{DATA_BASELINE.regulation}</div>
-          <div className="stat-delta">Workbook v{DATA_BASELINE.workbookVersion}</div>
+          <div className="stat-delta">Baseline release {DATA_BASELINE.workbookVersion}</div>
         </div>
         <div className="stat">
           <div className="stat-label">Tarnished Edition</div>
@@ -130,12 +114,12 @@ export function PatchPage() {
       <section className="card card-pad" style={{ marginTop: 18 }}>
         <SectionTitle
           title="Full content pack"
-          note={`Generated ${formatDate(CONTENT_COVERAGE.generatedAt)} · Redmaw Completion Sheets + workbook seed`}
+          note={`Compiled ${formatDate(CONTENT_COVERAGE.generatedAt)} · whole-game content snapshot`}
           actions={<Badge tone="accent">{formatNumber(ROUTE_STEPS.length)} route steps</Badge>}
         />
         <p className="small muted" style={{ marginBottom: 12 }}>
           The route and completion denominators cover the whole game: base game through Maliketh, every Shadow of the
-          Erdtree section, then the Ashen Capital endgame. The workbook remains the source for build and tier data.
+          Erdtree section, then the Ashen Capital endgame. Build and tier data keeps its own older baseline.
         </p>
 
         <div className="pack-stat-grid">
@@ -151,8 +135,8 @@ export function PatchPage() {
             <div className="pack-stat-label">Catalog</div>
             <div className="pack-stat-value">{formatNumber(ITEMS.length)}</div>
             <div className="pack-stat-note">
-              items · {formatNumber(CONTENT_COVERAGE.items.workbook)} workbook +{" "}
-              {formatNumber(CONTENT_COVERAGE.items.redmawOnly)} Redmaw-only
+              items · {formatNumber(CONTENT_COVERAGE.items.workbook)} from the original catalog +{" "}
+              {formatNumber(CONTENT_COVERAGE.items.redmawOnly)} added from the walkthrough sheets
             </div>
           </div>
           <div className="pack-stat">
@@ -166,7 +150,7 @@ export function PatchPage() {
             <div className="pack-stat-label">Boss ledger</div>
             <div className="pack-stat-value">{formatNumber(ENCOUNTERS.length)}</div>
             <div className="pack-stat-note">
-              encounters · {formatNumber(CONTENT_COVERAGE.bosses.redmawOnly)} Redmaw-only +{" "}
+              encounters · {formatNumber(CONTENT_COVERAGE.bosses.redmawOnly)} from the walkthrough sheets +{" "}
               {TARNISHED_ENCOUNTERS.length} pack invasions
             </div>
           </div>
@@ -207,9 +191,9 @@ export function PatchPage() {
         </div>
 
         <Callout tone="warning" icon="alert">
-          <strong>Workbook baseline still applies:</strong> {DATA_BASELINE.note} Route, collection, questline, boss,
-          achievement, and NG+ denominators are current; tier rankings, certified loadouts, encounter presets, and
-          upgrade plans remain Regulation {DATA_BASELINE.regulation} until re-validated.
+          <strong>Baseline still applies to builds:</strong> route, collection, questline, boss, achievement, and NG+
+          denominators are current. Tier rankings, certified loadouts, encounter presets, and upgrade plans remain at
+          Regulation {DATA_BASELINE.regulation}, the release they were validated against.
         </Callout>
 
         <p className="tiny faint" style={{ marginTop: 12 }}>
@@ -392,9 +376,10 @@ export function PatchPage() {
         </section>
 
         <section className="card card-pad">
-          <SectionTitle title="1.17 balance impact register" note="Validate affected builds" />
+          <SectionTitle title="1.17 balance impact register" note="What changed and which entries it touches" />
           <p className="small muted" style={{ marginBottom: 12 }}>
-            These are the official 1.17 changes. The certified build/tier data has not been re-ranked against them.
+            The official 1.17 changes, grouped by the entries they touch. Build and tier data keeps its pre-1.17
+            baseline until each entry is re-ranked.
           </p>
           <div className="impact-list">
             {PATCH_IMPACTS.map((impact) => (
@@ -428,41 +413,65 @@ export function PatchPage() {
       </div>
 
       <section className="card card-pad" style={{ marginTop: 18 }}>
-        <SectionTitle title="Remaining validation and coverage" note="Honest gaps before calling build data 1.17-current" />
-        <div className="upgrade-checklist">
+        <SectionTitle
+          title="Current coverage"
+          note={`Companion state as of ${formatDate(CONTENT_COVERAGE.generatedAt)}`}
+          actions={<Badge tone="success">Current</Badge>}
+        />
+        <p className="small muted" style={{ marginBottom: 12 }}>
+          Every ledger below is live and usable today. The labels show what each one is based on, so no row can be
+          mistaken for 1.17-validated data where it is not.
+        </p>
+        <div className="coverage-rows">
           {[
-            [
-              "Fold Tarnished Pack acquisitions into route sequencing",
-              `The ${TARNISHED_ITEMS.length} pack records and ${TARNISHED_ENCOUNTERS.length} NPC invasions are tracked in the collection and boss ledger, but are not yet inserted as steps in the Redmaw route.`,
-            ],
-            [
-              "Re-validate tier lists and build loadouts",
-              "The 1.17 weapon/skill/spell changes above can move rankings and encounter presets. Treat 1.16.1 rankings as baseline.",
-            ],
-            [
-              "Re-check encounter strategies",
-              "Boss strategies and recommended weapons may be affected by buffed skills/spells and shield guard-boost changes.",
-            ],
-            [
-              "Reconcile coverage edges",
-              `${formatNumber(CONTENT_COVERAGE.links.unresolved)} of ${formatNumber(CONTENT_COVERAGE.links.labels)} route link labels remain unresolved in linkedRaw, and ${formatNumber(CONTENT_COVERAGE.items.unmatchedWorkbook)} workbook records had no Redmaw match. They stay visible but unlinked.`,
-            ],
-            [
-              "Verify legacy progress migration",
-              `${formatNumber(CONTENT_COVERAGE.legacyMap.mapped)} of ${formatNumber(CONTENT_COVERAGE.legacyMap.workbookSteps)} legacy workbook step IDs map to the full route. Unmapped legacy route keys are dropped on load; lifetime collection and endings survive.`,
-            ],
-            [
-              "Re-run extraction and update the source hash",
-              "Keep the original workbook immutable and regenerate the workbook seed plus the merged full-game pack when a newer certified workbook arrives.",
-            ],
-          ].map(([title, detail]) => (
-            <div className="checklist-row" key={title}>
-              <span className="checklist-dot" />
-              <div>
-                <div className="card-title" style={{ fontSize: 13.5 }}>{title}</div>
-                <div className="small muted">{detail}</div>
+            {
+              title: "Tarnished Pack acquisitions",
+              status: "Tracked",
+              tone: "success" as const,
+              detail: `All ${TARNISHED_ITEMS.length} pack records and ${TARNISHED_ENCOUNTERS.length} NPC invasions are tracked in the collection and boss ledger. They are not inserted as steps in the walkthrough route.`,
+            },
+            {
+              title: "Route, quests, bosses, achievements, NG+",
+              status: "Current",
+              tone: "success" as const,
+              detail: `${formatNumber(ROUTE_STEPS.length)} route steps, ${formatNumber(QUESTLINES.length)} questlines, ${formatNumber(ENCOUNTERS.length)} encounters, ${ACHIEVEMENTS.length} achievements, and ${formatNumber(NGPLUS_STEPS.length)} NG+ items cover the full game.`,
+            },
+            {
+              title: "Builds, tiers, and loadouts",
+              status: `Regulation ${DATA_BASELINE.regulation} baseline`,
+              tone: "warning" as const,
+              detail:
+                "Rankings, certified loadouts, gear recommendations, and upgrade plans were authored before the 1.17 balance pass. The 1.17 changes above can move them, so they are presented as baseline.",
+            },
+            {
+              title: "Encounter strategies",
+              status: `Regulation ${DATA_BASELINE.regulation} baseline`,
+              tone: "warning" as const,
+              detail:
+                "Boss strategies and recommended weapons predate the 1.17 buffs to skills and spells and the shield guard-boost change.",
+            },
+            {
+              title: "Route link labels",
+              status: "Labeled",
+              tone: "info" as const,
+              detail: `${formatNumber(CONTENT_COVERAGE.links.resolved)} of ${formatNumber(CONTENT_COVERAGE.links.labels)} route link labels resolve to a catalog entry, so they open the item directly. The remainder are still listed by name inside the step text but have no catalog link, and ${formatNumber(CONTENT_COVERAGE.items.unmatchedWorkbook)} older source items have no matching full-game record.`,
+            },
+            {
+              title: "Legacy saved progress",
+              status: "Migrated",
+              tone: "info" as const,
+              detail: `${formatNumber(CONTENT_COVERAGE.legacyMap.mapped)} of ${formatNumber(CONTENT_COVERAGE.legacyMap.workbookSteps)} older step keys map to the full route. Unmapped route keys are dropped on load; lifetime collection, lore, and ending records are kept.`,
+            },
+          ].map((row) => (
+            <div className="coverage-row" key={row.title}>
+              <span className={`coverage-mark coverage-mark-${row.tone}`} aria-hidden="true">
+                <Icon name={row.tone === "warning" ? "alert" : row.tone === "info" ? "eye" : "check"} size={13} />
+              </span>
+              <div className="grow">
+                <div className="card-title" style={{ fontSize: 13.5 }}>{row.title}</div>
+                <div className="small muted">{row.detail}</div>
               </div>
-              <Badge tone="warning">Pending</Badge>
+              <Badge tone={row.tone}>{row.status}</Badge>
             </div>
           ))}
         </div>

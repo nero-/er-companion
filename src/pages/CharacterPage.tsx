@@ -4,11 +4,13 @@ import {
   Badge,
   Button,
   Callout,
+  Disclosure,
   EmptyState,
   PageHeader,
   ProgressBar,
   SectionTitle,
   Select,
+  StatCompare,
   useToast,
 } from "../components/ui";
 import { Icon } from "../components/Icon";
@@ -17,7 +19,10 @@ import { EquipmentPicker } from "../components/EquipmentPicker";
 import type { EquipmentKind } from "../components/EquipmentPicker";
 import {
   applyProfile,
+  applyStatSnapshot,
+  deleteStatSnapshot,
   renameCharacter,
+  saveStatSnapshot,
   setClass,
   setEquipment,
   setItemOwned,
@@ -35,9 +40,9 @@ import {
   profilesForArchetype,
 } from "../lib/selectors";
 import { CLASSES, CLASS_BY_ID, STAT_LABELS, STAT_ORDER, levelFromStats } from "../lib/classes";
-import { equipmentModeLabel, itemGroupIcon } from "../lib/format";
+import { equipmentModeLabel, formatDate, itemGroupIcon } from "../lib/format";
 import { navigate } from "../lib/router";
-import type { Character, EquipmentState, StatKey } from "../lib/types";
+import type { Character, EquipmentState, StatKey, Stats } from "../lib/types";
 import "./builds.css";
 
 type EquipmentSlot = keyof EquipmentState;
@@ -170,6 +175,8 @@ export function CharacterPage() {
     arc: String(character.stats.arc),
   });
   const [picker, setPicker] = useState<PickerTarget | null>(null);
+  const [snapshotName, setSnapshotName] = useState("");
+  const [draft, setDraft] = useState<Stats | null>(null);
 
   const [profileArchetype, setProfileArchetype] = useState(
     CERTIFIED.find((entry) => entry.id === character.archetypeId)?.id ?? CERTIFIED[0]?.id ?? "",
@@ -384,6 +391,39 @@ export function CharacterPage() {
   const currentPickerValue = picker ? equipmentSlotValue(equipment, picker.slot, picker.index) : "";
   const currentPickerItem = currentPickerValue ? itemForEquipmentName(currentPickerValue) : undefined;
 
+  const saveCurrentSpread = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const saved = saveStatSnapshot(snapshotName);
+    if (!saved) {
+      toast.push("No active character to save a spread for.", "error");
+      return;
+    }
+    setSnapshotName("");
+    toast.push(`Saved “${saved.name}” · derived Level ${levelFromStats(saved.stats)}.`, "success");
+  };
+
+  const updateDraft = (key: StatKey, value: string) => {
+    setDraft((previous) => {
+      if (!previous) return previous;
+      const parsed = Number(value);
+      if (value.trim() === "" || !Number.isFinite(parsed)) return { ...previous, [key]: previous[key] };
+      return { ...previous, [key]: Math.max(1, Math.min(99, Math.floor(parsed))) };
+    });
+  };
+
+  const applyDraft = () => {
+    if (!draft) return;
+    // Draft is local-only until this point; setStat writes each key and clears the profile once.
+    for (const key of STAT_ORDER) setStat(key, draft[key]);
+    setDraft(null);
+    toast.push(
+      `Experiment applied to ${character.name} · derived Level ${levelFromStats(draft)}. The certified profile selection is cleared.`,
+      "success",
+    );
+  };
+
+  const plannedProfileStats = chosenProfile?.stats;
+
   return (
     <div className="page character-page">
       <PageHeader
@@ -551,7 +591,10 @@ export function CharacterPage() {
 
       <div className="grid-2 char-summary-grid">
         <section className="card card-pad">
-          <SectionTitle title="Apply certified profile" note={chosenProfile?.id} />
+          <SectionTitle
+            title="Apply certified profile"
+            note={chosenProfile ? `Level ${chosenProfile.level} · ${chosenProfile.startingClass}` : "No profile"}
+          />
           <div className="grid-2" style={{ gap: 10 }}>
             <Select
               label="Archetype"
@@ -639,60 +682,255 @@ export function CharacterPage() {
 
         <section className="card card-pad">
           <SectionTitle
-            title="Owned equipment"
-            note={`${plannedOwned.owned}/${plannedOwned.total} indexed pieces`}
+            title="Stat spreads"
+            note={`${character.statSnapshots.length} saved · current derives Level ${level}`}
           />
-          <ProgressBar
-            value={plannedOwned.total ? (plannedOwned.owned / plannedOwned.total) * 100 : 0}
-            label="Planned indexed gear marked owned"
-            detail={`${missingNames.length} indexed missing`}
-            tone={plannedOwned.total > 0 && plannedOwned.owned === plannedOwned.total ? "success" : "accent"}
-          />
-          {unindexedPlanned.length > 0 ? (
-            <p className="tiny faint" style={{ margin: "6px 0 0" }}>
-              {unindexedPlanned.length} planned {unindexedPlanned.length === 1 ? "entry has" : "entries have"} no
-              item-catalogue match; ownership cannot be determined for those names and they are excluded from the count.
-            </p>
-          ) : null}
-          {plannedNames.length === 0 ? (
-            <p className="small muted" style={{ marginTop: 10 }}>
-              No equipment planned yet. Use the planner below or apply a certified profile.
-            </p>
-          ) : cataloguedPlanned.length === 0 ? (
-            <p className="small muted" style={{ marginTop: 10 }}>
-              None of the planned names match the item catalogue, so ownership cannot be determined.
-            </p>
-          ) : missingNames.length === 0 ? (
-            <Callout tone="success" icon="check">
-              Every indexed planned slot is marked owned in the collection.
-            </Callout>
-          ) : (
-            <>
-              <div className="tag-list" style={{ marginTop: 10 }}>
-                {missingNames.slice(0, 12).map((name) => (
-                  <span className="own-chip is-missing" key={name} title="Not in collection">
-                    <span className="owned-dot" aria-hidden="true" />
-                    {name}
-                  </span>
-                ))}
-                {missingNames.length > 12 ? (
-                  <span className="own-chip">+{missingNames.length - 12} more</span>
-                ) : null}
+          <form className="stack" onSubmit={saveCurrentSpread} style={{ gap: 8 }}>
+            <label className="field">
+              <span className="field-label">Save current spread</span>
+              <div className="name-row">
+                <input
+                  className="input"
+                  value={snapshotName}
+                  onChange={(event) => setSnapshotName(event.target.value)}
+                  placeholder={`Spread ${character.statSnapshots.length + 1}`}
+                  aria-label="Saved spread name"
+                  autoComplete="off"
+                />
+                <Button type="submit" icon="download">
+                  Save current spread
+                </Button>
               </div>
-              <Callout tone="warning" icon="alert">
-                {missingNames.length} indexed planned piece{missingNames.length === 1 ? " is" : "s are"} not marked
-                owned. The planner records intent; it does not claim the loadout is playable.
-              </Callout>
-            </>
+            </label>
+            <p className="tiny faint" style={{ margin: 0 }}>
+              Saves the eight current stats with the derived level. Equipment and ownership are not part of a spread.
+            </p>
+          </form>
+
+          {character.statSnapshots.length === 0 ? (
+            <p className="small muted" style={{ marginTop: 10 }}>
+              No spreads saved yet. Save the current spread to compare or return to it later.
+            </p>
+          ) : (
+            <ul className="spread-list">
+              {character.statSnapshots.map((snapshot) => (
+                <li className="spread-row" key={snapshot.id}>
+                  <div className="grow">
+                    <div className="spread-name">{snapshot.name}</div>
+                    <div className="tiny faint">
+                      Level {levelFromStats(snapshot.stats)} · {formatDate(snapshot.createdAt)}
+                      {snapshot.note ? ` · ${snapshot.note}` : ""}
+                    </div>
+                  </div>
+                  <div className="row" style={{ gap: 4 }}>
+                    <Button
+                      size="sm"
+                      icon="check"
+                      onClick={() => {
+                        applyStatSnapshot(snapshot.id);
+                        setDraft(null);
+                        toast.push(`Applied “${snapshot.name}” to ${character.name}.`, "success");
+                      }}
+                    >
+                      Apply
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      icon="x"
+                      aria-label={`Delete ${snapshot.name}`}
+                      onClick={() => {
+                        deleteStatSnapshot(snapshot.id);
+                        toast.push(`Deleted “${snapshot.name}”.`, "success");
+                      }}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
           )}
-          <div className="row-between wrap" style={{ marginTop: 10 }}>
-            <span className="tiny faint">Unique pieces {plannedNames.length} · mode {equipmentModeLabel(character.equipmentMode)}</span>
-            <Button size="sm" variant="ghost" icon="bag" onClick={() => navigate("/collection")}>
-              Mark gear in collection
-            </Button>
+
+          <div className="divider" />
+
+          <div className="row-between wrap">
+            <div>
+              <div className="subheading">Experiment</div>
+              <p className="tiny faint" style={{ margin: "2px 0 0", maxWidth: 460 }}>
+                Plan a spread without touching the character. Nothing is written until you apply it.
+              </p>
+            </div>
+            {draft ? (
+              <Button size="sm" variant="ghost" icon="x" onClick={() => setDraft(null)}>
+                Close draft
+              </Button>
+            ) : (
+              <Button size="sm" icon="spark" onClick={() => setDraft({ ...character.stats })}>
+                Start experiment
+              </Button>
+            )}
           </div>
+
+          {draft ? (
+            <>
+              <div className="stat-editor experiment-editor">
+                {STAT_ORDER.map((key) => (
+                  <div className="stat-edit" key={key}>
+                    <label htmlFor={`draft-${key}`}>{STAT_LABELS[key]}</label>
+                    <div className="stat-controls">
+                      <button
+                        type="button"
+                        className="stat-step"
+                        onClick={() => updateDraft(key, String(draft[key] - 1))}
+                        aria-label={`Decrease draft ${STAT_LABELS[key]}`}
+                      >
+                        <Icon name="minus" size={13} />
+                      </button>
+                      <input
+                        id={`draft-${key}`}
+                        className="stat-input"
+                        type="number"
+                        min={1}
+                        max={99}
+                        value={draft[key]}
+                        onChange={(event) => updateDraft(key, event.target.value)}
+                      />
+                      <button
+                        type="button"
+                        className="stat-step"
+                        onClick={() => updateDraft(key, String(draft[key] + 1))}
+                        aria-label={`Increase draft ${STAT_LABELS[key]}`}
+                      >
+                        <Icon name="plus" size={13} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <StatCompare
+                rows={STAT_ORDER.map((key) => ({
+                  key,
+                  label: STAT_LABELS[key],
+                  current: character.stats[key],
+                  target: draft[key],
+                }))}
+              />
+              <div className="row-between wrap" style={{ marginTop: 10 }}>
+                <span className="tiny faint">
+                  Draft derives Level {levelFromStats(draft)} · total{" "}
+                  {STAT_ORDER.reduce((total, key) => total + draft[key], 0)}
+                </span>
+                <div className="row" style={{ gap: 6 }}>
+                  <Button size="sm" variant="ghost" icon="refresh" onClick={() => setDraft({ ...character.stats })}>
+                    Reset draft
+                  </Button>
+                  <Button size="sm" variant="primary" icon="check" onClick={applyDraft}>
+                    Apply to character
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : null}
         </section>
       </div>
+
+      <section className="card card-pad current-vs-planned" style={{ marginBottom: 16 }}>
+        <SectionTitle
+          title="Current vs planned"
+          note={
+            chosenProfile
+              ? `${chosenProfile.archetype} · Level ${chosenProfile.level}`
+              : "No certified profile selected"
+          }
+        />
+        <div className="current-vs-planned-grid">
+          <div>
+            <div className="tiny faint" style={{ marginBottom: 6 }}>
+              Current spread → planned profile
+            </div>
+            {plannedProfileStats ? (
+              <StatCompare
+                rows={STAT_ORDER.map((key) => ({
+                  key,
+                  label: STAT_LABELS[key],
+                  current: character.stats[key],
+                  target: plannedProfileStats[key],
+                }))}
+              />
+            ) : (
+              <EmptyState
+                title="No planned profile"
+                description="Pick an archetype and level to compare against a certified spread."
+                icon="layers"
+              />
+            )}
+            {plannedProfileStats ? (
+              <p className="tiny faint" style={{ margin: "8px 0 0" }}>
+                Planned spread derives Level {levelFromStats(plannedProfileStats)} · current derives Level {level}.
+                Nothing is written until you apply the profile.
+              </p>
+            ) : null}
+          </div>
+          <Disclosure
+            title="Gear coverage"
+            summary={`${plannedOwned.owned}/${plannedOwned.total} indexed owned`}
+            tone="muted"
+            defaultOpen={missingNames.length > 0}
+          >
+            <ProgressBar
+              value={plannedOwned.total ? (plannedOwned.owned / plannedOwned.total) * 100 : 0}
+              label="Planned indexed gear marked owned"
+              detail={`${missingNames.length} indexed missing`}
+              tone={plannedOwned.total > 0 && plannedOwned.owned === plannedOwned.total ? "success" : "accent"}
+            />
+            {unindexedPlanned.length > 0 ? (
+              <p className="tiny faint" style={{ margin: "6px 0 0" }}>
+                {unindexedPlanned.length} planned {unindexedPlanned.length === 1 ? "entry has" : "entries have"} no
+                item-catalogue match; ownership cannot be determined for those names and they are excluded from the
+                count.
+              </p>
+            ) : null}
+            {plannedNames.length === 0 ? (
+              <p className="small muted" style={{ marginTop: 10 }}>
+                No equipment planned yet. Use the planner below or apply a certified profile.
+              </p>
+            ) : cataloguedPlanned.length === 0 ? (
+              <p className="small muted" style={{ marginTop: 10 }}>
+                None of the planned names match the item catalogue, so ownership cannot be determined.
+              </p>
+            ) : missingNames.length === 0 ? (
+              <Callout tone="success" icon="check">
+                Every indexed planned slot is marked owned in the collection.
+              </Callout>
+            ) : (
+              <>
+                <div className="tag-list" style={{ marginTop: 10 }}>
+                  {missingNames.slice(0, 12).map((name) => (
+                    <span className="own-chip is-missing" key={name} title="Not in collection">
+                      <span className="owned-dot" aria-hidden="true" />
+                      {name}
+                    </span>
+                  ))}
+                  {missingNames.length > 12 ? (
+                    <span className="own-chip">+{missingNames.length - 12} more</span>
+                  ) : null}
+                </div>
+                <Callout tone="warning" icon="alert">
+                  {missingNames.length} indexed planned piece{missingNames.length === 1 ? " is" : "s are"} not marked
+                  owned. The planner records intent; it does not claim the loadout is playable.
+                </Callout>
+              </>
+            )}
+            <div className="row-between wrap" style={{ marginTop: 10 }}>
+              <span className="tiny faint">
+                Unique pieces {plannedNames.length} · mode {equipmentModeLabel(character.equipmentMode)}
+              </span>
+              <Button size="sm" variant="ghost" icon="bag" onClick={() => navigate("/collection")}>
+                Mark gear in collection
+              </Button>
+            </div>
+          </Disclosure>
+        </div>
+      </section>
 
       <section className="card card-pad" style={{ marginBottom: 16 }}>
         <SectionTitle

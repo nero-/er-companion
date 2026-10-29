@@ -4,6 +4,8 @@ import {
   Button,
   Callout,
   Checkbox,
+  CollapsibleCard,
+  Disclosure,
   Drawer,
   EmptyState,
   Modal,
@@ -17,17 +19,23 @@ import {
   useToast,
 } from "../components/ui";
 import { Icon } from "../components/Icon";
-import { ART, ArtBanner, OrnamentRule } from "../components/Art";
+import { OrnamentRule } from "../components/Art";
 import {
   resolveArea,
+  setDecisionCheck,
+  setItemOwned,
+  setMaterialStock,
   setNpcWalkthroughStep,
   setSettings,
   setStepNote,
   setStepStatus,
   setSupplementalStatus,
+  setWorldCheck,
+  useActiveCharacter,
   useActiveJourney,
   useAppState,
 } from "../lib/store";
+import { areaSweep } from "../lib/gameplay";
 import {
   areaProgress,
   currentAreaName,
@@ -40,10 +48,13 @@ import {
 } from "../lib/selectors";
 import type { Progress } from "../lib/selectors";
 import {
+  BRANCH_PLAN_DECISIONS,
   CHRONOLOGY_AREAS,
+  CRAFTING_MATERIALS,
   ENCOUNTER_BY_ID,
   ITEM_BY_ID,
   ITEM_BY_NORMALIZED_NAME,
+  MATERIAL_BY_ID,
   NPC_WALKTHROUGH_SECTIONS,
   NPC_WALKTHROUGH_SECTION_BY_ID,
   NPC_WALKTHROUGH_STEPS,
@@ -61,11 +72,14 @@ import {
   SUPPLEMENTAL,
   SUPPLEMENTAL_BY_AREA,
   SUPPLEMENTAL_BY_ID,
+  WORLD_OBJECTS,
+  STEP_BY_SOURCE_ID,
   normalizeContentKey,
 } from "../lib/data";
 import { formatNumber, itemGroupIcon, titleCase } from "../lib/format";
 import { navigate, queryString, useRoute } from "../lib/router";
 import type {
+  AreaSweep,
   Encounter,
   Item,
   NpcWalkthroughSection,
@@ -232,6 +246,111 @@ function stepsForGate(gate: PhaseGate): RouteStep[] {
   );
 }
 
+/**
+ * World objects grouped by the route step that resolves them. The atlas ledger
+ * stores the Redmaw source id (`w2-1`), so resolve it to the runtime `RW-*`
+ * step before grouping; otherwise step completion can never match.
+ */
+const WORLD_OBJECT_IDS_BY_STEP: Record<string, string[]> = (() => {
+  const map: Record<string, string[]> = {};
+  for (const object of WORLD_OBJECTS) {
+    if (!object.routeStepId) continue;
+    const step = STEP_BY_ID[object.routeStepId] ?? STEP_BY_SOURCE_ID[object.routeStepId];
+    if (!step) continue;
+    (map[step.id] ??= []).push(object.id);
+  }
+  return map;
+})();
+
+const MATERIAL_BY_NORMALIZED_NAME: Record<string, string> = Object.fromEntries(
+  CRAFTING_MATERIALS.map((material) => [normalizeContentKey(material.name), material.id]),
+);
+
+/** Item ids in the sweep are content-pack ids; fall back to a normalized name lookup. */
+function resolveSweepItemId(rawId: string | undefined, name: string): string | undefined {
+  if (rawId && ITEM_BY_ID[rawId]) return rawId;
+  return ITEM_BY_NORMALIZED_NAME[normalizeContentKey(name)]?.id;
+}
+
+function resolveSweepMaterialId(rawId: string, name: string): string | undefined {
+  if (MATERIAL_BY_ID[rawId]) return rawId;
+  return MATERIAL_BY_NORMALIZED_NAME[normalizeContentKey(name)];
+}
+
+interface SweepRow {
+  key: string;
+  label: string;
+  note: string;
+  itemId?: string;
+  materialId?: string;
+  owned: boolean;
+}
+
+interface SweepGroup {
+  id: string;
+  title: string;
+  rows: SweepRow[];
+}
+
+function buildSweepGroups(
+  sweep: AreaSweep | undefined,
+  ownedItem: (id: string | undefined) => boolean,
+  stockedMaterial: (id: string) => boolean,
+): SweepGroup[] {
+  if (!sweep) return [];
+  const merchantRows: SweepRow[] = [];
+  for (const merchant of sweep.merchants) {
+    for (const item of merchant.items) {
+      const itemId = resolveSweepItemId(item.itemId, item.itemName);
+      merchantRows.push({
+        key: item.id,
+        label: item.itemName,
+        note: [merchant.merchant, item.price ? `${formatNumber(item.price)} runes` : "", item.stock ?? ""]
+          .filter(Boolean)
+          .join(" · "),
+        itemId,
+        owned: ownedItem(itemId),
+      });
+    }
+  }
+  const farmableRows: SweepRow[] = sweep.farmables.map((farm) => {
+    const itemId = resolveSweepItemId(farm.itemId, farm.name);
+    return {
+      key: farm.id,
+      label: farm.name,
+      note: [farm.source, farm.location, `×${formatNumber(farm.targetQuantity)}`].filter(Boolean).join(" · "),
+      itemId,
+      owned: ownedItem(itemId),
+    };
+  });
+  const unlinkedRows: SweepRow[] = sweep.unlinkedItems.map((item) => {
+    const itemId = resolveSweepItemId(item.itemId, item.name);
+    return {
+      key: item.id,
+      label: item.name,
+      note: [item.acquisitionType, item.location].filter(Boolean).join(" · "),
+      itemId,
+      owned: ownedItem(itemId),
+    };
+  });
+  const materialRows: SweepRow[] = sweep.materials.map((material) => {
+    const materialId = resolveSweepMaterialId(material.id, material.name);
+    return {
+      key: material.id,
+      label: material.name,
+      note: [material.grace, material.earlySource].filter(Boolean).join(" · "),
+      materialId,
+      owned: materialId ? stockedMaterial(materialId) : false,
+    };
+  });
+  return [
+    { id: "merchants", title: "Merchants", rows: merchantRows },
+    { id: "farmables", title: "Farmables", rows: farmableRows },
+    { id: "unlinked", title: "Loose pickups", rows: unlinkedRows },
+    { id: "materials", title: "Materials", rows: materialRows },
+  ].filter((group) => group.rows.length > 0);
+}
+
 interface LinkedRecordView {
   id: string;
   name: string;
@@ -376,6 +495,7 @@ function StepNoteEditor({ savedNote, onSave }: StepNoteEditorProps) {
 
 export function JourneyPage() {
   const state = useAppState();
+  const character = useActiveCharacter();
   const journey = useActiveJourney();
   const route = useRoute();
   const toast = useToast();
@@ -391,6 +511,23 @@ export function JourneyPage() {
   const [areaSearch, setAreaSearch] = useState("");
   const [collapsedPhases, setCollapsedPhases] = useState<Record<string, boolean>>({});
   const [resolveOpen, setResolveOpen] = useState(false);
+  // The decision ledger only stores explicit "secured" flags, so an unchecked
+  // box over an owned reward needs a session-local override to stay unset.
+  const [decisionOverrides, setDecisionOverrides] = useState<Record<string, boolean>>({});
+  const [wideLayout, setWideLayout] = useState(
+    () => typeof window === "undefined" || typeof window.matchMedia !== "function"
+      ? true
+      : window.matchMedia("(min-width: 1180px)").matches,
+  );
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
+    const query = window.matchMedia("(min-width: 1180px)");
+    const onChange = () => setWideLayout(query.matches);
+    onChange();
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, []);
 
   const allAreas = useMemo(
     () => ROUTE_AREAS.filter((area) => area.hasRoute && area.stepCount > 0).sort((a, b) => a.order - b.order),
@@ -480,6 +617,7 @@ export function JourneyPage() {
   const phaseAreas = areasByPhase.get(phaseMeta.label) ?? [];
   const phaseProgress = phaseStats[phaseMeta.id];
   const phaseMissable = phaseMissables[phaseMeta.id];
+  const phaseGateCount = PHASE_GATES.filter((gate) => gate.phase === phaseMeta.label).length;
 
   const fallbackArea = useMemo(() => {
     const currentInPhase = phaseAreas.find((area) => area.name === currentArea);
@@ -514,6 +652,49 @@ export function JourneyPage() {
   const phaseSteps = useMemo(
     () => [...(STEPS_BY_PHASE[phaseMeta.label] ?? [])].sort((a, b) => a.order - b.order),
     [phaseMeta.label],
+  );
+
+  const activeAreaMissable = useMemo(() => missableStats(areaSteps, journey.steps), [areaSteps, journey.steps]);
+
+  const activeSweep = useMemo(() => areaSweep(activeArea.name), [activeArea.name]);
+  const sweepGroups = useMemo(
+    () =>
+      buildSweepGroups(
+        activeSweep,
+        (id) => Boolean(id && character.items[id]),
+        (id) => Boolean(journey.materials[id]),
+      ),
+    [activeSweep, character.items, journey.materials],
+  );
+
+  const activeAreaDecisions = useMemo(() => {
+    const stepIds = new Set(areaSteps.map((step) => step.id));
+    return BRANCH_PLAN_DECISIONS.filter(
+      (decision) =>
+        decision.area === activeArea.name ||
+        (decision.routeStepIds ?? []).some((id) => stepIds.has(id)),
+    );
+  }, [activeArea.name, areaSteps]);
+
+  const previousJourneys = useMemo(
+    () =>
+      [...character.journeys]
+        .filter((entry) => entry.index < journey.index)
+        .sort((a, b) => a.index - b.index)
+        .map((entry) => {
+          const progress = routeProgress(entry);
+          const items = Object.keys(character.itemOrigins).filter(
+            (id) => character.itemOrigins[id] === entry.index,
+          );
+          return {
+            journey: entry,
+            progress,
+            decisionsRecorded: Object.keys(entry.decisions).length,
+            decisionsSecured: Object.keys(entry.decisionChecks).length,
+            items,
+          };
+        }),
+    [character.itemOrigins, character.journeys, journey.index],
   );
 
   const scopedSteps = useMemo(() => {
@@ -894,7 +1075,17 @@ export function JourneyPage() {
   const handleStepStatus = (step: RouteStep, status: StepStatus | null) => {
     const result = setStepStatus(step.id, status);
     if (status === "done") {
+      // World objects carry a routeStepId, so a finished route step resolves
+      // the matching map entries in the same write. Re-running is a no-op.
+      const linkedWorldObjects = (WORLD_OBJECT_IDS_BY_STEP[step.id] ?? []).filter(
+        (id) => !journey.worldChecks[id],
+      );
+      for (const id of linkedWorldObjects) setWorldCheck(id, true);
+
       const extras: string[] = [];
+      if (linkedWorldObjects.length) {
+        extras.push(`${plural(linkedWorldObjects.length, "world record")} auto-checked`);
+      }
       if (result.acquiredItems.length) extras.push(`${plural(result.acquiredItems.length, "item")} auto-acquired`);
       if (result.defeatedBosses.length) extras.push(`${plural(result.defeatedBosses.length, "boss", "bosses")} auto-recorded`);
       if (result.completedNpcs.length) extras.push(`${plural(result.completedNpcs.length, "NPC")} auto-completed`);
@@ -969,11 +1160,6 @@ export function JourneyPage() {
     const activeIndex = allAreas.findIndex((area) => area.name === activeArea.name);
     return beforeIndex === activeIndex + 1;
   });
-
-  const phaseArt =
-    phaseMeta.id === "shadow-of-the-erdtree"
-      ? { image: ART.heroSote, variant: "sote" as const }
-      : { image: ART.heroErdtree, variant: "erdtree" as const };
 
   const renderFilterCard = (missableView: boolean) => (
     <div className="card card-pad journey-filter-card">
@@ -1053,17 +1239,14 @@ export function JourneyPage() {
     const gateAreas = areasForGate(gate);
     const stats = missableStats(stepsForGate(gate), journey.steps);
     const severe = gate.severity === "MISSABLE";
-    const image = gate.id === "GATE-DLC" ? ART.heroSote : ART.heroErdtree;
-    const variant = gate.id === "GATE-DLC" ? "sote" : "erdtree";
     return (
-      <ArtBanner
+      <section
         key={gate.id}
-        image={image}
-        variant={variant}
-        className={`journey-gate${severe ? " journey-gate--danger" : ""}`}
-        caption={severe ? "Point of no return" : "Phase gate"}
-        title={gate.title}
+        className={`card card-pad journey-gate${severe ? " journey-gate--danger" : ""}`}
+        aria-label={gate.title}
       >
+        <div className="eyebrow">{severe ? "Point of no return" : "Phase gate"}</div>
+        <h2 className="journey-gate-title">{gate.title}</h2>
         <p className="journey-gate-message">{gate.message}</p>
         <div className="journey-gate-warning">
           <Icon name="alert" size={14} />
@@ -1107,7 +1290,7 @@ export function JourneyPage() {
             Open phase
           </Button>
         </div>
-      </ArtBanner>
+      </section>
     );
   };
 
@@ -1496,29 +1679,11 @@ export function JourneyPage() {
       <PageHeader
         eyebrow={`${journey.label} · Guided journey`}
         title="Journey"
-        description={
-          <>
-            The full {formatNumber(routeStats.total)}-step route in three canonical phases: base game through Maliketh, the
-            entire Shadow of the Erdtree, then the base-game endgame.{" "}
-            {formatNumber(
-              Object.values(phaseMissables).reduce((sum, stats) => sum + stats.total, 0),
-            )}{" "}
-            steps are flagged missable; the {chronologyStats.total}-action companion chronology remains a separate
-            cross-game tracking layer, alongside a {NPC_WALKTHROUGH_STEPS.length}-step area-ordered NPC walkthrough.
-          </>
-        }
+        description={`${formatNumber(routeStats.total)} route steps in three phases. Use the tabs to switch route, chronology, or NPC walkthrough.`}
         actions={
-          <>
-            <Button variant="primary" icon="target" onClick={openNextStep} disabled={!nextStep}>
-              {nextStep ? "Continue route" : "Route complete"}
-            </Button>
-            <Button icon="list" onClick={openChronology}>
-              Companion chronology
-            </Button>
-            <Button icon="users" onClick={openNpc}>
-              NPC walkthrough
-            </Button>
-          </>
+          <Button variant="primary" icon="target" onClick={openNextStep} disabled={!nextStep}>
+            {nextStep ? "Continue route" : "Route complete"}
+          </Button>
         }
       />
 
@@ -1539,16 +1704,23 @@ export function JourneyPage() {
           <>
             <section className="card card-pad journey-phase-tabs" aria-label="Route phases">
               <div className="row-between wrap">
-                <div>
-                  <div className="eyebrow">Route phases</div>
-                  <p className="small muted journey-phase-tabs-note">
-                    Maliketh closes the pre-DLC phase; Shadow of the Erdtree plays in full before the Ashen Capital.
-                  </p>
-                </div>
+                <div className="eyebrow">Route phases</div>
                 <Badge tone={nextStep ? "info" : "success"}>
                   {nextStep ? `Next · ${nextStep.phase}` : "Full route closed"}
                 </Badge>
               </div>
+              <Disclosure title="How this view works" tone="muted" icon="book">
+                <p className="journey-disclosure-copy">
+                  {formatNumber(routeStats.total)} steps in three canonical phases: base game through Maliketh, the
+                  entire Shadow of the Erdtree, then the base-game endgame. Maliketh closes the pre-DLC phase, so the
+                  DLC plays in full before the Ashen Capital.{" "}
+                  {formatNumber(
+                    Object.values(phaseMissables).reduce((sum, stats) => sum + stats.total, 0),
+                  )}{" "}
+                  steps are flagged missable. Area sweeps and route decisions sit under each section; the companion
+                  chronology and NPC walkthrough stay separate tracking layers.
+                </p>
+              </Disclosure>
               <div className="journey-phase-tab-row" role="tablist" aria-label="Select route phase">
                 {PHASES.map((phase, index) => {
                   const stats = phaseStats[phase.id];
@@ -1596,11 +1768,14 @@ export function JourneyPage() {
 
             <div className="journey-layout">
               <aside className="journey-side">
-                <div className="card card-pad journey-rail">
-                  <SectionTitle
-                    title="Route sections"
-                    note={`${allAreas.length} sections · ${formatNumber(routeStats.total)} steps`}
-                  />
+                {/* Remount on breakpoint changes so the rail's open state follows the layout width. */}
+                <CollapsibleCard
+                  key={`route-rail-${wideLayout}`}
+                  title="Route sections"
+                  note={`${allAreas.length} sections · ${formatNumber(routeStats.total)} steps`}
+                  defaultOpen={wideLayout}
+                  className="journey-rail-card"
+                >
                   <div className="journey-rail-search">
                     <SearchInput
                       value={areaSearch}
@@ -1712,50 +1887,58 @@ export function JourneyPage() {
                       Jump to {currentArea}
                     </Button>
                   ) : null}
-                </div>
+                </CollapsibleCard>
               </aside>
 
               <div className="journey-main">
-                <ArtBanner
-                  image={phaseArt.image}
-                  variant={phaseArt.variant}
-                  className={`journey-phase-banner${
-                    phaseMeta.id === "base-endgame" ? " journey-phase-banner--danger" : ""
+                <section
+                  className={`card card-pad journey-phase-head${
+                    phaseMeta.id === "base-endgame" ? " journey-phase-head--danger" : ""
                   }`}
-                  caption={`Phase ${phaseIndex + 1} of ${PHASES.length} · ${phaseAreas.length} sections · ${formatNumber(
-                    phaseProgress.total,
-                  )} steps`}
-                  title={phaseMeta.label}
+                  aria-label={`Phase ${phaseIndex + 1}: ${phaseMeta.label}`}
                 >
-                  <div className="journey-phase-banner-body">
-                    <div className="journey-phase-banner-meta">
+                  <div className="journey-phase-head-top">
+                    <div className="grow">
+                      <div className="eyebrow">
+                        Phase {phaseIndex + 1} of {PHASES.length} · {phaseAreas.length} sections
+                      </div>
+                      <h2 className="journey-phase-title">{phaseMeta.label}</h2>
+                    </div>
+                    {phaseMeta.id === "base-endgame" ? <Badge tone="danger">Point of no return</Badge> : null}
+                  </div>
+
+                  <div className="journey-phase-stats">
+                    <span>
+                      <strong>{formatNumber(phaseProgress.resolved)}</strong> / {formatNumber(phaseProgress.total)} steps
+                    </span>
+                    <span className={phaseMissable.remaining ? "danger" : ""}>
+                      <Icon name={phaseMissable.remaining ? "alert" : "check"} size={12} />
+                      {phaseMissable.remaining
+                        ? `${formatNumber(phaseMissable.remaining)} missable left`
+                        : "No unresolved missables"}
+                    </span>
+                    <span>
+                      <Icon name="lock" size={12} />
+                      {plural(phaseGateCount, "phase gate")}
+                    </span>
+                  </div>
+
+                  <ProgressBar
+                    value={phaseProgress.requiredPercent}
+                    label={`${phaseProgress.requiredResolved} / ${phaseProgress.required} required steps`}
+                    detail={`${phaseProgress.done} done · ${phaseProgress.skipped} skipped · ${phaseProgress.deferred} deferred`}
+                  />
+
+                  {phaseMeta.id === "base-endgame" ? (
+                    <div className="journey-phase-warning">
+                      <Icon name="alert" size={14} />
                       <span>
-                        <strong>{formatNumber(phaseProgress.resolved)}</strong> resolved ·{" "}
-                        <strong>{formatNumber(phaseProgress.total - phaseProgress.resolved)}</strong> open
-                      </span>
-                      <span className={phaseMissable.remaining ? "danger" : ""}>
-                        <Icon name={phaseMissable.remaining ? "alert" : "check"} size={12} />
-                        {phaseMissable.remaining
-                          ? `${formatNumber(phaseMissable.remaining)} missable steps remaining`
-                          : "No unresolved missables"}
+                        Endgame phase. The capital is already ash: pre-DLC missables can no longer be recovered once
+                        this phase begins.
                       </span>
                     </div>
-                    <ProgressBar
-                      value={phaseProgress.requiredPercent}
-                      label={`${phaseProgress.requiredResolved} / ${phaseProgress.required} required steps`}
-                      detail={`${phaseProgress.done} done · ${phaseProgress.skipped} skipped · ${phaseProgress.deferred} deferred`}
-                    />
-                    {phaseMeta.id === "base-endgame" ? (
-                      <div className="journey-phase-warning">
-                        <Icon name="alert" size={14} />
-                        <span>
-                          Endgame phase. The capital is already ash: pre-DLC missables can no longer be recovered once
-                          this phase begins.
-                        </span>
-                      </div>
-                    ) : null}
-                  </div>
-                </ArtBanner>
+                  ) : null}
+                </section>
 
                 {activeGateFilter && phaseMissableMode ? renderGate(activeGateFilter) : null}
                 {phaseMissableMode && !activeGateFilter && missableViewGate
@@ -1833,59 +2016,66 @@ export function JourneyPage() {
                         </Button>
                       </div>
 
+                      <dl className="journey-level-guide">
+                        <div>
+                          <dt>Recommended level</dt>
+                          <dd>{activeArea.levelRange || activeArea.game}</dd>
+                        </div>
+                        <div>
+                          <dt>Required steps</dt>
+                          <dd>
+                            {activeProgress.requiredResolved} / {activeProgress.required}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Steps</dt>
+                          <dd>
+                            {activeProgress.resolved} / {activeProgress.total}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Missables left</dt>
+                          <dd className={activeAreaMissable.remaining ? "danger" : undefined}>
+                            {activeAreaMissable.total
+                              ? `${activeAreaMissable.remaining} of ${activeAreaMissable.total}`
+                              : "None recorded"}
+                          </dd>
+                        </div>
+                      </dl>
+
                       <div className="journey-area-badges">
                         <Badge tone={activeProgress.complete ? "success" : "warning"}>
                           {activeProgress.complete
                             ? "Required steps complete"
                             : `${remainingRequired} required step${remainingRequired === 1 ? "" : "s"} left`}
                         </Badge>
-                        <Badge>
-                          {activeProgress.total} steps · {activeProgress.required} required
-                        </Badge>
                         <Badge tone={activeArea.dlc ? "info" : "default"}>{activeArea.game}</Badge>
-                        {activeArea.levelRange ? <Badge>{activeArea.levelRange}</Badge> : null}
                         {pendingSteps ? <Badge tone="info">{pendingSteps} pending</Badge> : null}
-                        {(() => {
-                          const areaMisses = missableStats(STEPS_BY_AREA[activeArea.name] ?? [], journey.steps);
-                          return areaMisses.total ? (
-                            <Badge tone={areaMisses.remaining ? "danger" : "success"}>
-                              {areaMisses.remaining} of {areaMisses.total} missables left
-                            </Badge>
-                          ) : null;
-                        })()}
                       </div>
 
-                      <p className="journey-area-description">
-                        {activeArea.description || activeArea.levelRange || "No area summary is recorded in the content pack."}
-                      </p>
-                      <div className="journey-validation">
-                        <Icon name="scroll" size={12} />
-                        <span>
-                          {activeArea.validation || "No separate area validation is recorded in the content pack."}
-                        </span>
-                      </div>
+                      <ProgressBar
+                        value={activeProgress.requiredPercent}
+                        label={`${activeProgress.requiredResolved} / ${activeProgress.required} required steps`}
+                        detail={`${activeProgress.done} done · ${activeProgress.skipped} skipped · ${activeProgress.deferred} deferred`}
+                      />
 
-                      <div className="journey-progress-block">
-                        <ProgressBar
-                          value={activeProgress.requiredPercent}
-                          label={`${activeProgress.requiredResolved} / ${activeProgress.required} required steps`}
-                          detail={`${activeProgress.done} done · ${activeProgress.skipped} skipped · ${activeProgress.deferred} deferred`}
-                        />
-                        <div className="journey-counts">
+                      <Disclosure
+                        title="Section notes"
+                        icon="scroll"
+                        summary={activeArea.description || activeArea.validation ? "Summary and validation" : undefined}
+                      >
+                        <p className="journey-area-description">
+                          {activeArea.description ||
+                            activeArea.levelRange ||
+                            "No area summary is recorded in the content pack."}
+                        </p>
+                        <div className="journey-validation">
+                          <Icon name="scroll" size={12} />
                           <span>
-                            <strong>{activeProgress.resolved}</strong> resolved
-                          </span>
-                          <span>
-                            <strong>{pendingSteps}</strong> pending
-                          </span>
-                          <span>
-                            <strong>{activeProgress.percent}%</strong> of all steps resolved
-                          </span>
-                          <span>
-                            <strong>{formatNumber(activeArea.order)}</strong> global section order
+                            {activeArea.validation || "No separate area validation is recorded in the content pack."}
                           </span>
                         </div>
-                      </div>
+                      </Disclosure>
                     </section>
 
                     {renderFilterCard(false)}
@@ -1928,7 +2118,7 @@ export function JourneyPage() {
                     title={hideLeaveArea ? "All steps in this section are resolved" : "No steps match these filters"}
                     description={
                       hideLeaveArea
-                        ? "Turn off Hide completed to review the steps in this section, or open the companion chronology for cross-game actions."
+                        ? "Turn off Hide completed to review the steps in this section."
                         : "Adjust the search, status, or requirement filter to bring steps back into view."
                     }
                     action={
@@ -1942,13 +2132,231 @@ export function JourneyPage() {
                         >
                           Clear filters and show completed
                         </Button>
-                        <Button variant="ghost" icon="list" onClick={openChronology}>
-                          Open companion chronology
-                        </Button>
                       </div>
                     }
                   />
                 )}
+
+                {!phaseMissableMode ? (
+                  <>
+                    <section className="card card-pad journey-sweep" aria-label={`${activeArea.name} area sweep`}>
+                      <SectionTitle
+                        title="Area sweep"
+                        note={
+                          sweepGroups.length
+                            ? `${sweepGroups.reduce((sum, group) => sum + group.rows.length, 0)} pickups and purchases`
+                            : "No sweep recorded"
+                        }
+                      />
+                      {activeSweep ? (
+                        <div className="journey-counts">
+                          <span>
+                            <strong>{activeSweep.counts.merchants}</strong> merchants
+                          </span>
+                          <span>
+                            <strong>{activeSweep.counts.merchantItems}</strong> merchant items
+                          </span>
+                          <span>
+                            <strong>{activeSweep.counts.farmables}</strong> farmables
+                          </span>
+                          <span>
+                            <strong>{activeSweep.counts.unlinkedItems}</strong> loose pickups
+                          </span>
+                          <span>
+                            <strong>{activeSweep.counts.materials}</strong> materials
+                          </span>
+                        </div>
+                      ) : null}
+                      {sweepGroups.length ? (
+                        <div className="journey-sweep-groups">
+                          {sweepGroups.map((group) => {
+                            const owned = group.rows.filter((row) => row.owned).length;
+                            return (
+                              <Disclosure
+                                key={group.id}
+                                title={group.title}
+                                icon="bag"
+                                summary={`${owned} / ${group.rows.length} owned`}
+                              >
+                                <ul className="journey-sweep-list">
+                                  {group.rows.map((row) => (
+                                    <li key={row.key} className={`journey-sweep-row${row.owned ? " is-owned" : ""}`}>
+                                      {row.materialId || row.itemId ? (
+                                        <Checkbox
+                                          checked={row.owned}
+                                          onChange={(value) => {
+                                            if (row.materialId) setMaterialStock(row.materialId, value);
+                                            else if (row.itemId) setItemOwned(row.itemId, value);
+                                          }}
+                                          label={
+                                            <span className="journey-sweep-label">
+                                              <span className="journey-sweep-name">{row.label}</span>
+                                              {row.note ? <span className="tiny faint">{row.note}</span> : null}
+                                            </span>
+                                          }
+                                        />
+                                      ) : (
+                                        <span className="journey-sweep-label">
+                                          <span className="journey-sweep-name">{row.label}</span>
+                                          {row.note ? <span className="tiny faint">{row.note}</span> : null}
+                                        </span>
+                                      )}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </Disclosure>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <p className="journey-quiet-note">
+                            No merchant, farmable, pickup, or material sweep is recorded for this section yet.
+                          </p>
+                        )}
+                      </section>
+
+                      <section className="card card-pad journey-decisions" aria-label={`${activeArea.name} decisions`}>
+                        <SectionTitle
+                          title="Route decisions"
+                          note={
+                            activeAreaDecisions.length
+                              ? `${activeAreaDecisions.length} tied to this section`
+                              : "None tied to this section"
+                          }
+                        />
+                        {activeAreaDecisions.length ? (
+                          <div className="journey-decision-list">
+                            {activeAreaDecisions.map((decision) => {
+                              const ownedReward = decision.rewards.some(
+                                (reward) => Boolean(reward.itemId) && Boolean(character.items[reward.itemId]),
+                              );
+                              const checked =
+                                decisionOverrides[decision.decisionId] ??
+                                journey.decisionChecks[decision.decisionId] ??
+                                ownedReward;
+                              return (
+                                <article className="journey-decision" key={decision.decisionId}>
+                                  <div className="row-between wrap" style={{ gap: 8 }}>
+                                    <div className="grow">
+                                      <div className="eyebrow mono">{decision.decisionId}</div>
+                                      <h3 className="journey-decision-title">{decision.title}</h3>
+                                    </div>
+                                    <Checkbox
+                                      checked={checked}
+                                      onChange={(value) => {
+                                        setDecisionCheck(decision.decisionId, value);
+                                        setDecisionOverrides((current) => ({
+                                          ...current,
+                                          [decision.decisionId]: value,
+                                        }));
+                                      }}
+                                      label={<span className="tiny">Secured</span>}
+                                    />
+                                  </div>
+                                  <p className="journey-decision-line">
+                                    <strong>Journey 1:</strong> {decision.journey1Result || decision.journey1}
+                                  </p>
+                                  {decision.rewards.length ? (
+                                    <div className="journey-decision-rewards">
+                                      {decision.rewards.map((reward, index) => (
+                                        <span
+                                          key={`${decision.decisionId}-${reward.itemId || reward.name}-${index}`}
+                                          className={`chip${reward.itemId && character.items[reward.itemId] ? " is-owned" : ""}`}
+                                        >
+                                          {reward.itemId && character.items[reward.itemId] ? (
+                                            <Icon name="check" size={11} />
+                                          ) : null}
+                                          {reward.name}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  ) : null}
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    icon="external"
+                                    onClick={() =>
+                                      navigate(
+                                        `/completion?tab=branch&decision=${encodeURIComponent(decision.decisionId)}`,
+                                      )
+                                    }
+                                  >
+                                    Open decision
+                                  </Button>
+                                </article>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <p className="journey-quiet-note">
+                            No branch-plan decision is anchored to this section. Open the completion branch tab for the
+                            full decision ledger.
+                          </p>
+                        )}
+                      </section>
+
+                      <Disclosure
+                        title="Previous journey carryover"
+                        icon="layers"
+                        className="journey-carryover-card"
+                        summary={
+                          previousJourneys.length
+                            ? `${plural(previousJourneys.length, "earlier journey")}`
+                            : "No earlier journeys"
+                        }
+                      >
+                        {previousJourneys.length ? (
+                          <div className="journey-carryover-list">
+                            {previousJourneys.map((entry) => {
+                              const originItems = entry.items
+                                .map((id) => ITEM_BY_ID[id]?.name ?? id)
+                                .slice(0, 8);
+                              return (
+                                <article className="journey-carryover" key={entry.journey.id}>
+                                  <div className="row-between wrap" style={{ gap: 8 }}>
+                                    <strong>{entry.journey.label}</strong>
+                                    <span className="tiny faint">
+                                      {entry.progress.resolved} / {entry.progress.total} route steps ·{" "}
+                                      {entry.progress.percent}%
+                                    </span>
+                                  </div>
+                                  <div className="journey-counts">
+                                    <span>
+                                      <strong>{entry.decisionsRecorded}</strong> decisions recorded
+                                    </span>
+                                    <span>
+                                      <strong>{entry.decisionsSecured}</strong> decisions secured
+                                    </span>
+                                    <span>
+                                      <strong>{entry.items.length}</strong> items acquired
+                                    </span>
+                                  </div>
+                                  {originItems.length ? (
+                                    <div className="tag-list">
+                                      {originItems.map((name) => (
+                                        <span className="chip" key={`${entry.journey.id}-${name}`}>
+                                          {name}
+                                        </span>
+                                      ))}
+                                      {entry.items.length > originItems.length ? (
+                                        <span className="chip">+{entry.items.length - originItems.length} more</span>
+                                      ) : null}
+                                    </div>
+                                  ) : (
+                                    <p className="tiny faint">No item is recorded as acquired in this journey.</p>
+                                  )}
+                                </article>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <p className="journey-quiet-note">
+                            This is the first journey: there is no earlier run to carry records from.
+                          </p>
+                        )}
+                      </Disclosure>
+                  </>
+                ) : null}
 
                 {!phaseMissableMode && leaveGate ? renderGate(leaveGate) : null}
               </div>
@@ -2018,67 +2426,62 @@ export function JourneyPage() {
               </aside>
 
               <div className="journey-main journey-npc-main">
-                <ArtBanner
-                  image={ART.heroErdtree}
-                  variant="erdtree"
-                  className="journey-phase-banner journey-npc-banner"
-                  caption={`Area and level order · ${NPC_SECTIONS.length} sections · ${formatNumber(npcStats.total)} steps`}
-                  title="NPC walkthrough"
-                >
-                  <div className="journey-phase-banner-body">
-                    <div className="journey-phase-banner-meta">
-                      <span>
-                        <strong>{formatNumber(npcStats.done)}</strong> checked ·{" "}
-                        <strong>{formatNumber(npcStats.total - npcStats.done)}</strong> open
-                      </span>
-                      <span className={npcCounts.missableRemaining ? "danger" : ""}>
-                        <Icon name={npcCounts.missableRemaining ? "alert" : "check"} size={12} />
-                        {npcCounts.missableRemaining
-                          ? `${formatNumber(npcCounts.missableRemaining)} missable steps remaining`
-                          : "No unresolved missables"}
-                      </span>
-                    </div>
-                    <ProgressBar
-                      value={npcStats.percent}
-                      label={`${npcStats.done} / ${npcStats.total} NPC steps`}
-                      detail={`${npcCounts.optional} optional · ${npcCounts.dlc} DLC steps · ${npcCounts.missable} flagged missable`}
-                    />
-                  </div>
-                </ArtBanner>
-
                 <section className="card card-pad journey-npc-head">
                   <div className="row-between wrap">
                     <div className="grow">
                       <div className="eyebrow">Alternate walkthrough · area and level order</div>
-                      <h2 className="journey-area-title">How this list works</h2>
-                      <p className="small muted journey-chronology-intro">
-                        {formatNumber(npcStats.total)} NPC conversation and quest steps across {NPC_SECTIONS.length}{" "}
-                        areas, ordered by area and recommended level. This is an alternate companion list: it is not a
-                        replacement for the {formatNumber(routeStats.total)}-step full route, and it does not include
-                        achievements or non-quest content. Those remain in their own ledgers.
-                      </p>
+                      <h2 className="journey-phase-title">NPC walkthrough</h2>
                     </div>
                     <Badge tone={npcStats.complete ? "success" : "accent"}>
                       {npcStats.done} / {npcStats.total} checked
                     </Badge>
                   </div>
-                  <div className="journey-counts journey-npc-counts">
+                  <div className="journey-phase-stats">
                     <span>
-                      <strong>{NPC_SECTIONS.length}</strong> sections
+                      <strong>{formatNumber(npcStats.done)}</strong> checked ·{" "}
+                      <strong>{formatNumber(npcStats.total - npcStats.done)}</strong> open
+                    </span>
+                    <span className={npcCounts.missableRemaining ? "danger" : ""}>
+                      <Icon name={npcCounts.missableRemaining ? "alert" : "check"} size={12} />
+                      {npcCounts.missableRemaining
+                        ? `${formatNumber(npcCounts.missableRemaining)} missable left`
+                        : "No unresolved missables"}
                     </span>
                     <span>
-                      <strong>{npcBaseSectionCount}</strong> base game
-                    </span>
-                    <span>
-                      <strong>{npcDlcSectionCount}</strong> DLC
-                    </span>
-                    <span>
-                      <strong>{npcCounts.optional}</strong> optional
-                    </span>
-                    <span>
-                      <strong>{npcCounts.missable}</strong> missable
+                      <Icon name="layers" size={12} />
+                      {plural(NPC_SECTIONS.length, "section")}
                     </span>
                   </div>
+                  <ProgressBar
+                    value={npcStats.percent}
+                    label={`${npcStats.done} / ${npcStats.total} NPC steps`}
+                    detail={`${npcCounts.optional} optional · ${npcCounts.dlc} DLC steps · ${npcCounts.missable} flagged missable`}
+                  />
+                  <Disclosure title="How this view works" tone="muted" icon="book">
+                    <p className="journey-disclosure-copy">
+                      {formatNumber(npcStats.total)} NPC conversation and quest steps across {NPC_SECTIONS.length}{" "}
+                      areas, ordered by area and recommended level. This is an alternate companion list: it is not a
+                      replacement for the {formatNumber(routeStats.total)}-step full route, and it does not include
+                      achievements or non-quest content. Those remain in their own ledgers.
+                    </p>
+                    <div className="journey-counts journey-npc-counts">
+                      <span>
+                        <strong>{NPC_SECTIONS.length}</strong> sections
+                      </span>
+                      <span>
+                        <strong>{npcBaseSectionCount}</strong> base game
+                      </span>
+                      <span>
+                        <strong>{npcDlcSectionCount}</strong> DLC
+                      </span>
+                      <span>
+                        <strong>{npcCounts.optional}</strong> optional
+                      </span>
+                      <span>
+                        <strong>{npcCounts.missable}</strong> missable
+                      </span>
+                    </div>
+                  </Disclosure>
                 </section>
 
                 <div className="card card-pad journey-filter-card">
@@ -2192,12 +2595,7 @@ export function JourneyPage() {
               <div className="row-between wrap">
                 <div className="grow">
                   <div className="eyebrow">Companion chronology · separate from the full route</div>
-                  <h2 className="journey-area-title">Cross-game companion actions</h2>
-                  <p className="small muted journey-chronology-intro">
-                    This chronology collects {chronologyStats.total} companion, certification, and ending actions across{" "}
-                    {CHRONOLOGY_AREAS.length} areas. It is not the {formatNumber(routeStats.total)}-step route or a
-                    complete pickup checklist; each action records its trigger, coverage, and source.
-                  </p>
+                  <h2 className="journey-phase-title">Cross-game companion actions</h2>
                 </div>
                 <Badge tone="accent">
                   {chronologyStats.resolved} / {chronologyStats.total} resolved
@@ -2230,42 +2628,53 @@ export function JourneyPage() {
                   </span>
                 </div>
               </div>
-              <Callout icon="alert" tone="warning">
-                Missable actions are flagged. Coverage notes describe what the source walkthrough routes and what it
-                leaves implicit, so a missed companion beat is visible before it becomes unrecoverable.
-              </Callout>
+              <Disclosure title="How this view works" tone="muted" icon="book">
+                <p className="journey-disclosure-copy">
+                  This chronology collects {chronologyStats.total} companion, certification, and ending actions across{" "}
+                  {CHRONOLOGY_AREAS.length} areas. It is not the {formatNumber(routeStats.total)}-step route or a
+                  complete pickup checklist; each action records its trigger, coverage, and source. Missable actions
+                  are flagged so a missed companion beat is visible before it becomes unrecoverable.
+                </p>
+              </Disclosure>
             </section>
 
-            <div className="card card-pad journey-filter-card">
-              <div className="journey-filter-row journey-filter-row--chronology">
-                <SearchInput
-                  className="grow"
-                  value={chronologySearch}
-                  onChange={setChronologySearch}
-                  placeholder="Search action, trigger, area, category, coverage…"
-                />
-                <Select
-                  label="Status"
-                  value={chronologyStatus}
-                  onChange={(event) => setChronologyStatus(event.target.value as StatusFilter)}
-                >
-                  <option value="all">All statuses</option>
-                  <option value="pending">Pending</option>
-                  <option value="done">Done</option>
-                  <option value="skipped">Skipped</option>
-                  <option value="deferred">Deferred</option>
-                </Select>
-              </div>
-              <div className="journey-filter-meta">
-                <span className="small faint">
-                  {filteredActions.length} of {chronologyStats.total} actions shown
-                </span>
-                {chronologyFiltersActive ? (
-                  <Button variant="ghost" size="sm" icon="x" onClick={resetChronologyFilters}>
-                    Clear filters
-                  </Button>
-                ) : null}
-              </div>
+            <div className="card card-pad">
+              <Disclosure
+                title="Filter chronology"
+                icon="filter"
+                defaultOpen={chronologyFiltersActive}
+                summary={`${filteredActions.length} of ${chronologyStats.total} actions shown`}
+              >
+                <div className="journey-filter-row journey-filter-row--chronology">
+                  <SearchInput
+                    className="grow"
+                    value={chronologySearch}
+                    onChange={setChronologySearch}
+                    placeholder="Search action, trigger, area, category, coverage…"
+                  />
+                  <Select
+                    label="Status"
+                    value={chronologyStatus}
+                    onChange={(event) => setChronologyStatus(event.target.value as StatusFilter)}
+                  >
+                    <option value="all">All statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="done">Done</option>
+                    <option value="skipped">Skipped</option>
+                    <option value="deferred">Deferred</option>
+                  </Select>
+                </div>
+                <div className="journey-filter-meta">
+                  <span className="small faint">
+                    {filteredActions.length} of {chronologyStats.total} actions shown
+                  </span>
+                  {chronologyFiltersActive ? (
+                    <Button variant="ghost" size="sm" icon="x" onClick={resetChronologyFilters}>
+                      Clear filters
+                    </Button>
+                  ) : null}
+                </div>
+              </Disclosure>
             </div>
 
             {chronologyGroups.length ? (

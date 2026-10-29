@@ -4,7 +4,9 @@ import {
   Button,
   Callout,
   Checkbox,
+  Disclosure,
   EmptyState,
+  PageHeader,
   ProgressBar,
   SearchInput,
   SectionTitle,
@@ -12,17 +14,20 @@ import {
   TabBar,
   useToast,
 } from "../components/ui";
-import { ART, ArtHero } from "../components/Art";
 import { Icon } from "../components/Icon";
 import {
   DIALOGUE_EVENTS,
   ENCOUNTERS,
   ITEMS_BY_NAME,
   META,
+  NPC_DESCRIPTIONS,
   NPC_STATES,
   QUESTLINES,
+  QUESTLINE_ROUTE_LINKS,
+  QUESTLINE_ROUTE_MAP,
   QUESTLINE_STEPS,
   STEP_BY_ID,
+  normalizeContentKey,
 } from "../lib/data";
 import worldJson from "../data/world.json";
 import { decisionsResolved, questlineProgress } from "../lib/selectors";
@@ -43,6 +48,7 @@ import type {
   Lockout,
   NpcState,
   Questline,
+  QuestlineRouteLink,
   QuestlineStep,
 } from "../lib/types";
 import "./world.css";
@@ -56,6 +62,37 @@ type BadgeTone = "default" | "accent" | "success" | "warning" | "danger" | "info
 const QUESTLINE_BY_ID: Record<string, Questline> = Object.fromEntries(
   QUESTLINES.map((questline) => [questline.id, questline]),
 );
+
+/**
+ * Route links are keyed by questline step id, but the record key is not part of
+ * the contract — index both the key and the value so either keying works.
+ */
+const ROUTE_LINK_BY_QUESTLINE_STEP: Record<string, QuestlineRouteLink> = Object.fromEntries(
+  Object.entries(QUESTLINE_ROUTE_LINKS).flatMap(([key, link]) => [
+    [key, link] as const,
+    [link.questlineStepId, link] as const,
+  ]),
+);
+
+/** Only links whose route step exists in the bundled route are navigable. */
+const ROUTE_LINKS_WITH_TARGET: QuestlineRouteLink[] = Object.values(QUESTLINE_ROUTE_LINKS).filter(
+  (link) => Boolean(STEP_BY_ID[link.routeStepId]),
+);
+
+const NPC_LORE_BY_NORMALIZED_KEY: Record<string, string> = Object.fromEntries(
+  Object.entries(NPC_DESCRIPTIONS).map(([key, entry]) => [normalizeContentKey(key), entry.text]),
+);
+
+const ROUTE_LINK_COVERAGE =
+  QUESTLINE_ROUTE_MAP.coverage.steps > 0
+    ? QUESTLINE_ROUTE_MAP.coverage
+    : {
+        steps: QUESTLINE_STEPS.length,
+        linked: ROUTE_LINKS_WITH_TARGET.length,
+        high: 0,
+        medium: 0,
+        low: 0,
+      };
 
 const ENCOUNTER_BY_NAME: Record<string, Encounter> = Object.fromEntries(
   ENCOUNTERS.map((encounter) => [encounter.name, encounter]),
@@ -122,6 +159,23 @@ function QuestField({ label, value, wide = false }: { label: string; value?: str
       <div className="k">{label}</div>
       <div className="v">{value}</div>
     </div>
+  );
+}
+
+/**
+ * Identification prose for an NPC: who they are and where they sit in the
+ * world. Quest outcomes stay behind the questline cards, so this is safe to
+ * show without a boss-defeat gate.
+ */
+function NpcLoreNote({ npc }: { npc: string }) {
+  const text = NPC_DESCRIPTIONS[npc]?.text ?? NPC_LORE_BY_NORMALIZED_KEY[normalizeContentKey(npc)];
+  if (!text) return null;
+  return (
+    <section className="quest-npc-lore">
+      <div className="k">In-game lore</div>
+      <p className="quest-text">{text}</p>
+      <div className="tiny faint">Source: in-game item and dialogue text</div>
+    </section>
   );
 }
 
@@ -404,6 +458,8 @@ function QuestlineStepCard({ step, done, onToggle }: QuestlineStepCardProps) {
   const extraBadges = step.badges.filter(
     (badge) => badge !== "Optional" && !badge.toUpperCase().includes("MISSABLE"),
   );
+  const routeLink = ROUTE_LINK_BY_QUESTLINE_STEP[step.id];
+  const routeStep = routeLink ? STEP_BY_ID[routeLink.routeStepId] : undefined;
   return (
     <article
       className={`card card-pad quest-card questline-step ${done ? "is-done" : ""} ${
@@ -431,11 +487,37 @@ function QuestlineStepCard({ step, done, onToggle }: QuestlineStepCardProps) {
               {badge}
             </Badge>
           ))}
+          {routeLink ? <Badge tone="info">Route</Badge> : null}
         </div>
         <span className="tiny faint mono">{step.id}</span>
       </div>
 
       <p className="quest-text">{step.text}</p>
+
+      {routeLink ? (
+        <div className="row wrap" style={{ gap: 8 }}>
+          <span className="tiny faint">
+            {routeStep ? `Route step ${routeStep.order + 1} · ` : "Route step missing from pack · "}
+            {routeLink.area || routeStep?.area} · {routeLink.confidence} confidence
+          </span>
+          {routeStep ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              icon="map"
+              onClick={() =>
+                navigate(
+                  `/journey?step=${encodeURIComponent(routeLink.routeStepId)}&area=${encodeURIComponent(
+                    routeLink.area || routeStep.area,
+                  )}`,
+                )
+              }
+            >
+              Open route step
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
 
       {step.links.length ? (
         <div className="tag-list">
@@ -744,12 +826,9 @@ export function QuestsPage() {
 
   return (
     <div className="page">
-      <ArtHero
-        image={ART.heroSote}
-        kicker={`${journey.label} · Fates and world state`}
+      <PageHeader
+        eyebrow={`${journey.label} · Fates and world state`}
         title="Quests"
-        headingLevel={1}
-        size="compact"
         description={
           <>
             {QUESTLINES.length} questlines and {QUESTLINE_STEPS.length} steps, plus {NPC_STATES.length} NPC
@@ -759,6 +838,10 @@ export function QuestsPage() {
         }
         actions={
           <>
+            <Badge tone="accent">
+              {questsProgress.done} / {questsProgress.total} quest steps
+            </Badge>
+            <Badge tone="danger">{missableStepCount} MISSABLE</Badge>
             <Button icon="map" onClick={() => navigate("/journey")}>
               Open journey
             </Button>
@@ -767,16 +850,7 @@ export function QuestsPage() {
             </Button>
           </>
         }
-      >
-        <div className="world-badges">
-          <Badge tone="accent">
-            {questsProgress.done} / {questsProgress.total} quest steps
-          </Badge>
-          <Badge tone="danger">{missableStepCount} MISSABLE</Badge>
-          <Badge tone="info">{dlcQuestlineCount} DLC questlines</Badge>
-          <Badge>{optionalStepCount} optional steps</Badge>
-        </div>
-      </ArtHero>
+      />
 
       <div style={{ marginTop: 16 }}>
         <TabBar items={TABS} value={tab} onChange={goTab} />
@@ -858,6 +932,37 @@ export function QuestsPage() {
                 label={`${questsProgress.done} of ${questsProgress.total} quest steps recorded`}
                 detail={`${filteredQuestlines.length} questlines shown`}
               />
+            </div>
+
+            <div className="quest-route-summary">
+              <div className="row-between wrap" style={{ gap: 8 }}>
+                <div>
+                  <div className="k">Route mapping</div>
+                  <div className="v">
+                    {ROUTE_LINK_COVERAGE.linked} / {ROUTE_LINK_COVERAGE.steps} linked steps
+                  </div>
+                </div>
+                <Badge tone={ROUTE_LINK_COVERAGE.linked > 0 ? "info" : "warning"}>
+                  {ROUTE_LINK_COVERAGE.linked > 0 ? "Route badges active" : "No links yet"}
+                </Badge>
+              </div>
+              <Disclosure title="How steps map to the route" summary="Mapping policy" tone="muted">
+                <p className="small muted">
+                  Each questline step is matched to a journey route step by NPC, area and objective. Linked steps show
+                  a Route badge and an <strong>Open route step</strong> button; unlinked steps stay navigation-free
+                  rather than guessing a destination.
+                </p>
+                <div className="row wrap" style={{ gap: 8, marginTop: 8 }}>
+                  <Badge tone="success">{ROUTE_LINK_COVERAGE.high} high confidence</Badge>
+                  <Badge tone="warning">{ROUTE_LINK_COVERAGE.medium} medium</Badge>
+                  <Badge>{ROUTE_LINK_COVERAGE.low} low</Badge>
+                </div>
+                {QUESTLINE_ROUTE_MAP.method ? (
+                  <p className="tiny faint" style={{ marginTop: 8 }}>
+                    Method: {QUESTLINE_ROUTE_MAP.method}
+                  </p>
+                ) : null}
+              </Disclosure>
             </div>
           </section>
 
@@ -945,6 +1050,9 @@ export function QuestsPage() {
                       label={`${selectedQuestlineDone} of ${selectedQuestline.steps.length} steps recorded`}
                       detail={`${visibleQuestlineSteps.length} shown`}
                     />
+                  </div>
+                  <div style={{ marginTop: 12 }}>
+                    <NpcLoreNote npc={selectedQuestline.npc} />
                   </div>
                   {validQuestlineParam === selectedQuestline.id ? (
                     <div className="quest-focus" style={{ marginTop: 12, marginBottom: 0 }}>
@@ -1054,20 +1162,23 @@ export function QuestsPage() {
           </section>
 
           {focusedNpc ? (
-            <div className="quest-focus">
-              <Badge tone="accent">NPC focus</Badge>
-              <span className="quest-focus-label">{focusedNpc}</span>
-              <Button
-                size="sm"
-                variant="ghost"
-                icon="x"
-                onClick={() => {
-                  setNpcQuery("");
-                  navigate("/quests");
-                }}
-              >
-                Clear
-              </Button>
+            <div className="stack" style={{ gap: 8 }}>
+              <div className="quest-focus">
+                <Badge tone="accent">NPC focus</Badge>
+                <span className="quest-focus-label">{focusedNpc}</span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  icon="x"
+                  onClick={() => {
+                    setNpcQuery("");
+                    navigate("/quests");
+                  }}
+                >
+                  Clear
+                </Button>
+              </div>
+              <NpcLoreNote npc={focusedNpc} />
             </div>
           ) : null}
 
@@ -1080,6 +1191,7 @@ export function QuestsPage() {
                     {states.length} milestone{states.length === 1 ? "" : "s"}
                   </span>
                 </div>
+                {groupMode === "npc" ? <NpcLoreNote npc={groupName} /> : null}
                 <div className="stack" style={{ gap: 8 }}>
                   {states.map((state) => (
                     <NpcStateCard

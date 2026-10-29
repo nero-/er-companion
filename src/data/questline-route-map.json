@@ -1,0 +1,3619 @@
+{
+  "generatedAt": "2026-10-29T14:42:30Z",
+  "method": "linked label > NPC+keyword > item name > rare-keyword overlap; never below the low threshold.",
+  "links": {
+    "Q-melina-1": {
+      "questlineStepId": "Q-melina-1",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w2-10",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-2": {
+      "questlineStepId": "Q-melina-2",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w2-5",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-3": {
+      "questlineStepId": "Q-melina-3",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w2-1",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-4": {
+      "questlineStepId": "Q-melina-4",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w2-14",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-melina-5": {
+      "questlineStepId": "Q-melina-5",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w2-43",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-6": {
+      "questlineStepId": "Q-melina-6",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w2-127",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-7": {
+      "questlineStepId": "Q-melina-7",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w6-12",
+      "area": "Weeping Peninsula",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-melina-8": {
+      "questlineStepId": "Q-melina-8",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w12-3",
+      "area": "Central Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-9": {
+      "questlineStepId": "Q-melina-9",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w14-86",
+      "area": "East Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-10": {
+      "questlineStepId": "Q-melina-10",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w23-13",
+      "area": "Carian Study Hall",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-melina-11": {
+      "questlineStepId": "Q-melina-11",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w23-31",
+      "area": "Carian Study Hall",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-12": {
+      "questlineStepId": "Q-melina-12",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w34-8",
+      "area": "Capital Outskirts",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-13": {
+      "questlineStepId": "Q-melina-13",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w34-37",
+      "area": "Capital Outskirts",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-14": {
+      "questlineStepId": "Q-melina-14",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w34-103",
+      "area": "Capital Outskirts",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-15": {
+      "questlineStepId": "Q-melina-15",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w35-125",
+      "area": "Leyndell, Royal Capital",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-16": {
+      "questlineStepId": "Q-melina-16",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w35-129",
+      "area": "Leyndell, Royal Capital",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-melina-17": {
+      "questlineStepId": "Q-melina-17",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w35-120",
+      "area": "Leyndell, Royal Capital",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-18": {
+      "questlineStepId": "Q-melina-18",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w36-60",
+      "area": "Subterranean Shunning-Grounds",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-19": {
+      "questlineStepId": "Q-melina-19",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w36-70",
+      "area": "Subterranean Shunning-Grounds",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-20": {
+      "questlineStepId": "Q-melina-20",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w35-129",
+      "area": "Leyndell, Royal Capital",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-melina-21": {
+      "questlineStepId": "Q-melina-21",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w40-12",
+      "area": "East Mountaintops",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-melina-22": {
+      "questlineStepId": "Q-melina-22",
+      "questlineId": "melina",
+      "routeStepId": "RW-B-w46-2",
+      "area": "Crumbling Farum Azula",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-boc-1": {
+      "questlineStepId": "Q-boc-1",
+      "questlineId": "boc",
+      "routeStepId": "RW-B-w2-96",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-boc-3": {
+      "questlineStepId": "Q-boc-3",
+      "questlineId": "boc",
+      "routeStepId": "RW-B-w3-42",
+      "area": "Early Liurnia and Caelid",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-boc-5": {
+      "questlineStepId": "Q-boc-5",
+      "questlineId": "boc",
+      "routeStepId": "RW-B-w3-5",
+      "area": "Early Liurnia and Caelid",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-boc-6": {
+      "questlineStepId": "Q-boc-6",
+      "questlineId": "boc",
+      "routeStepId": "RW-B-w12-3",
+      "area": "Central Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-boc-7": {
+      "questlineStepId": "Q-boc-7",
+      "questlineId": "boc",
+      "routeStepId": "RW-B-w3-42",
+      "area": "Early Liurnia and Caelid",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-boc-8": {
+      "questlineStepId": "Q-boc-8",
+      "questlineId": "boc",
+      "routeStepId": "RW-B-w21-42",
+      "area": "Redmane Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-boc-9": {
+      "questlineStepId": "Q-boc-9",
+      "questlineId": "boc",
+      "routeStepId": "RW-B-w23-32",
+      "area": "Carian Study Hall",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-boc-10": {
+      "questlineStepId": "Q-boc-10",
+      "questlineId": "boc",
+      "routeStepId": "RW-B-w32-53",
+      "area": "Mt. Gelmir",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-boc-11": {
+      "questlineStepId": "Q-boc-11",
+      "questlineId": "boc",
+      "routeStepId": "RW-B-w2-10",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-boc-15": {
+      "questlineStepId": "Q-boc-15",
+      "questlineId": "boc",
+      "routeStepId": "RW-B-w9-23",
+      "area": "Fringefolk Hero's Grave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-boc-17": {
+      "questlineStepId": "Q-boc-17",
+      "questlineId": "boc",
+      "routeStepId": "RW-B-w32-53",
+      "area": "Mt. Gelmir",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-boc-18": {
+      "questlineStepId": "Q-boc-18",
+      "questlineId": "boc",
+      "routeStepId": "RW-B-w2-10",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-kenneth-1": {
+      "questlineStepId": "Q-kenneth-1",
+      "questlineId": "kenneth",
+      "routeStepId": "RW-B-w2-68",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-kenneth-2": {
+      "questlineStepId": "Q-kenneth-2",
+      "questlineId": "kenneth",
+      "routeStepId": "RW-B-w4-8",
+      "area": "West Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-kenneth-3": {
+      "questlineStepId": "Q-kenneth-3",
+      "questlineId": "kenneth",
+      "routeStepId": "RW-B-w4-9",
+      "area": "West Limgrave",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-nepheli-2": {
+      "questlineStepId": "Q-nepheli-2",
+      "questlineId": "nepheli",
+      "routeStepId": "RW-B-w8-43",
+      "area": "Stormveil Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-nepheli-3": {
+      "questlineStepId": "Q-nepheli-3",
+      "questlineId": "nepheli",
+      "routeStepId": "RW-B-w15-59",
+      "area": "Caria Manor",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-nepheli-4": {
+      "questlineStepId": "Q-nepheli-4",
+      "questlineId": "nepheli",
+      "routeStepId": "RW-B-w10-47",
+      "area": "South Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-nepheli-5": {
+      "questlineStepId": "Q-nepheli-5",
+      "questlineId": "nepheli",
+      "routeStepId": "RW-B-w15-59",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-nepheli-6": {
+      "questlineStepId": "Q-nepheli-6",
+      "questlineId": "nepheli",
+      "routeStepId": "RW-B-w11-28",
+      "area": "West Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-nepheli-7": {
+      "questlineStepId": "Q-nepheli-7",
+      "questlineId": "nepheli",
+      "routeStepId": "RW-B-w15-59",
+      "area": "Caria Manor",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-nepheli-8": {
+      "questlineStepId": "Q-nepheli-8",
+      "questlineId": "nepheli",
+      "routeStepId": "RW-B-w11-31",
+      "area": "West Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-nepheli-9": {
+      "questlineStepId": "Q-nepheli-9",
+      "questlineId": "nepheli",
+      "routeStepId": "RW-B-w15-59",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-nepheli-10": {
+      "questlineStepId": "Q-nepheli-10",
+      "questlineId": "nepheli",
+      "routeStepId": "RW-B-w23-47",
+      "area": "Carian Study Hall",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-nepheli-11": {
+      "questlineStepId": "Q-nepheli-11",
+      "questlineId": "nepheli",
+      "routeStepId": "RW-B-w15-59",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-nepheli-12": {
+      "questlineStepId": "Q-nepheli-12",
+      "questlineId": "nepheli",
+      "routeStepId": "RW-B-w15-59",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-nepheli-13": {
+      "questlineStepId": "Q-nepheli-13",
+      "questlineId": "nepheli",
+      "routeStepId": "RW-B-w15-59",
+      "area": "Caria Manor",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-nepheli-14": {
+      "questlineStepId": "Q-nepheli-14",
+      "questlineId": "nepheli",
+      "routeStepId": "RW-B-w15-59",
+      "area": "Caria Manor",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-gostoc-2": {
+      "questlineStepId": "Q-gostoc-2",
+      "questlineId": "gostoc",
+      "routeStepId": "RW-B-w8-21",
+      "area": "Stormveil Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gostoc-3": {
+      "questlineStepId": "Q-gostoc-3",
+      "questlineId": "gostoc",
+      "routeStepId": "RW-B-w6-71",
+      "area": "Weeping Peninsula",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gostoc-4": {
+      "questlineStepId": "Q-gostoc-4",
+      "questlineId": "gostoc",
+      "routeStepId": "RW-B-w6-72",
+      "area": "Weeping Peninsula",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gostoc-5": {
+      "questlineStepId": "Q-gostoc-5",
+      "questlineId": "gostoc",
+      "routeStepId": "RW-B-w6-73",
+      "area": "Weeping Peninsula",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gostoc-7": {
+      "questlineStepId": "Q-gostoc-7",
+      "questlineId": "gostoc",
+      "routeStepId": "RW-B-w8-26",
+      "area": "Stormveil Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gostoc-8": {
+      "questlineStepId": "Q-gostoc-8",
+      "questlineId": "gostoc",
+      "routeStepId": "RW-B-w2-10",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-gostoc-9": {
+      "questlineStepId": "Q-gostoc-9",
+      "questlineId": "gostoc",
+      "routeStepId": "RW-B-w32-80",
+      "area": "Mt. Gelmir",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-roderika-1": {
+      "questlineStepId": "Q-roderika-1",
+      "questlineId": "roderika",
+      "routeStepId": "RW-B-w2-21",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-roderika-3": {
+      "questlineStepId": "Q-roderika-3",
+      "questlineId": "roderika",
+      "routeStepId": "RW-B-w8-52",
+      "area": "Stormveil Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-roderika-5": {
+      "questlineStepId": "Q-roderika-5",
+      "questlineId": "roderika",
+      "routeStepId": "RW-B-w1-2",
+      "area": "Starting Out",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-roderika-8": {
+      "questlineStepId": "Q-roderika-8",
+      "questlineId": "roderika",
+      "routeStepId": "RW-B-w8-51",
+      "area": "Stormveil Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-roderika-9": {
+      "questlineStepId": "Q-roderika-9",
+      "questlineId": "roderika",
+      "routeStepId": "RW-B-w14-109",
+      "area": "East Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-roderika-16": {
+      "questlineStepId": "Q-roderika-16",
+      "questlineId": "roderika",
+      "routeStepId": "RW-B-w46-66",
+      "area": "Crumbling Farum Azula",
+      "confidence": "low",
+      "method": "keyword-3"
+    },
+    "Q-hewg-1": {
+      "questlineStepId": "Q-hewg-1",
+      "questlineId": "hewg",
+      "routeStepId": "RW-B-w2-55",
+      "area": "First steps in Limgrave",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-hewg-2": {
+      "questlineStepId": "Q-hewg-2",
+      "questlineId": "hewg",
+      "routeStepId": "RW-B-w2-52",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-hewg-6": {
+      "questlineStepId": "Q-hewg-6",
+      "questlineId": "hewg",
+      "routeStepId": "RW-B-w14-109",
+      "area": "East Liurnia",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-hewg-9": {
+      "questlineStepId": "Q-hewg-9",
+      "questlineId": "hewg",
+      "routeStepId": "RW-B-w46-38",
+      "area": "Crumbling Farum Azula",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ensha-1": {
+      "questlineStepId": "Q-ensha-1",
+      "questlineId": "ensha",
+      "routeStepId": "RW-B-w2-58",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ensha-2": {
+      "questlineStepId": "Q-ensha-2",
+      "questlineId": "ensha",
+      "routeStepId": "RW-B-w10-54",
+      "area": "South Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gideon-1": {
+      "questlineStepId": "Q-gideon-1",
+      "questlineId": "gideon",
+      "routeStepId": "RW-B-w47-14",
+      "area": "Leyndell, Ashen Capital",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-gideon-2": {
+      "questlineStepId": "Q-gideon-2",
+      "questlineId": "gideon",
+      "routeStepId": "RW-B-w47-14",
+      "area": "Leyndell, Ashen Capital",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-gideon-3": {
+      "questlineStepId": "Q-gideon-3",
+      "questlineId": "gideon",
+      "routeStepId": "RW-B-w47-14",
+      "area": "Leyndell, Ashen Capital",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-gideon-4": {
+      "questlineStepId": "Q-gideon-4",
+      "questlineId": "gideon",
+      "routeStepId": "RW-B-w47-14",
+      "area": "Leyndell, Ashen Capital",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-gideon-5": {
+      "questlineStepId": "Q-gideon-5",
+      "questlineId": "gideon",
+      "routeStepId": "RW-B-w15-59",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gideon-6": {
+      "questlineStepId": "Q-gideon-6",
+      "questlineId": "gideon",
+      "routeStepId": "RW-B-w47-14",
+      "area": "Leyndell, Ashen Capital",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-gideon-7": {
+      "questlineStepId": "Q-gideon-7",
+      "questlineId": "gideon",
+      "routeStepId": "RW-B-w47-14",
+      "area": "Leyndell, Ashen Capital",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-gideon-8": {
+      "questlineStepId": "Q-gideon-8",
+      "questlineId": "gideon",
+      "routeStepId": "RW-B-w47-14",
+      "area": "Leyndell, Ashen Capital",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-gideon-9": {
+      "questlineStepId": "Q-gideon-9",
+      "questlineId": "gideon",
+      "routeStepId": "RW-B-w43-44",
+      "area": "Mohgwyn Palace",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gideon-10": {
+      "questlineStepId": "Q-gideon-10",
+      "questlineId": "gideon",
+      "routeStepId": "RW-B-w43-44",
+      "area": "Mohgwyn Palace",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gideon-11": {
+      "questlineStepId": "Q-gideon-11",
+      "questlineId": "gideon",
+      "routeStepId": "RW-B-w44-44",
+      "area": "Miquella's Haligtree",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gideon-12": {
+      "questlineStepId": "Q-gideon-12",
+      "questlineId": "gideon",
+      "routeStepId": "RW-B-w29-32",
+      "area": "The Shaded Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gideon-13": {
+      "questlineStepId": "Q-gideon-13",
+      "questlineId": "gideon",
+      "routeStepId": "RW-B-w47-14",
+      "area": "Leyndell, Ashen Capital",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-gideon-14": {
+      "questlineStepId": "Q-gideon-14",
+      "questlineId": "gideon",
+      "routeStepId": "RW-B-w35-90",
+      "area": "Leyndell, Royal Capital",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-latenna-1": {
+      "questlineStepId": "Q-latenna-1",
+      "questlineId": "latenna",
+      "routeStepId": "RW-B-w10-45",
+      "area": "South Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-latenna-2": {
+      "questlineStepId": "Q-latenna-2",
+      "questlineId": "latenna",
+      "routeStepId": "RW-B-w10-69",
+      "area": "South Liurnia",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-latenna-3": {
+      "questlineStepId": "Q-latenna-3",
+      "questlineId": "latenna",
+      "routeStepId": "RW-B-w10-69",
+      "area": "South Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-latenna-4": {
+      "questlineStepId": "Q-latenna-4",
+      "questlineId": "latenna",
+      "routeStepId": "RW-B-w42-31",
+      "area": "Consecrated Snowfield",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-irina-1": {
+      "questlineStepId": "Q-irina-1",
+      "questlineId": "irina",
+      "routeStepId": "RW-B-w2-107",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-irina-2": {
+      "questlineStepId": "Q-irina-2",
+      "questlineId": "irina",
+      "routeStepId": "RW-B-w7-9",
+      "area": "Castle Morne",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-irina-3": {
+      "questlineStepId": "Q-irina-3",
+      "questlineId": "irina",
+      "routeStepId": "RW-B-w7-21",
+      "area": "Castle Morne",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-irina-6": {
+      "questlineStepId": "Q-irina-6",
+      "questlineId": "irina",
+      "routeStepId": "RW-B-w8-108",
+      "area": "Stormveil Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-irina-7": {
+      "questlineStepId": "Q-irina-7",
+      "questlineId": "irina",
+      "routeStepId": "RW-B-w11-18",
+      "area": "West Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-hyetta-1": {
+      "questlineStepId": "Q-hyetta-1",
+      "questlineId": "hyetta",
+      "routeStepId": "RW-B-w8-108",
+      "area": "Stormveil Castle",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-hyetta-4": {
+      "questlineStepId": "Q-hyetta-4",
+      "questlineId": "hyetta",
+      "routeStepId": "RW-B-w11-20",
+      "area": "West Liurnia",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-hyetta-5": {
+      "questlineStepId": "Q-hyetta-5",
+      "questlineId": "hyetta",
+      "routeStepId": "RW-B-w8-109",
+      "area": "Stormveil Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-hyetta-6": {
+      "questlineStepId": "Q-hyetta-6",
+      "questlineId": "hyetta",
+      "routeStepId": "RW-B-w14-9",
+      "area": "East Liurnia",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-hyetta-7": {
+      "questlineStepId": "Q-hyetta-7",
+      "questlineId": "hyetta",
+      "routeStepId": "RW-B-w14-35",
+      "area": "East Liurnia",
+      "confidence": "low",
+      "method": "keyword-3"
+    },
+    "Q-hyetta-8": {
+      "questlineStepId": "Q-hyetta-8",
+      "questlineId": "hyetta",
+      "routeStepId": "RW-B-w14-103",
+      "area": "East Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-hyetta-12": {
+      "questlineStepId": "Q-hyetta-12",
+      "questlineId": "hyetta",
+      "routeStepId": "RW-B-w48-13",
+      "area": "Endings",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-varre-4": {
+      "questlineStepId": "Q-varre-4",
+      "questlineId": "varre",
+      "routeStepId": "RW-B-w9-33",
+      "area": "Fringefolk Hero's Grave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-varre-5": {
+      "questlineStepId": "Q-varre-5",
+      "questlineId": "varre",
+      "routeStepId": "RW-B-w10-30",
+      "area": "South Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-varre-6": {
+      "questlineStepId": "Q-varre-6",
+      "questlineId": "varre",
+      "routeStepId": "RW-B-w8-61",
+      "area": "Stormveil Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-varre-7": {
+      "questlineStepId": "Q-varre-7",
+      "questlineId": "varre",
+      "routeStepId": "RW-B-w31-46",
+      "area": "East Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-varre-9": {
+      "questlineStepId": "Q-varre-9",
+      "questlineId": "varre",
+      "routeStepId": "RW-B-w31-54",
+      "area": "East Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-varre-13": {
+      "questlineStepId": "Q-varre-13",
+      "questlineId": "varre",
+      "routeStepId": "RW-B-w48-13",
+      "area": "Endings",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-varre-14": {
+      "questlineStepId": "Q-varre-14",
+      "questlineId": "varre",
+      "routeStepId": "RW-B-w4-28",
+      "area": "West Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-varre-15": {
+      "questlineStepId": "Q-varre-15",
+      "questlineId": "varre",
+      "routeStepId": "RW-B-w3-59",
+      "area": "Early Liurnia and Caelid",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-varre-16": {
+      "questlineStepId": "Q-varre-16",
+      "questlineId": "varre",
+      "routeStepId": "RW-B-w29-23",
+      "area": "The Shaded Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-enia-1": {
+      "questlineStepId": "Q-enia-1",
+      "questlineId": "enia",
+      "routeStepId": "RW-B-w9-4",
+      "area": "Fringefolk Hero's Grave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-enia-2": {
+      "questlineStepId": "Q-enia-2",
+      "questlineId": "enia",
+      "routeStepId": "RW-B-w8-2",
+      "area": "Stormveil Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-enia-3": {
+      "questlineStepId": "Q-enia-3",
+      "questlineId": "enia",
+      "routeStepId": "RW-B-w35-127",
+      "area": "Leyndell, Royal Capital",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-gurranq-1": {
+      "questlineStepId": "Q-gurranq-1",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w5-62",
+      "area": "North Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gurranq-2": {
+      "questlineStepId": "Q-gurranq-2",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w5-51",
+      "area": "North Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gurranq-4": {
+      "questlineStepId": "Q-gurranq-4",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w5-51",
+      "area": "North Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gurranq-5": {
+      "questlineStepId": "Q-gurranq-5",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w5-34",
+      "area": "North Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-gurranq-6": {
+      "questlineStepId": "Q-gurranq-6",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w5-51",
+      "area": "North Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gurranq-11": {
+      "questlineStepId": "Q-gurranq-11",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w5-62",
+      "area": "North Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gurranq-12": {
+      "questlineStepId": "Q-gurranq-12",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w5-62",
+      "area": "North Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gurranq-13": {
+      "questlineStepId": "Q-gurranq-13",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w14-106",
+      "area": "East Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gurranq-14": {
+      "questlineStepId": "Q-gurranq-14",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w14-106",
+      "area": "East Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gurranq-15": {
+      "questlineStepId": "Q-gurranq-15",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w2-10",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-gurranq-16": {
+      "questlineStepId": "Q-gurranq-16",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w29-33",
+      "area": "The Shaded Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gurranq-17": {
+      "questlineStepId": "Q-gurranq-17",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w32-122",
+      "area": "Mt. Gelmir",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gurranq-18": {
+      "questlineStepId": "Q-gurranq-18",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w38-81",
+      "area": "West Mountaintops",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gurranq-19": {
+      "questlineStepId": "Q-gurranq-19",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w38-81",
+      "area": "West Mountaintops",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gurranq-20": {
+      "questlineStepId": "Q-gurranq-20",
+      "questlineId": "gurranq",
+      "routeStepId": "RW-B-w32-80",
+      "area": "Mt. Gelmir",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-darian-1": {
+      "questlineStepId": "Q-darian-1",
+      "questlineId": "darian",
+      "routeStepId": "RW-B-w2-35",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-darian-2": {
+      "questlineStepId": "Q-darian-2",
+      "questlineId": "darian",
+      "routeStepId": "RW-B-w2-35",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-darian-3": {
+      "questlineStepId": "Q-darian-3",
+      "questlineId": "darian",
+      "routeStepId": "RW-B-w2-48",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-darian-4": {
+      "questlineStepId": "Q-darian-4",
+      "questlineId": "darian",
+      "routeStepId": "RW-B-w2-48",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-darian-5": {
+      "questlineStepId": "Q-darian-5",
+      "questlineId": "darian",
+      "routeStepId": "RW-B-w9-9",
+      "area": "Fringefolk Hero's Grave",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-darian-6": {
+      "questlineStepId": "Q-darian-6",
+      "questlineId": "darian",
+      "routeStepId": "RW-B-w21-44",
+      "area": "Redmane Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-devin-1": {
+      "questlineStepId": "Q-devin-1",
+      "questlineId": "devin",
+      "routeStepId": "RW-B-w22-72",
+      "area": "Nokron",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-devin-2": {
+      "questlineStepId": "Q-devin-2",
+      "questlineId": "devin",
+      "routeStepId": "RW-B-w22-72",
+      "area": "Nokron",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-devin-3": {
+      "questlineStepId": "Q-devin-3",
+      "questlineId": "devin",
+      "routeStepId": "RW-B-w24-61",
+      "area": "Deeproot Depths",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-fia-2": {
+      "questlineStepId": "Q-fia-2",
+      "questlineId": "fia",
+      "routeStepId": "RW-B-w9-13",
+      "area": "Fringefolk Hero's Grave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-fia-3": {
+      "questlineStepId": "Q-fia-3",
+      "questlineId": "fia",
+      "routeStepId": "RW-B-w2-87",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-fia-4": {
+      "questlineStepId": "Q-fia-4",
+      "questlineId": "fia",
+      "routeStepId": "RW-B-w21-43",
+      "area": "Redmane Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-fia-5": {
+      "questlineStepId": "Q-fia-5",
+      "questlineId": "fia",
+      "routeStepId": "RW-B-w4-8",
+      "area": "West Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-fia-6": {
+      "questlineStepId": "Q-fia-6",
+      "questlineId": "fia",
+      "routeStepId": "RW-B-w23-63",
+      "area": "Carian Study Hall",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-fia-7": {
+      "questlineStepId": "Q-fia-7",
+      "questlineId": "fia",
+      "routeStepId": "RW-B-w24-56",
+      "area": "Deeproot Depths",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-fia-8": {
+      "questlineStepId": "Q-fia-8",
+      "questlineId": "fia",
+      "routeStepId": "RW-B-w24-58",
+      "area": "Deeproot Depths",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-fia-9": {
+      "questlineStepId": "Q-fia-9",
+      "questlineId": "fia",
+      "routeStepId": "RW-B-w24-59",
+      "area": "Deeproot Depths",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-fia-10": {
+      "questlineStepId": "Q-fia-10",
+      "questlineId": "fia",
+      "routeStepId": "RW-B-w24-60",
+      "area": "Deeproot Depths",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-rogier-1": {
+      "questlineStepId": "Q-rogier-1",
+      "questlineId": "rogier",
+      "routeStepId": "RW-B-w8-43",
+      "area": "Stormveil Castle",
+      "confidence": "low",
+      "method": "keyword-3"
+    },
+    "Q-rogier-2": {
+      "questlineStepId": "Q-rogier-2",
+      "questlineId": "rogier",
+      "routeStepId": "RW-B-w8-101",
+      "area": "Stormveil Castle",
+      "confidence": "low",
+      "method": "keyword-3"
+    },
+    "Q-rogier-4": {
+      "questlineStepId": "Q-rogier-4",
+      "questlineId": "rogier",
+      "routeStepId": "RW-B-w9-6",
+      "area": "Fringefolk Hero's Grave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-rogier-5": {
+      "questlineStepId": "Q-rogier-5",
+      "questlineId": "rogier",
+      "routeStepId": "RW-B-w5-34",
+      "area": "North Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-rogier-6": {
+      "questlineStepId": "Q-rogier-6",
+      "questlineId": "rogier",
+      "routeStepId": "RW-B-w9-9",
+      "area": "Fringefolk Hero's Grave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-rogier-7": {
+      "questlineStepId": "Q-rogier-7",
+      "questlineId": "rogier",
+      "routeStepId": "RW-B-w5-34",
+      "area": "North Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-rogier-8": {
+      "questlineStepId": "Q-rogier-8",
+      "questlineId": "rogier",
+      "routeStepId": "RW-B-w5-34",
+      "area": "North Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-rogier-11": {
+      "questlineStepId": "Q-rogier-11",
+      "questlineId": "rogier",
+      "routeStepId": "RW-B-w15-70",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-rogier-12": {
+      "questlineStepId": "Q-rogier-12",
+      "questlineId": "rogier",
+      "routeStepId": "RW-B-w9-6",
+      "area": "Fringefolk Hero's Grave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ranni-1": {
+      "questlineStepId": "Q-ranni-1",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w2-11",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ranni-2": {
+      "questlineStepId": "Q-ranni-2",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w5-34",
+      "area": "North Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-ranni-3": {
+      "questlineStepId": "Q-ranni-3",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w49-1",
+      "area": "New Game Plus Preparation",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-ranni-6": {
+      "questlineStepId": "Q-ranni-6",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w15-49",
+      "area": "Caria Manor",
+      "confidence": "low",
+      "method": "keyword-3"
+    },
+    "Q-ranni-7": {
+      "questlineStepId": "Q-ranni-7",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w15-50",
+      "area": "Caria Manor",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-ranni-8": {
+      "questlineStepId": "Q-ranni-8",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w15-51",
+      "area": "Caria Manor",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-ranni-9": {
+      "questlineStepId": "Q-ranni-9",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w2-10",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-ranni-10": {
+      "questlineStepId": "Q-ranni-10",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w22-41",
+      "area": "Nokron",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ranni-11": {
+      "questlineStepId": "Q-ranni-11",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w15-59",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ranni-14": {
+      "questlineStepId": "Q-ranni-14",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w25-3",
+      "area": "Nokstella",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-ranni-15": {
+      "questlineStepId": "Q-ranni-15",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w25-17",
+      "area": "Nokstella",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ranni-16": {
+      "questlineStepId": "Q-ranni-16",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w25-48",
+      "area": "Nokstella",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ranni-17": {
+      "questlineStepId": "Q-ranni-17",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w25-52",
+      "area": "Nokstella",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ranni-18": {
+      "questlineStepId": "Q-ranni-18",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w25-54",
+      "area": "Nokstella",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ranni-19": {
+      "questlineStepId": "Q-ranni-19",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w27-26",
+      "area": "Moonlight Altar",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ranni-20": {
+      "questlineStepId": "Q-ranni-20",
+      "questlineId": "ranni",
+      "routeStepId": "RW-B-w23-44",
+      "area": "Carian Study Hall",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-blaidd-2": {
+      "questlineStepId": "Q-blaidd-2",
+      "questlineId": "blaidd",
+      "routeStepId": "RW-B-w2-136",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-blaidd-3": {
+      "questlineStepId": "Q-blaidd-3",
+      "questlineId": "blaidd",
+      "routeStepId": "RW-B-w2-136",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-blaidd-4": {
+      "questlineStepId": "Q-blaidd-4",
+      "questlineId": "blaidd",
+      "routeStepId": "RW-B-w2-138",
+      "area": "First steps in Limgrave",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-blaidd-5": {
+      "questlineStepId": "Q-blaidd-5",
+      "questlineId": "blaidd",
+      "routeStepId": "RW-B-w2-140",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-blaidd-6": {
+      "questlineStepId": "Q-blaidd-6",
+      "questlineId": "blaidd",
+      "routeStepId": "RW-B-w2-115",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-blaidd-8": {
+      "questlineStepId": "Q-blaidd-8",
+      "questlineId": "blaidd",
+      "routeStepId": "RW-B-w18-17",
+      "area": "Siofra River",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-blaidd-12": {
+      "questlineStepId": "Q-blaidd-12",
+      "questlineId": "blaidd",
+      "routeStepId": "RW-B-w21-19",
+      "area": "Redmane Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-blaidd-13": {
+      "questlineStepId": "Q-blaidd-13",
+      "questlineId": "blaidd",
+      "routeStepId": "RW-B-w22-2",
+      "area": "Nokron",
+      "confidence": "low",
+      "method": "keyword-3"
+    },
+    "Q-blaidd-14": {
+      "questlineStepId": "Q-blaidd-14",
+      "questlineId": "blaidd",
+      "routeStepId": "RW-B-w26-29",
+      "area": "Lake of Rot",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-iji-2": {
+      "questlineStepId": "Q-iji-2",
+      "questlineId": "iji",
+      "routeStepId": "RW-B-w3-30",
+      "area": "Early Liurnia and Caelid",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-iji-8": {
+      "questlineStepId": "Q-iji-8",
+      "questlineId": "iji",
+      "routeStepId": "RW-B-w15-59",
+      "area": "Caria Manor",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-iji-9": {
+      "questlineStepId": "Q-iji-9",
+      "questlineId": "iji",
+      "routeStepId": "RW-B-w27-29",
+      "area": "Moonlight Altar",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-seluvis-2": {
+      "questlineStepId": "Q-seluvis-2",
+      "questlineId": "seluvis",
+      "routeStepId": "RW-B-w15-54",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-seluvis-9": {
+      "questlineStepId": "Q-seluvis-9",
+      "questlineId": "seluvis",
+      "routeStepId": "RW-B-w15-75",
+      "area": "Caria Manor",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-seluvis-11": {
+      "questlineStepId": "Q-seluvis-11",
+      "questlineId": "seluvis",
+      "routeStepId": "RW-B-w2-10",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-seluvis-12": {
+      "questlineStepId": "Q-seluvis-12",
+      "questlineId": "seluvis",
+      "routeStepId": "RW-B-w23-40",
+      "area": "Carian Study Hall",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-seluvis-13": {
+      "questlineStepId": "Q-seluvis-13",
+      "questlineId": "seluvis",
+      "routeStepId": "RW-B-w23-41",
+      "area": "Carian Study Hall",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-seluvis-15": {
+      "questlineStepId": "Q-seluvis-15",
+      "questlineId": "seluvis",
+      "routeStepId": "RW-B-w23-45",
+      "area": "Carian Study Hall",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-seluvis-16": {
+      "questlineStepId": "Q-seluvis-16",
+      "questlineId": "seluvis",
+      "routeStepId": "RW-B-w15-59",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-sellen-1": {
+      "questlineStepId": "Q-sellen-1",
+      "questlineId": "sellen",
+      "routeStepId": "RW-B-w4-78",
+      "area": "West Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-sellen-2": {
+      "questlineStepId": "Q-sellen-2",
+      "questlineId": "sellen",
+      "routeStepId": "RW-B-w32-56",
+      "area": "Mt. Gelmir",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-sellen-4": {
+      "questlineStepId": "Q-sellen-4",
+      "questlineId": "sellen",
+      "routeStepId": "RW-B-w20-36",
+      "area": "Sellia",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-sellen-5": {
+      "questlineStepId": "Q-sellen-5",
+      "questlineId": "sellen",
+      "routeStepId": "RW-B-w2-62",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-sellen-7": {
+      "questlineStepId": "Q-sellen-7",
+      "questlineId": "sellen",
+      "routeStepId": "RW-B-w32-74",
+      "area": "Mt. Gelmir",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-sellen-9": {
+      "questlineStepId": "Q-sellen-9",
+      "questlineId": "sellen",
+      "routeStepId": "RW-B-w32-82",
+      "area": "Mt. Gelmir",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-sellen-10": {
+      "questlineStepId": "Q-sellen-10",
+      "questlineId": "sellen",
+      "routeStepId": "RW-B-w32-83",
+      "area": "Mt. Gelmir",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-sellen-11": {
+      "questlineStepId": "Q-sellen-11",
+      "questlineId": "sellen",
+      "routeStepId": "RW-B-w32-79",
+      "area": "Mt. Gelmir",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-sellen-12": {
+      "questlineStepId": "Q-sellen-12",
+      "questlineId": "sellen",
+      "routeStepId": "RW-B-w20-36",
+      "area": "Sellia",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-jerren-2": {
+      "questlineStepId": "Q-jerren-2",
+      "questlineId": "jerren",
+      "routeStepId": "RW-B-w21-32",
+      "area": "Redmane Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-jerren-5": {
+      "questlineStepId": "Q-jerren-5",
+      "questlineId": "jerren",
+      "routeStepId": "RW-B-w32-74",
+      "area": "Mt. Gelmir",
+      "confidence": "low",
+      "method": "keyword-3"
+    },
+    "Q-jerren-6": {
+      "questlineStepId": "Q-jerren-6",
+      "questlineId": "jerren",
+      "routeStepId": "RW-B-w3-59",
+      "area": "Early Liurnia and Caelid",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-jerren-7": {
+      "questlineStepId": "Q-jerren-7",
+      "questlineId": "jerren",
+      "routeStepId": "RW-B-w32-80",
+      "area": "Mt. Gelmir",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gowry-2": {
+      "questlineStepId": "Q-gowry-2",
+      "questlineId": "gowry",
+      "routeStepId": "RW-B-w20-2",
+      "area": "Sellia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gowry-3": {
+      "questlineStepId": "Q-gowry-3",
+      "questlineId": "gowry",
+      "routeStepId": "RW-B-w20-6",
+      "area": "Sellia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gowry-6": {
+      "questlineStepId": "Q-gowry-6",
+      "questlineId": "gowry",
+      "routeStepId": "RW-B-w29-32",
+      "area": "The Shaded Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-gowry-7": {
+      "questlineStepId": "Q-gowry-7",
+      "questlineId": "gowry",
+      "routeStepId": "RW-B-w2-52",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-gowry-9": {
+      "questlineStepId": "Q-gowry-9",
+      "questlineId": "gowry",
+      "routeStepId": "RW-B-w45-42",
+      "area": "Elphael, Brace of the Haligtree",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-millicent-1": {
+      "questlineStepId": "Q-millicent-1",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w2-19",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-millicent-2": {
+      "questlineStepId": "Q-millicent-2",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w20-39",
+      "area": "Sellia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-millicent-3": {
+      "questlineStepId": "Q-millicent-3",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w20-62",
+      "area": "Sellia",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-millicent-4": {
+      "questlineStepId": "Q-millicent-4",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w20-1",
+      "area": "Sellia",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-millicent-5": {
+      "questlineStepId": "Q-millicent-5",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w29-14",
+      "area": "The Shaded Castle",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-millicent-6": {
+      "questlineStepId": "Q-millicent-6",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w30-61",
+      "area": "Central Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-millicent-7": {
+      "questlineStepId": "Q-millicent-7",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w20-1",
+      "area": "Sellia",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-millicent-8": {
+      "questlineStepId": "Q-millicent-8",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w2-52",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-millicent-9": {
+      "questlineStepId": "Q-millicent-9",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w45-45",
+      "area": "Elphael, Brace of the Haligtree",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-millicent-10": {
+      "questlineStepId": "Q-millicent-10",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w20-1",
+      "area": "Sellia",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-millicent-11": {
+      "questlineStepId": "Q-millicent-11",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w20-1",
+      "area": "Sellia",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-millicent-12": {
+      "questlineStepId": "Q-millicent-12",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w3-59",
+      "area": "Early Liurnia and Caelid",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-millicent-13": {
+      "questlineStepId": "Q-millicent-13",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w20-1",
+      "area": "Sellia",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-millicent-14": {
+      "questlineStepId": "Q-millicent-14",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w45-44",
+      "area": "Elphael, Brace of the Haligtree",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-millicent-15": {
+      "questlineStepId": "Q-millicent-15",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w20-2",
+      "area": "Sellia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-millicent-16": {
+      "questlineStepId": "Q-millicent-16",
+      "questlineId": "millicent",
+      "routeStepId": "RW-B-w36-69",
+      "area": "Subterranean Shunning-Grounds",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-corhyn-1": {
+      "questlineStepId": "Q-corhyn-1",
+      "questlineId": "corhyn",
+      "routeStepId": "RW-B-w2-52",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-corhyn-5": {
+      "questlineStepId": "Q-corhyn-5",
+      "questlineId": "corhyn",
+      "routeStepId": "RW-B-w2-10",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-corhyn-9": {
+      "questlineStepId": "Q-corhyn-9",
+      "questlineId": "corhyn",
+      "routeStepId": "RW-B-w35-106",
+      "area": "Leyndell, Royal Capital",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-corhyn-11": {
+      "questlineStepId": "Q-corhyn-11",
+      "questlineId": "corhyn",
+      "routeStepId": "RW-B-w35-109",
+      "area": "Leyndell, Royal Capital",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-corhyn-12": {
+      "questlineStepId": "Q-corhyn-12",
+      "questlineId": "corhyn",
+      "routeStepId": "RW-B-w35-116",
+      "area": "Leyndell, Royal Capital",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-corhyn-13": {
+      "questlineStepId": "Q-corhyn-13",
+      "questlineId": "corhyn",
+      "routeStepId": "RW-B-w35-117",
+      "area": "Leyndell, Royal Capital",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-corhyn-16": {
+      "questlineStepId": "Q-corhyn-16",
+      "questlineId": "corhyn",
+      "routeStepId": "RW-B-w2-93",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-corhyn-18": {
+      "questlineStepId": "Q-corhyn-18",
+      "questlineId": "corhyn",
+      "routeStepId": "RW-B-w47-10",
+      "area": "Leyndell, Ashen Capital",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-dung-eater-1": {
+      "questlineStepId": "Q-dung-eater-1",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w45-63",
+      "area": "Elphael, Brace of the Haligtree",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-dung-eater-2": {
+      "questlineStepId": "Q-dung-eater-2",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w33-46",
+      "area": "Volcano Manor",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-dung-eater-3": {
+      "questlineStepId": "Q-dung-eater-3",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w15-60",
+      "area": "Caria Manor",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-dung-eater-4": {
+      "questlineStepId": "Q-dung-eater-4",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w15-60",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-dung-eater-5": {
+      "questlineStepId": "Q-dung-eater-5",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w34-62",
+      "area": "Capital Outskirts",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-dung-eater-6": {
+      "questlineStepId": "Q-dung-eater-6",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w15-60",
+      "area": "Caria Manor",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-dung-eater-7": {
+      "questlineStepId": "Q-dung-eater-7",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w15-60",
+      "area": "Caria Manor",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-dung-eater-8": {
+      "questlineStepId": "Q-dung-eater-8",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w33-109",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-dung-eater-9": {
+      "questlineStepId": "Q-dung-eater-9",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w36-29",
+      "area": "Subterranean Shunning-Grounds",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-dung-eater-10": {
+      "questlineStepId": "Q-dung-eater-10",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w36-83",
+      "area": "Subterranean Shunning-Grounds",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-dung-eater-11": {
+      "questlineStepId": "Q-dung-eater-11",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w36-87",
+      "area": "Subterranean Shunning-Grounds",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-dung-eater-12": {
+      "questlineStepId": "Q-dung-eater-12",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w33-107",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-dung-eater-13": {
+      "questlineStepId": "Q-dung-eater-13",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w15-60",
+      "area": "Caria Manor",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-dung-eater-14": {
+      "questlineStepId": "Q-dung-eater-14",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w15-60",
+      "area": "Caria Manor",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-dung-eater-15": {
+      "questlineStepId": "Q-dung-eater-15",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w45-63",
+      "area": "Elphael, Brace of the Haligtree",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-dung-eater-16": {
+      "questlineStepId": "Q-dung-eater-16",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w45-63",
+      "area": "Elphael, Brace of the Haligtree",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-dung-eater-17": {
+      "questlineStepId": "Q-dung-eater-17",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w15-63",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-dung-eater-18": {
+      "questlineStepId": "Q-dung-eater-18",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w15-60",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-dung-eater-19": {
+      "questlineStepId": "Q-dung-eater-19",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w15-64",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-dung-eater-20": {
+      "questlineStepId": "Q-dung-eater-20",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w15-63",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-dung-eater-21": {
+      "questlineStepId": "Q-dung-eater-21",
+      "questlineId": "dung-eater",
+      "routeStepId": "RW-B-w15-64",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-blackguard-1": {
+      "questlineStepId": "Q-blackguard-1",
+      "questlineId": "blackguard",
+      "routeStepId": "RW-B-w10-23",
+      "area": "South Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-blackguard-2": {
+      "questlineStepId": "Q-blackguard-2",
+      "questlineId": "blackguard",
+      "routeStepId": "RW-B-w10-24",
+      "area": "South Liurnia",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-blackguard-3": {
+      "questlineStepId": "Q-blackguard-3",
+      "questlineId": "blackguard",
+      "routeStepId": "RW-B-w2-10",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-blackguard-5": {
+      "questlineStepId": "Q-blackguard-5",
+      "questlineId": "blackguard",
+      "routeStepId": "RW-B-w33-107",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-rya-1": {
+      "questlineStepId": "Q-rya-1",
+      "questlineId": "rya",
+      "routeStepId": "RW-B-w2-95",
+      "area": "First steps in Limgrave",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-rya-6": {
+      "questlineStepId": "Q-rya-6",
+      "questlineId": "rya",
+      "routeStepId": "RW-B-w33-17",
+      "area": "Volcano Manor",
+      "confidence": "low",
+      "method": "keyword-3"
+    },
+    "Q-rya-12": {
+      "questlineStepId": "Q-rya-12",
+      "questlineId": "rya",
+      "routeStepId": "RW-B-w23-61",
+      "area": "Carian Study Hall",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-rya-13": {
+      "questlineStepId": "Q-rya-13",
+      "questlineId": "rya",
+      "routeStepId": "RW-B-w33-79",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-rya-18": {
+      "questlineStepId": "Q-rya-18",
+      "questlineId": "rya",
+      "routeStepId": "RW-B-w33-94",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-rya-20": {
+      "questlineStepId": "Q-rya-20",
+      "questlineId": "rya",
+      "routeStepId": "RW-B-w33-94",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-rya-24": {
+      "questlineStepId": "Q-rya-24",
+      "questlineId": "rya",
+      "routeStepId": "RW-B-w33-94",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-tanith-1": {
+      "questlineStepId": "Q-tanith-1",
+      "questlineId": "tanith",
+      "routeStepId": "RW-B-w33-3",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-tanith-2": {
+      "questlineStepId": "Q-tanith-2",
+      "questlineId": "tanith",
+      "routeStepId": "RW-B-w33-5",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-tanith-3": {
+      "questlineStepId": "Q-tanith-3",
+      "questlineId": "tanith",
+      "routeStepId": "RW-B-w4-96",
+      "area": "West Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-tanith-4": {
+      "questlineStepId": "Q-tanith-4",
+      "questlineId": "tanith",
+      "routeStepId": "RW-B-w33-5",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-tanith-5": {
+      "questlineStepId": "Q-tanith-5",
+      "questlineId": "tanith",
+      "routeStepId": "RW-B-w33-22",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-tanith-6": {
+      "questlineStepId": "Q-tanith-6",
+      "questlineId": "tanith",
+      "routeStepId": "RW-B-w33-24",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-tanith-7": {
+      "questlineStepId": "Q-tanith-7",
+      "questlineId": "tanith",
+      "routeStepId": "RW-B-w38-34",
+      "area": "West Mountaintops",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-tanith-8": {
+      "questlineStepId": "Q-tanith-8",
+      "questlineId": "tanith",
+      "routeStepId": "RW-B-w33-93",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-tanith-10": {
+      "questlineStepId": "Q-tanith-10",
+      "questlineId": "tanith",
+      "routeStepId": "RW-B-w38-48",
+      "area": "West Mountaintops",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-tanith-11": {
+      "questlineStepId": "Q-tanith-11",
+      "questlineId": "tanith",
+      "routeStepId": "RW-B-w38-49",
+      "area": "West Mountaintops",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-patches-1": {
+      "questlineStepId": "Q-patches-1",
+      "questlineId": "patches",
+      "routeStepId": "RW-B-w4-34",
+      "area": "West Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-patches-2": {
+      "questlineStepId": "Q-patches-2",
+      "questlineId": "patches",
+      "routeStepId": "RW-B-w4-35",
+      "area": "West Limgrave",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-patches-3": {
+      "questlineStepId": "Q-patches-3",
+      "questlineId": "patches",
+      "routeStepId": "RW-B-w32-18",
+      "area": "Mt. Gelmir",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-patches-4": {
+      "questlineStepId": "Q-patches-4",
+      "questlineId": "patches",
+      "routeStepId": "RW-B-w4-37",
+      "area": "West Limgrave",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-patches-5": {
+      "questlineStepId": "Q-patches-5",
+      "questlineId": "patches",
+      "routeStepId": "RW-B-w4-41",
+      "area": "West Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-patches-6": {
+      "questlineStepId": "Q-patches-6",
+      "questlineId": "patches",
+      "routeStepId": "RW-B-w4-41",
+      "area": "West Limgrave",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-patches-7": {
+      "questlineStepId": "Q-patches-7",
+      "questlineId": "patches",
+      "routeStepId": "RW-B-w32-18",
+      "area": "Mt. Gelmir",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-patches-8": {
+      "questlineStepId": "Q-patches-8",
+      "questlineId": "patches",
+      "routeStepId": "RW-B-w4-41",
+      "area": "West Limgrave",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-patches-9": {
+      "questlineStepId": "Q-patches-9",
+      "questlineId": "patches",
+      "routeStepId": "RW-B-w33-4",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-patches-10": {
+      "questlineStepId": "Q-patches-10",
+      "questlineId": "patches",
+      "routeStepId": "RW-B-w33-12",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-patches-11": {
+      "questlineStepId": "Q-patches-11",
+      "questlineId": "patches",
+      "routeStepId": "RW-B-w16-24",
+      "area": "Ruin-Strewn Precipice",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-patches-12": {
+      "questlineStepId": "Q-patches-12",
+      "questlineId": "patches",
+      "routeStepId": "RW-B-w16-24",
+      "area": "Ruin-Strewn Precipice",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-patches-13": {
+      "questlineStepId": "Q-patches-13",
+      "questlineId": "patches",
+      "routeStepId": "RW-B-w4-34",
+      "area": "West Limgrave",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-patches-15": {
+      "questlineStepId": "Q-patches-15",
+      "questlineId": "patches",
+      "routeStepId": "RW-B-w38-50",
+      "area": "West Mountaintops",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-bernahl-4": {
+      "questlineStepId": "Q-bernahl-4",
+      "questlineId": "bernahl",
+      "routeStepId": "RW-B-w33-25",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-bernahl-5": {
+      "questlineStepId": "Q-bernahl-5",
+      "questlineId": "bernahl",
+      "routeStepId": "RW-B-w35-75",
+      "area": "Leyndell, Royal Capital",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-bernahl-7": {
+      "questlineStepId": "Q-bernahl-7",
+      "questlineId": "bernahl",
+      "routeStepId": "RW-B-w46-91",
+      "area": "Crumbling Farum Azula",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-diallos-5": {
+      "questlineStepId": "Q-diallos-5",
+      "questlineId": "diallos",
+      "routeStepId": "RW-D-d10-75",
+      "area": "East Scadu Altus",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-diallos-10": {
+      "questlineStepId": "Q-diallos-10",
+      "questlineId": "diallos",
+      "routeStepId": "RW-B-w24-5",
+      "area": "Deeproot Depths",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-jar-bairn-1": {
+      "questlineStepId": "Q-jar-bairn-1",
+      "questlineId": "jar-bairn",
+      "routeStepId": "RW-B-w23-5",
+      "area": "Carian Study Hall",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-jar-bairn-2": {
+      "questlineStepId": "Q-jar-bairn-2",
+      "questlineId": "jar-bairn",
+      "routeStepId": "RW-B-w23-5",
+      "area": "Carian Study Hall",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-jar-bairn-3": {
+      "questlineStepId": "Q-jar-bairn-3",
+      "questlineId": "jar-bairn",
+      "routeStepId": "RW-B-w46-63",
+      "area": "Crumbling Farum Azula",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-jar-bairn-4": {
+      "questlineStepId": "Q-jar-bairn-4",
+      "questlineId": "jar-bairn",
+      "routeStepId": "RW-B-w33-29",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-jar-bairn-5": {
+      "questlineStepId": "Q-jar-bairn-5",
+      "questlineId": "jar-bairn",
+      "routeStepId": "RW-B-w23-5",
+      "area": "Carian Study Hall",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-jar-bairn-6": {
+      "questlineStepId": "Q-jar-bairn-6",
+      "questlineId": "jar-bairn",
+      "routeStepId": "RW-B-w23-5",
+      "area": "Carian Study Hall",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-jar-bairn-7": {
+      "questlineStepId": "Q-jar-bairn-7",
+      "questlineId": "jar-bairn",
+      "routeStepId": "RW-B-w33-29",
+      "area": "Volcano Manor",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-jar-bairn-8": {
+      "questlineStepId": "Q-jar-bairn-8",
+      "questlineId": "jar-bairn",
+      "routeStepId": "RW-B-w46-63",
+      "area": "Crumbling Farum Azula",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-alexander-1": {
+      "questlineStepId": "Q-alexander-1",
+      "questlineId": "alexander",
+      "routeStepId": "RW-B-w2-29",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-alexander-2": {
+      "questlineStepId": "Q-alexander-2",
+      "questlineId": "alexander",
+      "routeStepId": "RW-B-w2-28",
+      "area": "First steps in Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-alexander-5": {
+      "questlineStepId": "Q-alexander-5",
+      "questlineId": "alexander",
+      "routeStepId": "RW-B-w23-1",
+      "area": "Carian Study Hall",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-alexander-7": {
+      "questlineStepId": "Q-alexander-7",
+      "questlineId": "alexander",
+      "routeStepId": "RW-B-w46-59",
+      "area": "Crumbling Farum Azula",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-yura-1": {
+      "questlineStepId": "Q-yura-1",
+      "questlineId": "yura",
+      "routeStepId": "RW-B-w4-28",
+      "area": "West Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-yura-2": {
+      "questlineStepId": "Q-yura-2",
+      "questlineId": "yura",
+      "routeStepId": "RW-B-w4-52",
+      "area": "West Limgrave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-yura-3": {
+      "questlineStepId": "Q-yura-3",
+      "questlineId": "yura",
+      "routeStepId": "RW-B-w4-53",
+      "area": "West Limgrave",
+      "confidence": "low",
+      "method": "keyword-3"
+    },
+    "Q-yura-5": {
+      "questlineStepId": "Q-yura-5",
+      "questlineId": "yura",
+      "routeStepId": "RW-B-w13-2",
+      "area": "Academy of Raya Lucaria",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-yura-6": {
+      "questlineStepId": "Q-yura-6",
+      "questlineId": "yura",
+      "routeStepId": "RW-B-w3-61",
+      "area": "Early Liurnia and Caelid",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-yura-7": {
+      "questlineStepId": "Q-yura-7",
+      "questlineId": "yura",
+      "routeStepId": "RW-B-w30-15",
+      "area": "Central Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-yura-8": {
+      "questlineStepId": "Q-yura-8",
+      "questlineId": "yura",
+      "routeStepId": "RW-B-w30-17",
+      "area": "Central Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-yura-9": {
+      "questlineStepId": "Q-yura-9",
+      "questlineId": "yura",
+      "routeStepId": "RW-B-w37-31",
+      "area": "Forbidden Lands",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-thops-1": {
+      "questlineStepId": "Q-thops-1",
+      "questlineId": "thops",
+      "routeStepId": "RW-B-w3-7",
+      "area": "Early Liurnia and Caelid",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-thops-3": {
+      "questlineStepId": "Q-thops-3",
+      "questlineId": "thops",
+      "routeStepId": "RW-B-w3-7",
+      "area": "Early Liurnia and Caelid",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-thops-4": {
+      "questlineStepId": "Q-thops-4",
+      "questlineId": "thops",
+      "routeStepId": "RW-B-w13-65",
+      "area": "Academy of Raya Lucaria",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-thops-5": {
+      "questlineStepId": "Q-thops-5",
+      "questlineId": "thops",
+      "routeStepId": "RW-B-w13-73",
+      "area": "Academy of Raya Lucaria",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-thops-6": {
+      "questlineStepId": "Q-thops-6",
+      "questlineId": "thops",
+      "routeStepId": "RW-B-w13-74",
+      "area": "Academy of Raya Lucaria",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-thops-7": {
+      "questlineStepId": "Q-thops-7",
+      "questlineId": "thops",
+      "routeStepId": "RW-B-w13-74",
+      "area": "Academy of Raya Lucaria",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-leda-1": {
+      "questlineStepId": "Q-leda-1",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d12-33",
+      "area": "Shadow Keep",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-leda-2": {
+      "questlineStepId": "Q-leda-2",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d12-33",
+      "area": "Shadow Keep",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-leda-3": {
+      "questlineStepId": "Q-leda-3",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d12-33",
+      "area": "Shadow Keep",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-leda-4": {
+      "questlineStepId": "Q-leda-4",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d12-33",
+      "area": "Shadow Keep",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-leda-5": {
+      "questlineStepId": "Q-leda-5",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d12-33",
+      "area": "Shadow Keep",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-leda-6": {
+      "questlineStepId": "Q-leda-6",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d12-33",
+      "area": "Shadow Keep",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-leda-7": {
+      "questlineStepId": "Q-leda-7",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d12-33",
+      "area": "Shadow Keep",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-leda-8": {
+      "questlineStepId": "Q-leda-8",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d12-35",
+      "area": "Shadow Keep",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-leda-9": {
+      "questlineStepId": "Q-leda-9",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d12-36",
+      "area": "Shadow Keep",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-leda-10": {
+      "questlineStepId": "Q-leda-10",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d12-33",
+      "area": "Shadow Keep",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-leda-11": {
+      "questlineStepId": "Q-leda-11",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d12-33",
+      "area": "Shadow Keep",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-leda-12": {
+      "questlineStepId": "Q-leda-12",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d12-95",
+      "area": "Shadow Keep",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-leda-13": {
+      "questlineStepId": "Q-leda-13",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d12-33",
+      "area": "Shadow Keep",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-leda-14": {
+      "questlineStepId": "Q-leda-14",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d12-100",
+      "area": "Shadow Keep",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-leda-15": {
+      "questlineStepId": "Q-leda-15",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d20-46",
+      "area": "Enir-Ilim",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-leda-16": {
+      "questlineStepId": "Q-leda-16",
+      "questlineId": "leda",
+      "routeStepId": "RW-D-d20-54",
+      "area": "Enir-Ilim",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-dane-1": {
+      "questlineStepId": "Q-dane-1",
+      "questlineId": "dane",
+      "routeStepId": "RW-D-d8-2",
+      "area": "West Scadu Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-dane-2": {
+      "questlineStepId": "Q-dane-2",
+      "questlineId": "dane",
+      "routeStepId": "RW-D-d8-36",
+      "area": "West Scadu Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-dane-3": {
+      "questlineStepId": "Q-dane-3",
+      "questlineId": "dane",
+      "routeStepId": "RW-D-d20-53",
+      "area": "Enir-Ilim",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-hornsent-1": {
+      "questlineStepId": "Q-hornsent-1",
+      "questlineId": "hornsent",
+      "routeStepId": "RW-D-d1-29",
+      "area": "West Gravesite Plain",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-hornsent-2": {
+      "questlineStepId": "Q-hornsent-2",
+      "questlineId": "hornsent",
+      "routeStepId": "RW-D-d3-58",
+      "area": "Belurat, Tower Settlement",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-hornsent-3": {
+      "questlineStepId": "Q-hornsent-3",
+      "questlineId": "hornsent",
+      "routeStepId": "RW-D-d1-29",
+      "area": "West Gravesite Plain",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-hornsent-4": {
+      "questlineStepId": "Q-hornsent-4",
+      "questlineId": "hornsent",
+      "routeStepId": "RW-D-d8-3",
+      "area": "West Scadu Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-hornsent-5": {
+      "questlineStepId": "Q-hornsent-5",
+      "questlineId": "hornsent",
+      "routeStepId": "RW-D-d1-29",
+      "area": "West Gravesite Plain",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-hornsent-6": {
+      "questlineStepId": "Q-hornsent-6",
+      "questlineId": "hornsent",
+      "routeStepId": "RW-D-d12-32",
+      "area": "Shadow Keep",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-hornsent-7": {
+      "questlineStepId": "Q-hornsent-7",
+      "questlineId": "hornsent",
+      "routeStepId": "RW-D-d12-31",
+      "area": "Shadow Keep",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-hornsent-8": {
+      "questlineStepId": "Q-hornsent-8",
+      "questlineId": "hornsent",
+      "routeStepId": "RW-D-d1-29",
+      "area": "West Gravesite Plain",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-hornsent-9": {
+      "questlineStepId": "Q-hornsent-9",
+      "questlineId": "hornsent",
+      "routeStepId": "RW-D-d1-29",
+      "area": "West Gravesite Plain",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-hornsent-10": {
+      "questlineStepId": "Q-hornsent-10",
+      "questlineId": "hornsent",
+      "routeStepId": "RW-D-d12-35",
+      "area": "Shadow Keep",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-hornsent-11": {
+      "questlineStepId": "Q-hornsent-11",
+      "questlineId": "hornsent",
+      "routeStepId": "RW-D-d1-29",
+      "area": "West Gravesite Plain",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-hornsent-12": {
+      "questlineStepId": "Q-hornsent-12",
+      "questlineId": "hornsent",
+      "routeStepId": "RW-D-d1-29",
+      "area": "West Gravesite Plain",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-hornsent-13": {
+      "questlineStepId": "Q-hornsent-13",
+      "questlineId": "hornsent",
+      "routeStepId": "RW-D-d20-52",
+      "area": "Enir-Ilim",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-grandam-1": {
+      "questlineStepId": "Q-grandam-1",
+      "questlineId": "grandam",
+      "routeStepId": "RW-D-d3-22",
+      "area": "Belurat, Tower Settlement",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-grandam-2": {
+      "questlineStepId": "Q-grandam-2",
+      "questlineId": "grandam",
+      "routeStepId": "RW-D-d3-55",
+      "area": "Belurat, Tower Settlement",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-grandam-3": {
+      "questlineStepId": "Q-grandam-3",
+      "questlineId": "grandam",
+      "routeStepId": "RW-D-d3-50",
+      "area": "Belurat, Tower Settlement",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-grandam-4": {
+      "questlineStepId": "Q-grandam-4",
+      "questlineId": "grandam",
+      "routeStepId": "RW-D-d3-55",
+      "area": "Belurat, Tower Settlement",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-grandam-5": {
+      "questlineStepId": "Q-grandam-5",
+      "questlineId": "grandam",
+      "routeStepId": "RW-D-d3-57",
+      "area": "Belurat, Tower Settlement",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-grandam-6": {
+      "questlineStepId": "Q-grandam-6",
+      "questlineId": "grandam",
+      "routeStepId": "RW-D-d13-62",
+      "area": "Church District",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-grandam-7": {
+      "questlineStepId": "Q-grandam-7",
+      "questlineId": "grandam",
+      "routeStepId": "RW-D-d13-62",
+      "area": "Church District",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-freyja-4": {
+      "questlineStepId": "Q-freyja-4",
+      "questlineId": "freyja",
+      "routeStepId": "RW-D-d12-78",
+      "area": "Shadow Keep",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-freyja-5": {
+      "questlineStepId": "Q-freyja-5",
+      "questlineId": "freyja",
+      "routeStepId": "RW-D-d12-88",
+      "area": "Shadow Keep",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-freyja-7": {
+      "questlineStepId": "Q-freyja-7",
+      "questlineId": "freyja",
+      "routeStepId": "RW-D-d20-51",
+      "area": "Enir-Ilim",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ansbach-2": {
+      "questlineStepId": "Q-ansbach-2",
+      "questlineId": "ansbach",
+      "routeStepId": "RW-D-d1-33",
+      "area": "West Gravesite Plain",
+      "confidence": "medium",
+      "method": "item-name"
+    },
+    "Q-ansbach-7": {
+      "questlineStepId": "Q-ansbach-7",
+      "questlineId": "ansbach",
+      "routeStepId": "RW-D-d10-37",
+      "area": "East Scadu Altus",
+      "confidence": "low",
+      "method": "keyword-2"
+    },
+    "Q-ansbach-9": {
+      "questlineStepId": "Q-ansbach-9",
+      "questlineId": "ansbach",
+      "routeStepId": "RW-D-d12-71",
+      "area": "Shadow Keep",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ansbach-11": {
+      "questlineStepId": "Q-ansbach-11",
+      "questlineId": "ansbach",
+      "routeStepId": "RW-D-d12-87",
+      "area": "Shadow Keep",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ansbach-13": {
+      "questlineStepId": "Q-ansbach-13",
+      "questlineId": "ansbach",
+      "routeStepId": "RW-D-d12-32",
+      "area": "Shadow Keep",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ansbach-15": {
+      "questlineStepId": "Q-ansbach-15",
+      "questlineId": "ansbach",
+      "routeStepId": "RW-D-d12-97",
+      "area": "Shadow Keep",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-moore-1": {
+      "questlineStepId": "Q-moore-1",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d1-49",
+      "area": "West Gravesite Plain",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-moore-2": {
+      "questlineStepId": "Q-moore-2",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d8-46",
+      "area": "West Scadu Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-moore-3": {
+      "questlineStepId": "Q-moore-3",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d1-48",
+      "area": "West Gravesite Plain",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-moore-4": {
+      "questlineStepId": "Q-moore-4",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d4-25",
+      "area": "Ellac River",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-moore-5": {
+      "questlineStepId": "Q-moore-5",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d8-29",
+      "area": "West Scadu Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-moore-6": {
+      "questlineStepId": "Q-moore-6",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d9-4",
+      "area": "Rauh Base",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-moore-8": {
+      "questlineStepId": "Q-moore-8",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d8-95",
+      "area": "West Scadu Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-moore-9": {
+      "questlineStepId": "Q-moore-9",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d1-34",
+      "area": "West Gravesite Plain",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-moore-10": {
+      "questlineStepId": "Q-moore-10",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d10-65",
+      "area": "East Scadu Altus",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-moore-11": {
+      "questlineStepId": "Q-moore-11",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d1-34",
+      "area": "West Gravesite Plain",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-moore-12": {
+      "questlineStepId": "Q-moore-12",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d20-45",
+      "area": "Enir-Ilim",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-moore-13": {
+      "questlineStepId": "Q-moore-13",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d20-50",
+      "area": "Enir-Ilim",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-moore-14": {
+      "questlineStepId": "Q-moore-14",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d10-67",
+      "area": "East Scadu Altus",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-moore-15": {
+      "questlineStepId": "Q-moore-15",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d20-45",
+      "area": "Enir-Ilim",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-moore-16": {
+      "questlineStepId": "Q-moore-16",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d10-68",
+      "area": "East Scadu Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-moore-17": {
+      "questlineStepId": "Q-moore-17",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d10-73",
+      "area": "East Scadu Altus",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-moore-18": {
+      "questlineStepId": "Q-moore-18",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d1-34",
+      "area": "West Gravesite Plain",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-moore-19": {
+      "questlineStepId": "Q-moore-19",
+      "questlineId": "moore",
+      "routeStepId": "RW-D-d20-65",
+      "area": "Enir-Ilim",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-thiollier-1": {
+      "questlineStepId": "Q-thiollier-1",
+      "questlineId": "thiollier",
+      "routeStepId": "RW-D-d2-51",
+      "area": "East Gravesite Plain",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-thiollier-2": {
+      "questlineStepId": "Q-thiollier-2",
+      "questlineId": "thiollier",
+      "routeStepId": "RW-D-d2-52",
+      "area": "East Gravesite Plain",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-thiollier-3": {
+      "questlineStepId": "Q-thiollier-3",
+      "questlineId": "thiollier",
+      "routeStepId": "RW-D-d2-53",
+      "area": "East Gravesite Plain",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-thiollier-4": {
+      "questlineStepId": "Q-thiollier-4",
+      "questlineId": "thiollier",
+      "routeStepId": "RW-D-d10-37",
+      "area": "East Scadu Altus",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-thiollier-5": {
+      "questlineStepId": "Q-thiollier-5",
+      "questlineId": "thiollier",
+      "routeStepId": "RW-D-d2-53",
+      "area": "East Gravesite Plain",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-thiollier-6": {
+      "questlineStepId": "Q-thiollier-6",
+      "questlineId": "thiollier",
+      "routeStepId": "RW-D-d2-51",
+      "area": "East Gravesite Plain",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-thiollier-7": {
+      "questlineStepId": "Q-thiollier-7",
+      "questlineId": "thiollier",
+      "routeStepId": "RW-D-d10-75",
+      "area": "East Scadu Altus",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-thiollier-8": {
+      "questlineStepId": "Q-thiollier-8",
+      "questlineId": "thiollier",
+      "routeStepId": "RW-D-d11-27",
+      "area": "Stone Coffin Fissure",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-thiollier-9": {
+      "questlineStepId": "Q-thiollier-9",
+      "questlineId": "thiollier",
+      "routeStepId": "RW-D-d11-26",
+      "area": "Stone Coffin Fissure",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-thiollier-10": {
+      "questlineStepId": "Q-thiollier-10",
+      "questlineId": "thiollier",
+      "routeStepId": "RW-D-d20-60",
+      "area": "Enir-Ilim",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-igon-1": {
+      "questlineStepId": "Q-igon-1",
+      "questlineId": "igon",
+      "routeStepId": "RW-D-d2-60",
+      "area": "East Gravesite Plain",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-igon-2": {
+      "questlineStepId": "Q-igon-2",
+      "questlineId": "igon",
+      "routeStepId": "RW-D-d18-4",
+      "area": "Jagged Peak",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-igon-3": {
+      "questlineStepId": "Q-igon-3",
+      "questlineId": "igon",
+      "routeStepId": "RW-D-d18-3",
+      "area": "Jagged Peak",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-igon-4": {
+      "questlineStepId": "Q-igon-4",
+      "questlineId": "igon",
+      "routeStepId": "RW-D-d18-23",
+      "area": "Jagged Peak",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-igon-5": {
+      "questlineStepId": "Q-igon-5",
+      "questlineId": "igon",
+      "routeStepId": "RW-D-d18-26",
+      "area": "Jagged Peak",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-igon-6": {
+      "questlineStepId": "Q-igon-6",
+      "questlineId": "igon",
+      "routeStepId": "RW-D-d18-27",
+      "area": "Jagged Peak",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-florissax-1": {
+      "questlineStepId": "Q-florissax-1",
+      "questlineId": "florissax",
+      "routeStepId": "RW-D-d6-6",
+      "area": "Charo's Hidden Grave",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-florissax-2": {
+      "questlineStepId": "Q-florissax-2",
+      "questlineId": "florissax",
+      "routeStepId": "RW-D-d6-7",
+      "area": "Charo's Hidden Grave",
+      "confidence": "low",
+      "method": "keyword-3"
+    },
+    "Q-florissax-3": {
+      "questlineStepId": "Q-florissax-3",
+      "questlineId": "florissax",
+      "routeStepId": "RW-D-d18-3",
+      "area": "Jagged Peak",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-florissax-6": {
+      "questlineStepId": "Q-florissax-6",
+      "questlineId": "florissax",
+      "routeStepId": "RW-D-d18-17",
+      "area": "Jagged Peak",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-florissax-10": {
+      "questlineStepId": "Q-florissax-10",
+      "questlineId": "florissax",
+      "routeStepId": "RW-D-d18-21",
+      "area": "Jagged Peak",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-florissax-11": {
+      "questlineStepId": "Q-florissax-11",
+      "questlineId": "florissax",
+      "routeStepId": "RW-D-d18-22",
+      "area": "Jagged Peak",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ymir-1": {
+      "questlineStepId": "Q-ymir-1",
+      "questlineId": "ymir",
+      "routeStepId": "RW-D-d10-54",
+      "area": "East Scadu Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ymir-4": {
+      "questlineStepId": "Q-ymir-4",
+      "questlineId": "ymir",
+      "routeStepId": "RW-D-d10-59",
+      "area": "East Scadu Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ymir-6": {
+      "questlineStepId": "Q-ymir-6",
+      "questlineId": "ymir",
+      "routeStepId": "RW-D-d10-62",
+      "area": "East Scadu Altus",
+      "confidence": "low",
+      "method": "keyword-3"
+    },
+    "Q-ymir-7": {
+      "questlineStepId": "Q-ymir-7",
+      "questlineId": "ymir",
+      "routeStepId": "RW-D-d14-17",
+      "area": "Scaduview",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ymir-8": {
+      "questlineStepId": "Q-ymir-8",
+      "questlineId": "ymir",
+      "routeStepId": "RW-D-d14-18",
+      "area": "Scaduview",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ymir-9": {
+      "questlineStepId": "Q-ymir-9",
+      "questlineId": "ymir",
+      "routeStepId": "RW-D-d14-21",
+      "area": "Scaduview",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ymir-10": {
+      "questlineStepId": "Q-ymir-10",
+      "questlineId": "ymir",
+      "routeStepId": "RW-D-d14-23",
+      "area": "Scaduview",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-ymir-11": {
+      "questlineStepId": "Q-ymir-11",
+      "questlineId": "ymir",
+      "routeStepId": "RW-D-d14-24",
+      "area": "Scaduview",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-jolan-1": {
+      "questlineStepId": "Q-jolan-1",
+      "questlineId": "jolan",
+      "routeStepId": "RW-D-d14-23",
+      "area": "Scaduview",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-jolan-2": {
+      "questlineStepId": "Q-jolan-2",
+      "questlineId": "jolan",
+      "routeStepId": "RW-D-d14-23",
+      "area": "Scaduview",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-jolan-3": {
+      "questlineStepId": "Q-jolan-3",
+      "questlineId": "jolan",
+      "routeStepId": "RW-D-d14-23",
+      "area": "Scaduview",
+      "confidence": "medium",
+      "method": "npc"
+    },
+    "Q-jolan-4": {
+      "questlineStepId": "Q-jolan-4",
+      "questlineId": "jolan",
+      "routeStepId": "RW-D-d14-23",
+      "area": "Scaduview",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-jolan-5": {
+      "questlineStepId": "Q-jolan-5",
+      "questlineId": "jolan",
+      "routeStepId": "RW-D-d14-23",
+      "area": "Scaduview",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-jolan-6": {
+      "questlineStepId": "Q-jolan-6",
+      "questlineId": "jolan",
+      "routeStepId": "RW-D-d14-27",
+      "area": "Scaduview",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-jolan-7": {
+      "questlineStepId": "Q-jolan-7",
+      "questlineId": "jolan",
+      "routeStepId": "RW-D-d14-23",
+      "area": "Scaduview",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-jolan-8": {
+      "questlineStepId": "Q-jolan-8",
+      "questlineId": "jolan",
+      "routeStepId": "RW-D-d14-28",
+      "area": "Scaduview",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-jolan-9": {
+      "questlineStepId": "Q-jolan-9",
+      "questlineId": "jolan",
+      "routeStepId": "RW-D-d14-23",
+      "area": "Scaduview",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-jolan-10": {
+      "questlineStepId": "Q-jolan-10",
+      "questlineId": "jolan",
+      "routeStepId": "RW-D-d14-27",
+      "area": "Scaduview",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-jolan-11": {
+      "questlineStepId": "Q-jolan-11",
+      "questlineId": "jolan",
+      "routeStepId": "RW-B-w15-15",
+      "area": "Caria Manor",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-queelign-1": {
+      "questlineStepId": "Q-queelign-1",
+      "questlineId": "queelign",
+      "routeStepId": "RW-D-d3-16",
+      "area": "Belurat, Tower Settlement",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-queelign-2": {
+      "questlineStepId": "Q-queelign-2",
+      "questlineId": "queelign",
+      "routeStepId": "RW-D-d8-27",
+      "area": "West Scadu Altus",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-queelign-3": {
+      "questlineStepId": "Q-queelign-3",
+      "questlineId": "queelign",
+      "routeStepId": "RW-D-d13-9",
+      "area": "Church District",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-queelign-4": {
+      "questlineStepId": "Q-queelign-4",
+      "questlineId": "queelign",
+      "routeStepId": "RW-D-d13-9",
+      "area": "Church District",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-queelign-5": {
+      "questlineStepId": "Q-queelign-5",
+      "questlineId": "queelign",
+      "routeStepId": "RW-D-d3-16",
+      "area": "Belurat, Tower Settlement",
+      "confidence": "high",
+      "method": "linked-label"
+    },
+    "Q-queelign-6": {
+      "questlineStepId": "Q-queelign-6",
+      "questlineId": "queelign",
+      "routeStepId": "RW-D-d13-9",
+      "area": "Church District",
+      "confidence": "high",
+      "method": "npc+keyword"
+    },
+    "Q-queelign-7": {
+      "questlineStepId": "Q-queelign-7",
+      "questlineId": "queelign",
+      "routeStepId": "RW-D-d13-11",
+      "area": "Church District",
+      "confidence": "high",
+      "method": "linked-label"
+    }
+  },
+  "coverage": {
+    "steps": 587,
+    "linked": 431,
+    "high": 337,
+    "medium": 67,
+    "low": 27
+  },
+  "gaps": [
+    "Q-alexander-3",
+    "Q-alexander-4",
+    "Q-alexander-6",
+    "Q-ansbach-1",
+    "Q-ansbach-10",
+    "Q-ansbach-12",
+    "Q-ansbach-14",
+    "Q-ansbach-3",
+    "Q-ansbach-4",
+    "Q-ansbach-5",
+    "Q-ansbach-6",
+    "Q-ansbach-8",
+    "Q-bernahl-1",
+    "Q-bernahl-2",
+    "Q-bernahl-3",
+    "Q-bernahl-6",
+    "Q-blackguard-4",
+    "Q-blaidd-1",
+    "Q-blaidd-10",
+    "Q-blaidd-11",
+    "Q-blaidd-7",
+    "Q-blaidd-9",
+    "Q-boc-12",
+    "Q-boc-13",
+    "Q-boc-14",
+    "Q-boc-16",
+    "Q-boc-2",
+    "Q-boc-4",
+    "Q-corhyn-10",
+    "Q-corhyn-14",
+    "Q-corhyn-15",
+    "Q-corhyn-17",
+    "Q-corhyn-2",
+    "Q-corhyn-3",
+    "Q-corhyn-4",
+    "Q-corhyn-6",
+    "Q-corhyn-7",
+    "Q-corhyn-8",
+    "Q-diallos-1",
+    "Q-diallos-2",
+    "Q-diallos-3",
+    "Q-diallos-4",
+    "Q-diallos-6",
+    "Q-diallos-7",
+    "Q-diallos-8",
+    "Q-diallos-9",
+    "Q-enia-4",
+    "Q-fia-1",
+    "Q-florissax-4",
+    "Q-florissax-5",
+    "Q-florissax-7",
+    "Q-florissax-8",
+    "Q-florissax-9",
+    "Q-freyja-1",
+    "Q-freyja-2",
+    "Q-freyja-3",
+    "Q-freyja-6",
+    "Q-gostoc-1",
+    "Q-gostoc-6",
+    "Q-gowry-1",
+    "Q-gowry-4",
+    "Q-gowry-5",
+    "Q-gowry-8",
+    "Q-gurranq-10",
+    "Q-gurranq-3",
+    "Q-gurranq-7",
+    "Q-gurranq-8",
+    "Q-gurranq-9",
+    "Q-hewg-10",
+    "Q-hewg-3",
+    "Q-hewg-4",
+    "Q-hewg-5",
+    "Q-hewg-7",
+    "Q-hewg-8",
+    "Q-hyetta-10",
+    "Q-hyetta-11",
+    "Q-hyetta-2",
+    "Q-hyetta-3",
+    "Q-hyetta-9",
+    "Q-iji-1",
+    "Q-iji-3",
+    "Q-iji-4",
+    "Q-iji-5",
+    "Q-iji-6",
+    "Q-iji-7",
+    "Q-irina-4",
+    "Q-irina-5",
+    "Q-jerren-1",
+    "Q-jerren-3",
+    "Q-jerren-4",
+    "Q-kenneth-4",
+    "Q-moore-7",
+    "Q-nepheli-1",
+    "Q-nepheli-15",
+    "Q-patches-14",
+    "Q-ranni-12",
+    "Q-ranni-13",
+    "Q-ranni-4",
+    "Q-ranni-5",
+    "Q-roderika-10",
+    "Q-roderika-11",
+    "Q-roderika-12",
+    "Q-roderika-13",
+    "Q-roderika-14",
+    "Q-roderika-15",
+    "Q-roderika-17",
+    "Q-roderika-2",
+    "Q-roderika-4",
+    "Q-roderika-6",
+    "Q-roderika-7",
+    "Q-rogier-10",
+    "Q-rogier-3",
+    "Q-rogier-9",
+    "Q-rya-10",
+    "Q-rya-11",
+    "Q-rya-14",
+    "Q-rya-15",
+    "Q-rya-16",
+    "Q-rya-17",
+    "Q-rya-19",
+    "Q-rya-2",
+    "Q-rya-21",
+    "Q-rya-22",
+    "Q-rya-23",
+    "Q-rya-3",
+    "Q-rya-4",
+    "Q-rya-5",
+    "Q-rya-7",
+    "Q-rya-8",
+    "Q-rya-9",
+    "Q-sellen-3",
+    "Q-sellen-6",
+    "Q-sellen-8",
+    "Q-seluvis-1",
+    "Q-seluvis-10",
+    "Q-seluvis-14",
+    "Q-seluvis-3",
+    "Q-seluvis-4",
+    "Q-seluvis-5",
+    "Q-seluvis-6",
+    "Q-seluvis-7",
+    "Q-seluvis-8",
+    "Q-tanith-9",
+    "Q-thops-2",
+    "Q-varre-1",
+    "Q-varre-10",
+    "Q-varre-11",
+    "Q-varre-12",
+    "Q-varre-2",
+    "Q-varre-3",
+    "Q-varre-8",
+    "Q-ymir-2",
+    "Q-ymir-3",
+    "Q-ymir-5",
+    "Q-yura-10",
+    "Q-yura-4"
+  ]
+}

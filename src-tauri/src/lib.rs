@@ -1,9 +1,10 @@
 use serde::Serialize;
 use std::fs;
 use std::path::{Path, PathBuf};
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Emitter, LogicalSize, Manager};
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_opener::OpenerExt;
+use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 
 const MAX_BACKUP_BYTES: u64 = 64 * 1024 * 1024;
 
@@ -143,6 +144,11 @@ async fn import_backup(app: AppHandle) -> Result<Option<String>, String> {
 }
 
 #[tauri::command]
+fn quick_log_shortcut() -> String {
+    "Ctrl+Shift+L".to_string()
+}
+
+#[tauri::command]
 fn open_external(app: AppHandle, url: String) -> Result<(), String> {
     let parsed = validated_external_url(&url)?;
     app.opener()
@@ -161,14 +167,46 @@ pub fn run() {
         std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
     }
 
+    let quick_log = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::SHIFT), Code::KeyL);
+
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(move |app, shortcut, event| {
+                    if shortcut == &quick_log && event.state() == ShortcutState::Pressed {
+                        let _ = app.emit("er-companion:quick-log", ());
+                    }
+                })
+                .build(),
+        )
+        .setup(move |app| {
+            let _ = app.global_shortcut().register(quick_log);
+            // Open at a comfortable fraction of the current monitor instead of a
+            // fixed 1440x960 logical window. On 1440p/4K panels this keeps the
+            // interface readable without requiring the OS scale factor to be
+            // configured for this app.
+            if let Some(window) = app.get_webview_window("main") {
+                if let Ok(Some(monitor)) = window.current_monitor() {
+                    let size = monitor.size();
+                    let scale = monitor.scale_factor();
+                    let logical_width = size.width as f64 / scale;
+                    let logical_height = size.height as f64 / scale;
+                    let width = (logical_width * 0.82).clamp(1024.0, 1920.0);
+                    let height = (logical_height * 0.86).clamp(700.0, 1280.0);
+                    let _ = window.set_size(LogicalSize::new(width, height));
+                    let _ = window.center();
+                }
+            }
+            Ok(())
+        })
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             desktop_info,
             export_backup,
             import_backup,
-            open_external
+            open_external,
+            quick_log_shortcut
         ])
         .run(tauri::generate_context!())
         .expect("error while running ER Companion");

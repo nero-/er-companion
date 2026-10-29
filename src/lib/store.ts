@@ -7,6 +7,7 @@ import type {
   EquipmentState,
   JourneyState,
   Settings,
+  StatSnapshot,
   Stats,
   StepStatus,
 } from "./types";
@@ -32,6 +33,9 @@ const DEFAULT_SETTINGS: Settings = {
   density: "comfortable",
   reducedMotion: false,
   hideCompleted: false,
+  disclosure: "progressive",
+  interfaceScale: "auto",
+  bossSpoilerMode: "hide-until-defeated",
 };
 
 const EMPTY_EQUIPMENT: EquipmentState = {
@@ -70,6 +74,7 @@ function emptyJourney(index: number, label?: string): JourneyState {
     materials: {},
     finite: {},
     merchants: {},
+    materialCounts: {},
     scarabs: {},
     certifications: {},
     transitionGates: {},
@@ -80,6 +85,8 @@ function emptyJourney(index: number, label?: string): JourneyState {
     worldChecks: {},
     upgradeCounts: {},
     npcWalkthroughSteps: {},
+    bossReveals: {},
+    decisionChecks: {},
   };
 }
 
@@ -87,8 +94,14 @@ function createCharacter(name = "Tarnished"): Character {
   const base = CLASS_BY_ID.vagabond;
   const journey = emptyJourney(1);
   const owned: Record<string, boolean> = {};
+  const itemCounts: Record<string, number> = {};
+  const itemOrigins: Record<string, number> = {};
   for (const item of ITEMS) {
-    if (item.startingOwned) owned[item.id] = true;
+    if (item.startingOwned) {
+      owned[item.id] = true;
+      itemCounts[item.id] = 1;
+      itemOrigins[item.id] = 1;
+    }
   }
   return {
     id: newId("character"),
@@ -113,6 +126,11 @@ function createCharacter(name = "Tarnished"): Character {
       physick: [...EMPTY_EQUIPMENT.physick],
     },
     equipmentMode: "signature",
+    itemCounts,
+    itemOrigins,
+    statSnapshots: [],
+    progressionChecks: {},
+    bossReveals: {},
   };
 }
 
@@ -238,6 +256,7 @@ export function normalizeJourney(value: unknown, index: number): JourneyState {
     materials: boolRecord(source.materials),
     finite: boolRecord(source.finite),
     merchants: boolRecord(source.merchants),
+    materialCounts: numberRecord(source.materialCounts),
     scarabs: boolRecord(source.scarabs),
     certifications: boolRecord(source.certifications),
     transitionGates: boolRecord(source.transitionGates),
@@ -248,6 +267,8 @@ export function normalizeJourney(value: unknown, index: number): JourneyState {
     worldChecks: boolRecord(source.worldChecks),
     upgradeCounts: numberRecord(source.upgradeCounts),
     npcWalkthroughSteps: boolRecord(source.npcWalkthroughSteps),
+    bossReveals: boolRecord(source.bossReveals),
+    decisionChecks: boolRecord(source.decisionChecks),
   };
 }
 
@@ -262,6 +283,24 @@ function normalizeEndings(value: unknown): Record<string, EndingState> {
       completedAt: typeof state.completedAt === "string" ? state.completedAt : undefined,
       journeyIndex: typeof state.journeyIndex === "number" ? state.journeyIndex : undefined,
     };
+  }
+  return output;
+}
+
+function normalizeStatSnapshots(value: unknown): StatSnapshot[] {
+  if (!Array.isArray(value)) return [];
+  const output: StatSnapshot[] = [];
+  for (const entry of value) {
+    const source = asObject(entry);
+    if (typeof source.id !== "string" || typeof source.name !== "string") continue;
+    output.push({
+      id: source.id,
+      name: source.name,
+      stats: statsFrom(source.stats, { vig: 1, mnd: 1, end: 1, str: 1, dex: 1, int: 1, fai: 1, arc: 1 }),
+      createdAt: typeof source.createdAt === "string" ? source.createdAt : nowIso(),
+      profileId: typeof source.profileId === "string" ? source.profileId : undefined,
+      note: typeof source.note === "string" ? source.note : undefined,
+    });
   }
   return output;
 }
@@ -309,6 +348,11 @@ function normalizeCharacter(value: unknown): Character | null {
       source.equipmentMode === "custom"
         ? source.equipmentMode
         : "signature",
+    itemCounts: numberRecord(source.itemCounts),
+    itemOrigins: numberRecord(source.itemOrigins),
+    statSnapshots: normalizeStatSnapshots(source.statSnapshots),
+    progressionChecks: boolRecord(source.progressionChecks),
+    bossReveals: boolRecord(source.bossReveals),
   };
 }
 
@@ -330,6 +374,10 @@ function normalizeState(value: unknown): AppState | null {
     density: settingsSource.density === "compact" ? "compact" : "comfortable",
     reducedMotion: settingsSource.reducedMotion === true,
     hideCompleted: settingsSource.hideCompleted === true,
+    disclosure: settingsSource.disclosure === "everything" ? "everything" : "progressive",
+    interfaceScale: settingsSource.interfaceScale === "large" ? "large" : "auto",
+    bossSpoilerMode:
+      settingsSource.bossSpoilerMode === "show" ? "show" : "hide-until-defeated",
   };
   return {
     schemaVersion: 1,
@@ -441,11 +489,22 @@ function applyStepCompletion(
   stepId: string,
   result: StepActionResult,
   sourceItems: Record<string, boolean>,
-): { items: Record<string, boolean>; journey: JourneyState } {
+  sourceCounts: Record<string, number>,
+  sourceOrigins: Record<string, number>,
+): {
+  items: Record<string, boolean>;
+  itemCounts: Record<string, number>;
+  itemOrigins: Record<string, number>;
+  journey: JourneyState;
+} {
   const items = { ...sourceItems };
+  const itemCounts = { ...sourceCounts };
+  const itemOrigins = { ...sourceOrigins };
   for (const item of AUTO_ITEMS_BY_STEP[stepId] ?? []) {
     if (!items[item.id]) {
       items[item.id] = true;
+      itemCounts[item.id] = Math.max(1, itemCounts[item.id] ?? 1);
+      itemOrigins[item.id] = journey.index;
       result.acquiredItems.push(item.name);
     }
   }
@@ -457,7 +516,7 @@ function applyStepCompletion(
       result.defeatedBosses.push(encounter.name);
     }
   }
-  return { items, journey: { ...journey, bosses } };
+  return { items, itemCounts, itemOrigins, journey: { ...journey, bosses } };
 }
 
 export function setStepStatus(stepId: string, status: StepStatus | null): StepActionResult {
@@ -476,14 +535,20 @@ export function setStepStatus(stepId: string, status: StepStatus | null): StepAc
     else steps[stepId] = status;
     let journey = { ...current, steps };
     let items = character.items;
+    let itemCounts = character.itemCounts;
+    let itemOrigins = character.itemOrigins;
     if (status === "done") {
-      const completion = applyStepCompletion(journey, stepId, result, items);
+      const completion = applyStepCompletion(journey, stepId, result, items, itemCounts, itemOrigins);
       journey = completion.journey;
       items = completion.items;
+      itemCounts = completion.itemCounts;
+      itemOrigins = completion.itemOrigins;
     }
     return {
       ...character,
       items,
+      itemCounts,
+      itemOrigins,
       journeys: character.journeys.map((entry) => (entry.id === journey.id ? journey : entry)),
     };
   });
@@ -522,17 +587,23 @@ export function resolveArea(area: string): StepActionResult {
     const steps = { ...current.steps };
     let journey = current;
     let items = character.items;
+    let itemCounts = character.itemCounts;
+    let itemOrigins = character.itemOrigins;
     for (const step of Object.values(STEP_BY_ID)) {
       if (step.area !== area) continue;
       steps[step.id] = "done";
-      const completion = applyStepCompletion(journey, step.id, result, items);
+      const completion = applyStepCompletion(journey, step.id, result, items, itemCounts, itemOrigins);
       journey = completion.journey;
       items = completion.items;
+      itemCounts = completion.itemCounts;
+      itemOrigins = completion.itemOrigins;
     }
     journey = { ...journey, steps };
     return {
       ...character,
       items,
+      itemCounts,
+      itemOrigins,
       journeys: character.journeys.map((entry) => (entry.id === journey.id ? journey : entry)),
     };
   });
@@ -585,7 +656,34 @@ export function setFarmable(id: string, quantity: number, target: number, itemNa
 }
 
 export function setMaterialStock(id: string, value: boolean): void {
-  updateJourney((journey) => ({ ...journey, materials: { ...journey.materials, [id]: value } }));
+  updateJourney((journey) => {
+    const materials = { ...journey.materials };
+    const materialCounts = { ...journey.materialCounts };
+    if (value) {
+      materials[id] = true;
+      materialCounts[id] = Math.max(1, materialCounts[id] ?? 1);
+    } else {
+      delete materials[id];
+      delete materialCounts[id];
+    }
+    return { ...journey, materials, materialCounts };
+  });
+}
+
+export function setMaterialCount(id: string, count: number): void {
+  updateJourney((journey) => {
+    const materialCounts = { ...journey.materialCounts };
+    const materials = { ...journey.materials };
+    const next = Math.max(0, Math.min(9999, Math.floor(count)));
+    if (next > 0) {
+      materialCounts[id] = next;
+      materials[id] = true;
+    } else {
+      delete materialCounts[id];
+      delete materials[id];
+    }
+    return { ...journey, materialCounts, materials };
+  });
 }
 
 export function setFiniteAcquired(id: string, value: boolean): void {
@@ -812,21 +910,120 @@ export function renameCharacter(name: string): void {
 export function setItemOwned(id: string, owned: boolean): void {
   updateCharacter((character) => {
     const items = { ...character.items };
-    if (owned) items[id] = true;
-    else delete items[id];
-    return { ...character, items };
+    const itemCounts = { ...character.itemCounts };
+    const itemOrigins = { ...character.itemOrigins };
+    if (owned) {
+      items[id] = true;
+      itemCounts[id] = Math.max(1, itemCounts[id] ?? 1);
+      itemOrigins[id] ??= character.journeys.find((journey) => journey.id === character.journeyId)?.index ?? 1;
+    } else {
+      delete items[id];
+      delete itemCounts[id];
+      delete itemOrigins[id];
+    }
+    return { ...character, items, itemCounts, itemOrigins };
+  });
+}
+
+export function setItemCount(id: string, count: number): void {
+  updateCharacter((character) => {
+    const items = { ...character.items };
+    const itemCounts = { ...character.itemCounts };
+    const itemOrigins = { ...character.itemOrigins };
+    const next = Math.max(0, Math.min(999, Math.floor(count)));
+    if (next > 0) {
+      items[id] = true;
+      itemCounts[id] = next;
+      itemOrigins[id] ??= character.journeys.find((journey) => journey.id === character.journeyId)?.index ?? 1;
+    } else {
+      delete items[id];
+      delete itemCounts[id];
+      delete itemOrigins[id];
+    }
+    return { ...character, items, itemCounts, itemOrigins };
   });
 }
 
 export function bulkSetItems(ids: string[], owned: boolean): void {
   updateCharacter((character) => {
     const items = { ...character.items };
+    const itemCounts = { ...character.itemCounts };
+    const itemOrigins = { ...character.itemOrigins };
+    const journeyIndex = character.journeys.find((journey) => journey.id === character.journeyId)?.index ?? 1;
     for (const id of ids) {
-      if (owned) items[id] = true;
-      else delete items[id];
+      if (owned) {
+        items[id] = true;
+        itemCounts[id] = Math.max(1, itemCounts[id] ?? 1);
+        itemOrigins[id] ??= journeyIndex;
+      } else {
+        delete items[id];
+        delete itemCounts[id];
+        delete itemOrigins[id];
+      }
     }
-    return { ...character, items };
+    return { ...character, items, itemCounts, itemOrigins };
   });
+}
+
+export function setBossReveal(id: string, value: boolean): void {
+  updateJourney((journey) => {
+    const bossReveals = { ...journey.bossReveals };
+    if (value) bossReveals[id] = true;
+    else delete bossReveals[id];
+    return { ...journey, bossReveals };
+  });
+}
+
+export function setDecisionCheck(id: string, value: boolean): void {
+  updateJourney((journey) => {
+    const decisionChecks = { ...journey.decisionChecks };
+    if (value) decisionChecks[id] = true;
+    else delete decisionChecks[id];
+    return { ...journey, decisionChecks };
+  });
+}
+
+export function setProgressionCheck(id: string, value: boolean): void {
+  updateCharacter((character) => {
+    const progressionChecks = { ...character.progressionChecks };
+    if (value) progressionChecks[id] = true;
+    else delete progressionChecks[id];
+    return { ...character, progressionChecks };
+  });
+}
+
+export function saveStatSnapshot(name: string, note?: string): StatSnapshot | null {
+  const character = state.characters.find((entry) => entry.id === state.activeCharacterId);
+  if (!character) return null;
+  const snapshot: StatSnapshot = {
+    id: newId("spread"),
+    name: name.trim() || `Spread ${character.statSnapshots.length + 1}`,
+    stats: { ...character.stats },
+    createdAt: nowIso(),
+    profileId: character.profileId || undefined,
+    note: note?.trim() || undefined,
+  };
+  updateCharacter((entry) => ({ ...entry, statSnapshots: [...entry.statSnapshots, snapshot] }));
+  return snapshot;
+}
+
+export function applyStatSnapshot(id: string): void {
+  updateCharacter((character) => {
+    const snapshot = character.statSnapshots.find((entry) => entry.id === id);
+    if (!snapshot) return character;
+    return {
+      ...character,
+      stats: { ...snapshot.stats },
+      profileId: snapshot.profileId ?? "",
+    };
+  });
+}
+
+export function deleteStatSnapshot(id: string): void {
+  updateCharacter((character) => ({
+    ...character,
+    statSnapshots: character.statSnapshots.filter((entry) => entry.id !== id),
+  }));
 }
 
 export function newJourney(): JourneyState {
@@ -852,10 +1049,18 @@ export function resetJourney(): void {
     ...character,
     journeys: character.journeys.map((journey) =>
       journey.id === character.journeyId
-        ? { ...emptyJourney(journey.index, journey.label), id: journey.id, createdAt: journey.createdAt }
+        ? {
+            ...emptyJourney(journey.index, journey.label),
+            id: journey.id,
+            createdAt: journey.createdAt,
+          }
         : journey,
     ),
   }));
+}
+
+export function setJourneyStatus(id: string, value: boolean): void {
+  updateJourney((journey) => ({ ...journey, transitionGates: { ...journey.transitionGates, [id]: value } }));
 }
 
 export function addCharacter(name: string): void {

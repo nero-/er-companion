@@ -1137,6 +1137,8 @@ export interface TierEntry {
   role?: string;
   ceiling?: string;
   limitation?: string;
+  wikiUrl?: string;
+  source?: string;
 }
 
 export interface Warehouse {
@@ -1196,6 +1198,15 @@ export interface RemembranceState {
   consumed?: boolean;
 }
 
+export interface StatSnapshot {
+  id: string;
+  name: string;
+  stats: Stats;
+  createdAt: string;
+  profileId?: string;
+  note?: string;
+}
+
 export interface EndingState {
   viewed?: boolean;
   earned?: boolean;
@@ -1219,6 +1230,7 @@ export interface JourneyState {
   materials: Record<string, boolean>;
   finite: Record<string, boolean>;
   merchants: Record<string, boolean>;
+  materialCounts: Record<string, number>;
   scarabs: Record<string, boolean>;
   certifications: Record<string, boolean>;
   transitionGates: Record<string, boolean>;
@@ -1229,6 +1241,10 @@ export interface JourneyState {
   worldChecks: Record<string, boolean>;
   upgradeCounts: Record<string, number>;
   npcWalkthroughSteps: Record<string, boolean>;
+  /** Manual boss spoiler reveals for this journey. */
+  bossReveals: Record<string, boolean>;
+  /** Manual overrides for auto-completed branch decisions. */
+  decisionChecks: Record<string, boolean>;
 }
 
 export interface EquipmentState {
@@ -1259,6 +1275,16 @@ export interface Character {
   achievements: Record<string, boolean>;
   equipment: EquipmentState;
   equipmentMode: "signature" | "optimized" | "fashion" | "custom";
+  /** Duplicate counts for owned items; 0/absent means missing. */
+  itemCounts: Record<string, number>;
+  /** Journey index in which an item was first acquired. */
+  itemOrigins: Record<string, number>;
+  /** Saved stat spreads and build experiments. */
+  statSnapshots: StatSnapshot[];
+  /** Progression timeline checkpoints marked complete. */
+  progressionChecks: Record<string, boolean>;
+  /** Spoiler reveals for boss and NPC lore. */
+  bossReveals: Record<string, boolean>;
 }
 
 export interface Settings {
@@ -1266,6 +1292,12 @@ export interface Settings {
   density: "comfortable" | "compact";
   reducedMotion: boolean;
   hideCompleted: boolean;
+  /** Progressive disclosure is the default; "everything" expands every panel. */
+  disclosure: "progressive" | "everything";
+  /** Auto scales the interface for 1440p/4K displays; large forces the bigger scale. */
+  interfaceScale: "auto" | "large";
+  /** Boss and NPC spoiler policy. */
+  bossSpoilerMode: "hide-until-defeated" | "show";
 }
 
 export interface AppState {
@@ -1428,4 +1460,174 @@ export interface BranchPlanDecision {
   rewards: BranchReward[];
   unresolved: boolean;
   notes: string;
+  /** Derived route anchors for this decision, if any. */
+  routeStepIds?: string[];
+  area?: string;
+  linkConfidence?: string;
+  linkMethod?: string;
+}
+
+export interface AreaSweepMerchantItem {
+  id: string;
+  merchantId: string;
+  merchant: string;
+  itemName: string;
+  /** Canonical catalog id, or an empty string when the row does not resolve. */
+  itemId: string;
+  price?: number;
+  stock?: string;
+  wikiUrl?: string;
+}
+
+export interface AreaSweepMerchant {
+  merchantId: string;
+  merchant: string;
+  items: AreaSweepMerchantItem[];
+}
+
+export interface AreaSweepFarmable {
+  id: string;
+  name: string;
+  itemId: string;
+  source: string;
+  location: string;
+  targetQuantity: number;
+  dropType: string;
+  category: string;
+}
+
+export interface AreaSweepUnlinkedItem {
+  id: string;
+  itemId: string;
+  name: string;
+  location: string;
+  acquisitionType: string;
+  group: string;
+}
+
+export interface AreaSweepMaterial {
+  id: string;
+  name: string;
+  grace: string;
+  earlySource: string;
+  method: string;
+  sourceUrl: string;
+}
+
+export interface AreaSweep {
+  area: string;
+  sectionId: string;
+  phase: string;
+  game: string;
+  merchants: AreaSweepMerchant[];
+  farmables: AreaSweepFarmable[];
+  unlinkedItems: AreaSweepUnlinkedItem[];
+  materials: AreaSweepMaterial[];
+  counts: {
+    merchants: number;
+    merchantItems: number;
+    farmables: number;
+    unlinkedItems: number;
+    materials: number;
+  };
+  confidence: "high" | "medium" | "low";
+  notes: string[];
+}
+
+export interface AreaSweepFile {
+  generatedAt: string;
+  source: string;
+  method: string;
+  areas: AreaSweep[];
+  coverage: {
+    routeAreas: number;
+    areasWithSweep: number;
+    merchantItems: number;
+    farmables: number;
+    unlinkedItems: number;
+    materials: number;
+  };
+  gaps: string[];
+}
+
+export interface DescriptionEntry {
+  text: string;
+  sourceUrl: string;
+  kind: "item" | "boss" | "npc" | "area";
+}
+
+export interface DescriptionFile {
+  generatedAt: string;
+  source: string;
+  method: string;
+  items: Record<string, DescriptionEntry>;
+  bosses: Record<string, DescriptionEntry>;
+  npcs: Record<string, DescriptionEntry>;
+  areas: Record<string, DescriptionEntry>;
+  counts: { items: number; bosses: number; npcs: number; areas: number };
+  missing: { items: string[]; bosses: string[]; npcs: string[]; areas: string[] };
+}
+
+export interface LoreExpandedEntry {
+  id: string;
+  overview: string;
+  context: string;
+  spoiler: string;
+  sourceUrl: string;
+  sourceTitle: string;
+}
+
+export interface LoreExpandedFile {
+  generatedAt: string;
+  source: string;
+  entries: Record<string, LoreExpandedEntry>;
+  counts: { entries: number; withOverview: number; withContext: number };
+  gaps: string[];
+}
+
+export interface QuestlineRouteLink {
+  questlineStepId: string;
+  questlineId: string;
+  routeStepId: string;
+  area: string;
+  confidence: "high" | "medium" | "low";
+  method: string;
+}
+
+export interface QuestlineRouteMap {
+  generatedAt: string;
+  links: Record<string, QuestlineRouteLink>;
+  coverage: {
+    steps: number;
+    linked: number;
+    high: number;
+    medium: number;
+    low: number;
+  };
+  method: string;
+  gaps: string[];
+}
+
+export interface RemembrancePlanEntry {
+  order: number;
+  remembranceId: string;
+  remembrance: string;
+  boss: string;
+  game: string;
+  priority: string;
+  duplicatePlan: string;
+  journey1: string;
+  journey2: string;
+  rewards: string[];
+  routeStepIds: string[];
+  area: string;
+  notes: string;
+}
+
+export interface RemembrancePlan {
+  generatedAt: string;
+  source: string;
+  method: string;
+  entries: RemembrancePlanEntry[];
+  counts: { entries: number; duplicateNow: number; defer: number; noDuplicate: number };
 }

@@ -1,8 +1,28 @@
-import { useMemo } from "react";
-import { Badge, Button, PageHeader, ProgressBar, Ring, SectionTitle, useToast } from "../components/ui";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Badge,
+  Button,
+  Callout,
+  Disclosure,
+  Modal,
+  PageHeader,
+  ProgressBar,
+  Ring,
+  SectionTitle,
+  StatCompare,
+  useToast,
+} from "../components/ui";
 import { Icon } from "../components/Icon";
-import { ART, ArtBanner, ArtHero } from "../components/Art";
-import { useActiveCharacter, useActiveJourney, useAppState, setStepStatus } from "../lib/store";
+import { ART, ArtHero } from "../components/Art";
+import {
+  applyProfile,
+  resetAll,
+  setStepStatus,
+  useActiveCharacter,
+  useActiveJourney,
+  useAppState,
+} from "../lib/store";
+import { isDesktop } from "../lib/desktop";
 import {
   areaProgress,
   collectionSummary,
@@ -18,21 +38,20 @@ import type { CompletionScope, Progress } from "../lib/selectors";
 import {
   ENCOUNTER_BY_ID,
   ITEM_BY_ID,
-  ITEMS_BY_REGION,
   LOADOUTS_BY_BUILD,
   PHASE_GATES,
   PROFILE_BY_ID,
   QUESTLINES,
   ROUTE_AREAS,
   ROUTE_CHRONOLOGY,
-  STEPS_BY_AREA,
   STEPS_BY_PHASE,
+  PROFILES_BY_ARCHETYPE,
 } from "../lib/data";
 import { formatNumber, itemGroupIcon } from "../lib/format";
 import { navigate } from "../lib/router";
-import { levelFromStats } from "../lib/classes";
+import { STAT_LABELS, STAT_ORDER, levelFromStats } from "../lib/classes";
 import { DATA_BASELINE, GAME_VERSION } from "../data/game";
-import type { Item, PhaseGate, RouteArea, RouteStep, StepStatus } from "../lib/types";
+import type { PhaseGate, RouteArea, RouteStep, StepStatus } from "../lib/types";
 import "./dashboard.css";
 
 const PHASES = ROUTE_CHRONOLOGY.phases;
@@ -124,6 +143,13 @@ const SCOPE_HREF: Record<string, string> = {
   endings: "/completion?tab=endings",
   remembrances: "/completion?tab=remembrances",
   ngplus: "/completion?tab=readiness",
+  graces: "/atlas",
+  world: "/atlas",
+  upgrades: "/materials?tab=upgrades",
+  materials: "/materials?tab=materials",
+  merchants: "/farms?tab=merchants",
+  "npc-walkthrough": "/journey?tab=npc",
+  "branch-rewards": "/completion?tab=branch",
 };
 
 export function DashboardPage() {
@@ -157,19 +183,6 @@ export function DashboardPage() {
   const otherLinkedCount = next
     ? next.linkedIds.filter((id) => !ITEM_BY_ID[id] && !ENCOUNTER_BY_ID[id]).length
     : 0;
-  const areaItems = (() => {
-    const regional = (ITEMS_BY_REGION[area] ?? []).filter((item) => !character.items[item.id]);
-    if (regional.length) return regional.slice(0, 6);
-    const linked = new Map<string, Item>();
-    for (const step of STEPS_BY_AREA[area] ?? []) {
-      for (const id of step.linkedIds) {
-        const item = ITEM_BY_ID[id];
-        if (item) linked.set(item.id, item);
-      }
-    }
-    return [...linked.values()].filter((item) => !character.items[item.id]).slice(0, 6);
-  })();
-
   const phaseRows = useMemo<PhaseRow[]>(
     () =>
       PHASES.map((phase, index) => {
@@ -211,7 +224,28 @@ export function DashboardPage() {
   const upcomingGateMissables = upcomingGate
     ? missableStats(gateScopeSteps(upcomingGate), journey.steps)
     : undefined;
-  const heroImage = next?.phase === "Shadow of the Erdtree" ? ART.heroSote : ART.heroErdtree;
+  const heroImage =
+    next?.phase === "Shadow of the Erdtree"
+      ? ART.heroSote
+      : next?.phase === "Base Game — endgame"
+        ? ART.erdtreeShots[4]
+        : ART.erdtreeShots[2];
+
+  const nextMissable = next
+    ? [...(STEPS_BY_PHASE[next.phase] ?? [])]
+        .filter((step) => step.missable && journey.steps[step.id] !== "done" && journey.steps[step.id] !== "skipped")
+        .sort((a, b) => a.order - b.order)[0]
+    : undefined;
+
+  const level150 = character.archetypeId
+    ? PROFILES_BY_ARCHETYPE[character.archetypeId]?.find((entry) => entry.level === 150)
+    : undefined;
+  const level200 = character.archetypeId
+    ? PROFILES_BY_ARCHETYPE[character.archetypeId]?.find((entry) => entry.level === 200)
+    : undefined;
+  const currentScopedProfile = profile ?? level150;
+  const showLevel200 = level > 150 && Boolean(level200);
+  const [resetOpen, setResetOpen] = useState(false);
 
   const completeNext = () => {
     if (!next) return;
@@ -224,8 +258,16 @@ export function DashboardPage() {
   };
 
   const openCommandSearch = () => {
-    window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true }));
+    window.dispatchEvent(new Event("er-companion:search"));
   };
+
+  useEffect(() => {
+    const onQuickLog = () => {
+      if (next) completeNext();
+    };
+    window.addEventListener("er-companion:quick-log", onQuickLog);
+    return () => window.removeEventListener("er-companion:quick-log", onQuickLog);
+  });
 
   const heroKicker = next ? `Next action · ${next.phase}` : "Full route · complete";
   const heroTitle = next?.instruction ?? "The full route is closed.";
@@ -260,9 +302,6 @@ export function DashboardPage() {
           Review missables
         </Button>
       ) : null}
-      <Button variant="ghost" icon="map" onClick={() => navigate("/journey")}>
-        Route details
-      </Button>
     </>
   ) : (
     <>
@@ -291,8 +330,8 @@ export function DashboardPage() {
             <Button variant="primary" icon="map" onClick={() => navigate("/journey")}>
               Open journey
             </Button>
-            <Button variant="ghost" icon="search" onClick={openCommandSearch}>
-              Search
+            <Button variant="ghost" icon="refresh" onClick={() => setResetOpen(true)}>
+              Reset progress
             </Button>
           </>
         }
@@ -513,17 +552,13 @@ export function DashboardPage() {
         </div>
       </div>
 
-      <section style={{ marginTop: 22 }}>
-        <SectionTitle
-          title="Route phases"
-          note="Canonical order: Maliketh → Shadow of the Erdtree → Ashen Capital"
-          actions={
-            <Button variant="ghost" size="sm" iconRight="chevronRight" onClick={() => navigate("/journey")}>
-              Open route
-            </Button>
-          }
-        />
-        <div className="dashboard-phase-grid">
+      <Disclosure
+        title="Route phases"
+        summary="Canonical order: Maliketh → Shadow of the Erdtree → Ashen Capital"
+        tone="accent"
+        icon="map"
+      >
+        <div className="dashboard-phase-grid" style={{ marginTop: 12 }}>
           {phaseRows.map((phase) => {
             const isCurrent = next ? phase.label === next.phase : phase.index === phaseRows.length - 1;
             return (
@@ -571,7 +606,7 @@ export function DashboardPage() {
             );
           })}
         </div>
-      </section>
+      </Disclosure>
 
       <div className={`dashboard-alert-grid${upcomingGate ? "" : " dashboard-alert-grid--single"}`}>
         <section className={`card card-pad dashboard-missables${focusPhase.missables.remaining ? "" : " is-clear"}`}>
@@ -598,6 +633,31 @@ export function DashboardPage() {
               ? "These steps can be lost permanently. Resolve them or consciously skip them before crossing the phase gate."
               : "Every flagged missable in this phase is resolved. Continue when the surrounding collection and quest state is ready."}
           </p>
+          {nextMissable ? (
+            <button
+              type="button"
+              className="dashboard-next-missable"
+              onClick={() =>
+                navigate(
+                  `/journey?phase=${encodeURIComponent(phaseIdForLabel(nextMissable.phase))}&area=${encodeURIComponent(
+                    nextMissable.area,
+                  )}&step=${nextMissable.id}`,
+                )
+              }
+            >
+              <Icon name="alert" size={14} />
+              <span className="grow">
+                <span className="dashboard-next-missable-title">
+                  Next missable · #{formatNumber(nextMissable.order)} · {nextMissable.area}
+                </span>
+                <span className="dashboard-next-missable-copy">{nextMissable.instruction}</span>
+                {nextMissable.warning ? (
+                  <span className="dashboard-next-missable-warning">{nextMissable.warning}</span>
+                ) : null}
+              </span>
+              <Icon name="chevronRight" size={14} />
+            </button>
+          ) : null}
           <ProgressBar
             value={
               focusPhase.missables.total
@@ -634,13 +694,9 @@ export function DashboardPage() {
         </section>
 
         {upcomingGate ? (
-          <ArtBanner
-            image={upcomingGate.id === "GATE-DLC" ? ART.heroSote : ART.heroErdtree}
-            variant={upcomingGate.id === "GATE-DLC" ? "sote" : "erdtree"}
-            className={`dashboard-gate${upcomingGate.severity === "MISSABLE" ? " dashboard-gate--danger" : ""}`}
-            caption={`Phase gate · ${upcomingGate.severity}`}
-            title={upcomingGate.title}
-          >
+          <section className={`card card-pad dashboard-gate${upcomingGate.severity === "MISSABLE" ? " dashboard-gate--danger" : ""}`}>
+            <div className="eyebrow">Phase gate · {upcomingGate.severity}</div>
+            <h3 className="dashboard-gate-next-title">{upcomingGate.title}</h3>
             <p className="dashboard-gate-copy">{upcomingGate.warning}</p>
             {upcomingGateMissables ? (
               <p className="dashboard-gate-count">
@@ -663,7 +719,7 @@ export function DashboardPage() {
                 Review gate missables
               </Button>
             </div>
-          </ArtBanner>
+          </section>
         ) : nextGate ? (
           <section className="card card-pad dashboard-gate-next">
             <div className="eyebrow">Next phase gate</div>
@@ -684,6 +740,71 @@ export function DashboardPage() {
           </section>
         ) : null}
       </div>
+
+      <section className="card card-pad dashboard-build-stats" style={{ marginTop: 22 }}>
+        <SectionTitle
+          title="Build stats"
+          note={profile ? `${profile.archetype} · level ${profile.level}` : "No certified profile selected"}
+          actions={
+            <Button variant="ghost" size="sm" iconRight="chevronRight" onClick={() => navigate("/builds")}>
+              Builds
+            </Button>
+          }
+        />
+        {currentScopedProfile ? (
+          <>
+            <div className="dashboard-build-stats-grid">
+              <div>
+                <div className="stat-label">Current</div>
+                <div className="pulse-value">{level}</div>
+                <div className="tiny faint">{character.name}</div>
+              </div>
+              <div>
+                <div className="stat-label">Level 150 target</div>
+                <div className="pulse-value">{level150 ? level150.level : "—"}</div>
+                <div className="tiny faint">{level150 ? level150.archetype : "No level-150 profile"}</div>
+              </div>
+              <div>
+                <div className="stat-label">Level 200 target</div>
+                <div className="pulse-value">{showLevel200 && level200 ? level200.level : "Locked"}</div>
+                <div className="tiny faint">
+                  {showLevel200 && level200 ? level200.archetype : "Unlocks above level 150"}
+                </div>
+              </div>
+            </div>
+            <StatCompare
+              rows={STAT_ORDER.map((key) => ({
+                key,
+                label: STAT_LABELS[key],
+                current: character.stats[key],
+                target: currentScopedProfile.stats[key],
+              }))}
+            />
+            <div className="row wrap" style={{ marginTop: 10 }}>
+              {level150 ? (
+                <Button size="sm" variant="primary" icon="check" onClick={() => applyProfile(level150.id)}>
+                  Apply level 150
+                </Button>
+              ) : null}
+              {showLevel200 && level200 ? (
+                <Button size="sm" icon="check" onClick={() => applyProfile(level200.id)}>
+                  Apply level 200
+                </Button>
+              ) : null}
+              <Button size="sm" variant="ghost" icon="helmet" onClick={() => navigate("/character")}>
+                Open character
+              </Button>
+            </div>
+          </>
+        ) : (
+          <Callout tone="warning" icon="spark">
+            Pick a certified archetype to compare your current spread with the level 150 and 200 targets.{" "}
+            <button className="btn btn-sm btn-ghost" onClick={() => navigate("/builds")}>
+              Open builds
+            </button>
+          </Callout>
+        )}
+      </section>
 
       <section style={{ marginTop: 22 }}>
         <SectionTitle
@@ -787,49 +908,10 @@ export function DashboardPage() {
         </section>
 
         <div className="stack">
-          <section className="card card-pad">
-            <SectionTitle
-              title={`Collection focus · ${area}`}
-              note={`${areaItems.length} shown`}
-              actions={
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  iconRight="chevronRight"
-                  onClick={() => navigate(`/collection?region=${encodeURIComponent(area)}`)}
-                >
-                  Collection
-                </Button>
-              }
-            />
-            {areaItems.length ? (
-              <div className="stack" style={{ gap: 7 }}>
-                {areaItems.map((item) => (
-                  <button
-                    key={item.id}
-                    className="item-card"
-                    onClick={() => navigate(`/collection?item=${encodeURIComponent(item.id)}`)}
-                  >
-                    <span className="item-glyph">
-                      <Icon name={itemGroupIcon(item.group)} size={14} />
-                    </span>
-                    <span className="grow">
-                      <span className="item-name">{item.name}</span>
-                      <span className="item-sub">
-                        {item.group} · {item.acquisitionType}
-                      </span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <p className="small muted">No catalogued items remain in this area.</p>
-            )}
-          </section>
 
-          <section className="card card-pad dashboard-command">
-            <SectionTitle title="Command & references" />
-            <div className="dashboard-quick-links">
+
+          <Disclosure title="Command & references" icon="command" tone="muted">
+            <div className="dashboard-quick-links" style={{ marginTop: 10 }}>
               <Button size="sm" icon="search" onClick={openCommandSearch}>
                 Command search
               </Button>
@@ -844,22 +926,61 @@ export function DashboardPage() {
               </Button>
             </div>
             <p className="tiny faint" style={{ marginTop: 10 }}>
-              Ctrl/Cmd + K opens search from anywhere. Character level {level} · {character.classId} ·{" "}
-              {QUESTLINES.length} questlines tracked.
+              Ctrl/Cmd + K opens search from anywhere.
+              {isDesktop() ? " Ctrl+Shift+L logs the next step from anywhere on the desktop app." : ""} Character level{" "}
+              {level} · {character.classId} · {QUESTLINES.length} questlines tracked.
             </p>
-          </section>
+          </Disclosure>
         </div>
       </div>
 
-      <p className="tiny faint" style={{ marginTop: 26 }}>
-        {formatNumber(route.total)} route steps · {formatNumber(ROUTE_AREAS.length)} route sections ·{" "}
-        {chronology.total} companion chronology actions · {formatNumber(collection.total)} catalogued items ·{" "}
-        {formatNumber(scopesById.achievements.denominator)} achievements ·{" "}
-        {formatNumber(scopesById.bosses.denominator)} bosses · {QUESTLINES.length} questlines ·{" "}
-        {formatNumber(scopesById.quests.denominator)} quest steps · {formatNumber(scopesById.ngplus.denominator)} NG+
-        items · game {GAME_VERSION.app}/Reg {GAME_VERSION.regulation} · content baseline {DATA_BASELINE.regulation} ·{" "}
-        {state.settings.spoilerMode === "strict" ? "spoiler-safe" : "revealed"} mode
-      </p>
+      <div style={{ marginTop: 26 }}>
+        <Disclosure title="Content pack details" tone="muted" icon="scroll">
+          <p className="tiny faint" style={{ margin: 0 }}>
+            {formatNumber(route.total)} route steps · {formatNumber(ROUTE_AREAS.length)} route sections ·{" "}
+            {chronology.total} companion chronology actions · {formatNumber(collection.total)} catalogued items ·{" "}
+            {formatNumber(scopesById.achievements.denominator)} achievements ·{" "}
+            {formatNumber(scopesById.bosses.denominator)} bosses · {QUESTLINES.length} questlines ·{" "}
+            {formatNumber(scopesById.quests.denominator)} quest steps · {formatNumber(scopesById.ngplus.denominator)} NG+
+            items · game {GAME_VERSION.app}/Reg {GAME_VERSION.regulation} · content baseline{" "}
+            {DATA_BASELINE.regulation} · {state.settings.spoilerMode === "strict" ? "spoiler-safe" : "revealed"} mode
+          </p>
+        </Disclosure>
+      </div>
+
+      <Modal
+        open={resetOpen}
+        title="Reset all companion progress?"
+        onClose={() => setResetOpen(false)}
+        actions={
+          <>
+            <Button variant="ghost" onClick={() => setResetOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              icon="refresh"
+              onClick={() => {
+                resetAll();
+                setResetOpen(false);
+                toast.push("Companion reset to a fresh state.", "success");
+              }}
+            >
+              Reset everything
+            </Button>
+          </>
+        }
+      >
+        <Callout tone="danger" icon="alert">
+          This replaces every character, journey, route step, collection entry, and setting with a fresh companion. Export
+          a backup first if you want to keep this state.
+        </Callout>
+        <div className="row wrap" style={{ marginTop: 12 }}>
+          <Button size="sm" icon="download" onClick={() => navigate("/settings")}>
+            Export a backup first
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   Callout,
   Drawer,
   EmptyState,
+  PageHeader,
   ProgressBar,
   SearchInput,
   SectionTitle,
@@ -12,13 +13,20 @@ import {
   TabBar,
   useToast,
 } from "../components/ui";
-import { ART, ArtHero } from "../components/Art";
 import { Icon } from "../components/Icon";
-import type { Achievement, BossStatus, BossStrategy, Encounter } from "../lib/types";
-import { setBossStatus, useActiveJourney } from "../lib/store";
+import type {
+  Achievement,
+  BossStatus,
+  BossStrategy,
+  Encounter,
+  JourneyState,
+  Settings,
+} from "../lib/types";
+import { setBossReveal, setBossStatus, useActiveJourney, useAppState } from "../lib/store";
 import { bossStrategyCount } from "../lib/selectors";
 import {
   ACHIEVEMENTS,
+  BOSS_DESCRIPTIONS,
   BOSS_NAMES,
   BOSS_STRATEGIES,
   BOSS_STRATEGIES_BY_BOSS,
@@ -26,6 +34,7 @@ import {
   PROFILE_BY_ID,
   ROUTE_AREAS,
   STEP_BY_ID,
+  normalizeContentKey,
 } from "../lib/data";
 import { navigate, queryString, useRoute } from "../lib/router";
 import "./world.css";
@@ -35,13 +44,17 @@ type BossTab = "encounters" | "prep";
 interface EncounterCardProps {
   encounter: Encounter;
   status?: BossStatus;
+  hidden: boolean;
   onOpen: () => void;
   onStatus: (status: BossStatus | null) => void;
+  onReveal: () => void;
 }
 
 interface EncounterDetailProps {
   encounter: Encounter;
   status?: BossStatus;
+  hidden: boolean;
+  onReveal: () => void;
 }
 
 interface StrategyFieldProps {
@@ -132,6 +145,30 @@ function linkedEncounterStatus(boss: string, bosses: Record<string, BossStatus>)
   return undefined;
 }
 
+/** Description keys are encounter ids; fall back to a normalized name match. */
+const BOSS_LORE_BY_NORMALIZED_KEY: Record<string, string> = Object.fromEntries(
+  Object.entries(BOSS_DESCRIPTIONS).map(([key, entry]) => [normalizeContentKey(key), entry.text]),
+);
+
+/**
+ * The boss ledger withholds names, locations, strategies, notes and lore until
+ * the fight is defeated or the player reveals it. Manual reveals live on the
+ * journey so they persist; the global setting can turn the gate off entirely.
+ */
+function isEncounterHidden(settings: Settings, journey: JourneyState, encounter: Encounter): boolean {
+  if (settings.bossSpoilerMode === "show") return false;
+  if (journey.bosses[encounter.id] === "defeated") return false;
+  return !journey.bossReveals[encounter.id] && !journey.bossReveals[encounter.name];
+}
+
+function isBossNameHidden(settings: Settings, journey: JourneyState, boss: string): boolean {
+  if (settings.bossSpoilerMode === "show") return false;
+  const linked = ENCOUNTERS.filter((encounter) => encounter.name === boss);
+  if (linked.some((encounter) => journey.bosses[encounter.id] === "defeated")) return false;
+  if (journey.bossReveals[boss]) return false;
+  return !linked.some((encounter) => journey.bossReveals[encounter.id]);
+}
+
 function DetailRow({ label, value }: { label: string; value?: string | number }) {
   if (value === undefined || value === null || value === "") return null;
   return (
@@ -152,13 +189,16 @@ function StrategyField({ label, value, wide = false }: StrategyFieldProps) {
   );
 }
 
-function EncounterCard({ encounter, status, onOpen, onStatus }: EncounterCardProps) {
+function EncounterCard({ encounter, status, hidden, onOpen, onStatus, onReveal }: EncounterCardProps) {
   const step = encounter.routeStepIds[0] ? STEP_BY_ID[encounter.routeStepIds[0]] : undefined;
   const required = isRequired(encounter.required);
   const missable = isMissable(encounter);
   const achievement = encounterAchievement(encounter);
+  const name = hidden ? `Unknown encounter · ${encounter.region}` : encounter.name;
   return (
-    <article className={`card card-pad world-encounter ${status ? `is-${status}` : ""}`.trim()}>
+    <article
+      className={`card card-pad world-encounter ${status ? `is-${status}` : ""} ${hidden ? "is-hidden" : ""}`.trim()}
+    >
       <div className="row-between wrap" style={{ gap: 6 }}>
         <div className="world-badges">
           <Badge tone="accent">{encounter.type}</Badge>
@@ -167,109 +207,176 @@ function EncounterCard({ encounter, status, onOpen, onStatus }: EncounterCardPro
             {encounter.dlc ? "DLC" : encounter.game ?? "Base Game"}
           </Badge>
           {status ? <Badge tone={statusTone(status)}>{statusLabel(status)}</Badge> : null}
+          {hidden ? (
+            <Badge tone="warning">
+              <Icon name="lock" size={11} /> Spoiler safe
+            </Badge>
+          ) : null}
         </div>
-        <span className="tiny faint mono">{encounter.id}</span>
+        <span className="tiny faint mono">{hidden ? "—" : encounter.id}</span>
       </div>
 
-      <button className="world-title-btn" onClick={onOpen}>
-        {encounter.name}
-      </button>
+      {hidden ? (
+        <span className="world-title-static">{name}</span>
+      ) : (
+        <button className="world-title-btn" onClick={onOpen}>
+          {name}
+        </button>
+      )}
 
       <div className="world-location">
         <Icon name="map" size={12} />
-        <span>
-          {encounter.section ?? encounter.region} · {encounter.location}
-        </span>
+        <span>{hidden ? "Location sealed" : `${encounter.section ?? encounter.region} · ${encounter.location}`}</span>
       </div>
 
-      <div className="world-badges">
-        <Badge>{encounter.levelRange || encounter.recommendedLevel || "Level unlisted"}</Badge>
-        {missable ? <Badge tone="danger">MISSABLE</Badge> : null}
-        {encounter.optional ? <Badge>Optional fight</Badge> : null}
-        {encounter.questRelated ? <Badge tone="info">Quest</Badge> : null}
-        {achievement ? <Badge tone="success">🏆 {achievement.name}</Badge> : null}
-        {encounter.difficulty ? <Badge tone="danger">{encounter.difficulty}</Badge> : null}
-      </div>
+      {hidden ? (
+        <>
+          <p className="small faint">
+            Name, strategy, notes and lore stay sealed until this fight is marked defeated, or you reveal it for this
+            journey.
+          </p>
+          <div className="world-card-actions">
+            <Button size="sm" icon="eye" onClick={onReveal} aria-label="Reveal this encounter">
+              Reveal
+            </Button>
+            <Button
+              size="sm"
+              variant={status === "defeated" ? "primary" : "default"}
+              icon="trophy"
+              aria-label="Mark this encounter defeated"
+              onClick={() => onStatus(status === "defeated" ? null : "defeated")}
+            >
+              Defeated
+            </Button>
+            <Button
+              size="sm"
+              variant={status === "deferred" ? "primary" : "default"}
+              icon="clock"
+              aria-label="Defer this encounter"
+              onClick={() => onStatus(status === "deferred" ? null : "deferred")}
+            >
+              Defer
+            </Button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="world-badges">
+            <Badge>{encounter.levelRange || encounter.recommendedLevel || "Level unlisted"}</Badge>
+            {missable ? <Badge tone="danger">MISSABLE</Badge> : null}
+            {encounter.optional ? <Badge>Optional fight</Badge> : null}
+            {encounter.questRelated ? <Badge tone="info">Quest</Badge> : null}
+            {achievement ? <Badge tone="success">🏆 {achievement.name}</Badge> : null}
+            {encounter.difficulty ? <Badge tone="danger">{encounter.difficulty}</Badge> : null}
+          </div>
 
-      <p className="small muted world-clamp">
-        {encounter.description || encounter.strategyNotes || encounter.notes}
-      </p>
+          <p className="small muted world-clamp">
+            {encounter.description || encounter.strategyNotes || encounter.notes}
+          </p>
 
-      {encounter.defaultRoute ? (
-        <div className="world-note">
-          Plan: {encounter.defaultRoute}
-          {encounter.returnObjective ? ` · Return: ${encounter.returnObjective}` : ""}
-        </div>
-      ) : null}
+          {encounter.defaultRoute ? (
+            <div className="world-note">
+              Plan: {encounter.defaultRoute}
+              {encounter.returnObjective ? ` · Return: ${encounter.returnObjective}` : ""}
+            </div>
+          ) : null}
 
-      <div className="world-badges">
-        {step ? (
-          <button
-            className="chip quest-route-chip"
-            onClick={() =>
-              navigate(`/journey?area=${encodeURIComponent(step.area)}&step=${encodeURIComponent(step.id)}`)
-            }
-          >
-            <Icon name="map" size={12} /> Step {step.order + 1} · {step.area}
-          </button>
-        ) : (
-          <span className="tiny faint">No route step linked</span>
-        )}
-        {achievement ? (
-          <button
-            className="chip quest-route-chip"
-            onClick={() => navigate(`/completion?tab=endings&achievement=${encodeURIComponent(achievement.id)}`)}
-          >
-            <Icon name="trophy" size={12} /> Achievement
-          </button>
-        ) : null}
-        {encounter.wikiUrl ? (
-          <a className="chip" href={encounter.wikiUrl} target="_blank" rel="noreferrer noopener">
-            <Icon name="external" size={12} /> Wiki
-          </a>
-        ) : null}
-      </div>
+          <div className="world-badges">
+            {step ? (
+              <button
+                className="chip quest-route-chip"
+                onClick={() =>
+                  navigate(`/journey?area=${encodeURIComponent(step.area)}&step=${encodeURIComponent(step.id)}`)
+                }
+              >
+                <Icon name="map" size={12} /> Step {step.order + 1} · {step.area}
+              </button>
+            ) : (
+              <span className="tiny faint">No route step linked</span>
+            )}
+            {achievement ? (
+              <button
+                className="chip quest-route-chip"
+                onClick={() => navigate(`/completion?tab=endings&achievement=${encodeURIComponent(achievement.id)}`)}
+              >
+                <Icon name="trophy" size={12} /> Achievement
+              </button>
+            ) : null}
+            {encounter.wikiUrl ? (
+              <a className="chip" href={encounter.wikiUrl} target="_blank" rel="noreferrer noopener">
+                <Icon name="external" size={12} /> Wiki
+              </a>
+            ) : null}
+          </div>
 
-      <div className="world-card-actions">
-        <Button
-          size="sm"
-          variant={status === "defeated" ? "primary" : "default"}
-          icon="trophy"
-          aria-label={`Mark ${encounter.name} defeated`}
-          onClick={() => onStatus(status === "defeated" ? null : "defeated")}
-        >
-          Defeated
-        </Button>
-        <Button
-          size="sm"
-          variant={status === "deferred" ? "primary" : "default"}
-          icon="clock"
-          aria-label={`Defer ${encounter.name}`}
-          onClick={() => onStatus(status === "deferred" ? null : "deferred")}
-        >
-          Defer
-        </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          iconRight="chevronRight"
-          aria-label={`Open details for ${encounter.name}`}
-          onClick={onOpen}
-        >
-          Details
-        </Button>
-      </div>
+          <div className="world-card-actions">
+            <Button
+              size="sm"
+              variant={status === "defeated" ? "primary" : "default"}
+              icon="trophy"
+              aria-label={`Mark ${encounter.name} defeated`}
+              onClick={() => onStatus(status === "defeated" ? null : "defeated")}
+            >
+              Defeated
+            </Button>
+            <Button
+              size="sm"
+              variant={status === "deferred" ? "primary" : "default"}
+              icon="clock"
+              aria-label={`Defer ${encounter.name}`}
+              onClick={() => onStatus(status === "deferred" ? null : "deferred")}
+            >
+              Defer
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              iconRight="chevronRight"
+              aria-label={`Open details for ${encounter.name}`}
+              onClick={onOpen}
+            >
+              Details
+            </Button>
+          </div>
+        </>
+      )}
     </article>
   );
 }
 
-function EncounterDetail({ encounter, status }: EncounterDetailProps) {
+function EncounterDetail({ encounter, status, hidden, onReveal }: EncounterDetailProps) {
   const steps = encounter.routeStepIds.flatMap((id) => {
     const step = STEP_BY_ID[id];
     return step ? [step] : [];
   });
   const tags = encounter.tags ?? [];
   const achievement = encounterAchievement(encounter);
+  const lore =
+    BOSS_DESCRIPTIONS[encounter.id]?.text ??
+    BOSS_LORE_BY_NORMALIZED_KEY[normalizeContentKey(encounter.name)] ??
+    "";
+
+  if (hidden) {
+    return (
+      <div className="stack" style={{ gap: 12 }}>
+        <Callout tone="warning" icon="lock">
+          This encounter is sealed by the boss spoiler policy. Its name, strategy, notes and in-game lore stay hidden
+          until you mark it defeated or reveal it for this journey.
+        </Callout>
+        <dl className="kv">
+          <DetailRow label="Encounter" value="Unknown encounter" />
+          <DetailRow label="Region" value={encounter.region} />
+          <DetailRow label="Requirement" value={isRequired(encounter.required) ? "Required" : "Optional"} />
+          <DetailRow label="Game" value={encounter.dlc ? "DLC" : encounter.game ?? "Base Game"} />
+          <DetailRow label="Phase" value={encounterPhase(encounter)} />
+          <DetailRow label="Status" value={statusLabel(status)} />
+        </dl>
+        <Button icon="eye" onClick={onReveal}>
+          Reveal this encounter
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="stack" style={{ gap: 12 }}>
@@ -292,6 +399,16 @@ function EncounterDetail({ encounter, status }: EncounterDetailProps) {
           {encounter.strategyNotes}
         </Callout>
       ) : null}
+
+      {lore ? (
+        <section className="world-lore">
+          <div className="world-field-label">In-game lore</div>
+          <p className="quest-text">{lore}</p>
+          <div className="tiny faint">Source: in-game item and dialogue text</div>
+        </section>
+      ) : (
+        <p className="small faint">No in-game lore recorded for this encounter yet.</p>
+      )}
 
       <dl className="kv">
         <DetailRow label="Section" value={encounter.section} />
@@ -420,6 +537,7 @@ function EncounterDetail({ encounter, status }: EncounterDetailProps) {
 export function BossesPage() {
   const route = useRoute();
   const journey = useActiveJourney();
+  const { settings } = useAppState();
   const toast = useToast();
 
   const encounterParam = route.query.get("encounter");
@@ -496,23 +614,27 @@ export function BossesPage() {
       if (statusFilter === "defeated" && status !== "defeated") return false;
       if (statusFilter === "deferred" && status !== "deferred") return false;
       if (!q) return true;
-      const haystack = [
-        encounter.name,
-        encounter.type,
-        encounter.region,
-        encounter.section,
-        encounter.location,
-        encounter.levelRange,
-        encounter.description,
-        encounter.notes,
-        encounter.notes2,
-        encounter.strategyNotes,
-        encounter.required,
-        encounter.achievement,
-        encounterPhase(encounter),
-        encounterAchievement(encounter)?.name,
-        ...(encounter.tags ?? []),
-      ]
+      const hidden = isEncounterHidden(settings, journey, encounter);
+      const haystack = (hidden
+        ? [encounter.type, encounter.region, encounter.section, encounterPhase(encounter)]
+        : [
+            encounter.name,
+            encounter.type,
+            encounter.region,
+            encounter.section,
+            encounter.location,
+            encounter.levelRange,
+            encounter.description,
+            encounter.notes,
+            encounter.notes2,
+            encounter.strategyNotes,
+            encounter.required,
+            encounter.achievement,
+            encounterPhase(encounter),
+            encounterAchievement(encounter)?.name,
+            ...(encounter.tags ?? []),
+          ]
+      )
         .join(" ")
         .toLowerCase();
       return haystack.includes(q);
@@ -526,14 +648,20 @@ export function BossesPage() {
     dlcFilter,
     missableFilter,
     statusFilter,
-    journey.bosses,
+    journey,
+    settings,
   ]);
 
   const filteredBosses = useMemo(() => {
     const q = bossQuery.trim().toLowerCase();
     if (!q) return BOSS_NAMES;
-    return BOSS_NAMES.filter((boss) => boss.toLowerCase().includes(q));
-  }, [bossQuery]);
+    return BOSS_NAMES.filter((boss) => {
+      if (!isBossNameHidden(settings, journey, boss)) return boss.toLowerCase().includes(q);
+      const linked = ENCOUNTERS.find((encounter) => encounter.name === boss);
+      const sealedHaystack = ["unknown target", "sealed", linked?.region ?? ""].join(" ").toLowerCase();
+      return sealedHaystack.includes(q);
+    });
+  }, [bossQuery, settings, journey]);
 
   const filteredStrategies = useMemo(
     () =>
@@ -563,6 +691,7 @@ export function BossesPage() {
   const achievementCount = ENCOUNTERS.filter((encounter) => Boolean(encounterAchievement(encounter))).length;
   const defeatedCount = ENCOUNTERS.filter((encounter) => journey.bosses[encounter.id] === "defeated").length;
   const deferredCount = ENCOUNTERS.filter((encounter) => journey.bosses[encounter.id] === "deferred").length;
+  const sealedCount = ENCOUNTERS.filter((encounter) => isEncounterHidden(settings, journey, encounter)).length;
 
   const goTab = (id: string) => {
     const next = id === "prep" ? "prep" : "encounters";
@@ -580,11 +709,23 @@ export function BossesPage() {
   };
 
   const applyStatus = (encounter: Encounter, status: BossStatus | null) => {
+    const label = isEncounterHidden(settings, journey, encounter) ? "Encounter" : encounter.name;
     setBossStatus(encounter.id, status);
     toast.push(
-      status ? `${encounter.name} marked ${status}.` : `${encounter.name} status cleared.`,
+      status ? `${label} marked ${status}.` : `${label} status cleared.`,
       "success",
     );
+  };
+
+  const revealEncounter = (encounter: Encounter) => {
+    setBossReveal(encounter.id, true);
+    toast.push(`${encounter.name} revealed for ${journey.label}.`, "success");
+  };
+
+  const revealBoss = (boss: string) => {
+    const linked = ENCOUNTERS.find((encounter) => encounter.name === boss);
+    setBossReveal(linked?.id ?? boss, true);
+    toast.push(`${boss} revealed for ${journey.label}.`, "success");
   };
 
   const clearEncounterFilters = () => {
@@ -600,24 +741,31 @@ export function BossesPage() {
 
   const linkedEncounter = ENCOUNTERS.find((encounter) => encounter.name === selectedBoss);
   const bossStatus = linkedEncounterStatus(selectedBoss, journey.bosses);
+  const selectedBossHidden = isBossNameHidden(settings, journey, selectedBoss);
 
   return (
     <div className="page">
-      <ArtHero
-        image={ART.heroErdtree}
-        kicker={`${journey.label} · Boss ledger`}
+      <PageHeader
+        eyebrow={`${journey.label} · Boss ledger`}
         title="Bosses"
-        headingLevel={1}
-        size="compact"
         description={
           <>
             {ENCOUNTERS.length} catalogued encounters across {ENCOUNTER_SECTIONS.length} sections, with persistent
             outcomes and wiki references. {BOSS_NAMES.length} major targets carry {BOSS_STRATEGIES.length} strategy
-            rows at level {ALL_LEVELS.join(" / ")}.
+            rows at level {ALL_LEVELS.join(" / ")}. Names, strategy and lore stay sealed until defeated or revealed.
           </>
         }
         actions={
           <>
+            <Badge tone="danger">{missableCount} MISSABLE</Badge>
+            <Badge tone="info">{defeatedCount} defeated</Badge>
+            {settings.bossSpoilerMode === "hide-until-defeated" ? (
+              <Badge tone="warning">
+                {sealedCount} sealed · {journey.label}
+              </Badge>
+            ) : (
+              <Badge tone="accent">Spoilers shown</Badge>
+            )}
             <Button icon="map" onClick={() => navigate("/journey")}>
               Open journey
             </Button>
@@ -626,14 +774,7 @@ export function BossesPage() {
             </Button>
           </>
         }
-      >
-        <div className="world-badges">
-          <Badge tone="danger">{missableCount} MISSABLE</Badge>
-          <Badge tone="success">{achievementCount} achievement-linked</Badge>
-          <Badge tone="info">{defeatedCount} defeated</Badge>
-          <Badge tone="warning">{deferredCount} deferred</Badge>
-        </div>
-      </ArtHero>
+      />
 
       <div style={{ marginTop: 16 }}>
         <TabBar items={TABS} value={tab} onChange={goTab} />
@@ -777,8 +918,10 @@ export function BossesPage() {
                   key={encounter.id}
                   encounter={encounter}
                   status={journey.bosses[encounter.id]}
+                  hidden={isEncounterHidden(settings, journey, encounter)}
                   onOpen={() => openEncounter(encounter.id)}
                   onStatus={(status) => applyStatus(encounter, status)}
+                  onReveal={() => revealEncounter(encounter)}
                 />
               ))}
             </div>
@@ -808,22 +951,32 @@ export function BossesPage() {
             <div className="world-roster">
               {filteredBosses.map((boss) => {
                 const linked = linkedEncounterStatus(boss, journey.bosses);
+                const locked = isBossNameHidden(settings, journey, boss);
+                const linkedEncounterRow = ENCOUNTERS.find((encounter) => encounter.name === boss);
                 return (
                   <button
                     key={boss}
                     className={`world-roster-item ${boss === selectedBoss ? "active" : ""}`.trim()}
                     aria-current={boss === selectedBoss ? "true" : undefined}
+                    aria-label={locked ? "Unrevealed boss target" : boss}
                     onClick={() => selectBoss(boss)}
                   >
                     <span className="grow">
-                      <span className="world-roster-title">{boss}</span>
+                      <span className="world-roster-title">{locked ? "Unknown target" : boss}</span>
                       <span className="world-roster-sub">
-                        {bossStrategyCount(boss)} strategies · levels {ALL_LEVELS.join(" / ")}
+                        {locked
+                          ? `Sealed · ${linkedEncounterRow?.region ?? "region unknown"}`
+                          : `${bossStrategyCount(boss)} strategies · levels ${ALL_LEVELS.join(" / ")}`}
                       </span>
                     </span>
                     {linked ? (
                       <Badge tone={statusTone(linked)} className="world-roster-badge">
                         {linked === "defeated" ? "Defeated" : "Deferred"}
+                      </Badge>
+                    ) : null}
+                    {locked ? (
+                      <Badge tone="warning" className="world-roster-badge">
+                        <Icon name="lock" size={11} />
                       </Badge>
                     ) : null}
                   </button>
@@ -840,21 +993,51 @@ export function BossesPage() {
                   <div className="eyebrow" style={{ marginBottom: 4 }}>
                     Major boss prep · {BOSS_NAMES.length} targets / {BOSS_STRATEGIES.length} rows
                   </div>
-                  <h2 className="world-boss-title">{selectedBoss}</h2>
+                  <h2 className="world-boss-title">
+                    {selectedBossHidden ? "Unknown target" : selectedBoss}
+                  </h2>
                   <div className="small muted" style={{ marginTop: 4 }}>
-                    {bossStrategyCount(selectedBoss)} strategy rows · {buildOptions.length} builds · levels{" "}
-                    {levelOptions.join(" / ")}
+                    {selectedBossHidden
+                      ? "Sealed by the boss spoiler policy until defeated or revealed."
+                      : `${bossStrategyCount(selectedBoss)} strategy rows · ${buildOptions.length} builds · levels ${levelOptions.join(" / ")}`}
                   </div>
                 </div>
                 <div className="world-badges">
-                  <Badge tone="accent">{filteredStrategies.length} shown</Badge>
+                  {selectedBossHidden ? (
+                    <Badge tone="warning">
+                      <Icon name="lock" size={11} /> Unrevealed
+                    </Badge>
+                  ) : (
+                    <Badge tone="accent">{filteredStrategies.length} shown</Badge>
+                  )}
                   {linkedEncounter ? (
                     <Badge tone={statusTone(bossStatus)}>{statusLabel(bossStatus)}</Badge>
                   ) : null}
                 </div>
               </div>
 
-              {linkedEncounter ? (
+              {selectedBossHidden ? (
+                <div className="stack" style={{ marginTop: 12 }}>
+                  <Callout tone="warning" icon="lock">
+                    {linkedEncounter ? linkedEncounter.region : "Region unlisted"} · strategy rows, gear and kill plan
+                    stay hidden until this target is defeated or revealed.
+                  </Callout>
+                  <div className="row wrap">
+                    <Button icon="eye" onClick={() => revealBoss(selectedBoss)}>
+                      Reveal target
+                    </Button>
+                    {linkedEncounter ? (
+                      <Button
+                        variant="ghost"
+                        icon="trophy"
+                        onClick={() => applyStatus(linkedEncounter, "defeated")}
+                      >
+                        Mark defeated
+                      </Button>
+                    ) : null}
+                  </div>
+                </div>
+              ) : linkedEncounter ? (
                 <div className="row wrap" style={{ marginTop: 10 }}>
                   <Badge tone="info">{linkedEncounter.type}</Badge>
                   <Badge>{linkedEncounter.region}</Badge>
@@ -873,48 +1056,50 @@ export function BossesPage() {
                 </p>
               )}
 
-              <div className="world-filters" style={{ marginTop: 14 }}>
-                <Select
-                  label="Build"
-                  className="world-filter-field"
-                  value={buildFilter}
-                  onChange={(event) => setBuildFilter(event.target.value)}
-                >
-                  <option value="all">All builds</option>
-                  {buildOptions.map(([id, name]) => (
-                    <option key={id} value={id}>
-                      {name}
-                    </option>
-                  ))}
-                </Select>
-                <Select
-                  label="Level"
-                  className="world-filter-field"
-                  value={levelFilter}
-                  onChange={(event) => setLevelFilter(event.target.value)}
-                >
-                  <option value="all">Both levels</option>
-                  {levelOptions.map((level) => (
-                    <option key={level} value={String(level)}>
-                      Level {level}
-                    </option>
-                  ))}
-                </Select>
-                <Button
-                  variant="ghost"
-                  icon="refresh"
-                  onClick={() => {
-                    setBuildFilter("all");
-                    setLevelFilter("all");
-                    setStrategyId(null);
-                  }}
-                >
-                  Reset
-                </Button>
-              </div>
+              {selectedBossHidden ? null : (
+                <div className="world-filters" style={{ marginTop: 14 }}>
+                  <Select
+                    label="Build"
+                    className="world-filter-field"
+                    value={buildFilter}
+                    onChange={(event) => setBuildFilter(event.target.value)}
+                  >
+                    <option value="all">All builds</option>
+                    {buildOptions.map(([id, name]) => (
+                      <option key={id} value={id}>
+                        {name}
+                      </option>
+                    ))}
+                  </Select>
+                  <Select
+                    label="Level"
+                    className="world-filter-field"
+                    value={levelFilter}
+                    onChange={(event) => setLevelFilter(event.target.value)}
+                  >
+                    <option value="all">Both levels</option>
+                    {levelOptions.map((level) => (
+                      <option key={level} value={String(level)}>
+                        Level {level}
+                      </option>
+                    ))}
+                  </Select>
+                  <Button
+                    variant="ghost"
+                    icon="refresh"
+                    onClick={() => {
+                      setBuildFilter("all");
+                      setLevelFilter("all");
+                      setStrategyId(null);
+                    }}
+                  >
+                    Reset
+                  </Button>
+                </div>
+              )}
             </section>
 
-            {filteredStrategies.length ? (
+            {selectedBossHidden ? null : filteredStrategies.length ? (
               <>
                 <section className="card card-pad">
                   <SectionTitle
@@ -1069,9 +1254,19 @@ export function BossesPage() {
 
       <Drawer
         open={Boolean(selectedEncounter)}
-        title={selectedEncounter?.name ?? "Encounter"}
+        title={
+          selectedEncounter
+            ? isEncounterHidden(settings, journey, selectedEncounter)
+              ? "Unknown encounter"
+              : selectedEncounter.name
+            : "Encounter"
+        }
         subtitle={
-          selectedEncounter ? `${selectedEncounter.region} · ${selectedEncounter.location}` : undefined
+          selectedEncounter
+            ? isEncounterHidden(settings, journey, selectedEncounter)
+              ? `${selectedEncounter.region} · sealed`
+              : `${selectedEncounter.region} · ${selectedEncounter.location}`
+            : undefined
         }
         onClose={() => navigate("/bosses")}
         footer={
@@ -1082,7 +1277,11 @@ export function BossesPage() {
                   size="sm"
                   variant={journey.bosses[selectedEncounter.id] === "defeated" ? "primary" : "default"}
                   icon="trophy"
-                  aria-label={`Mark ${selectedEncounter.name} defeated`}
+                  aria-label={
+                    isEncounterHidden(settings, journey, selectedEncounter)
+                      ? "Mark this encounter defeated"
+                      : `Mark ${selectedEncounter.name} defeated`
+                  }
                   onClick={() =>
                     applyStatus(
                       selectedEncounter,
@@ -1096,7 +1295,11 @@ export function BossesPage() {
                   size="sm"
                   variant={journey.bosses[selectedEncounter.id] === "deferred" ? "primary" : "default"}
                   icon="clock"
-                  aria-label={`Defer ${selectedEncounter.name}`}
+                  aria-label={
+                    isEncounterHidden(settings, journey, selectedEncounter)
+                      ? "Defer this encounter"
+                      : `Defer ${selectedEncounter.name}`
+                  }
                   onClick={() =>
                     applyStatus(
                       selectedEncounter,
@@ -1107,7 +1310,9 @@ export function BossesPage() {
                   Defer
                 </Button>
               </div>
-              <span className="tiny faint">{selectedEncounter.id}</span>
+              <span className="tiny faint">
+                {isEncounterHidden(settings, journey, selectedEncounter) ? "sealed" : selectedEncounter.id}
+              </span>
             </div>
           ) : null
         }
@@ -1116,6 +1321,8 @@ export function BossesPage() {
           <EncounterDetail
             encounter={selectedEncounter}
             status={journey.bosses[selectedEncounter.id]}
+            hidden={isEncounterHidden(settings, journey, selectedEncounter)}
+            onReveal={() => revealEncounter(selectedEncounter)}
           />
         ) : null}
       </Drawer>

@@ -33,6 +33,7 @@ import {
   ROUTE_AREAS,
   ROUTE_STEPS,
   STEP_BY_ID,
+  STEP_BY_SOURCE_ID,
   remapStepId,
   TECH_EDGES,
   TECH_NODES,
@@ -88,6 +89,7 @@ function journey(overrides: Partial<JourneyState> = {}): JourneyState {
     bosses: {},
     farmables: {},
     materials: {},
+    materialCounts: {},
     finite: {},
     merchants: {},
     scarabs: {},
@@ -100,6 +102,8 @@ function journey(overrides: Partial<JourneyState> = {}): JourneyState {
     worldChecks: {},
     upgradeCounts: {},
     npcWalkthroughSteps: {},
+    bossReveals: {},
+    decisionChecks: {},
     ...overrides,
   };
 }
@@ -131,6 +135,11 @@ function character(overrides: Partial<Character> = {}): Character {
       physick: ["", ""],
     },
     equipmentMode: "signature",
+    itemCounts: {},
+    itemOrigins: {},
+    statSnapshots: [],
+    progressionChecks: {},
+    bossReveals: {},
     ...overrides,
   };
 }
@@ -277,7 +286,22 @@ describe("canonical content integrity", () => {
       expect(ranks, `${list} rank order`).toEqual([...ranks].sort((a, b) => a - b));
       expect(Math.min(...ranks), `${list} rank floor`).toBeGreaterThan(0);
     }
-    expect(TIERS.length).toBe(866);
+    // 866 workbook rows + the six user-specified 1.17 weapon entries.
+    expect(TIERS.length).toBe(872);
+    const required = {
+      "Leontiel's Greatsword": "broken",
+      "Reed Great Katana": "s",
+      "Reverse Bladed Swords (Lightning)": "a",
+      "Itinerant Sword": "a",
+      "Hefty Scimitar": "b",
+      "Golden Order Flail": "b",
+    };
+    for (const [name, tier] of Object.entries(required)) {
+      const row = TIERS.find((entry) => entry.list === "Weapons" && entry.name === name);
+      expect(row, name).toBeDefined();
+      expect(row?.tier.toLowerCase().replace(/-tier$/, "")).toBe(tier);
+      expect(row?.wikiUrl, `${name} wiki link`).toMatch(/^https:\/\/eldenring\.wiki\.gg\/wiki\//);
+    }
   });
 });
 
@@ -312,7 +336,7 @@ describe("progress selectors", () => {
     const entry = LORE.find((row) => row.area === "Tutorial");
     expect(entry).toBeDefined();
     if (!entry) return;
-    const settings = { spoilerMode: "strict" as const, density: "comfortable" as const, reducedMotion: false, hideCompleted: false };
+    const settings = { spoilerMode: "strict" as const, density: "comfortable" as const, reducedMotion: false, hideCompleted: false, disclosure: "progressive" as const, interfaceScale: "auto" as const, bossSpoilerMode: "hide-until-defeated" as const };
     expect(loreAccess(journey(), settings, entry).unlocked).toBe(false);
     const done: Record<string, "done"> = {};
     for (const step of ROUTE_STEPS.filter((row) => row.sectionId === "starting-out")) done[step.id] = "done";
@@ -323,7 +347,7 @@ describe("progress selectors", () => {
     const entry = LORE.find((row) => row.area === "Enir-Ilim & DLC Finale");
     expect(entry).toBeDefined();
     if (!entry) return;
-    const settings = { spoilerMode: "reveal-all" as const, density: "comfortable" as const, reducedMotion: false, hideCompleted: false };
+    const settings = { spoilerMode: "reveal-all" as const, density: "comfortable" as const, reducedMotion: false, hideCompleted: false, disclosure: "progressive" as const, interfaceScale: "auto" as const, bossSpoilerMode: "hide-until-defeated" as const };
     expect(loreAccess(journey(), settings, entry).unlocked).toBe(true);
   });
 });
@@ -394,6 +418,15 @@ describe("full content catalogs", () => {
 });
 
 describe("beyond Redmaw ledgers", () => {
+  it("resolves atlas step links through the Redmaw source-step id", () => {
+    const linked = WORLD_OBJECTS.filter((object) => object.routeStepId);
+    expect(linked.length).toBeGreaterThan(0);
+    const resolved = linked.filter(
+      (object) => STEP_BY_ID[object.routeStepId] || STEP_BY_SOURCE_ID[object.routeStepId],
+    );
+    expect(resolved.length).toBe(linked.length);
+  });
+
   it("ships 697 world objects with resolved category counts", () => {
     expect(WORLD_OBJECTS).toHaveLength(697);
     expect(new Set(WORLD_OBJECTS.map((object) => object.id)).size).toBe(697);

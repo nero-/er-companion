@@ -3,6 +3,7 @@ import {
   Button,
   Callout,
   Checkbox,
+  CollapsibleCard,
   EmptyState,
   Modal,
   PageHeader,
@@ -12,19 +13,20 @@ import {
   Stat,
   useToast,
 } from "../components/ui";
-import { ART, ArtBanner } from "../components/Art";
 import { Icon } from "../components/Icon";
 import {
   ItemDrawer,
+  ItemQuantity,
   isItemMissable,
   isItemRouteLinked,
   isItemTimingSensitive,
   itemLocationKind,
   itemRegionName,
+  itemSweep,
 } from "../components/ItemDrawer";
 import { bulkSetItems, setItemOwned, useActiveCharacter } from "../lib/store";
 import { collectionSummary } from "../lib/selectors";
-import { ITEM_BY_ID, ITEMS, ITEMS_BY_GROUP, ROUTE_STEPS } from "../lib/data";
+import { ITEM_BY_ID, ITEM_DESCRIPTIONS, ITEMS, ITEMS_BY_GROUP, ROUTE_STEPS } from "../lib/data";
 import { formatNumber, itemGroupIcon } from "../lib/format";
 import { navigate, useRoute } from "../lib/router";
 import type { Item } from "../lib/types";
@@ -124,6 +126,7 @@ const CATALOG_COUNTS = (() => {
   let missable = 0;
   let missableDlc = 0;
   let timing = 0;
+  let lore = 0;
   const locations = { exact: 0, area: 0, unrecorded: 0 };
   for (const item of ITEMS) {
     if (isItemRouteLinked(item)) routeLinked += 1;
@@ -133,9 +136,10 @@ const CATALOG_COUNTS = (() => {
     } else if (isItemTimingSensitive(item)) {
       timing += 1;
     }
+    if (ITEM_DESCRIPTIONS[item.id]?.text) lore += 1;
     locations[itemLocationKind(item)] += 1;
   }
-  return { routeLinked, missable, missableDlc, timing, locations };
+  return { routeLinked, missable, missableDlc, timing, lore, locations };
 })();
 
 const SORT_KEYS: Record<string, SortKey> = {
@@ -146,6 +150,14 @@ const SORT_KEYS: Record<string, SortKey> = {
   section: "section",
   acquisition: "acquisition",
 };
+
+function asOwnedFilter(value: string | null | undefined): OwnedFilter {
+  return value === "owned" || value === "missing" ? value : "all";
+}
+
+function asSortKey(value: string | null | undefined): SortKey {
+  return value && Object.prototype.hasOwnProperty.call(SORT_KEYS, value) ? SORT_KEYS[value] : "name";
+}
 
 function sortLabel(item: Item, key: SortKey): string {
   if (key === "group") return item.group;
@@ -168,6 +180,22 @@ interface QueryPatch {
   item?: string;
 }
 
+const FILTERS_QUERY = "(min-width: 900px)";
+
+/** Filter chrome stays open on desktop and folded away on phones. */
+function useWideViewport(): boolean {
+  const [wide, setWide] = useState(() => window.matchMedia(FILTERS_QUERY).matches);
+
+  useEffect(() => {
+    const query = window.matchMedia(FILTERS_QUERY);
+    const onChange = (event: MediaQueryListEvent) => setWide(event.matches);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, []);
+
+  return wide;
+}
+
 export function CollectionPage() {
   const route = useRoute();
   const character = useActiveCharacter();
@@ -188,16 +216,15 @@ export function CollectionPage() {
     groupParam && Object.prototype.hasOwnProperty.call(ITEMS_BY_GROUP, groupParam) ? groupParam : "all";
   const region = regionParam && REGION_VALUES[regionParam] === true ? regionParam : "all";
   const game = gameParam && GAMES.includes(gameParam) ? gameParam : "all";
-  const ownedFilter: OwnedFilter =
-    ownedParam === "owned" || ownedParam === "missing" ? ownedParam : "all";
+  const ownedFilter: OwnedFilter = asOwnedFilter(ownedParam);
   const missableOnly = missableParam === "1" || missableParam === "true";
   const routeOnly = routeParam === "1" || routeParam === "true";
-  const sort: SortKey =
-    sortParam && Object.prototype.hasOwnProperty.call(SORT_KEYS, sortParam) ? SORT_KEYS[sortParam] : "name";
+  const sort: SortKey = asSortKey(sortParam);
   const activeItem =
     itemParam && Object.prototype.hasOwnProperty.call(ITEM_BY_ID, itemParam) ? ITEM_BY_ID[itemParam] : null;
 
   const [search, setSearch] = useState(qParam ?? "");
+  const wideViewport = useWideViewport();
   const [page, setPage] = useState(1);
   const [bulkTarget, setBulkTarget] = useState<BulkTarget | null>(null);
   const lastSyncedQuery = useRef(qParam ?? "");
@@ -374,18 +401,34 @@ export function CollectionPage() {
         }
       />
 
-      <ArtBanner
-        className="col-banner"
-        image={ART.erdtreeShots[1]}
-        caption="The Lands Between · armory index"
-        title="One ledger for every acquisition"
-        variant="erdtree"
-      >
-        <p className="col-banner-note">
-          {formatNumber(summary.total)} catalogued items · {formatNumber(CATALOG_COUNTS.routeLinked)} route-linked ·{" "}
-          {formatNumber(CATALOG_COUNTS.missable)} flagged missable
-        </p>
-      </ArtBanner>
+      <div className="col-summary-strip" aria-label="Catalogue coverage">
+        <span className="col-summary-lead">
+          <Icon name="bag" size={14} />
+          <strong>
+            {formatNumber(summary.owned)}/{formatNumber(summary.total)}
+          </strong>{" "}
+          owned
+        </span>
+        <span className="col-summary-sep" aria-hidden="true" />
+        <span className="col-summary-item">
+          <Icon name="map" size={13} />
+          {formatNumber(CATALOG_COUNTS.routeLinked)} route-linked
+        </span>
+        <span className="col-summary-sep" aria-hidden="true" />
+        <span className="col-summary-item">
+          <Icon name="book" size={13} />
+          {formatNumber(CATALOG_COUNTS.lore)} with lore
+          <span className="faint">
+            {" "}
+            · {Math.round((CATALOG_COUNTS.lore / Math.max(1, summary.total)) * 100)}% coverage
+          </span>
+        </span>
+        <span className="col-summary-sep" aria-hidden="true" />
+        <span className="col-summary-item is-warn">
+          <Icon name="alert" size={13} />
+          {formatNumber(CATALOG_COUNTS.missable)} missable
+        </span>
+      </div>
 
       <section className="col-stats" aria-label="Collection summary">
         <Stat
@@ -474,7 +517,17 @@ export function CollectionPage() {
         </div>
       </section>
 
-      <section className="card card-pad col-filters" aria-label="Collection filters">
+      <CollapsibleCard
+        title="Search & filters"
+        note={
+          activeFilterCount
+            ? `${activeFilterCount} active ${activeFilterCount === 1 ? "filter" : "filters"}`
+            : `${formatNumber(filtered.length)} of ${formatNumber(ITEMS.length)} matching`
+        }
+        defaultOpen={wideViewport}
+        className="col-filters"
+        key={wideViewport ? "filters-wide" : "filters-narrow"}
+      >
         <div className="col-filter-grid">
           <div className="field col-search-field">
             <span className="field-label">Search catalogue</span>
@@ -516,25 +569,13 @@ export function CollectionPage() {
           <Select
             label="Owned state"
             value={ownedFilter}
-            onChange={(event) => {
-              const value = event.target.value;
-              applyFilter({ owned: value === "owned" || value === "missing" ? value : "all" });
-            }}
+            onChange={(event) => applyFilter({ owned: asOwnedFilter(event.target.value) })}
           >
             <option value="all">All items</option>
             <option value="owned">Owned only</option>
             <option value="missing">Missing only</option>
           </Select>
-          <Select
-            label="Sort"
-            value={sort}
-            onChange={(event) => {
-              const value = Object.prototype.hasOwnProperty.call(SORT_KEYS, event.target.value)
-                ? SORT_KEYS[event.target.value]
-                : "name";
-              applyFilter({ sort: value });
-            }}
-          >
+          <Select label="Sort" value={sort} onChange={(event) => applyFilter({ sort: asSortKey(event.target.value) })}>
             <option value="name">Name</option>
             <option value="group">Group</option>
             <option value="region">Region</option>
@@ -579,7 +620,7 @@ export function CollectionPage() {
             Clear search &amp; filters
           </Button>
         </div>
-      </section>
+      </CollapsibleCard>
 
       <section className="card card-pad col-results" aria-label="Catalogue results" ref={resultsRef}>
         <SectionTitle
@@ -626,91 +667,124 @@ export function CollectionPage() {
             <div className="item-grid col-item-grid">
               {pageItems.map((item) => {
                 const owned = character.items[item.id] === true;
+                const count = Math.max(0, character.itemCounts[item.id] ?? (owned ? 1 : 0));
                 const missable = isItemMissable(item);
                 const timing = !missable && isItemTimingSensitive(item);
                 const routeLinked = isItemRouteLinked(item);
                 const legacyRef = !routeLinked && item.linkedRouteRaw.trim().length > 0;
                 const regionName = itemRegionName(item);
+                const description = ITEM_DESCRIPTIONS[item.id]?.text;
+                const sweep = routeLinked ? undefined : itemSweep(item);
                 return (
                   <div
                     className={`item-card col-item${owned ? " owned" : ""}${missable ? " is-missable" : ""}`}
                     key={item.id}
                   >
-                    <button
-                      type="button"
-                      className="col-item-open"
-                      onClick={() => applyQuery({ item: item.id })}
-                      aria-label={`Open details for ${item.name}`}
-                    >
-                      <span className="item-glyph">
-                        <Icon name={itemGroupIcon(item.group)} size={15} />
-                      </span>
-                      <span className="col-item-copy">
-                        <span className="item-name">{item.name}</span>
-                        <span className="item-sub">
-                          {item.group}
-                          {item.category && item.category !== item.group ? ` · ${item.category}` : ""}
+                    <div className="col-item-main">
+                      <button
+                        type="button"
+                        className="col-item-open"
+                        onClick={() => applyQuery({ item: item.id })}
+                        aria-label={`Open details for ${item.name}`}
+                      >
+                        <span className="item-glyph">
+                          <Icon name={itemGroupIcon(item.group)} size={15} />
                         </span>
-                        <span className="col-item-tags">
-                          <span className="col-item-tag">{item.game}</span>
-                          {regionName ? (
-                            <span className="col-item-tag" title={`Region: ${regionName}`}>
-                              <Icon name="map" size={10} />
-                              {regionName}
-                            </span>
-                          ) : (
-                            <span className="col-item-tag is-faint" title="The merged catalogue records the game, not a region.">
-                              Region not recorded
-                            </span>
-                          )}
-                          {missable ? (
-                            <span className="col-item-tag is-missable">
-                              <Icon name="alert" size={10} />
-                              MISSABLE
-                            </span>
-                          ) : timing ? (
-                            <span className="col-item-tag is-timing" title={item.missable}>
-                              <Icon name="clock" size={10} />
-                              Note
+                        <span className="col-item-copy">
+                          <span className="item-name">{item.name}</span>
+                          <span className="item-sub">
+                            {item.group}
+                            {item.category && item.category !== item.group ? ` · ${item.category}` : ""}
+                          </span>
+                          {description ? (
+                            <span className="col-item-desc" title={description}>
+                              {description}
                             </span>
                           ) : null}
-                          {routeLinked ? (
-                            <span
-                              className="col-item-tag is-route"
-                              title={`Linked to ${Math.max(item.routeStepIds.length, 1)} route ${
-                                Math.max(item.routeStepIds.length, 1) === 1 ? "step" : "steps"
-                              }`}
-                            >
-                              <Icon name="map" size={10} />
-                              {item.autoStepId ? "Auto route" : "Route"}
-                            </span>
-                          ) : legacyRef ? (
-                            <span className="col-item-tag is-legacy" title={`Legacy route reference: ${item.linkedRouteRaw}`}>
-                              <Icon name="clock" size={10} />
-                              Legacy ref
-                            </span>
-                          ) : null}
-                        </span>
-                        <span className="col-item-foot">
-                          <span className="col-item-acq" title={item.acquisitionType}>
-                            {item.acquisitionType || "Acquisition not recorded"}
+                          <span className="col-item-tags">
+                            <span className="col-item-tag">{item.game}</span>
+                            {regionName ? (
+                              <span className="col-item-tag" title={`Region: ${regionName}`}>
+                                <Icon name="map" size={10} />
+                                {regionName}
+                              </span>
+                            ) : (
+                              <span
+                                className="col-item-tag is-faint"
+                                title="The merged catalogue records the game, not a region."
+                              >
+                                Region not recorded
+                              </span>
+                            )}
+                            {missable ? (
+                              <span className="col-item-tag is-missable">
+                                <Icon name="alert" size={10} />
+                                MISSABLE
+                              </span>
+                            ) : timing ? (
+                              <span className="col-item-tag is-timing" title={item.missable}>
+                                <Icon name="clock" size={10} />
+                                Note
+                              </span>
+                            ) : null}
+                            {routeLinked ? (
+                              <span
+                                className="col-item-tag is-route"
+                                title={`Linked to ${Math.max(item.routeStepIds.length, 1)} route ${
+                                  Math.max(item.routeStepIds.length, 1) === 1 ? "step" : "steps"
+                                }`}
+                              >
+                                <Icon name="map" size={10} />
+                                {item.autoStepId ? "Auto route" : "Route"}
+                              </span>
+                            ) : legacyRef ? (
+                              <span
+                                className="col-item-tag is-legacy"
+                                title={`Legacy route reference: ${item.linkedRouteRaw}`}
+                              >
+                                <Icon name="clock" size={10} />
+                                Legacy ref
+                              </span>
+                            ) : null}
+                            {sweep ? (
+                              <span
+                                className="col-item-tag is-sweep"
+                                title={`Covered by the ${sweep.area} area sweep`}
+                              >
+                                <Icon name="target" size={10} />
+                                Area sweep
+                              </span>
+                            ) : null}
+                            {count > 1 ? (
+                              <span className="col-item-tag is-count" title={`${count} owned`}>
+                                ×{count}
+                              </span>
+                            ) : null}
                           </span>
-                          <span className={`col-item-state${owned ? " is-owned" : ""}`}>
-                            {owned ? "Owned" : "Missing"}
+                          <span className="col-item-foot">
+                            <span className="col-item-acq" title={item.acquisitionType}>
+                              {item.acquisitionType || "Acquisition not recorded"}
+                            </span>
+                            <span className={`col-item-state${owned ? " is-owned" : ""}`}>
+                              {owned ? "Owned" : "Missing"}
+                            </span>
                           </span>
                         </span>
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      className={`col-item-toggle${owned ? " is-owned" : ""}`}
-                      aria-pressed={owned}
-                      aria-label={owned ? `Mark ${item.name} as missing` : `Mark ${item.name} as owned`}
-                      title={owned ? "Owned — click to mark missing" : "Missing — click to mark owned"}
-                      onClick={() => toggleOwned(item)}
-                    >
-                      <Icon name={owned ? "check" : "plus"} size={14} />
-                    </button>
+                      </button>
+                      <button
+                        type="button"
+                        className={`col-item-toggle${owned ? " is-owned" : ""}`}
+                        aria-pressed={owned}
+                        aria-label={owned ? `Mark ${item.name} as missing` : `Mark ${item.name} as owned`}
+                        title={owned ? "Owned — click to mark missing" : "Missing — click to mark owned"}
+                        onClick={() => toggleOwned(item)}
+                      >
+                        <Icon name={owned ? "check" : "plus"} size={14} />
+                      </button>
+                    </div>
+                    <div className="col-item-bar">
+                      <ItemQuantity item={item} count={count} />
+                    </div>
                   </div>
                 );
               })}

@@ -3,6 +3,7 @@ import {
   Badge,
   Button,
   Callout,
+  Disclosure,
   Drawer,
   EmptyState,
   Modal,
@@ -13,10 +14,10 @@ import {
   useToast,
 } from "../components/ui";
 import { Icon } from "../components/Icon";
-import { ART, ArtBanner } from "../components/Art";
 import {
   AREA_BY_NAME,
   LORE,
+  LORE_EXPANDED,
   SECTION_BY_NORMALIZED_TITLE,
   normalizeContentKey,
 } from "../lib/data";
@@ -72,6 +73,7 @@ export function LorePage() {
   const [readFilter, setReadFilter] = useState<ReadFilter>("all");
   const [lockFilter, setLockFilter] = useState<LockFilter>("all");
   const [pendingReveal, setPendingReveal] = useState<string | null>(null);
+  const [pendingHide, setPendingHide] = useState<string | null>(null);
   const [gateEntryId, setGateEntryId] = useState<string | null>(null);
 
   const areaParam = route.query.get("area") ?? "all";
@@ -126,6 +128,18 @@ export function LorePage() {
   const selectedEntry = entryParam ? orderedLore.find((entry) => entry.id === entryParam) : undefined;
   const selectedAccess = selectedEntry ? accessById[selectedEntry.id] : undefined;
   const selectedSection = selectedEntry ? sectionForArea(selectedEntry.area) : undefined;
+  const selectedExpanded = selectedEntry
+    ? (LORE_EXPANDED[selectedEntry.id] ??
+      Object.values(LORE_EXPANDED).find(
+        (row) => normalizeContentKey(row.id) === normalizeContentKey(selectedEntry.area),
+      ))
+    : undefined;
+  const selectedRawSections = selectedEntry
+    ? DETAIL_SECTIONS.flatMap((section) => {
+        const value = selectedEntry[section.key];
+        return value ? [{ ...section, value }] : [];
+      })
+    : [];
   const gateEntry = gateEntryId ? orderedLore.find((entry) => entry.id === gateEntryId) : undefined;
   const gateAccess = gateEntry ? accessById[gateEntry.id] : undefined;
 
@@ -141,6 +155,13 @@ export function LorePage() {
     setPendingReveal(null);
   };
 
+  const confirmHide = () => {
+    if (!pendingHide) return;
+    revealZone(pendingHide, false);
+    toast.push(`${pendingHide} hidden again. Route progress is unchanged.`, "success");
+    setPendingHide(null);
+  };
+
   const revealCount = gateEntry
     ? orderedLore.filter((entry) => entry.area === gateEntry.area).length
     : pendingReveal
@@ -149,19 +170,6 @@ export function LorePage() {
 
   return (
     <div className="page">
-      <ArtBanner
-        image={ART.soteHeader}
-        variant="sote"
-        caption={`Shadow of the Erdtree · ${dlcChapters} of ${LORE.length} chapters`}
-        title="The Shadow's own chapters"
-        className="lore-banner"
-      >
-        <p className="lore-banner-note">
-          The full route now spans the base game, Shadow of the Erdtree, and the Ashen Capital endgame. Chapter gates
-          resolve against the matching route section, so DLC lore stays sealed until its section is complete.
-        </p>
-      </ArtBanner>
-
       <PageHeader
         eyebrow={`${journey.label} · Full-game lore archive`}
         title="Lore"
@@ -332,14 +340,27 @@ export function LorePage() {
                     <p className="lore-teaser">{entry.rawSummary}</p>
                     <p className="lore-unlock-note">{access?.reason}</p>
                     <div className="lore-card-footer">
-                      <Button
-                        size="sm"
-                        icon={read ? "refresh" : "check"}
-                        onClick={() => toggleRead(entry, !read)}
-                        aria-label={`${read ? "Mark unread" : "Mark read"}: ${entry.area}`}
-                      >
-                        {read ? "Mark unread" : "Mark read"}
-                      </Button>
+                      <div className="row wrap" style={{ gap: 6 }}>
+                        <Button
+                          size="sm"
+                          icon={read ? "refresh" : "check"}
+                          onClick={() => toggleRead(entry, !read)}
+                          aria-label={`${read ? "Mark unread" : "Mark read"}: ${entry.area}`}
+                        >
+                          {read ? "Mark unread" : "Mark read"}
+                        </Button>
+                        {journey.zonesRevealed[entry.area] ? (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            icon="lock"
+                            onClick={() => setPendingHide(entry.area)}
+                            aria-label={`Hide lore area again: ${entry.area}`}
+                          >
+                            Hide area again
+                          </Button>
+                        ) : null}
+                      </div>
                       <Button
                         size="sm"
                         variant="primary"
@@ -416,12 +437,24 @@ export function LorePage() {
         footer={
           selectedEntry && selectedAccess?.unlocked ? (
             <div className="row-between wrap">
-              <Button
-                icon={character.loreRead[selectedEntry.id] ? "refresh" : "check"}
-                onClick={() => toggleRead(selectedEntry, !character.loreRead[selectedEntry.id])}
-              >
-                {character.loreRead[selectedEntry.id] ? "Mark unread" : "Mark read"}
-              </Button>
+              <div className="row wrap">
+                <Button
+                  icon={character.loreRead[selectedEntry.id] ? "refresh" : "check"}
+                  onClick={() => toggleRead(selectedEntry, !character.loreRead[selectedEntry.id])}
+                >
+                  {character.loreRead[selectedEntry.id] ? "Mark unread" : "Mark read"}
+                </Button>
+                {journey.zonesRevealed[selectedEntry.area] ? (
+                  <Button
+                    variant="ghost"
+                    icon="lock"
+                    onClick={() => setPendingHide(selectedEntry.area)}
+                    aria-label={`Hide lore area again: ${selectedEntry.area}`}
+                  >
+                    Hide area again
+                  </Button>
+                ) : null}
+              </div>
               <Button variant="ghost" icon="settings" onClick={() => navigate("/settings")}>
                 Spoiler settings
               </Button>
@@ -462,21 +495,62 @@ export function LorePage() {
                 No route section in this content set — reveal manually when reached in game.
               </p>
             )}
-            <div className="lore-detail-sections">
-              {DETAIL_SECTIONS.map((section) => {
-                const value = selectedEntry[section.key];
-                if (!value) return null;
-                return (
-                  <section key={section.key} className={`lore-section${section.spoiler ? " is-spoiler" : ""}`}>
-                    <h3>
-                      {section.label}
-                      {section.spoiler ? <Badge tone="warning">Spoiler</Badge> : null}
-                    </h3>
-                    <p>{value}</p>
-                  </section>
-                );
-              })}
-            </div>
+            {selectedExpanded ? (
+              <div className="lore-detail-sections lore-expanded">
+                <section className="lore-section">
+                  <h3>Overview</h3>
+                  <p>{selectedExpanded.overview || "No overview recorded for this chapter."}</p>
+                </section>
+                <section className="lore-section">
+                  <h3>Context</h3>
+                  <p>{selectedExpanded.context || "No context recorded for this chapter."}</p>
+                </section>
+                {selectedExpanded.spoiler ? (
+                  <Disclosure title="Later context" summary="Spoiler" tone="muted">
+                    <p>{selectedExpanded.spoiler}</p>
+                  </Disclosure>
+                ) : null}
+                <p className="tiny faint">
+                  {selectedExpanded.sourceTitle ? `Source: ${selectedExpanded.sourceTitle}` : "Expanded lore"}
+                  {selectedExpanded.sourceUrl ? (
+                    <>
+                      {" · "}
+                      <a href={selectedExpanded.sourceUrl} target="_blank" rel="noreferrer noopener">
+                        Open source <Icon name="external" size={11} />
+                      </a>
+                    </>
+                  ) : null}
+                </p>
+              </div>
+            ) : (
+              <p className="small faint">
+                No expanded lore recorded for this chapter yet — the raw evidence below is the full record.
+              </p>
+            )}
+
+            {selectedRawSections.length ? (
+              <Disclosure
+                title="Raw evidence"
+                summary={`${selectedRawSections.length} block${selectedRawSections.length === 1 ? "" : "s"}`}
+                className="lore-raw-disclosure"
+                tone="muted"
+              >
+                <div className="lore-detail-sections">
+                  {selectedRawSections.map((section) => (
+                    <section
+                      key={section.key}
+                      className={`lore-section${section.spoiler ? " is-spoiler" : ""}`}
+                    >
+                      <h3>
+                        {section.label}
+                        {section.spoiler ? <Badge tone="warning">Spoiler</Badge> : null}
+                      </h3>
+                      <p>{section.value}</p>
+                    </section>
+                  ))}
+                </div>
+              </Disclosure>
+            ) : null}
             <div className="lore-source">
               <dl className="kv">
                 <dt>Source contract</dt>
@@ -607,6 +681,33 @@ export function LorePage() {
               spoiler settings
             </button>
             .
+          </p>
+        </div>
+      </Modal>
+
+      <Modal
+        open={Boolean(pendingHide)}
+        title={pendingHide ? `Hide ${pendingHide} again?` : "Hide area?"}
+        onClose={() => setPendingHide(null)}
+        actions={
+          <>
+            <Button variant="ghost" onClick={() => setPendingHide(null)}>
+              Cancel
+            </Button>
+            <Button variant="primary" icon="lock" onClick={confirmHide}>
+              Hide area again
+            </Button>
+          </>
+        }
+      >
+        <div className="stack">
+          <Callout tone="warning" icon="alert">
+            This clears the manual reveal for this area, so its chapters fall back to the route gate. Read state, route
+            progress, and completion are untouched.
+          </Callout>
+          <p className="small muted">
+            If the matching route section or chronology block is already complete, the chapters stay unlocked — a hide
+            only removes the manual bypass.
           </p>
         </div>
       </Modal>
