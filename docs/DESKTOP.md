@@ -38,6 +38,8 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 - **External links:** clicks on `http`/`https` anchors are intercepted and opened in the default browser. Only `http` and `https` schemes are accepted by the Rust command.
 - **Offline:** all content, fonts, and art ship inside the binary. The PWA service worker is intentionally omitted from Tauri builds; local assets are already immutable.
 - **No accounts, telemetry, or runtime API calls.**
+- **Window sizing:** the window opens at 82% × 86% of the current monitor (clamped 1024–1920 × 700–1280 logical pixels) and recentres, so 1440p/4K displays do not open a small fixed window.
+- **Quick log:** `Ctrl+Shift+L` is a global shortcut that marks the next route step done through the same store action as the UI. It is registered with `tauri-plugin-global-shortcut` and forwarded to the renderer as `er-companion:quick-log`.
 - **Linux renderer fallback:** the Rust entrypoint sets `WEBKIT_DISABLE_DMABUF_RENDERER=1` by default on Linux. WebKitGTK 2.5x with Mesa can otherwise render a blank webview under software/remote X sessions. The variable is only a fallback; it can be overridden before launch. This was verified by isolating the blank window under Xvfb.
 
 ## Build outputs

@@ -6,6 +6,8 @@ The route follows the game's intended full-content order: **base game through Ma
 
 The app is a **web-first PWA plus a Tauri 2 desktop app** for Linux, macOS, and Windows: React 19 + TypeScript + Vite, static content generated from the workbook and the Redmaw Completion Sheets, and versioned local persistence. It installs for offline use, works at desktop and handheld widths, and makes no runtime API calls, accounts, or telemetry requests.
 
+The interface is **progressive by default**: each page leads with the next action, then expands into detail. Settings can switch to **Everything**, force a larger interface scale for 1440p/4K, and gate boss/NPC spoilers. A handheld bottom bar covers Home, Journey, Collection and search. See [`docs/REDESIGN_AND_DATA.md`](docs/REDESIGN_AND_DATA.md) for the redesign and data-expansion evidence.
+
 ## Run
 
 Web development:
