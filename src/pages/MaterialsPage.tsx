@@ -17,14 +17,13 @@ import {
 import {
   AREA_BY_NAME,
   AREA_SWEEP_BY_AREA,
-  AREA_SWEEPS,
   CRAFTING_MATERIALS,
   MATERIALS_BY_CATEGORY,
   MATERIAL_BY_ID,
+  SWEEP_STEPS,
+  SWEEP_STEP_BY_ID,
   UPGRADE_BY_ID,
   UPGRADE_ENTRIES,
-  UPGRADE_QUANTITY_TOTALS,
-  UPGRADE_STATED_TOTALS,
   UPGRADES_BY_CATEGORY,
 } from "../lib/data";
 import { formatNumber } from "../lib/format";
@@ -91,16 +90,7 @@ const UPGRADE_SEARCH_INDEX: Record<string, string> = Object.fromEntries(
 const MULTI_QUANTITY_UPGRADES = UPGRADE_ENTRIES.filter((entry) => (entry.quantity ?? 0) > 1).length;
 const UNSTATED_QUANTITY_UPGRADES = UPGRADE_ENTRIES.filter((entry) => entry.quantity === null).length;
 const UNRESOLVED_UPGRADES = UPGRADE_ENTRIES.filter((entry) => entry.unresolved).length;
-const TOTAL_UPGRADE_QUANTITY = Object.values(UPGRADE_QUANTITY_TOTALS).reduce((sum, value) => sum + value, 0);
 const DLC_UPGRADES = UPGRADE_ENTRIES.filter((entry) => entry.dlc).length;
-
-const SCADUTREE_TOTAL =
-  UPGRADE_STATED_TOTALS["scadutree-fragment"] ?? UPGRADE_QUANTITY_TOTALS["scadutree-fragment"] ?? 0;
-const REVERED_TOTAL =
-  UPGRADE_STATED_TOTALS["revered-spirit-ash"] ?? UPGRADE_QUANTITY_TOTALS["revered-spirit-ash"] ?? 0;
-const GOLDEN_SEED_TOTAL = UPGRADE_QUANTITY_TOTALS["golden-seed"] ?? 0;
-const SACRED_TEAR_TOTAL =
-  UPGRADE_STATED_TOTALS["sacred-tear"] ?? UPGRADE_QUANTITY_TOTALS["sacred-tear"] ?? 0;
 
 function slugify(value: string): string {
   return value
@@ -127,31 +117,42 @@ const MATERIAL_GAMES = [...new Set(CRAFTING_MATERIALS.map((material) => material
   a.localeCompare(b),
 );
 
-/** Area sweeps that reference a material, keyed by material id and name. */
-const SWEEP_AREAS_BY_MATERIAL: Record<string, string[]> = (() => {
-  const index: Record<string, string[]> = {};
-  const add = (key: string, area: string) => {
-    if (!key) return;
-    const list = (index[key] ??= []);
-    if (!list.includes(area)) list.push(area);
-  };
-  for (const sweep of AREA_SWEEPS) {
-    for (const material of sweep.materials) {
-      add(material.id, sweep.area);
-      add(material.name.toLowerCase(), sweep.area);
-    }
-    for (const farmable of sweep.farmables) {
-      add(farmable.itemId, sweep.area);
-      add(farmable.name.toLowerCase(), sweep.area);
+const RENEWABLE_MATERIAL_STEP = "SWEEP-renewable-materials";
+
+interface MaterialStepRef {
+  stepId: string;
+  area: string;
+  title: string;
+  renewable: string;
+}
+
+/**
+ * The sweep step a material belongs to. A fixed-source step wins over the
+ * catch-all renewable step, so the card points at the real place when one exists.
+ */
+const MATERIAL_STEP: Record<string, MaterialStepRef> = (() => {
+  const index: Record<string, MaterialStepRef> = {};
+  for (const step of SWEEP_STEPS) {
+    for (const entry of step.entries) {
+      if (!entry.materialId) continue;
+      const existing = index[entry.materialId];
+      const isRenewable = step.id === RENEWABLE_MATERIAL_STEP;
+      if (existing && (existing.stepId !== RENEWABLE_MATERIAL_STEP || isRenewable)) continue;
+      index[entry.materialId] = {
+        stepId: step.id,
+        area: step.area,
+        title: step.title,
+        renewable: entry.renewable ?? "",
+      };
     }
   }
   return index;
 })();
 
 /**
- * Resolve a recorded region/grace to a real route area or area sweep. Only exact
- * names from the bundled ledgers are accepted; free-text locations never resolve,
- * so a link can point at the wrong area only if the data itself is wrong.
+ * Resolve a recorded region/grace to a real route area. Only exact names from
+ * the bundled ledgers are accepted, so a link can point at the wrong area only
+ * if the data itself is wrong.
  */
 function resolveArea(...candidates: (string | undefined)[]): string {
   for (const candidate of candidates) {
@@ -162,12 +163,21 @@ function resolveArea(...candidates: (string | undefined)[]): string {
   return "";
 }
 
-function sweepAreasForMaterial(material: CraftingMaterial): string[] {
-  const direct = SWEEP_AREAS_BY_MATERIAL[material.id];
-  const byName = direct?.length ? direct : (SWEEP_AREAS_BY_MATERIAL[material.name.toLowerCase()] ?? []);
-  if (byName.length) return byName;
-  const area = resolveArea(material.grace);
-  return area ? [area] : [];
+function StepLink({ stepId, area, label }: { stepId: string; area: string; label?: string }) {
+  const step = SWEEP_STEP_BY_ID[stepId];
+  return (
+    <button
+      type="button"
+      className="mat-sweep-link"
+      onClick={() => navigate(`/journey?step=${encodeURIComponent(stepId)}&area=${encodeURIComponent(area)}`)}
+      aria-label={`Open the sweep step for ${label ?? step?.title ?? area}`}
+      title={step?.title ?? label ?? area}
+    >
+      <Icon name="map" size={11} />
+      {area}
+      <span className="mat-sweep-kind">step</span>
+    </button>
+  );
 }
 
 function AreaSweepLink({ area }: { area: string }) {
@@ -412,22 +422,6 @@ export function MaterialsPage() {
     });
   }, [materialCategory, materialGame, materialRenewability, materialPriority, materialSearch]);
 
-  let filteredQuantity = 0;
-  let filteredAcquired = 0;
-  let filteredTouched = 0;
-  for (const entry of filteredUpgrades) {
-    const quantity = entry.quantity ?? 0;
-    const raw = journey.upgradeCounts[entry.id] ?? 0;
-    filteredQuantity += quantity;
-    filteredAcquired += Math.min(raw, quantity);
-    if (raw > 0) filteredTouched += 1;
-  }
-
-  let filteredMaterialStock = 0;
-  for (const material of filteredMaterials) {
-    if (journey.materials[material.id] === true) filteredMaterialStock += 1;
-  }
-
   const totalUpgradePages = Math.max(1, Math.ceil(filteredUpgrades.length / PAGE_SIZE));
   const currentUpgradePage = Math.min(upgradePage, totalUpgradePages);
   const upgradeStart = (currentUpgradePage - 1) * PAGE_SIZE;
@@ -531,8 +525,7 @@ export function MaterialsPage() {
             <span className="mat-mini-fill" style={{ width: `${upgrades.percent}%` }} />
           </span>
           <p className="mat-summary-note">
-            {formatNumber(UPGRADE_ENTRIES.length)} pickups · {formatNumber(TOTAL_UPGRADE_QUANTITY)} total quantity ·{" "}
-            {formatNumber(upgrades.entriesTouched)}/{formatNumber(upgrades.entriesTotal)} rows touched
+            {formatNumber(upgrades.entriesTouched)} rows touched · quantities counted only where the source states one
           </p>
         </div>
         <div className="mat-summary-block">
@@ -547,36 +540,15 @@ export function MaterialsPage() {
             <span className="mat-mini-fill" style={{ width: `${materials.percent}%` }} />
           </span>
           <p className="mat-summary-note">
-            {formatNumber(CRAFTING_MATERIALS.length)} materials · {formatNumber(MATERIAL_CATEGORY_NAMES.length)}{" "}
-            categories
+            One stock flag per material; sweep steps and this ledger share the same state
           </p>
         </div>
         <Disclosure
           className="mat-summary-more"
           title="Ledger detail"
-          summary="Category totals, DLC mix, and source notes"
+          summary="DLC mix and source caveats"
         >
           <div className="mat-stats mat-stats--inline">
-            <Stat
-              label="Scadutree Fragments"
-              value={formatNumber(SCADUTREE_TOTAL)}
-              detail={`${formatNumber(UPGRADES_BY_CATEGORY["scadutree-fragment"]?.length ?? 0)} recorded pickups · stated total`}
-            />
-            <Stat
-              label="Revered Spirit Ashes"
-              value={formatNumber(REVERED_TOTAL)}
-              detail={`${formatNumber(UPGRADES_BY_CATEGORY["revered-spirit-ash"]?.length ?? 0)} recorded pickups · stated total`}
-            />
-            <Stat
-              label="Golden Seeds"
-              value={formatNumber(GOLDEN_SEED_TOTAL)}
-              detail={`${formatNumber(UPGRADES_BY_CATEGORY["golden-seed"]?.length ?? 0)} recorded pickups`}
-            />
-            <Stat
-              label="Sacred Tears"
-              value={formatNumber(SACRED_TEAR_TOTAL)}
-              detail={`${formatNumber(UPGRADES_BY_CATEGORY["sacred-tear"]?.length ?? 0)} recorded pickups`}
-            />
             <Stat
               label="DLC rows"
               value={formatNumber(DLC_UPGRADES)}
@@ -616,26 +588,11 @@ export function MaterialsPage() {
               aria-pressed={upgradeCategory === ALL}
               onClick={() => navigate(pathFor("upgrades", null, null))}
             >
-              <span className="mat-cat-row">
-                <span className="mat-cat-label">All upgrades</span>
-                <span className="mat-cat-count">{formatNumber(UPGRADE_ENTRIES.length)} rows</span>
-              </span>
-              <span className="mat-cat-row mat-cat-qty">
-                <span>
-                  {formatNumber(upgrades.acquired)}/{formatNumber(upgrades.total)}
-                </span>
-                <span>{upgrades.percent}%</span>
-              </span>
-              <span className="mat-cat-foot">
-                {formatNumber(upgrades.entriesTouched)}/{formatNumber(upgrades.entriesTotal)} rows touched
-              </span>
-              <span className="mat-mini-track" aria-hidden="true">
-                <span className="mat-mini-fill" style={{ width: `${upgrades.percent}%` }} />
-              </span>
+              <span className="mat-cat-label">All upgrades</span>
+              <span className="mat-cat-count">{upgradeCategory === ALL ? "Category filter off" : "Clear filter"}</span>
             </button>
             {UPGRADE_CATEGORY_META.map((meta) => {
               const stat = upgrades.byCategory[meta.id];
-              const entries = UPGRADES_BY_CATEGORY[meta.id]?.length ?? 0;
               const active = upgradeCategory === meta.id;
               return (
                 <button
@@ -645,18 +602,9 @@ export function MaterialsPage() {
                   aria-pressed={active}
                   onClick={() => navigate(pathFor("upgrades", active ? null : meta.id, null))}
                 >
-                  <span className="mat-cat-row">
-                    <span className="mat-cat-label">{meta.label}</span>
-                    <span className="mat-cat-count">{formatNumber(entries)} rows</span>
-                  </span>
+                  <span className="mat-cat-label">{meta.label}</span>
                   <span className="mat-cat-row mat-cat-qty">
-                    <span>
-                      {formatNumber(stat?.done ?? 0)}/{formatNumber(stat?.total ?? 0)}
-                    </span>
-                    <span>{stat?.percent ?? 0}%</span>
-                  </span>
-                  <span className="mat-cat-foot">
-                    {formatNumber(stat?.entriesTouched ?? 0)}/{formatNumber(stat?.entriesTotal ?? entries)} rows touched
+                    {formatNumber(stat?.done ?? 0)}/{formatNumber(stat?.total ?? 0)}
                   </span>
                   <span className="mat-mini-track" aria-hidden="true">
                     <span className="mat-mini-fill" style={{ width: `${stat?.percent ?? 0}%` }} />
@@ -703,9 +651,7 @@ export function MaterialsPage() {
             </div>
             <div className="mat-filter-foot">
               <span className="small faint">
-                {formatNumber(filteredUpgrades.length)} rows match · {formatNumber(filteredTouched)} touched ·{" "}
-                {formatNumber(filteredAcquired)}/{formatNumber(filteredQuantity)} quantity collected
-                {search.trim() ? ` · search “${search.trim()}”` : ""}
+                {search.trim() ? `Search “${search.trim()}”` : "Stated quantities only"}
               </span>
               <Button size="sm" variant="ghost" icon="refresh" onClick={resetUpgradeFilters} disabled={!upgradeFilterActive}>
                 Reset upgrades
@@ -716,7 +662,9 @@ export function MaterialsPage() {
           <section className="card card-pad mat-results" aria-label="Upgrade ledger" ref={resultsRef}>
             <SectionTitle
               title={upgradeCategory === ALL ? "All upgrade pickups" : UPGRADE_CATEGORY_LABEL[upgradeCategory] ?? upgradeCategory}
-              note={`${formatNumber(filteredUpgrades.length)} rows · page ${currentUpgradePage} of ${totalUpgradePages}`}
+              note={`${formatNumber(filteredUpgrades.length)} rows${
+                totalUpgradePages > 1 ? ` · page ${currentUpgradePage} of ${totalUpgradePages}` : ""
+              }`}
             />
             {filteredUpgrades.length === 0 ? (
               <EmptyState
@@ -781,10 +729,7 @@ export function MaterialsPage() {
                                   max={quantity}
                                   onChange={(next) => setUpgradeCount(entry.id, next)}
                                 />
-                                <span className="mat-note">
-                                  {formatNumber(count)}
-                                  {quantity === null ? " collected" : `/${formatNumber(quantity)}`}
-                                </span>
+                                {quantity === null ? <span className="mat-note">collected</span> : null}
                               </div>
                             </td>
                             <td data-label="Region / location" className="mat-cell-loc">
@@ -845,8 +790,8 @@ export function MaterialsPage() {
                 </div>
                 <div className="mat-page-foot">
                   <span className="tiny faint">
-                    Showing {formatNumber(upgradeStart + 1)}–{formatNumber(Math.min(upgradeStart + PAGE_SIZE, filteredUpgrades.length))} of{" "}
-                    {formatNumber(filteredUpgrades.length)} rows · stated quantities only
+                    Showing rows {formatNumber(upgradeStart + 1)}–
+                    {formatNumber(Math.min(upgradeStart + PAGE_SIZE, filteredUpgrades.length))}
                   </span>
                   <Pager page={currentUpgradePage} totalPages={totalUpgradePages} onGo={goUpgradePage} />
                 </div>
@@ -916,8 +861,11 @@ export function MaterialsPage() {
             </div>
             <div className="mat-filter-foot">
               <span className="small faint">
-                {formatNumber(filteredMaterials.length)} materials match · {formatNumber(filteredMaterialStock)} already
-                stocked
+                {materialFilterActive
+                  ? `${formatNumber(filteredMaterials.length)} materials after filtering${
+                      materialSearch.trim() ? ` · search “${materialSearch.trim()}”` : ""
+                    }`
+                  : "Sources from the bundled ledgers"}
               </span>
               <Button
                 size="sm"
@@ -947,7 +895,9 @@ export function MaterialsPage() {
                 const stocked = journey.materials[material.id] === true;
                 const isFocus = focusMaterial?.id === material.id;
                 const count = journey.materialCounts[material.id] ?? (stocked ? 1 : 0);
-                const sweepAreas = sweepAreasForMaterial(material);
+                const stepRef = MATERIAL_STEP[material.id];
+                const renewableOnly = !stepRef || stepRef.stepId === RENEWABLE_MATERIAL_STEP;
+                const fallbackArea = resolveArea(material.grace);
                 return (
                   <article
                     key={material.id}
@@ -983,26 +933,47 @@ export function MaterialsPage() {
                         onChange={(next) => setMaterialCount(material.id, next)}
                       />
                       <span className="mat-note">
-                        {count > 0 ? `${formatNumber(count)} in stock` : "Not stocked"}
+                        {count > 0 ? "Stocked for crafting" : "Not stocked"}
                       </span>
                     </div>
 
                     <div className="mat-material-loc">
-                      {material.grace ? (
+                      {stepRef && !renewableOnly ? (
                         <>
-                          <span className="mat-loc-region">{material.grace}</span>
-                          <span className="mat-note">Nearest grace</span>
+                          <span className="mat-loc-region">{stepRef.area}</span>
+                          <span className="mat-note">{stepRef.title}</span>
+                          <span className="mat-sweep-links">
+                            <StepLink stepId={stepRef.stepId} area={stepRef.area} label={material.name} />
+                          </span>
                         </>
                       ) : (
-                        <span className="mat-loc-missing">Location not recorded</span>
+                        <>
+                          {material.obtainable ? (
+                            <>
+                              <Badge tone="info">Farmable — no fixed location</Badge>
+                              <span className="mat-note">
+                                {stepRef?.renewable || material.renewability}
+                                {fallbackArea ? ` · Collected around ${fallbackArea}` : ""}
+                              </span>
+                              <span className="mat-sweep-links">
+                                {stepRef ? (
+                                  <StepLink stepId={stepRef.stepId} area={stepRef.area} label={material.name} />
+                                ) : null}
+                                {fallbackArea ? <AreaSweepLink area={fallbackArea} /> : null}
+                                {!stepRef && !fallbackArea ? (
+                                  <span className="mat-loc-missing">
+                                    No sweep step or area recorded in the bundled ledgers.
+                                  </span>
+                                ) : null}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="mat-loc-missing">
+                              Not obtainable in the release build — no location exists.
+                            </span>
+                          )}
+                        </>
                       )}
-                      {sweepAreas.length ? (
-                        <span className="mat-sweep-links">
-                          {sweepAreas.slice(0, 3).map((areaName) => (
-                            <AreaSweepLink key={areaName} area={areaName} />
-                          ))}
-                        </span>
-                      ) : null}
                     </div>
 
                     <dl className="mat-material-fields">

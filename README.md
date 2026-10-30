@@ -47,7 +47,7 @@ npm run test
 npm run desktop:check
 ```
 
-`npm run build` runs `tsc --noEmit` before Vite. **41 frontend tests** cover content integrity, route/catalog merge, completion scopes, the pure selectors, soft-cap derivation and remembrance sanitisation; **3 Rust tests** cover backup validation, file-extension handling and the HTTP/HTTPS-only link policy. `python3 scripts/verify_release_data.py` recomputes every derived count and fails on a violated data contract. Evidence-backed audit notes live in `docs/audit/`.
+`npm run build` runs `tsc --noEmit` before Vite. **47 frontend tests** cover content integrity, route/catalog merge, completion scopes, the pure selectors, soft-cap derivation, remembrance sanitisation, and the sweep ledger (every catalogue item and material has a step, every row resolves to a persisted key, every step anchors on a real route step). **3 Rust tests** cover backup validation, file-extension handling and the HTTP/HTTPS-only link policy. `python3 scripts/verify_release_data.py` recomputes every derived count and fails on a violated data contract. Evidence-backed audit notes live in `docs/audit/`.
 
 ## Full-game content
 
@@ -90,7 +90,7 @@ Global step order is contiguous 1–4,521. Two phase gates protect the transitio
 - Same-name records in different groups (for example an Ash of War and the matching sorcery) stay distinct.
 - Boss data merges 50 workbook encounters with 207 Redmaw rows (22 matched) plus 2 Tarnished Pack invasions for a 237-record ledger.
 
-Live counters and source hashes are in `src/data/content-coverage.json` and surfaced in **Settings → Full-game content pack**.
+Live counters and source hashes are in `src/data/content-coverage.json` and surfaced in **Settings → Full-game content pack**. The 2026-10-29 player-feedback round is recorded item by item in [`docs/FEEDBACK_2026-10-29.md`](docs/FEEDBACK_2026-10-29.md).
 
 ## Beyond Redmaw
 
@@ -173,6 +173,13 @@ python3 scripts/build_full_content.py
 python3 scripts/research/verify_full_game.py --write-report docs/audit/FULL_GAME_RESEARCH_VERIFICATION.md
 ```
 
+After regenerating the ledgers, rebuild the sweep-step ledger and split the build pack:
+
+```bash
+python3 scripts/research/build_sweep_steps.py   # sweep steps for every item + material
+python3 scripts/split_build_pack.py             # startup core / lazy reference pack
+```
+
 `npm run extract` intentionally does **not** build the full route: it regenerates the workbook JSON seed (`src/data/meta.json`, `items.json`, `route.json`, `world.json`, and related files). Run `scripts/build_full_content.py` afterward to produce `route.full.json`, `items.full.json`, `achievements.json`, `bosses.full.json`, `questlines.json`, `ngplus.json`, `content-coverage.json`, and `legacy-step-map.json`. The beyond-Redmaw generators write `research/world.json`, `upgrades.json`, `materials.json`, `resources.json`, `npc-walkthrough.json`, and `branch-plan.json`; their normalized runtime copies are `src/data/world.objects.json`, `upgrades.json`, `materials.full.json`, `resources.json`, `npc-walkthrough.json`, and `branch-plan.json`, and `src/data/merchants.full.json` mirrors the Redmaw merchant sheet. Those ledgers are additive and do not rewrite the route or catalog. The research contract, schemas, and expected counts are documented in `research/README.md`, `research/INTEGRATION.md`, and `research/BEYOND_REDMAW.md`. Workbook extraction expects the certified `.xlsx` at the repository root and requires Python with `openpyxl`; the research scrapers require `beautifulsoup4` and `lxml`.
 
 ## Architecture
@@ -192,11 +199,16 @@ src/data/resources.json      11 reference tables / 138 rows
 src/data/npc-walkthrough.json  36-section / 604-step alternate route
 src/data/branch-plan.json    27 decisions / 43 reward entries
 src/data/merchants.full.json 40 merchants / 627 inventory rows
+src/data/sweep-steps.json    152 sweep steps / 1,880 rows — every item and material has a step
+src/data/builds-core.json    startup build pack: archetypes, profiles, loadouts, tech tree
+src/data/builds-reference.json  lazy reference pack: presets, strategies, upgrades, configs
+src/data/boss-index.json     boss names + strategy counts for the shell and search
 src/data/content-coverage.json  counts, source paths, SHA-256 hashes
 src/data/game.ts             live version, Tarnished Pack, patch timeline
 src/data/*.json              workbook seed (route, items, world, builds, farms, lore, tiers)
 src/lib/types.ts             domain types
-src/lib/data.ts              arrays + indexes (route, items, builds, world, farms, lore, tiers, atlas, upgrades, materials, resources, NPC walkthrough, branch plan)
+src/lib/data.ts              startup arrays + indexes (route, items, core build pack, world, farms, lore, tiers, atlas, upgrades, materials, resources, NPC walkthrough, branch plan, sweep steps)
+src/lib/reference.ts         lazy hook for the reference pack; reference-data.ts holds its rows
 src/lib/selectors.ts         progress, collection, achievement, boss, quest, NG+, lore, world, upgrade, material, merchant, NPC walkthrough, branch reward, equipment selectors
 src/lib/store.ts             versioned localStorage state + actions + import/export + legacy step remap
 src/lib/search.ts            global in-memory search index
@@ -210,6 +222,8 @@ public/art                   bundled official store/press artwork
 public/fonts                 Cinzel + EB Garamond WOFF2 subsets and OFL licenses
 scripts/extract_workbook.py  workbook → seed JSON
 scripts/build_full_content.py  research + seed → full-game JSON
+scripts/research/build_sweep_steps.py  area sweeps + catalog → sweep-step ledger
+scripts/split_build_pack.py  builds.json → startup core, lazy reference pack, boss index
 scripts/research/*           Redmaw/wiki scrapers, beyond-Redmaw ledgers, branch builder, artwork fetch, independent verification
 docs/audit/*                 audit, integrity, and full-game evidence
 ```
@@ -224,6 +238,17 @@ docs/audit/*                 audit, integrity, and full-game evidence
 - **Sweep steps** give every catalogue item and crafting material an actionable step. Each area carries a merchant step, a farm step, a pickup step and a crafting-stock step where the ledgers have rows; records whose source pack has no location land in a phase cleanup step that says so. Ticking an item in any area marks it everywhere, so a duplicate-location drop is farmed once.
 
 Persistence is `localStorage` under `er-companion.state.v1`, debounced, with corrupt-state backup to `er-companion.state.corrupt`. Export/import is human-readable JSON in Settings. Older saves are normalized on load: `desiredBuild` and `sweepDeferred` default empty, `worldChecks`, `upgradeCounts`, `npcWalkthroughSteps` default empty, unknown future keys survive, and legacy `RTE-*` step IDs are remapped when a high-confidence match exists. Existing material and merchant keys retain the `MAT-*` and `MER-*` schemes, so the beyond-Redmaw ledgers require no save migration.
+
+## Live game link (research)
+
+`docs/research/GAME_LINK_FEASIBILITY.md` records what it would take for the companion to follow a live playthrough. The short version:
+
+- The PC save file (`ER0000.sl2`) is a plaintext BND4 container, not encrypted; a read-only watcher can parse level, stats, runes, inventory, equipment and discovered graces without touching game memory or anti-cheat.
+- **Meaning is the hard part.** Community event-flag tables label 833 flags, and only ~21% of this route's steps are anchored to a boss or item. Base-game joins work well; the DLC does not (1 of 482 items joinable in shipped name tables).
+- Recommended first step is read-only: watch the save, diff it, import deltas through the existing store actions. No schema change, no new permissions, no save writes.
+- Memory reading, overlays, and screen OCR are rejected with reasons; a save-write path is excluded entirely.
+
+This is research only — the manual/offline companion stays the primary product.
 
 ## Artwork, fonts, and licensing
 
@@ -245,7 +270,9 @@ Dark, gold-accented, serif display type, dense-but-readable data surfaces. No UI
 - **Tarnished Pack sequencing:** the 27 pack records and 2 invasions are tracked in the collection and boss ledger, but are not yet inserted as route steps.
 - **Progress migration:** only 62 legacy workbook step IDs map to the full route. Unmapped legacy `RTE-*` keys are dropped during normalization; non-legacy keys and lifetime data are preserved.
 - **Coverage edges:** 3,788 route link labels remain unresolved, 225 workbook catalog records had no Redmaw match, and 68 duplicate name keys represent intentionally distinct records. The app does not fabricate links or locations for these.
-- **Item locations:** 1,017 of 2,325 items have no recorded location and 930 are area-only. Both states are labelled; no place is invented.
+- **Item locations:** 1,017 of 2,325 items have no recorded location and 930 are area-only. Every item now has an actionable sweep step (or a cleanup step that says no location is recorded), so the acquisition is trackable even where the source pack never placed it; no place is invented.
+- **Build targeting:** applying a certified build sets the target only. The current sheet changes when the player edits it, so a level-200 preview can never destroy live progress.
+- **Bundle split:** pages are lazy and the 6.9 MiB build reference pack loads on first use. The initial chunk still carries the 4,521-step route and the 2,325-item catalogue because the shell counts progress on every page.
 - **World-object sources:** Stakes of Marika and Gatekeeper Statues have no authoritative per-object list and therefore zero rows. Finger readers, stranded souls and martyr effigies are partial lower bounds; the four Birdseye Telescopes come from an archived page and are marked unresolved. The Atlas shows each category's status and gap.
 - **Upgrade locations:** 138 of 725 upgrade pickups have an imprecise location (97 regional, 40 page-level, 1 "Multiple"). Another 101 enemy-drop leads are excluded from the completion denominator.
 - **Branch rewards:** 7 of 43 reward entries have no catalog row (Alexander's Innards, Ancient Dragon Smithing Stone ×2, Unalloyed Gold Needle, Zorayas's Letter, and the Eccentric's and Ansbach's sets at set level). They stay labelled with a reason; set components are still linked.

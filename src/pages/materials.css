@@ -145,11 +145,6 @@
   color: var(--fg-soft);
 }
 
-.mat-cat-foot {
-  font-size: 9.5px;
-  color: var(--faint);
-}
-
 .mat-mini-track {
   display: block;
   height: 3px;

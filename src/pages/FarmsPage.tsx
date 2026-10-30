@@ -19,13 +19,18 @@ import {
   ITEMS_BY_NAME,
   MATERIALS,
   MERCHANT_INVENTORIES,
+  MERCHANT_INVENTORY_ID_BY_LEGACY_ID,
   MERCHANTS,
+  ROUTE_STEPS,
   SCARABS,
   STEP_BY_ID,
+  SWEEP_STEPS,
+  normalizeContentKey,
   remapStepId,
 } from "../lib/data";
 import { formatNumber, itemGroupIcon } from "../lib/format";
 import { navigate, queryString, useRoute } from "../lib/router";
+import { sweepStepState } from "../lib/selectors";
 import {
   setFarmable,
   setFiniteAcquired,
@@ -75,6 +80,9 @@ interface Filters {
   missable: string;
   rewardType: string;
   stock: string;
+  location: string;
+  source: string;
+  dropSort: string;
 }
 
 const PAGE_SIZE = 120;
@@ -90,6 +98,11 @@ const INVENTORY_ROWS: InventoryRow[] = MERCHANT_INVENTORIES.flatMap((merchant) =
 
 const INVENTORY_ROW_BY_ID: Record<string, InventoryRow> = Object.fromEntries(
   INVENTORY_ROWS.map((row) => [row.id, row]),
+);
+
+/** Canonical inventory id → the workbook ledger id bridged to it, when one exists. */
+const LEGACY_ID_BY_INVENTORY_ID: Record<string, string> = Object.fromEntries(
+  Object.entries(MERCHANT_INVENTORY_ID_BY_LEGACY_ID).map(([legacyId, inventoryId]) => [inventoryId, legacyId]),
 );
 
 const FARM_TABS: FarmTab[] = [
@@ -120,6 +133,9 @@ const DEFAULT_FILTERS: Filters = {
   missable: "all",
   rewardType: "all",
   stock: "all",
+  location: "all",
+  source: "all",
+  dropSort: "default",
 };
 
 const TIMING_OPTIONS: { value: TimingGroup; label: string }[] = [
@@ -167,26 +183,245 @@ function overlapBadge(name: string): { label: string; tone: "accent" | "info" | 
   return { label: "Merchant only", tone: "default" };
 }
 
-interface RouteLink {
-  stepId: string | null;
-  ids: string[];
-  area: string;
+/* ---------------------------------------------------------------------------
+ * Drop chance parsing
+ * ------------------------------------------------------------------------- */
+
+interface DropChance {
+  /** Lowest stated percentage, null when the source never states a number. */
+  low: number | null;
+  /** Human label: "3%", the low end of "1%–1.5%", or "Not stated". */
+  label: string;
 }
 
-function routeStepFor(entry: FiniteResource): RouteLink | null {
-  const candidates = [entry.autoStepId ?? "", ...entry.routeStepIds].filter(Boolean);
-  if (!candidates.length) return null;
-  for (const raw of candidates) {
-    const step = STEP_BY_ID[remapStepId(raw) ?? raw] ?? STEP_BY_ID[raw];
-    if (step) return { stepId: step.id, ids: [...new Set([step.id, raw])], area: step.area };
+function parseDropChance(raw: string): DropChance {
+  const values: number[] = [];
+  for (const match of (raw ?? "").matchAll(/(\d+(?:\.\d+)?)\s*%/g)) {
+    const value = Number(match[1]);
+    if (Number.isFinite(value)) values.push(value);
   }
-  const viaItem = (ITEMS_BY_NAME[entry.name] ?? [])
-    .flatMap((item) => item.routeStepIds)
-    .map((id) => STEP_BY_ID[id])
-    .find(Boolean);
-  if (viaItem) return { stepId: viaItem.id, ids: [...candidates, viaItem.id], area: viaItem.area };
-  return { stepId: null, ids: candidates, area: entry.region };
+  if (!values.length) return { low: null, label: "Not stated" };
+  const low = Math.min(...values);
+  const high = Math.max(...values);
+  return { low, label: low === high ? `${low}%` : `${low}%–${high}%` };
 }
+
+function dropTone(chance: DropChance): "accent" | "warning" | "default" {
+  if (chance.low === null) return "default";
+  if (chance.low <= 2) return "warning";
+  return "accent";
+}
+
+/** Sort weight: stated rates first, unstated rows always last in both directions. */
+function dropSortWeight(chance: DropChance, direction: "asc" | "desc"): number {
+  if (chance.low === null) return Number.MAX_SAFE_INTEGER;
+  return direction === "asc" ? chance.low : -chance.low;
+}
+
+const FARMABLE_DROP_CHANCE: Record<string, DropChance> = Object.fromEntries(
+  FARMABLES.map((entry) => [entry.id, parseDropChance(entry.dropRate)]),
+);
+
+const FARMABLE_LOCATIONS = uniqueSorted(FARMABLES.map((entry) => entry.location));
+const FARMABLE_SOURCES = uniqueSorted(FARMABLES.map((entry) => entry.source));
+
+const DROP_SORT_OPTIONS: { value: string; label: string }[] = [
+  { value: "default", label: "Ledger order" },
+  { value: "rarest", label: "Drop chance: rarest first" },
+  { value: "commonest", label: "Drop chance: most common first" },
+];
+
+/* ---------------------------------------------------------------------------
+ * Finite pickup → actionable step
+ * ------------------------------------------------------------------------- */
+
+interface StepLink {
+  kind: "route" | "sweep";
+  stepId: string;
+  area: string;
+  title: string;
+  /**
+   * True when ticking this step actually hands the pickup over. A false value
+   * links the area the pickup sits in without claiming the step covers it.
+   */
+  covers: boolean;
+}
+
+const FINITE_NAME_SUFFIX = /\s+(deposits|placements|fixed materials|fixed consumables)$/;
+
+function itemKey(value: string): string {
+  return normalizeContentKey(value).replace(FINITE_NAME_SUFFIX, "").trim();
+}
+
+const ITEMS_BY_KEY: Record<string, typeof ITEMS> = (() => {
+  const grouped: Record<string, typeof ITEMS> = {};
+  for (const item of ITEMS) {
+    const key = itemKey(item.name);
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(item);
+  }
+  return grouped;
+})();
+
+/** Sweep steps keyed by row name, so a pickup reaches the step that lists it. */
+const SWEEP_STEPS_BY_ENTRY_KEY: Record<string, typeof SWEEP_STEPS> = (() => {
+  const grouped: Record<string, typeof SWEEP_STEPS> = {};
+  for (const step of SWEEP_STEPS) {
+    for (const entry of step.entries) {
+      const key = itemKey(entry.name);
+      if (!grouped[key]) grouped[key] = [];
+      if (!grouped[key].some((existing) => existing.id === step.id)) grouped[key].push(step);
+    }
+  }
+  return grouped;
+})();
+
+const SWEEP_STEPS_BY_ITEM_ID: Record<string, typeof SWEEP_STEPS> = (() => {
+  const grouped: Record<string, typeof SWEEP_STEPS> = {};
+  for (const step of SWEEP_STEPS) {
+    for (const entry of step.entries) {
+      if (!entry.itemId) continue;
+      if (!grouped[entry.itemId]) grouped[entry.itemId] = [];
+      grouped[entry.itemId].push(step);
+    }
+  }
+  return grouped;
+})();
+
+/** Route steps that hand an item over automatically, keyed by catalog item id. */
+const ROUTE_STEPS_BY_ITEM_ID: Record<string, string> = (() => {
+  const index: Record<string, string> = {};
+  for (const step of ROUTE_STEPS) {
+    for (const itemId of step.autoAcquireItemIds) {
+      if (!index[itemId]) index[itemId] = step.id;
+    }
+  }
+  return index;
+})();
+
+/** Sweep kinds in the order that best answers "where do I get this". */
+const SWEEP_KIND_ORDER: Record<string, number> = {
+  pickups: 0,
+  cleanup: 1,
+  materials: 2,
+  farmables: 3,
+  merchants: 4,
+};
+
+const AREA_NAME_PREFIX = /^(base game|shadow of the erdtree)\s*[—–-]\s*/i;
+
+const KNOWN_AREAS = new Set<string>([
+  ...ROUTE_STEPS.map((step) => step.area),
+  ...SWEEP_STEPS.map((step) => step.area),
+]);
+
+const SWEEP_BY_AREA: Record<string, typeof SWEEP_STEPS> = (() => {
+  const grouped: Record<string, typeof SWEEP_STEPS> = {};
+  for (const step of SWEEP_STEPS) {
+    if (!grouped[step.area]) grouped[step.area] = [];
+    grouped[step.area].push(step);
+  }
+  for (const steps of Object.values(grouped)) steps.sort((a, b) => a.order - b.order);
+  return grouped;
+})();
+
+const ROUTE_BY_AREA: Record<string, typeof ROUTE_STEPS> = (() => {
+  const grouped: Record<string, typeof ROUTE_STEPS> = {};
+  for (const step of ROUTE_STEPS) {
+    if (!grouped[step.area]) grouped[step.area] = [];
+    grouped[step.area].push(step);
+  }
+  for (const steps of Object.values(grouped)) steps.sort((a, b) => a.order - b.order);
+  return grouped;
+})();
+
+/** Route steps whose location or instruction text names the pickup's spot. */
+const ROUTE_TEXT_INDEX: { step: (typeof ROUTE_STEPS)[number]; text: string }[] = ROUTE_STEPS.map((step) => ({
+  step,
+  text: normalizeContentKey(`${step.location} ${step.instruction}`),
+}));
+
+function areasForFinite(entry: FiniteResource): string[] {
+  const found: string[] = [];
+  for (const raw of [entry.region, entry.location]) {
+    const stripped = (raw ?? "").replace(AREA_NAME_PREFIX, "").trim();
+    for (const part of stripped.split("/")) {
+      const name = part.trim();
+      if (name && KNOWN_AREAS.has(name) && !found.includes(name)) found.push(name);
+    }
+  }
+  return found;
+}
+
+const PICKUP_SWEEP_KINDS = new Set(["pickups", "cleanup", "farmables"]);
+
+function pickSweepStep(steps: typeof SWEEP_STEPS, areas: string[]): (typeof SWEEP_STEPS)[number] | undefined {
+  // Purchase and crafting-stock steps track different ledgers, so a placed
+  // pickup must never be linked to one of them.
+  const candidates = steps.filter((step) => PICKUP_SWEEP_KINDS.has(step.kind));
+  if (!candidates.length) return undefined;
+  return [...candidates].sort((a, b) => {
+    const byArea = Number(!areas.includes(a.area)) - Number(!areas.includes(b.area));
+    if (byArea) return byArea;
+    const byKind = (SWEEP_KIND_ORDER[a.kind] ?? 9) - (SWEEP_KIND_ORDER[b.kind] ?? 9);
+    if (byKind) return byKind;
+    return a.order - b.order;
+  })[0];
+}
+
+function routeStepForLocation(location: string) {
+  const tokens = normalizeContentKey(location).split(" ").filter((token) => token.length >= 3);
+  if (tokens.length < 2) return undefined;
+  for (let size = Math.min(3, tokens.length); size >= 2; size -= 1) {
+    const phrase = tokens.slice(0, size).join(" ");
+    const hit = ROUTE_TEXT_INDEX.find((row) => row.text.includes(phrase));
+    if (hit) return hit.step;
+  }
+  return undefined;
+}
+
+function resolveFiniteLink(entry: FiniteResource): StepLink | undefined {
+  const areas = areasForFinite(entry);
+
+  for (const raw of [entry.autoStepId ?? "", ...entry.routeStepIds]) {
+    if (!raw) continue;
+    const stepId = remapStepId(raw) ?? raw;
+    const step = STEP_BY_ID[stepId];
+    if (step) return { kind: "route", stepId: step.id, area: step.area, title: step.objectiveName, covers: true };
+  }
+
+  for (const item of ITEMS_BY_KEY[itemKey(entry.name)] ?? []) {
+    const routeId = ROUTE_STEPS_BY_ITEM_ID[item.id];
+    const routeStep = routeId ? STEP_BY_ID[routeId] : undefined;
+    if (routeStep) {
+      return { kind: "route", stepId: routeStep.id, area: routeStep.area, title: routeStep.objectiveName, covers: true };
+    }
+    const sweep = pickSweepStep(SWEEP_STEPS_BY_ITEM_ID[item.id] ?? [], areas);
+    if (sweep) return { kind: "sweep", stepId: sweep.id, area: sweep.area, title: sweep.title, covers: true };
+  }
+
+  const byName = pickSweepStep(SWEEP_STEPS_BY_ENTRY_KEY[itemKey(entry.name)] ?? [], areas);
+  if (byName) return { kind: "sweep", stepId: byName.id, area: byName.area, title: byName.title, covers: true };
+
+  for (const area of areas) {
+    const sweep = pickSweepStep(SWEEP_BY_AREA[area] ?? [], areas);
+    if (sweep) return { kind: "sweep", stepId: sweep.id, area: sweep.area, title: sweep.title, covers: false };
+    const routeStep = (ROUTE_BY_AREA[area] ?? []).find((step) => step.autoAcquireItemIds.length > 0);
+    if (routeStep) {
+      return { kind: "route", stepId: routeStep.id, area: routeStep.area, title: routeStep.objectiveName, covers: false };
+    }
+  }
+
+  const byLocation = routeStepForLocation(entry.location);
+  if (byLocation) {
+    return { kind: "route", stepId: byLocation.id, area: byLocation.area, title: byLocation.objectiveName, covers: false };
+  }
+  return undefined;
+}
+
+const FINITE_LINKS: Record<string, StepLink | undefined> = Object.fromEntries(
+  FINITE_RESOURCES.map((entry) => [entry.id, resolveFiniteLink(entry)]),
+);
 
 function isFarmTab(value: string | null): value is FarmTabId {
   return value === "farmables" || value === "materials" || value === "finite" || value === "merchants" || value === "scarabs";
@@ -536,26 +771,33 @@ export function FarmsPage() {
     setLimit(PAGE_SIZE);
   }
 
-  const farmableRows = useMemo(
-    () =>
-      FARMABLES.filter((entry) => {
-        if (filters.game !== "all" && entry.game !== filters.game) return false;
-        if (filters.category !== "all" && entry.category !== filters.category) return false;
-        if (filters.timing !== "all" && timingGroup(entry.timing) !== filters.timing) return false;
-        return matchesSearch(filters.query, [
-          entry.item,
-          entry.category,
-          entry.source,
-          entry.location,
-          entry.grace,
-          entry.dropRate,
-          entry.dropType,
-          entry.timing,
-          entry.notes,
-        ]);
-      }),
-    [filters],
-  );
+  const farmableRows = useMemo(() => {
+    const rows = FARMABLES.filter((entry) => {
+      if (filters.game !== "all" && entry.game !== filters.game) return false;
+      if (filters.category !== "all" && entry.category !== filters.category) return false;
+      if (filters.timing !== "all" && timingGroup(entry.timing) !== filters.timing) return false;
+      if (filters.location !== "all" && entry.location !== filters.location) return false;
+      if (filters.source !== "all" && entry.source !== filters.source) return false;
+      return matchesSearch(filters.query, [
+        entry.item,
+        entry.category,
+        entry.source,
+        entry.location,
+        entry.grace,
+        entry.dropRate,
+        entry.dropType,
+        entry.timing,
+        entry.notes,
+      ]);
+    });
+    if (filters.dropSort === "default") return rows;
+    const direction = filters.dropSort === "rarest" ? "asc" : "desc";
+    return [...rows].sort(
+      (a, b) =>
+        dropSortWeight(FARMABLE_DROP_CHANCE[a.id], direction) -
+          dropSortWeight(FARMABLE_DROP_CHANCE[b.id], direction) || a.item.localeCompare(b.item),
+    );
+  }, [filters]);
 
   const materialRows = useMemo(
     () =>
@@ -638,33 +880,69 @@ export function FarmsPage() {
     [filters],
   );
 
+  const purchasedKeys = useMemo(() => {
+    const keys = new Set<string>();
+    for (const [id, purchased] of Object.entries(journey.merchants)) {
+      if (!purchased) continue;
+      keys.add(MERCHANT_INVENTORY_ID_BY_LEGACY_ID[id] || id);
+    }
+    return keys;
+  }, [journey.merchants]);
+
   const inventoryStats = useMemo(() => {
     const stats: Record<string, { owned: number; total: number }> = {};
     for (const merchant of MERCHANT_INVENTORIES) {
       stats[merchant.id] = {
-        owned: merchant.items.filter((item) => journey.merchants[item.id]).length,
+        owned: merchant.items.filter((item) => purchasedKeys.has(item.id)).length,
         total: merchant.items.length,
       };
     }
     return stats;
-  }, [journey.merchants]);
+  }, [purchasedKeys]);
 
   const inventoryPurchased = useMemo(
-    () => INVENTORY_ROWS.filter((row) => journey.merchants[row.id]).length,
-    [journey.merchants],
+    () => INVENTORY_ROWS.filter((row) => purchasedKeys.has(row.id)).length,
+    [purchasedKeys],
   );
 
   const selectedInventoryMerchant =
     filters.merchant === "all" ? undefined : MERCHANT_INVENTORIES.find((entry) => entry.name === filters.merchant);
 
-  const finiteStepsDone = useMemo(() => {
-    const done: Record<string, boolean> = {};
+  const finiteStepState = useMemo(() => {
+    // `tracked` means the linked step really contains this pickup's row, so the
+    // step — not a second checkbox — decides whether it is collected.
+    const rows: Record<string, { link: StepLink | undefined; done: boolean; tracked: boolean }> = {};
     for (const entry of FINITE_RESOURCES) {
-      const link = routeStepFor(entry);
-      if (link?.ids.some((id) => journey.steps[id] === "done")) done[entry.id] = true;
+      const link = FINITE_LINKS[entry.id];
+      if (!link?.covers) {
+        rows[entry.id] = { link, done: false, tracked: false };
+        continue;
+      }
+      const items = ITEMS_BY_KEY[itemKey(entry.name)] ?? [];
+      if (link.kind === "route") {
+        // The route step owns the pickup, and owning the catalog item proves it
+        // was collected even if the step tick was never set.
+        const owned = items.some((item) => Boolean(character.items[item.id]));
+        rows[entry.id] = { link, done: owned || journey.steps[link.stepId] === "done", tracked: true };
+        continue;
+      }
+      // A sweep step holds many rows, so check only the row that covers this
+      // pickup. Ticks are character-wide, so one acquisition clears every copy.
+      const itemIds = new Set(items.map((item) => item.id));
+      const nameKey = normalizeContentKey(entry.name);
+      const matching = (sweepStepState(link.stepId, character, journey)?.entries ?? []).filter(
+        (row) =>
+          (row.entry.itemId.length > 0 && itemIds.has(row.entry.itemId)) ||
+          normalizeContentKey(row.entry.name) === nameKey,
+      );
+      rows[entry.id] = {
+        link,
+        done: matching.some((row) => row.acquired),
+        tracked: matching.length > 0,
+      };
     }
-    return done;
-  }, [journey.steps]);
+    return rows;
+  }, [journey, character]);
 
   const scarabRows = useMemo(
     () =>
@@ -725,14 +1003,17 @@ export function FarmsPage() {
     {
       id: "finite",
       label: "Finite pickups",
-      done: FINITE_RESOURCES.filter((entry) => finiteStepsDone[entry.id] || journey.finite[entry.id]).length,
+      done: FINITE_RESOURCES.filter((entry) => {
+        const state = finiteStepState[entry.id];
+        return state?.tracked ? state.done : Boolean(journey.finite[entry.id]);
+      }).length,
       total: FINITE_RESOURCES.length,
       scope: "Journey",
     },
     {
       id: "merchants",
       label: "Merchants",
-      done: INVENTORY_ROWS.filter((row) => journey.merchants[row.id]).length,
+      done: inventoryPurchased,
       total: INVENTORY_ROWS.length,
       scope: "Journey",
     },
@@ -785,12 +1066,20 @@ export function FarmsPage() {
   }
 
   function toggleMerchant(entry: MerchantRecord, purchased: boolean) {
-    const acquired = setMerchant(entry.id, purchased, entry.item);
+    // The workbook ledger and the full inventory are separate store keys. Every
+    // tick goes to the canonical inventory id so one purchase clears both views.
+    const canonical = MERCHANT_INVENTORY_ID_BY_LEGACY_ID[entry.id];
+    const acquired = setMerchant(canonical || entry.id, purchased, entry.item);
+    if (!purchased && canonical) setMerchant(entry.id, false, entry.item);
     recordPurchase(entry.item, acquired, purchased);
   }
 
   function toggleInventory(entry: InventoryRow, purchased: boolean) {
     const acquired = setMerchant(entry.id, purchased, entry.name);
+    // Clear any legacy workbook key bridged to this row so the ledger cannot
+    // keep a stale tick the inventory no longer agrees with.
+    const legacy = LEGACY_ID_BY_INVENTORY_ID[entry.id];
+    if (!purchased && legacy) setMerchant(legacy, false, entry.name);
     recordPurchase(entry.name, acquired, purchased);
   }
 
@@ -877,14 +1166,21 @@ export function FarmsPage() {
       key: "drop",
       label: "Drop",
       width: "150px",
-      render: (entry) => (
-        <>
-          <div className="small">{entry.dropRate}</div>
-          <div className="library-badges">
-            <Badge tone="info">{entry.dropType}</Badge>
-          </div>
-        </>
-      ),
+      render: (entry) => {
+        const chance = FARMABLE_DROP_CHANCE[entry.id];
+        return (
+          <>
+            <div className="library-badges">
+              <Badge tone={dropTone(chance)}>
+                {chance.low === null ? "Chance not stated" : `Drop ${chance.label}`}
+              </Badge>
+              <Badge tone="info">{entry.dropType}</Badge>
+            </div>
+            {/* Show the source wording only when it adds detail beyond the badge. */}
+            {entry.dropRate.trim() !== chance.label ? <div className="small">{entry.dropRate}</div> : null}
+          </>
+        );
+      },
     },
     {
       key: "source",
@@ -1005,8 +1301,9 @@ export function FarmsPage() {
       label: "Pickup",
       width: "24%",
       render: (entry) => {
-        const link = routeStepFor(entry);
-        const byRoute = Boolean(finiteStepsDone[entry.id]);
+        const state = finiteStepState[entry.id];
+        const link = state?.link;
+        const done = Boolean(state?.done);
         return (
           <>
             <div className="library-title">{entry.name}</div>
@@ -1014,26 +1311,30 @@ export function FarmsPage() {
               <Badge>{entry.type}</Badge>
               {entry.tier ? <Badge tone="accent">{entry.tier}</Badge> : null}
               <Badge tone="info">×{formatQuantity(entry.quantity)}</Badge>
-              {link ? <Badge>Route step</Badge> : null}
-              {byRoute ? <Badge tone="success">Collected</Badge> : null}
+              {link ? (
+                <Badge tone="info">
+                  {state?.tracked
+                    ? link.kind === "route"
+                      ? "Route step"
+                      : "Sweep step"
+                    : "Area step"}
+                </Badge>
+              ) : null}
+              {state?.tracked && done ? <Badge tone="success">Collected by step</Badge> : null}
             </div>
             {link ? (
               <button
                 type="button"
                 className="library-route-link"
-                onClick={() =>
-                  navigate(
-                    `/journey${queryString({
-                      step: link.stepId ?? undefined,
-                      area: link.area || undefined,
-                    })}`,
-                  )
-                }
-                aria-label={`Open route step for ${entry.name}`}
+                onClick={() => navigate(`/journey${queryString({ step: link.stepId, area: link.area })}`)}
+                aria-label={`Open the ${link.title} step for ${entry.name}`}
+                title={link.title}
               >
                 <Icon name="map" size={12} /> {link.area}
               </button>
-            ) : null}
+            ) : (
+              <span className="library-sub">No linked route or sweep step.</span>
+            )}
           </>
         );
       },
@@ -1042,21 +1343,40 @@ export function FarmsPage() {
       key: "acquired",
       label: "Acquired",
       width: "150px",
-      render: (entry) =>
-        finiteStepsDone[entry.id] ? (
-          <div className="library-check-cell">
-            <LockedCheckbox label="Acquired" />
-            <div className="library-sub">Collected by route step</div>
-          </div>
-        ) : (
+      render: (entry) => {
+        const state = finiteStepState[entry.id];
+        // A row its step hands over is tracked in exactly one place: the step.
+        if (state?.tracked && state.link) {
+          const kind = state.link.kind === "route" ? "route" : "sweep";
+          return (
+            <div className="library-check-cell">
+              {state.done ? (
+                <>
+                  <LockedCheckbox label="Acquired" />
+                  <div className="library-sub">Collected by step · {kind}</div>
+                </>
+              ) : (
+                <>
+                  <Badge tone="info">Handled by step</Badge>
+                  <div className="library-sub">Tick it in the linked step — no second checkbox here.</div>
+                </>
+              )}
+            </div>
+          );
+        }
+        return (
           <div className="library-check-cell">
             <Checkbox
               checked={journey.finite[entry.id] ?? false}
               onChange={(checked) => setFiniteAcquired(entry.id, checked)}
               label="Acquired"
             />
+            {state?.link ? (
+              <div className="library-sub">Linked step does not list this row — tick manually.</div>
+            ) : null}
           </div>
-        ),
+        );
+      },
     },
     {
       key: "location",
@@ -1126,7 +1446,7 @@ export function FarmsPage() {
       render: (entry) => (
         <div className="library-check-cell">
           <Checkbox
-            checked={journey.merchants[entry.id] ?? false}
+            checked={purchasedKeys.has(entry.id)}
             onChange={(checked) => toggleInventory(entry, checked)}
             label="Purchased"
           />
@@ -1197,7 +1517,7 @@ export function FarmsPage() {
       render: (entry) => (
         <div className="library-check-cell">
           <Checkbox
-            checked={journey.merchants[entry.id] ?? false}
+            checked={purchasedKeys.has(MERCHANT_INVENTORY_ID_BY_LEGACY_ID[entry.id] || entry.id)}
             onChange={(checked) => toggleMerchant(entry, checked)}
             label="Purchased"
           />
@@ -1345,9 +1665,9 @@ export function FarmsPage() {
             <p className="small muted" style={{ margin: 0 }}>
               Farmable quantities are permanent: they belong to the character and survive a new journey. Reaching a
               farmable target also records the matching collection item with a duplicate count. Materials, finite
-              pickups, merchant purchases, and scarabs are journey state and reset when you start a new run. A finite
-              pickup linked to a route step is collected automatically when that step is marked done, so it never needs
-              a second checkbox.
+              pickups, merchant purchases, and scarabs are journey state and reset when you start a new run. A merchant
+              row ticks the shared inventory record, so the workbook ledger and the full inventory always agree. A
+              finite pickup whose route or sweep step lists it is collected by that step and shows no second checkbox.
             </p>
           </Disclosure>
         </div>
@@ -1387,6 +1707,41 @@ export function FarmsPage() {
               >
                 <option value="all">All timing windows</option>
                 {TIMING_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </Select>
+              <Select
+                label="Location"
+                value={filters.location}
+                onChange={(event) => updateFilter("location", event.target.value)}
+              >
+                <option value="all">All locations</option>
+                {FARMABLE_LOCATIONS.map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </Select>
+              <Select
+                label="Enemy / source"
+                value={filters.source}
+                onChange={(event) => updateFilter("source", event.target.value)}
+              >
+                <option value="all">All enemies & sources</option>
+                {FARMABLE_SOURCES.map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </Select>
+              <Select
+                label="Sort"
+                value={filters.dropSort}
+                onChange={(event) => updateFilter("dropSort", event.target.value)}
+              >
+                {DROP_SORT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
@@ -1593,6 +1948,16 @@ export function FarmsPage() {
           ) : null}
         </div>
 
+        {activeTab === "farmables" && (filters.location !== "all" || filters.source !== "all") ? (
+          <p className="small faint" style={{ margin: "8px 0 0" }}>
+            Showing drops from{" "}
+            {filters.source !== "all" ? <strong>{filters.source}</strong> : "every enemy"}
+            {" at "}
+            {filters.location !== "all" ? <strong>{filters.location}</strong> : "every recorded location"}. Drop chance
+            comes from the source wording; “Chance not stated” means the workbook never named a rate.
+          </p>
+        ) : null}
+
         {activeTab === "merchants" && merchantScope === "inventory" ? (
           <div className="merchant-roster">
             <Disclosure
@@ -1663,7 +2028,7 @@ export function FarmsPage() {
               columns={finiteColumns}
               focusId={focusId}
               className="farm-table"
-              rowClassName={(entry) => (finiteStepsDone[entry.id] ? "is-collected" : undefined)}
+              rowClassName={(entry) => (finiteStepState[entry.id]?.done ? "is-collected" : undefined)}
               empty={filterEmpty("No finite pickups match these filters")}
             />
             <LoadMore shown={shownCount} total={matchingCount} onMore={() => setLimit((current) => current + PAGE_SIZE)} />
