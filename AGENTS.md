@@ -252,9 +252,23 @@ gh release create v1.2.0 --title "…" --notes-file notes.md \
   "src-tauri/target/release/bundle/rpm/…rpm" SHA256SUMS.txt
 ```
 
-`gh` is authenticated as `nero-` with `repo` + `workflow` scopes. macOS/Windows artifacts only come
-from CI (this host cannot build them) — download them from the workflow run with
-`gh run download <id>` and upload, or leave the release Linux-only and say so.
+macOS and Windows installers are **built by CI, not here** — this host has only the
+`x86_64-unknown-linux-gnu` Rust target, and a Tauri NSIS `.exe` needs a Windows toolchain. The v1.1.0
+release got its `.exe` and `.dmg` by `gh run download <run-id>` + manual upload (see
+`/tmp/ci-1.1.0/` for that layout). As of v1.2.0 the workflow's `publish` job does this itself.
+
+**Every release must carry Linux *and* Windows.** A Linux-only release is incomplete. If you are
+assembling by hand because CI is unavailable:
+
+```bash
+gh run list --workflow=desktop.yml --limit 1
+gh run watch <run-id> --exit-status            # wait for windows + macos jobs
+mkdir -p /tmp/ci && cd /tmp/ci && gh run download <run-id>
+# then upload the .exe / .dmg / .deb / .rpm / .AppImage alongside SHA256SUMS.txt
+```
+
+Do not describe "this machine cannot build Windows" as the reason a release lacks a `.exe` — it is
+the reason CI exists, not an excuse to skip it.
 
 **Do not claim a release is complete until the assets are attached and the release page lists
 them.** A tag alone ships nothing.

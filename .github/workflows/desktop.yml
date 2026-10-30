@@ -28,7 +28,7 @@ jobs:
           - name: Linux x86_64
             platform: ubuntu-22.04
             artifact: linux-x86_64
-            args: "--bundles deb,appimage"
+            args: "--bundles deb,rpm,appimage"
             targets: ""
           - name: macOS universal
             platform: macos-14
@@ -63,7 +63,7 @@ jobs:
         if: startsWith(matrix.platform, 'ubuntu')
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf rpm
 
       - run: npm ci
 
@@ -89,3 +89,58 @@ jobs:
           path: src-tauri/target/**/release/bundle/**
           if-no-files-found: error
           retention-days: 14
+
+  # Attach every platform's installer to the release that matches the pushed tag.
+  # Without this job the matrix builds Windows and macOS installers and then lets
+  # them expire as workflow artifacts, which is why a locally assembled release
+  # only ever contained Linux packages.
+  publish:
+    name: Publish release assets
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download every platform bundle
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: false
+
+      - name: Collect installers
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          # Linux: deb, rpm, AppImage.
+          find dist -type f \( -name '*.deb' -o -name '*.rpm' -o -name '*.AppImage' \) \
+            -exec cp {} release/ \;
+          # Windows: NSIS setup executable.
+          find dist -type f -name '*setup.exe' -exec cp {} release/ \;
+          # macOS: disk image. The .app directory is not a release asset.
+          find dist -type f -name '*.dmg' -exec cp {} release/ \;
+          cd release
+          ls -la
+          if [ -z "$(ls -A)" ]; then
+            echo "error: no installers were collected" >&2
+            exit 1
+          fi
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          # Create the release if the tag was pushed without one, then upload.
+          # --clobber makes this safe to re-run after a partial upload.
+          gh release view "$TAG" >/dev/null 2>&1 || \
+            gh release create "$TAG" --title "$TAG" --generate-notes
+          for asset in release/*; do
+            gh release upload "$TAG" "$asset" --clobber
+          done
+          gh release view "$TAG" --json url,assets \
+            --jq '{url, assets: [.assets[] | "\(.name) \(.size)"]}'
