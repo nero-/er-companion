@@ -37,7 +37,7 @@ Desktop installers for the host platform:
 npm run desktop:build
 ```
 
-The Linux build requires Rust stable plus WebKitGTK 4.1, GTK 3, and `librsvg`; the workflow and platform prerequisites are in [`docs/DESKTOP.md`](docs/DESKTOP.md). The Tauri shell provides native JSON save/open dialogs, opens external links in the system browser, and stores progress in the app's private WebView directory. The PWA service worker is omitted from desktop builds because the assets already ship locally. Cross-platform installers are built by `.github/workflows/desktop.yml`; the private [`v1.1.0` release](releases/tag/v1.1.0) carries the Linux DEB/AppImage, macOS universal DMG, and Windows NSIS installer.
+The Linux build requires Rust stable plus WebKitGTK 4.1, GTK 3, and `librsvg`; the workflow and platform prerequisites are in [`docs/DESKTOP.md`](docs/DESKTOP.md). The Tauri shell provides native JSON save/open dialogs, opens external links in the system browser, and stores progress in the app's private WebView directory. The PWA service worker is omitted from desktop builds because the assets already ship locally. Cross-platform installers are built by `.github/workflows/desktop.yml`; the private [`v1.2.0` release](releases/tag/v1.2.0) carries the Linux DEB/RPM/AppImage, with macOS and Windows installers produced by the CI matrix.
 
 Checks:
 

@@ -212,9 +212,12 @@ Verified by actually running it (not just tests):
 - Scale reads 1.0 / 1.1 / 1.25 at 1080p / 1440p / 4K; 4K@200% stays 1.0.
 - 20 scroll steps over 3,921 px: 0 long tasks; computed `backdrop-filter` none.
 - Production build: all 12 routes render, service worker precaches 62 entries, offline reload works.
-- Desktop: `.deb`, `.rpm`, `.AppImage` build and the AppImage launches without crashing
-  (~30 s run, WebKit child spawns). **No screenshot of the desktop window was captured** — the
-  app opens on Wayland but automated capture failed. Treat visual desktop QA as unverified.
+- Desktop: `.deb`, `.rpm`, `.AppImage` build. The AppImage runs: `WebKitWebProcess` spawns under
+  the app and reaches ~406 MB RSS, which means the 12 MB bundle parsed and React mounted (a blank
+  webview sits near 60 MB). **No screenshot of the desktop window was captured** — X11 auth is
+  denied from this shell (`xprop` fails, no `~/.Xauthority`), KWin's screenshot DBus interface is
+  unavailable, and `spectacle` captures a black frame. Treat *visual* desktop QA as unverified;
+  the process-level evidence above is what exists.
 
 Open / deliberately not done:
 
@@ -238,8 +241,8 @@ Version lives in **four** files and they must agree: `package.json`,
 versions), `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml`.
 
 CI (`.github/workflows/desktop.yml`) runs on `push` of a `v*` tag or manual dispatch; it builds
-Linux/macOS/Windows but **only uploads artifacts** — it does not attach them to a release. To
-publish, build locally and use `gh`:
+Linux/macOS/Windows but **only uploads workflow artifacts** — it does not attach them to a release.
+To publish, build locally and use `gh`:
 
 ```bash
 npm run desktop:build
@@ -250,11 +253,31 @@ gh release create v1.2.0 --title "…" --notes-file notes.md \
 ```
 
 `gh` is authenticated as `nero-` with `repo` + `workflow` scopes. macOS/Windows artifacts only come
-from CI (this host cannot build them) — download them from the workflow run and attach, or leave
-the release Linux-only and say so.
+from CI (this host cannot build them) — download them from the workflow run with
+`gh run download <id>` and upload, or leave the release Linux-only and say so.
 
 **Do not claim a release is complete until the assets are attached and the release page lists
 them.** A tag alone ships nothing.
+
+### Release gotchas found the hard way (v1.2.0)
+
+- **The repo is private.** `https://github.com/…/releases/download/…` returns `404` for anyone not
+  authenticated, including your own `curl`. That is not a broken upload. Verify assets with the
+  API instead:
+  ```bash
+  gh release view v1.2.0 --json assets --jq '.assets[] | "\(.name) \(.size) \(.state)"'
+  curl -sSL -H "Authorization: token $(gh auth token)" -H "Accept: application/octet-stream" \
+    -o out.bin "https://api.github.com/repos/nero-/er-companion/releases/assets/<asset-id>"
+  ```
+  Then compare `sha256sum` against the built file. A 9-byte download is the string `Not Found`.
+- **`gh release create` / `PATCH /releases` intermittently return HTTP 500** on this repo. Workaround
+  that worked: `DELETE` the broken release, then `POST /releases` with a JSON body containing
+  `tag_name`, `name`, `body`, and no assets; then `gh release upload` one asset at a time.
+- **GitHub rewrites asset names**: spaces become dots
+  (`Elden.Ring.Definitive.Companion_1.2.0_amd64.deb`). `SHA256SUMS.txt` keeps the original names,
+  so document the mapping or users will report a mismatch.
+- Uploading the 114 MB AppImage is fine, but do it alone — batching it with other assets was part
+  of what tripped the 500.
 
 ---
 
