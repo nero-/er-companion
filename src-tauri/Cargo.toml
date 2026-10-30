@@ -1,6 +1,6 @@
 [package]
 name = "er-companion"
-version = "1.1.0"
+version = "1.2.0"
 description = "Offline Elden Ring route, collection, build and lore companion"
 authors = ["ER Companion contributors"]
 edition = "2021"
