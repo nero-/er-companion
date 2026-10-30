@@ -362,7 +362,7 @@ export function Modal({ open, title, onClose, children, actions, className = "" 
     <div className="overlay" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <div className={`modal ${className}`.trim()} role="dialog" aria-modal="true" aria-label={title}>
         <div className="row-between" style={{ marginBottom: 12 }}>
-          <h2 style={{ fontSize: 22 }}>{title}</h2>
+          <h2 className="dialog-title">{title}</h2>
           <Button variant="ghost" size="sm" icon="x" onClick={onClose} aria-label="Close" />
         </div>
         <div>{children}</div>
@@ -402,7 +402,7 @@ export function Drawer({ open, title, subtitle, onClose, children, footer }: Dra
             <div className="eyebrow" style={{ marginBottom: 4 }}>
               Details
             </div>
-            <h2 style={{ fontSize: 22, lineHeight: 1.2 }}>{title}</h2>
+            <h2 className="dialog-title dialog-title--drawer">{title}</h2>
             {subtitle ? <div className="small muted" style={{ marginTop: 4 }}>{subtitle}</div> : null}
           </div>
           <Button variant="ghost" size="sm" icon="x" onClick={onClose} aria-label="Close details" />

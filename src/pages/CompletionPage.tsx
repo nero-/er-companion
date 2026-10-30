@@ -47,7 +47,6 @@ import {
   branchRewardProgress,
   collectionSummary,
   completionScopes,
-  decisionsResolved,
   endingSummary,
   farmSummary,
   ngplusProgress,
@@ -66,6 +65,7 @@ import {
   resetJourney,
   setAchievement,
   setCertification,
+  setDecision,
   setDecisionCheck,
   setEnding,
   setNgPlusItem,
@@ -74,7 +74,7 @@ import {
   useActiveCharacter,
   useActiveJourney,
 } from "../lib/store";
-import type { BranchReward, EndingState } from "../lib/types";
+import type { BranchPlanDecision, BranchReward, EndingState, JourneyState } from "../lib/types";
 import "./lore-completion.css";
 
 const TABS = [
@@ -134,6 +134,14 @@ const SCOPE_ICONS: Record<string, IconName> = {
   "npc-walkthrough": "users",
   "branch-rewards": "target",
 };
+
+/**
+ * The workbook's decision rows carry the authored outcome list; branch-plan
+ * rows carry the rewards and route anchors. They share one decision id.
+ */
+const META_DECISION_BY_ID: Record<string, (typeof META.decisions)[number]> = Object.fromEntries(
+  META.decisions.map((decision) => [decision.id, decision]),
+);
 
 const BRANCH_AVAILABILITY_LABELS: Record<string, string> = {
   "journey-1": "Journey 1",
@@ -310,6 +318,57 @@ function PulseCard({
   );
 }
 
+/** Outcomes are authored as "A / B / C"; the recorded value is one of those. */
+function decisionOutcomes(decisionId: string): string[] {
+  const meta = META_DECISION_BY_ID[decisionId];
+  if (!meta?.outcomes) return [];
+  return meta.outcomes
+    .split(/\s*\/\s*/)
+    .map((outcome) => outcome.trim())
+    .filter(Boolean);
+}
+
+interface DecisionState {
+  /** Anchored route steps that exist in the bundled route. */
+  anchors: { id: string; area: string; order: number; done: boolean }[];
+  anchorsDone: number;
+  /** Any anchored step done — a resolved branch needs one anchor, not all. */
+  anchorSettled: boolean;
+  manualChecked: boolean;
+  chosen: string;
+  /** Anchored completion, manual check, or a recorded outcome. */
+  settled: boolean;
+  /** How the card became settled, for the badge copy. */
+  reason: "outcome" | "route" | "manual" | "open";
+}
+
+/**
+ * A decision settles when the branch is actually resolved for this journey.
+ * Anchors are alternatives inside one decision, so ANY done anchor is enough;
+ * requiring every anchor was wrong for decisions whose branches are optional.
+ */
+function decisionState(decision: BranchPlanDecision, journey: JourneyState): DecisionState {
+  const anchors = (decision.routeStepIds ?? []).flatMap((stepId) => {
+    const step = STEP_BY_ID[stepId];
+    return step
+      ? [{ id: step.id, area: step.area, order: step.order, done: journey.steps[step.id] === "done" }]
+      : [];
+  });
+  const anchorsDone = anchors.filter((anchor) => anchor.done).length;
+  const anchorSettled = anchorsDone > 0;
+  const manualChecked = Boolean(journey.decisionChecks[decision.decisionId]);
+  const chosen = journey.decisions[decision.decisionId] ?? "";
+  const settled = Boolean(chosen) || anchorSettled || manualChecked;
+  const reason: DecisionState["reason"] = chosen
+    ? "outcome"
+    : anchorSettled
+      ? "route"
+      : manualChecked
+        ? "manual"
+        : "open";
+  return { anchors, anchorsDone, anchorSettled, manualChecked, chosen, settled, reason };
+}
+
 function BranchRewardChip({
   reward,
   ownedItemIds,
@@ -427,12 +486,37 @@ export function CompletionPage() {
   const scopesComplete = scopes.filter((scopeRow) => scopeRow.complete).length;
   const branchProgress = branchRewardProgress(character);
   const branchResolvedDecisions = BRANCH_PLAN_DECISIONS.filter((decision) => !decision.unresolved).length;
-  const branchSettledDecisions = BRANCH_PLAN_DECISIONS.filter((decision) => {
-    const anchoredSteps = (decision.routeStepIds ?? []).filter((stepId) => STEP_BY_ID[stepId]);
-    const autoDone =
-      anchoredSteps.length > 0 && anchoredSteps.every((stepId) => journey.steps[stepId] === "done");
-    return autoDone || Boolean(journey.decisionChecks[decision.decisionId]);
-  }).length;
+  const decisionStateById: Record<string, DecisionState> = Object.fromEntries(
+    BRANCH_PLAN_DECISIONS.map((decision) => [decision.decisionId, decisionState(decision, journey)]),
+  );
+  const decisionRows = BRANCH_PLAN_DECISIONS.map((decision) => decisionStateById[decision.decisionId]);
+  const branchSettledDecisions = decisionRows.filter((row) => row.settled).length;
+  const decisionsChosen = decisionRows.filter((row) => row.chosen).length;
+  const decisionsFromRoute = decisionRows.filter((row) => row.reason === "route").length;
+  const decisionsFromManual = decisionRows.filter((row) => row.reason === "manual").length;
+  const priorJourney = character.journeys
+    .filter((entry) => entry.index < journey.index)
+    .sort((a, b) => b.index - a.index)[0];
+  const priorDecisionRows = priorJourney
+    ? BRANCH_PLAN_DECISIONS.flatMap((decision) => {
+        const row = decisionState(decision, priorJourney);
+        return row.settled ? [{ decision, row }] : [];
+      })
+    : [];
+  /**
+   * A branch reward that is already in the lifetime collection cannot be lost
+   * by starting another run, so that decision needs no re-choosing for its
+   * reward. Everything else has to be decided again in the current journey.
+   */
+  const securedDecisions = BRANCH_PLAN_DECISIONS.filter((decision) => {
+    const resolved = decision.rewards.filter((reward) => !reward.unresolved && reward.itemId);
+    return resolved.length > 0 && resolved.every((reward) => Boolean(character.items[reward.itemId]));
+  });
+  const securedByLifetime = securedDecisions.length;
+  const freshRun = branchSettledDecisions === 0 && priorDecisionRows.length > 0;
+  const rechooseDecisions = BRANCH_PLAN_DECISIONS.filter(
+    (decision) => !securedDecisions.includes(decision) && !decisionStateById[decision.decisionId].settled,
+  );
   const ngplusTotal = NGPLUS_SECTIONS.reduce((total, section) => total + section.stepCount, 0);
   const missableAchievements = ACHIEVEMENTS.filter((achievement) => achievement.missable).length;
   const achievementItems = REQUIREMENT_GROUPS.reduce((total, group) => total + group.items.length, 0);
@@ -442,7 +526,6 @@ export function CompletionPage() {
   const endingsViewed = META.endings.filter((ending) => character.endings[ending.id]?.viewed).length;
   const endingsEarned = META.endings.filter((ending) => character.endings[ending.id]?.earned).length;
   const chronologyPending = chronology.total - chronology.resolved - chronology.deferred;
-  const decisionsDone = decisionsResolved(journey, META.decisions.length);
   const processedRemembrances = META.remembrances.filter((remembrance) => {
     const entry = journey.remembrances[remembrance.id];
     return Boolean(entry && (entry.selectedReward || entry.duplicated || entry.consumed));
@@ -463,7 +546,7 @@ export function CompletionPage() {
       label: "Chronology resolved or explicitly deferred",
       ok: chronologyPending === 0,
       detail: `${chronology.resolved} / ${chronology.total} actions resolved · ${chronology.deferred} explicitly deferred · ${chronologyPending} still pending`,
-      note: `Decisions recorded: ${decisionsDone} / ${META.decisions.length}.`,
+      note: `Decisions recorded: ${decisionsChosen} / ${META.decisions.length}.`,
       cta: "Open chronology",
       to: "/journey?tab=chronology",
     },
@@ -763,7 +846,7 @@ export function CompletionPage() {
               detail={
                 <>
                   {chronology.resolved} / {chronology.total} actions · {chronology.deferred} deferred · decisions{" "}
-                  {decisionsDone} / {META.decisions.length}
+                  {decisionsChosen} / {META.decisions.length}
                 </>
               }
               progress={chronology.percent}
@@ -1534,20 +1617,44 @@ export function CompletionPage() {
           </div>
 
           <Callout tone="default" icon="quest">
-            Each decision records the Journey 1 outcome and the stated future-journey alternative. Decisions with a
-            linked route step settle automatically once that step is done, so nothing is entered twice. Decisions
-            without a route anchor keep a manual check. Reward chips resolve to the permanent collection; unresolved
-            rewards stay labeled with the reason they cannot be linked, and reward progress is counted from character
-            ownership so it survives new journeys.
+            Each decision records the outcome you actually chose, the Journey 1 plan, and the stated alternative. A
+            card settles as soon as any one of these is true: an anchored route step on your chosen branch is done, you
+            tick the manual check, or you record an outcome — branches inside one decision are alternatives, so one
+            resolved branch is enough. Reward chips resolve to the permanent collection; unresolved rewards stay
+            labeled with the reason they cannot be linked.
           </Callout>
+
+          {priorJourney ? (
+            <Callout tone={freshRun ? "warning" : "default"} icon={freshRun ? "alert" : "refresh"}>
+              {freshRun ? (
+                <>
+                  <strong>{journey.label} has no decisions recorded yet.</strong> It is a clean run: nothing below is
+                  secured for it. {securedByLifetime} of {BRANCH_PLAN_DECISIONS.length} decisions already have every
+                  resolved reward in your lifetime collection, so those need no re-farming; {rechooseDecisions.length}{" "}
+                  still have a branch to choose. {journey.label} carries none of {priorJourney.label}&rsquo;s manual
+                  checks — the &ldquo;Secured in {priorJourney.label}&rdquo; list below is reference only.
+                </>
+              ) : (
+                <>
+                  <strong>{journey.label} is in progress.</strong> {securedByLifetime} of{" "}
+                  {BRANCH_PLAN_DECISIONS.length} decisions already have every resolved reward in your lifetime
+                  collection; {rechooseDecisions.length} still have a branch to choose for this run. Manual checks and
+                  route anchors below belong to {journey.label} only; {priorJourney.label} is preserved separately.
+                </>
+              )}
+            </Callout>
+          ) : null}
 
           <div className="branch-summary" aria-label="Branch reward summary">
             <div className="branch-summary-cell">
-              <span className="stat-label">Decisions</span>
+              <span className="stat-label">Decisions settled</span>
               <strong>
                 {branchSettledDecisions} <span className="faint">/ {BRANCH_PLAN_DECISIONS.length}</span>
               </strong>
-              <span className="tiny faint">{branchResolvedDecisions} with fully resolved rewards</span>
+              <span className="tiny faint">
+                {decisionsChosen} outcome{decisionsChosen === 1 ? "" : "s"} recorded · {decisionsFromRoute} by route ·{" "}
+                {decisionsFromManual} by check
+              </span>
             </div>
             <div className="branch-summary-cell">
               <span className="stat-label">Rewards</span>
@@ -1568,6 +1675,60 @@ export function CompletionPage() {
               </strong>
               <span className="tiny faint">owned / resolved distinct rewards</span>
             </div>
+          </div>
+
+          <div className="branch-lifecycle">
+            <section className="branch-lifecycle-col" aria-label="Decisions secured by lifetime progress">
+              <div className="branch-lifecycle-head">
+                <h3>Secured by lifetime progress</h3>
+                <Badge tone="success">{securedDecisions.length}</Badge>
+              </div>
+              <p className="tiny faint">
+                Every resolved reward for these decisions is already in your collection, so {journey.label} does not
+                have to farm them again. The outcome itself is still a choice you make in game — only the reward is
+                banked.
+              </p>
+              {securedDecisions.length ? (
+                <div className="branch-lifecycle-list">
+                  {securedDecisions.map((decision) => (
+                    <span className="branch-lifecycle-item" key={`secured-${decision.decisionId}`}>
+                      <Icon name="check" size={11} /> {decision.title}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="small muted">No branch reward is fully owned yet.</p>
+              )}
+            </section>
+            <section className="branch-lifecycle-col" aria-label="Decisions still to choose this run">
+              <div className="branch-lifecycle-head">
+                <h3>Still to decide this run</h3>
+                <Badge tone={rechooseDecisions.length ? "warning" : "success"}>
+                  {rechooseDecisions.length}
+                </Badge>
+              </div>
+              <p className="tiny faint">
+                No outcome recorded, no branch reached, and no manual check in {journey.label}
+                {freshRun ? " — the run is still empty" : ""}. Each of these needs its branch chosen again.
+              </p>
+              {rechooseDecisions.length ? (
+                <div className="branch-lifecycle-list">
+                  {rechooseDecisions.map((decision) => (
+                    <button
+                      className="branch-lifecycle-link"
+                      key={`rechoose-${decision.decisionId}`}
+                      onClick={() =>
+                        navigate(`/completion?tab=branch&decision=${encodeURIComponent(decision.decisionId)}`)
+                      }
+                    >
+                      <Icon name="target" size={11} /> {decision.title}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="small muted">Every decision is settled for this run.</p>
+              )}
+            </section>
           </div>
 
           <div className="branch-toolbar">
@@ -1620,17 +1781,11 @@ export function CompletionPage() {
             <div className="branch-grid">
               {filteredBranchDecisions.map((decision) => {
                 const resolvedRewards = decision.rewards.filter((reward) => !reward.unresolved).length;
-                const anchors = (decision.routeStepIds ?? []).flatMap((stepId) => {
-                  const step = STEP_BY_ID[stepId];
-                  return step ? [step] : [];
-                });
-                const anchorsDone = anchors.filter((step) => journey.steps[step.id] === "done").length;
-                const autoComplete = anchors.length > 0 && anchorsDone === anchors.length;
-                const manuallyChecked = Boolean(journey.decisionChecks[decision.decisionId]);
-                const settled = autoComplete || manuallyChecked;
+                const state = decisionStateById[decision.decisionId];
+                const outcomes = decisionOutcomes(decision.decisionId);
                 return (
                   <article
-                    className={`card card-pad branch-card${decision.unresolved ? " is-unresolved" : " is-resolved"}${settled ? " is-settled" : ""}`}
+                    className={`card card-pad branch-card${decision.unresolved ? " is-unresolved" : " is-resolved"}${state.settled ? " is-settled" : ""}`}
                     key={decision.decisionId}
                     id={`branch-${decision.decisionId}`}
                   >
@@ -1644,8 +1799,14 @@ export function CompletionPage() {
                           ) : (
                             <Badge tone="success">Rewards resolved</Badge>
                           )}
-                          {settled ? (
-                            <Badge tone="success">{autoComplete ? "Auto" : "Checked"}</Badge>
+                          {state.settled ? (
+                            <Badge tone="success">
+                              {state.reason === "outcome"
+                                ? "Outcome recorded"
+                                : state.reason === "route"
+                                  ? "Branch reached"
+                                  : "Checked"}
+                            </Badge>
                           ) : (
                             <Badge>Open</Badge>
                           )}
@@ -1658,40 +1819,40 @@ export function CompletionPage() {
                     </div>
 
                     <div className="branch-status">
-                      {anchors.length > 0 ? (
+                      {state.anchors.length > 0 ? (
                         <>
                           <div className="branch-anchors">
                             <span className="branch-set-label">
-                              Route {anchors.length === 1 ? "step" : "steps"} · {anchorsDone} / {anchors.length} done
+                              Branch route {state.anchors.length === 1 ? "step" : "steps"} · {state.anchorsDone} of{" "}
+                              {state.anchors.length} done
                             </span>
                             <div className="branch-set-items">
-                              {anchors.map((step) => {
-                                const done = journey.steps[step.id] === "done";
-                                return (
-                                  <button
-                                    key={step.id}
-                                    type="button"
-                                    className={`branch-component${done ? " is-owned" : ""}`}
-                                    onClick={() =>
-                                      navigate(
-                                        `/journey?area=${encodeURIComponent(step.area)}&step=${encodeURIComponent(step.id)}`,
-                                      )
-                                    }
-                                    aria-label={`Open route step ${step.order} in ${step.area}${done ? " (done)" : ""}`}
-                                  >
-                                    <Icon name={done ? "check" : "map"} size={11} />
-                                    {step.area} · step {step.order}
-                                  </button>
-                                );
-                              })}
+                              {state.anchors.map((anchor) => (
+                                <button
+                                  key={anchor.id}
+                                  type="button"
+                                  className={`branch-component${anchor.done ? " is-owned" : ""}`}
+                                  onClick={() =>
+                                    navigate(
+                                      `/journey?area=${encodeURIComponent(anchor.area)}&step=${encodeURIComponent(anchor.id)}`,
+                                    )
+                                  }
+                                  aria-label={`Open route step ${anchor.order} in ${anchor.area}${anchor.done ? " (done)" : ""}`}
+                                >
+                                  <Icon name={anchor.done ? "check" : "map"} size={11} />
+                                  {anchor.area} · step {anchor.order}
+                                </button>
+                              ))}
                             </div>
                           </div>
                           <div className="branch-check-row">
-                            {autoComplete ? (
-                              <span className="branch-auto-note">Auto — linked route step is done.</span>
+                            {state.anchorSettled ? (
+                              <span className="branch-auto-note">
+                                Settled — a route step on this branch is done.
+                              </span>
                             ) : (
                               <Checkbox
-                                checked={manuallyChecked}
+                                checked={state.manualChecked}
                                 onChange={(value) => setDecisionCheck(decision.decisionId, value)}
                                 label={
                                   <>
@@ -1706,7 +1867,7 @@ export function CompletionPage() {
                       ) : (
                         <div className="branch-check-row">
                           <Checkbox
-                            checked={manuallyChecked}
+                            checked={state.manualChecked}
                             onChange={(value) => setDecisionCheck(decision.decisionId, value)}
                             label={
                               <>
@@ -1718,6 +1879,37 @@ export function CompletionPage() {
                           <span className="tiny faint">No route anchor — tracked by hand.</span>
                         </div>
                       )}
+                    </div>
+
+                    <div className="branch-decision">
+                      <Select
+                        label="Outcome chosen this journey"
+                        value={state.chosen}
+                        onChange={(event) => {
+                          setDecision(decision.decisionId, event.target.value);
+                          toast.push(
+                            event.target.value
+                              ? `${decision.title} outcome recorded.`
+                              : `${decision.title} outcome cleared.`,
+                            event.target.value ? "success" : "default",
+                          );
+                        }}
+                      >
+                        <option value="">Not decided yet</option>
+                        {outcomes.map((outcome) => (
+                          <option key={outcome} value={outcome}>
+                            {outcome}
+                          </option>
+                        ))}
+                        {state.chosen && !outcomes.includes(state.chosen) ? (
+                          <option value={state.chosen}>{state.chosen}</option>
+                        ) : null}
+                      </Select>
+                      <p className="tiny faint branch-decision-note">
+                        {state.chosen
+                          ? `Recorded: ${state.chosen}`
+                          : "Recording the outcome settles this decision even before you reach its route step."}
+                      </p>
                     </div>
 
                     <dl className="branch-outcomes">
@@ -1761,6 +1953,45 @@ export function CompletionPage() {
               })}
             </div>
           )}
+
+          {priorJourney ? (
+            <section className="branch-prior" aria-label={`Decisions secured in ${priorJourney.label}`}>
+              <SectionTitle
+                title={`Secured in ${priorJourney.label}`}
+                note={`Reference only · ${priorDecisionRows.length} of ${BRANCH_PLAN_DECISIONS.length} decisions settled there`}
+              />
+              <p className="small muted" style={{ marginBottom: 10 }}>
+                Read-only history from the previous run. Nothing here is current for {journey.label}, and ticking a row
+                would not carry it forward — record the outcome again above once you reach that branch this run.
+              </p>
+              {priorDecisionRows.length === 0 ? (
+                <p className="tiny faint">No decision was recorded in {priorJourney.label} either.</p>
+              ) : (
+                <div className="list">
+                  {priorDecisionRows.map(({ decision, row }) => (
+                    <div className="list-row" key={`prior-${decision.decisionId}`}>
+                      <div className="grow">
+                        <div className="card-title" style={{ fontSize: 13.5 }}>
+                          {decision.title}
+                        </div>
+                        <div className="small muted">
+                          {row.chosen
+                            ? `Chosen: ${row.chosen}`
+                            : row.reason === "route"
+                              ? `Branch reached — ${row.anchors
+                                  .filter((anchor) => anchor.done)
+                                  .map((anchor) => `${anchor.area} step ${anchor.order}`)
+                                  .join(", ")}`
+                              : "Marked resolved by hand"}
+                        </div>
+                      </div>
+                      <Badge tone="default">Read-only</Badge>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          ) : null}
         </div>
       ) : null}
 

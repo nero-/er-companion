@@ -6,6 +6,7 @@ import {
   Callout,
   Disclosure,
   EmptyState,
+  Modal,
   PageHeader,
   ProgressBar,
   SectionTitle,
@@ -18,8 +19,12 @@ import type { IconName } from "../components/Icon";
 import { EquipmentPicker } from "../components/EquipmentPicker";
 import type { EquipmentKind } from "../components/EquipmentPicker";
 import {
+  addCharacter,
+  adoptCurrentStatsAsDesired,
   applyProfile,
   applyStatSnapshot,
+  clearDesiredBuild,
+  deleteCharacter,
   deleteStatSnapshot,
   renameCharacter,
   saveStatSnapshot,
@@ -27,10 +32,14 @@ import {
   setEquipment,
   setItemOwned,
   setStat,
+  setStats,
+  switchCharacter,
   useActiveCharacter,
   useActiveJourney,
+  useAppState,
 } from "../lib/store";
-import { ARCHETYPES, PROFILE_BY_ID, SPELL_PACKAGE_BY_ID, UPGRADES_BY_NODE } from "../lib/data";
+import { ARCHETYPES, PROFILE_BY_ID, SPELL_PACKAGE_BY_ID } from "../lib/data";
+import { useReferencePack } from "../lib/reference";
 import {
   equipmentOwnedCount,
   isEquipmentOwned,
@@ -158,10 +167,10 @@ function SlotCard({ character, label, value, icon, onPick, onClear }: SlotCardPr
 export function CharacterPage() {
   const character = useActiveCharacter();
   const journey = useActiveJourney();
+  const state = useAppState();
   const toast = useToast();
   const equipment = character.equipment;
   const level = levelFromStats(character.stats);
-  const appliedProfile = character.profileId ? PROFILE_BY_ID[character.profileId] : undefined;
   const classEntry = CLASS_BY_ID[character.classId];
   const [nameDraft, setNameDraft] = useState(character.name);
   const [statDrafts, setStatDrafts] = useState<Record<StatKey, string>>({
@@ -177,15 +186,22 @@ export function CharacterPage() {
   const [picker, setPicker] = useState<PickerTarget | null>(null);
   const [snapshotName, setSnapshotName] = useState("");
   const [draft, setDraft] = useState<Stats | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const [profileArchetype, setProfileArchetype] = useState(
-    CERTIFIED.find((entry) => entry.id === character.archetypeId)?.id ?? CERTIFIED[0]?.id ?? "",
+  // The target build is the single source of truth for the profile shown here.
+  const desiredProfile = character.desiredBuild.profileId
+    ? PROFILE_BY_ID[character.desiredBuild.profileId]
+    : undefined;
+  const desiredArchetypeId =
+    desiredProfile?.archetypeId || character.desiredBuild.archetypeId || character.archetypeId || "";
+  const [targetArchetypeId, setTargetArchetypeId] = useState(
+    CERTIFIED.find((entry) => entry.id === desiredArchetypeId)?.id ?? CERTIFIED[0]?.id ?? "",
   );
-  const [profileLevel, setProfileLevel] = useState(
-    appliedProfile?.level ?? profilesForArchetype(character.archetypeId)[0]?.level ?? 150,
-  );
+  const [levelDraft, setLevelDraft] = useState<number | null>(null);
   const [recArchetype, setRecArchetype] = useState(
-    CERTIFIED.find((entry) => entry.id === character.archetypeId)?.id ?? CERTIFIED[0]?.id ?? "",
+    CERTIFIED.find((entry) => entry.id === desiredArchetypeId)?.id ?? CERTIFIED[0]?.id ?? "",
   );
 
   useEffect(() => {
@@ -193,13 +209,24 @@ export function CharacterPage() {
   }, [character.name]);
 
   useEffect(() => {
-    const next = CERTIFIED.find((entry) => entry.id === character.archetypeId);
-    if (!next) return;
-    setProfileArchetype(next.id);
-    setRecArchetype(next.id);
-    const applied = PROFILE_BY_ID[character.profileId];
-    if (applied) setProfileLevel(applied.level);
-  }, [character.archetypeId, character.profileId]);
+    const next =
+      CERTIFIED.find((entry) => entry.id === character.desiredBuild.archetypeId) ??
+      CERTIFIED.find((entry) => entry.id === character.archetypeId);
+    if (next) {
+      setTargetArchetypeId(next.id);
+      setRecArchetype(next.id);
+    }
+    setLevelDraft(null);
+  }, [character.id, character.desiredBuild.archetypeId, character.desiredBuild.profileId, character.archetypeId]);
+
+  // Switching characters must not carry a half-finished draft or picker over.
+  useEffect(() => {
+    setDraft(null);
+    setPicker(null);
+    setDeleteOpen(false);
+    setCreateOpen(false);
+    setNewName("");
+  }, [character.id]);
 
   useEffect(() => {
     setStatDrafts({
@@ -214,8 +241,15 @@ export function CharacterPage() {
     });
   }, [character.stats]);
 
-  const profileOptions = profilesForArchetype(profileArchetype);
-  const chosenProfile = profileOptions.find((entry) => entry.level === profileLevel) ?? profileOptions[0];
+  const profileOptions = profilesForArchetype(targetArchetypeId);
+  const targetLevelHere =
+    desiredProfile && desiredProfile.archetypeId === targetArchetypeId ? desiredProfile.level : undefined;
+  const chosenLevel =
+    levelDraft ??
+    targetLevelHere ??
+    profileOptions.find((entry) => entry.level === 150)?.level ??
+    profileOptions[0]?.level;
+  const chosenProfile = profileOptions.find((entry) => entry.level === chosenLevel) ?? profileOptions[0];
   const signatureLoadout = chosenProfile
     ? loadoutsForProfile(chosenProfile.id).find((entry) => entry.type === "Signature") ??
       loadoutsForProfile(chosenProfile.id)[0]
@@ -238,7 +272,7 @@ export function CharacterPage() {
   );
   const signatureUnindexed = signatureGearNames.filter((name) => !itemForEquipmentName(name)).length;
 
-  const plannedNames = uniqueEquipmentNames([
+  const equippedNames = uniqueEquipmentNames([
     equipment.mainWeapon,
     equipment.secondaryWeapon,
     equipment.offhand,
@@ -248,10 +282,10 @@ export function CharacterPage() {
     ...equipment.spells,
     ...equipment.physick,
   ]);
-  const cataloguedPlanned = plannedNames.filter((name) => Boolean(itemForEquipmentName(name)));
-  const unindexedPlanned = plannedNames.filter((name) => !itemForEquipmentName(name));
-  const plannedOwned = equipmentOwnedCount(character, cataloguedPlanned);
-  const missingNames = cataloguedPlanned.filter((name) => !isEquipmentOwned(character, name));
+  const cataloguedEquipped = equippedNames.filter((name) => Boolean(itemForEquipmentName(name)));
+  const unindexedEquipped = equippedNames.filter((name) => !itemForEquipmentName(name));
+  const equippedOwned = equipmentOwnedCount(character, cataloguedEquipped);
+  const missingNames = cataloguedEquipped.filter((name) => !isEquipmentOwned(character, name));
 
   const armorSlots = padSlots(equipment.armor, 4);
   const talismanSlots = padSlots(equipment.talismans, 4);
@@ -275,7 +309,10 @@ export function CharacterPage() {
   const cataloguedRecommendationGear = recommendationGear.filter((name) => Boolean(itemForEquipmentName(name)));
   const recommendationUnindexed = recommendationGear.length - cataloguedRecommendationGear.length;
   const recommendationOwned = equipmentOwnedCount(character, cataloguedRecommendationGear);
-  const recommendationUpgrades = recommendation ? UPGRADES_BY_NODE[recommendation.node.id] ?? [] : [];
+  const reference = useReferencePack();
+  const recommendationUpgrades = recommendation
+    ? reference?.UPGRADES_BY_NODE[recommendation.node.id] ?? []
+    : [];
 
   const writeSlot = (slot: EquipmentSlot, index: number, value: string) => {
     switch (slot) {
@@ -333,11 +370,36 @@ export function CharacterPage() {
     toast.push(`Character renamed to ${trimmed}.`, "success");
   };
 
+  const createCharacter = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmed = newName.trim();
+    if (!trimmed) {
+      toast.push("Enter a name for the new character.", "error");
+      return;
+    }
+    addCharacter(trimmed);
+    setNewName("");
+    setCreateOpen(false);
+    toast.push(`Created ${trimmed} and switched to it.`, "success");
+  };
+
+  const confirmDelete = () => {
+    const removed = character.name;
+    const deleted = deleteCharacter(character.id);
+    setDeleteOpen(false);
+    toast.push(
+      deleted
+        ? `Deleted ${removed} and its journeys.`
+        : "The last character cannot be deleted — the companion always keeps one active sheet.",
+      deleted ? "success" : "error",
+    );
+  };
+
   const respec = () => {
     if (!classEntry) return;
     setClass(character.classId);
     toast.push(
-      `Stats reset to the ${classEntry.name} origin base. The certified profile selection is cleared; equipment is unchanged.`,
+      `Stats reset to the ${classEntry.name} origin base. Equipment and the target build are unchanged.`,
       "success",
     );
   };
@@ -360,11 +422,11 @@ export function CharacterPage() {
     if (!chosenProfile) return;
     const missing = signatureOwned.total - signatureOwned.owned;
     applyProfile(chosenProfile.id);
-    setProfileArchetype(chosenProfile.archetypeId);
-    setProfileLevel(chosenProfile.level);
+    setTargetArchetypeId(chosenProfile.archetypeId);
+    setLevelDraft(null);
     setRecArchetype(chosenProfile.archetypeId);
     toast.push(
-      `Applied ${chosenProfile.archetype} · Level ${chosenProfile.level}. Stats and signature gear updated${
+      `Target build set to ${chosenProfile.archetype} · Level ${chosenProfile.level}. Your current stats and gear are unchanged${
         missing > 0 ? `; ${missing} signature pieces are not marked owned.` : "."
       }`,
       "success",
@@ -413,16 +475,60 @@ export function CharacterPage() {
 
   const applyDraft = () => {
     if (!draft) return;
-    // Draft is local-only until this point; setStat writes each key and clears the profile once.
-    for (const key of STAT_ORDER) setStat(key, draft[key]);
+    // One commit so the whole spread lands together.
+    setStats(draft);
     setDraft(null);
-    toast.push(
-      `Experiment applied to ${character.name} · derived Level ${levelFromStats(draft)}. The certified profile selection is cleared.`,
-      "success",
-    );
+    toast.push(`Experiment applied to ${character.name} · derived Level ${levelFromStats(draft)}.`, "success");
   };
 
-  const plannedProfileStats = chosenProfile?.stats;
+  // Current vs target: desiredBuild wins, the selected profile is the fallback/preview.
+  const hasTargetBuild =
+    Boolean(desiredProfile) ||
+    Boolean(character.desiredBuild.archetypeId) ||
+    STAT_ORDER.some((key) => character.desiredBuild.stats[key] !== undefined);
+  const targetBaseProfile = desiredProfile ?? chosenProfile;
+  const targetStats: Stats | undefined = targetBaseProfile ? { ...targetBaseProfile.stats } : undefined;
+  if (targetStats) {
+    for (const key of STAT_ORDER) {
+      const override = character.desiredBuild.stats[key];
+      if (override !== undefined) targetStats[key] = override;
+    }
+  }
+  const customTargetStats: Stats | undefined = STAT_ORDER.every(
+    (key) => character.desiredBuild.stats[key] !== undefined,
+  )
+    ? {
+        vig: character.desiredBuild.stats.vig ?? 1,
+        mnd: character.desiredBuild.stats.mnd ?? 1,
+        end: character.desiredBuild.stats.end ?? 1,
+        str: character.desiredBuild.stats.str ?? 1,
+        dex: character.desiredBuild.stats.dex ?? 1,
+        int: character.desiredBuild.stats.int ?? 1,
+        fai: character.desiredBuild.stats.fai ?? 1,
+        arc: character.desiredBuild.stats.arc ?? 1,
+      }
+    : undefined;
+  const targetSpread = targetStats ?? customTargetStats;
+  const targetRows = targetSpread
+    ? STAT_ORDER.map((key) => ({
+        key,
+        label: STAT_LABELS[key],
+        current: character.stats[key],
+        target: targetSpread[key],
+      }))
+    : [];
+  const targetStatsComplete = Boolean(targetSpread);
+  const targetDerivedLevel = targetSpread ? levelFromStats(targetSpread) : undefined;
+  const targetDelta = targetRows.reduce((total, row) => total + (row.target - row.current), 0);
+  const targetSourceLabel = desiredProfile
+    ? `${desiredProfile.archetype} · Level ${desiredProfile.level}`
+    : hasTargetBuild
+      ? targetStatsComplete
+        ? `Custom target · Level ${targetDerivedLevel}`
+        : "Custom target"
+      : chosenProfile
+        ? `${chosenProfile.archetype} · Level ${chosenProfile.level} preview`
+        : "No target build";
 
   return (
     <div className="page character-page">
@@ -431,8 +537,8 @@ export function CharacterPage() {
         title={character.name}
         description={
           <>
-            Derive the character level from the eight stats, apply a certified profile, and plan every equipment slot.
-            Level {level} is computed from the stat total; no softcap or legality claims are made beyond the content pack.
+            Your live sheet is the eight current stats below; level {level} is computed from their total. The target
+            build is what you are working toward and never changes those stats on its own.
           </>
         }
         actions={
@@ -446,6 +552,48 @@ export function CharacterPage() {
           </>
         }
       />
+
+      <section className="card card-pad char-manager" style={{ marginBottom: 16 }}>
+        <SectionTitle
+          title="Characters"
+          note={`${state.characters.length} ${state.characters.length === 1 ? "character" : "characters"}`}
+        />
+        <div className="char-manager-grid">
+          <Select
+            label="Active character"
+            value={character.id}
+            onChange={(event) => switchCharacter(event.target.value)}
+          >
+            {state.characters.map((entry) => (
+              <option key={entry.id} value={entry.id}>
+                {entry.name} · Level {levelFromStats(entry.stats)} · {CLASS_BY_ID[entry.classId]?.name ?? entry.classId}
+              </option>
+            ))}
+          </Select>
+          <div className="row wrap char-manager-actions">
+            <Button icon="plus" onClick={() => setCreateOpen(true)}>
+              New character
+            </Button>
+            <Button
+              variant="danger"
+              icon="x"
+              onClick={() => setDeleteOpen(true)}
+              disabled={state.characters.length <= 1}
+              title={
+                state.characters.length <= 1
+                  ? "The companion always keeps one active character"
+                  : `Delete ${character.name}`
+              }
+            >
+              Delete character
+            </Button>
+          </div>
+        </div>
+        <p className="tiny faint" style={{ margin: "8px 0 0" }}>
+          Switching characters switches the whole companion sheet, including its journeys. Deleting removes the
+          character and every journey it owns and cannot be undone.
+        </p>
+      </section>
 
       <div className="char-top">
         <section className="card card-pad">
@@ -476,7 +624,7 @@ export function CharacterPage() {
               if (!next) return;
               setClass(next.id);
               toast.push(
-                `Class set to ${next.name}. Stats reset to the origin base and the certified profile selection is cleared.`,
+                `Class set to ${next.name}. Current stats reset to the origin base; the target build is unchanged.`,
                 "success",
               );
             }}
@@ -492,7 +640,7 @@ export function CharacterPage() {
           </p>
           <div className="char-level-row">
             <div>
-              <div className="tiny faint">Derived level</div>
+              <div className="tiny faint">Current level</div>
               <div className="char-level">{level}</div>
             </div>
             <div>
@@ -500,27 +648,33 @@ export function CharacterPage() {
               <div className="char-level-sub">{classEntry ? `Level ${classEntry.level}` : "Not in CLASSES"}</div>
             </div>
             <div>
-              <div className="tiny faint">Certified profile</div>
+              <div className="tiny faint">Target build</div>
               <div className="char-level-sub">
-                {appliedProfile ? `${appliedProfile.archetype} · ${appliedProfile.level}` : "None applied"}
+                {desiredProfile
+                  ? `${desiredProfile.archetype} · Level ${desiredProfile.level}`
+                  : hasTargetBuild && targetStatsComplete
+                    ? `Custom spread · Level ${targetDerivedLevel}`
+                    : hasTargetBuild
+                      ? "Custom target spread"
+                      : "No target build yet"}
               </div>
             </div>
           </div>
-          {appliedProfile ? (
-            <Badge tone={level === appliedProfile.calculatedLevel ? "success" : "warning"}>
-              {level === appliedProfile.calculatedLevel
-                ? `Matches certified level ${appliedProfile.calculatedLevel}`
-                : `Stats diverge from certified level ${appliedProfile.calculatedLevel}`}
+          {desiredProfile ? (
+            <Badge tone={level === desiredProfile.calculatedLevel ? "success" : "accent"}>
+              {level === desiredProfile.calculatedLevel
+                ? `Matches the target's certified level ${desiredProfile.calculatedLevel}`
+                : `Target is certified level ${desiredProfile.calculatedLevel}; current level ${level}`}
             </Badge>
           ) : null}
           <div className="row wrap" style={{ marginTop: 12 }}>
             <Button variant="danger" icon="refresh" onClick={respec} disabled={!classEntry}>
-              Respec / clear build
+              Respec current stats
             </Button>
           </div>
           <p className="tiny faint" style={{ margin: "8px 0 0" }}>
-            Respec restores the class origin stats and clears the certified profile; equipment is untouched. Use the
-            equipment planner below to clear gear separately.
+            Respec restores the class origin stats for the current level; the target build and equipment are untouched.
+            Use the equipment planner below to clear gear separately.
           </p>
         </section>
 
@@ -575,16 +729,15 @@ export function CharacterPage() {
           <div className="divider" />
           <div className="row-between wrap">
             <span className="small muted">
-              Stat total {STAT_ORDER.reduce((total, key) => total + character.stats[key], 0)} · derived level {level}
+              Current stat total {STAT_ORDER.reduce((total, key) => total + character.stats[key], 0)} · derived level{" "}
+              {level}
             </span>
-            <Badge tone={appliedProfile ? "accent" : "default"}>
-              {appliedProfile?.status ?? "Custom stat spread"}
-            </Badge>
+            <Badge tone="default">Current sheet</Badge>
           </div>
           <p className="tiny faint" style={{ margin: "8px 0 0" }}>
-            Level is the stat total minus 79, matching levelFromStats. The planner does not assert that a spread is
-            legal, optimal, or inside any softcap. Changing a stat clears the profile selection until a certified
-            profile is applied again.
+            Level is the stat total minus 79, matching levelFromStats. This editor is the only place that changes the
+            stats you have in game; setting a target build never writes here. The planner makes no legality or softcap
+            claim.
           </p>
         </section>
       </div>
@@ -592,17 +745,23 @@ export function CharacterPage() {
       <div className="grid-2 char-summary-grid">
         <section className="card card-pad">
           <SectionTitle
-            title="Apply certified profile"
-            note={chosenProfile ? `Level ${chosenProfile.level} · ${chosenProfile.startingClass}` : "No profile"}
+            title="Target build"
+            note={
+              desiredProfile
+                ? `Currently ${desiredProfile.archetype} · Level ${desiredProfile.level}`
+                : chosenProfile
+                  ? `Level ${chosenProfile.level} · ${chosenProfile.startingClass}`
+                  : "No target"
+            }
           />
           <div className="grid-2" style={{ gap: 10 }}>
             <Select
               label="Archetype"
-              value={profileArchetype}
+              value={targetArchetypeId}
               onChange={(event) => {
                 const nextId = event.target.value;
-                setProfileArchetype(nextId);
-                setProfileLevel(profilesForArchetype(nextId)[0]?.level ?? 150);
+                setTargetArchetypeId(nextId);
+                setLevelDraft(profilesForArchetype(nextId).find((entry) => entry.level === 150)?.level ?? null);
               }}
             >
               {CERTIFIED.map((entry) => (
@@ -612,9 +771,9 @@ export function CharacterPage() {
               ))}
             </Select>
             <Select
-              label="Level"
+              label="Target level"
               value={chosenProfile?.level ?? ""}
-              onChange={(event) => setProfileLevel(Number(event.target.value))}
+              onChange={(event) => setLevelDraft(Number(event.target.value))}
               disabled={profileOptions.length === 0}
             >
               {profileOptions.map((entry) => (
@@ -650,19 +809,24 @@ export function CharacterPage() {
               </dl>
               {classEntry && chosenProfile.startingClass !== classEntry.name ? (
                 <p className="tiny faint" style={{ margin: "8px 0 0" }}>
-                  This profile starts from {chosenProfile.startingClass}; the character class stays {classEntry.name}
-                  unless you change it. Applying the profile writes the certified stats regardless.
+                  This profile starts from {chosenProfile.startingClass}; your character class stays {classEntry.name}.
+                  The target build records the certified spread independently of your class.
                 </p>
               ) : null}
               {signatureOwned.owned < signatureOwned.total ? (
                 <Callout tone="warning" icon="alert">
-                  {signatureOwned.total - signatureOwned.owned} indexed signature pieces are not marked owned.
-                  Applying the profile writes the certified gear regardless; ownership stays unchanged.
+                  {signatureOwned.total - signatureOwned.owned} indexed signature pieces are not marked owned. The
+                  target build still records them; collection ownership stays unchanged.
                 </Callout>
               ) : null}
               <div className="row wrap" style={{ marginTop: 10 }}>
-                <Button variant="primary" icon="check" onClick={applyCertified}>
-                  Apply profile
+                <Button
+                  variant="primary"
+                  icon="target"
+                  onClick={applyCertified}
+                  aria-label={`Set ${chosenProfile.archetype} Level ${chosenProfile.level} as the target build`}
+                >
+                  Set as target build
                 </Button>
                 <Button
                   variant="ghost"
@@ -833,73 +997,87 @@ export function CharacterPage() {
         </section>
       </div>
 
-      <section className="card card-pad current-vs-planned" style={{ marginBottom: 16 }}>
+      <section className="card card-pad current-vs-target" style={{ marginBottom: 16 }}>
         <SectionTitle
-          title="Current vs planned"
-          note={
-            chosenProfile
-              ? `${chosenProfile.archetype} · Level ${chosenProfile.level}`
-              : "No certified profile selected"
-          }
+          title="Current vs target"
+          note={targetSourceLabel}
         />
-        <div className="current-vs-planned-grid">
+        <div className="current-vs-target-grid">
           <div>
             <div className="tiny faint" style={{ marginBottom: 6 }}>
-              Current spread → planned profile
+              Current spread → target build
             </div>
-            {plannedProfileStats ? (
-              <StatCompare
-                rows={STAT_ORDER.map((key) => ({
-                  key,
-                  label: STAT_LABELS[key],
-                  current: character.stats[key],
-                  target: plannedProfileStats[key],
-                }))}
-              />
+            {targetStatsComplete ? (
+              <StatCompare rows={targetRows} />
             ) : (
               <EmptyState
-                title="No planned profile"
-                description="Pick an archetype and level to compare against a certified spread."
+                title="No target spread"
+                description="Set a certified target above, or copy your current spread as the target."
                 icon="layers"
               />
             )}
-            {plannedProfileStats ? (
+            {targetStatsComplete ? (
               <p className="tiny faint" style={{ margin: "8px 0 0" }}>
-                Planned spread derives Level {levelFromStats(plannedProfileStats)} · current derives Level {level}.
-                Nothing is written until you apply the profile.
+                Target derives Level {targetDerivedLevel} · current derives Level {level}.{" "}
+                {targetDelta === 0
+                  ? "The two spreads are identical."
+                  : `${targetDelta > 0 ? "+" : ""}${targetDelta} stat points to go.`}
+                {hasTargetBuild ? "" : " The selected profile is only a preview until you set it as the target."}
               </p>
             ) : null}
+            <div className="row wrap" style={{ marginTop: 10 }}>
+              <Button
+                icon="download"
+                onClick={() => {
+                  adoptCurrentStatsAsDesired();
+                  toast.push("Current spread copied to the target build.", "success");
+                }}
+              >
+                Copy current spread as target
+              </Button>
+              <Button
+                icon="x"
+                variant="ghost"
+                disabled={!hasTargetBuild}
+                onClick={() => {
+                  clearDesiredBuild();
+                  toast.push("Target build cleared. Current stats and gear are unchanged.", "success");
+                }}
+              >
+                Clear target
+              </Button>
+            </div>
           </div>
           <Disclosure
             title="Gear coverage"
-            summary={`${plannedOwned.owned}/${plannedOwned.total} indexed owned`}
+            summary={`${equippedOwned.owned}/${equippedOwned.total} indexed owned`}
             tone="muted"
             defaultOpen={missingNames.length > 0}
           >
             <ProgressBar
-              value={plannedOwned.total ? (plannedOwned.owned / plannedOwned.total) * 100 : 0}
-              label="Planned indexed gear marked owned"
+              value={equippedOwned.total ? (equippedOwned.owned / equippedOwned.total) * 100 : 0}
+              label="Equipped indexed gear marked owned"
               detail={`${missingNames.length} indexed missing`}
-              tone={plannedOwned.total > 0 && plannedOwned.owned === plannedOwned.total ? "success" : "accent"}
+              tone={equippedOwned.total > 0 && equippedOwned.owned === equippedOwned.total ? "success" : "accent"}
             />
-            {unindexedPlanned.length > 0 ? (
+            {unindexedEquipped.length > 0 ? (
               <p className="tiny faint" style={{ margin: "6px 0 0" }}>
-                {unindexedPlanned.length} planned {unindexedPlanned.length === 1 ? "entry has" : "entries have"} no
+                {unindexedEquipped.length} equipped {unindexedEquipped.length === 1 ? "entry has" : "entries have"} no
                 item-catalogue match; ownership cannot be determined for those names and they are excluded from the
                 count.
               </p>
             ) : null}
-            {plannedNames.length === 0 ? (
+            {equippedNames.length === 0 ? (
               <p className="small muted" style={{ marginTop: 10 }}>
-                No equipment planned yet. Use the planner below or apply a certified profile.
+                No equipment equipped yet. Use the planner below.
               </p>
-            ) : cataloguedPlanned.length === 0 ? (
+            ) : cataloguedEquipped.length === 0 ? (
               <p className="small muted" style={{ marginTop: 10 }}>
-                None of the planned names match the item catalogue, so ownership cannot be determined.
+                None of the equipped names match the item catalogue, so ownership cannot be determined.
               </p>
             ) : missingNames.length === 0 ? (
               <Callout tone="success" icon="check">
-                Every indexed planned slot is marked owned in the collection.
+                Every indexed equipped slot is marked owned in the collection.
               </Callout>
             ) : (
               <>
@@ -915,14 +1093,14 @@ export function CharacterPage() {
                   ) : null}
                 </div>
                 <Callout tone="warning" icon="alert">
-                  {missingNames.length} indexed planned piece{missingNames.length === 1 ? " is" : "s are"} not marked
+                  {missingNames.length} indexed equipped piece{missingNames.length === 1 ? " is" : "s are"} not marked
                   owned. The planner records intent; it does not claim the loadout is playable.
                 </Callout>
               </>
             )}
             <div className="row-between wrap" style={{ marginTop: 10 }}>
               <span className="tiny faint">
-                Unique pieces {plannedNames.length} · mode {equipmentModeLabel(character.equipmentMode)}
+                Unique pieces {equippedNames.length} · mode {equipmentModeLabel(character.equipmentMode)}
               </span>
               <Button size="sm" variant="ghost" icon="bag" onClick={() => navigate("/collection")}>
                 Mark gear in collection
@@ -1216,6 +1394,74 @@ export function CharacterPage() {
           />
         )}
       </section>
+
+      <Modal
+        open={createOpen}
+        title="New character"
+        onClose={() => {
+          setCreateOpen(false);
+          setNewName("");
+        }}
+        actions={
+          <>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setCreateOpen(false);
+                setNewName("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button variant="primary" icon="plus" type="submit" form="create-character-form">
+              Create character
+            </Button>
+          </>
+        }
+      >
+        <form id="create-character-form" onSubmit={createCharacter} className="stack" style={{ gap: 10 }}>
+          <label className="field">
+            <span className="field-label">Character name</span>
+            <input
+              className="input"
+              value={newName}
+              onChange={(event) => setNewName(event.target.value)}
+              placeholder="Tarnished name"
+              aria-label="New character name"
+              autoComplete="off"
+              autoFocus
+            />
+          </label>
+          <p className="tiny faint" style={{ margin: 0 }}>
+            The new sheet starts with a fresh journey and its own collection, stats, equipment and target build.
+          </p>
+        </form>
+      </Modal>
+
+      <Modal
+        open={deleteOpen}
+        title={`Delete ${character.name}?`}
+        onClose={() => setDeleteOpen(false)}
+        actions={
+          <>
+            <Button variant="ghost" onClick={() => setDeleteOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="danger" icon="x" onClick={confirmDelete}>
+              Delete character
+            </Button>
+          </>
+        }
+      >
+        <Callout tone="danger" icon="alert">
+          This removes {character.name} and every journey it owns, including route progress and boss records. Collection
+          and stat changes saved on this sheet are lost. It cannot be undone.
+        </Callout>
+        <p className="tiny faint" style={{ margin: "10px 0 0" }}>
+          {state.characters.length} {state.characters.length === 1 ? "character remains" : "characters exist"} — the
+          companion always keeps at least one.
+        </p>
+      </Modal>
 
       <EquipmentPicker
         open={Boolean(picker)}

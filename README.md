@@ -216,12 +216,14 @@ docs/audit/*                 audit, integrity, and full-game evidence
 
 ### State model
 
-- **Character** owns lifetime data: item collection, farmable quantities, lore reads, endings, achievements, equipment, and journeys.
-- **Journey** owns resettable data: route and supplemental status, notes, NPC/dialogue state, decisions, boss results, finite pickups, materials, merchants, scarabs, certifications, transition gates, remembrances, questline steps, the NG+ checklist, world-object checks, upgrade quantities, NPC-walkthrough steps, and manually revealed lore zones.
+- **Character** owns lifetime data: item collection, farmable quantities, lore reads, endings, achievements, the live equipment loadout, the target build, and journeys.
+- **Target build** (`desiredBuild`) is separate from current state. Applying a certified profile writes the archetype, level target, stat spread and certified gear the player is working toward; `stats`, `equipment` and `equipmentMode` hold what the character actually has in game. Applying a level-200 preview can never overwrite a live character sheet.
+- **Journey** owns resettable data: route and supplemental status, notes, NPC/dialogue state, decisions, boss results, finite pickups, materials, merchants, scarabs, certifications, transition gates, remembrances, questline steps, the NG+ checklist, world-object checks, upgrade quantities, NPC-walkthrough steps, deferred sweep steps, and manually revealed lore zones and bosses.
 - Starting a new journey resets journey state while preserving lifetime collection, farmable quantities, lore reads, achievements, and endings.
 - Completing a route step auto-acquires linked items, bosses, and resources where the source links them. Undo does not revoke ownership; collection edits are explicit.
+- **Sweep steps** give every catalogue item and crafting material an actionable step. Each area carries a merchant step, a farm step, a pickup step and a crafting-stock step where the ledgers have rows; records whose source pack has no location land in a phase cleanup step that says so. Ticking an item in any area marks it everywhere, so a duplicate-location drop is farmed once.
 
-Persistence is `localStorage` under `er-companion.state.v1`, debounced, with corrupt-state backup to `er-companion.state.corrupt`. Export/import is human-readable JSON in Settings. Older saves are normalized on load: new state maps (`worldChecks`, `upgradeCounts`, `npcWalkthroughSteps`) default empty, unknown future keys survive, and legacy `RTE-*` step IDs are remapped when a high-confidence match exists. Existing material and merchant keys retain the `MAT-*` and `MER-*` schemes, so the beyond-Redmaw ledgers require no save migration.
+Persistence is `localStorage` under `er-companion.state.v1`, debounced, with corrupt-state backup to `er-companion.state.corrupt`. Export/import is human-readable JSON in Settings. Older saves are normalized on load: `desiredBuild` and `sweepDeferred` default empty, `worldChecks`, `upgradeCounts`, `npcWalkthroughSteps` default empty, unknown future keys survive, and legacy `RTE-*` step IDs are remapped when a high-confidence match exists. Existing material and merchant keys retain the `MAT-*` and `MER-*` schemes, so the beyond-Redmaw ledgers require no save migration.
 
 ## Artwork, fonts, and licensing
 

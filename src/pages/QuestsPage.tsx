@@ -19,6 +19,8 @@ import {
   DIALOGUE_EVENTS,
   ENCOUNTERS,
   ITEMS_BY_NAME,
+  LORE,
+  LORE_EXPANDED,
   META,
   NPC_DESCRIPTIONS,
   NPC_STATES,
@@ -30,7 +32,7 @@ import {
   normalizeContentKey,
 } from "../lib/data";
 import worldJson from "../data/world.json";
-import { decisionsResolved, questlineProgress } from "../lib/selectors";
+import { loreAccess, questlineProgress } from "../lib/selectors";
 import { navigate, queryString, useRoute } from "../lib/router";
 import {
   setDecision,
@@ -38,6 +40,7 @@ import {
   setNpcState,
   setQuestlineStep,
   useActiveJourney,
+  useAppState,
 } from "../lib/store";
 import type {
   Decision,
@@ -46,6 +49,7 @@ import type {
   Encounter,
   Link,
   Lockout,
+  LoreEntry,
   NpcState,
   Questline,
   QuestlineRouteLink,
@@ -82,6 +86,271 @@ const ROUTE_LINKS_WITH_TARGET: QuestlineRouteLink[] = Object.values(QUESTLINE_RO
 const NPC_LORE_BY_NORMALIZED_KEY: Record<string, string> = Object.fromEntries(
   Object.entries(NPC_DESCRIPTIONS).map(([key, entry]) => [normalizeContentKey(key), entry.text]),
 );
+
+const NPC_LORE_SOURCE_BY_NORMALIZED_KEY: Record<string, string> = Object.fromEntries(
+  Object.entries(NPC_DESCRIPTIONS).map(([key, entry]) => [normalizeContentKey(key), entry.sourceUrl]),
+);
+
+/**
+ * World-state records name NPCs by the role the route calls them ("Blaidd",
+ * "Castellan Edgar"), while the lore store keys the wiki page name ("Blaidd
+ * the Half-Wolf", "Irina of Morne"). Each alias points at a description key
+ * that actually exists, so an aliased NPC renders the same paragraph the Lore
+ * page would.
+ */
+const NPC_LORE_ALIASES: Record<string, string> = {
+  blaidd: "Blaidd the Half-Wolf",
+  "iron fist alexander": "Alexander, Warrior Jar",
+  alexander: "Alexander, Warrior Jar",
+  irina: "Irina of Morne",
+  roderika: "Roderika, Spirit Tuner",
+  "sir gideon ofnir": "Sir Gideon Ofnir, the All-Knowing",
+  "gideon ofnir": "Sir Gideon Ofnir, the All-Knowing",
+  "bloody finger hunter yura": "Yura, Hunter of Bloody Fingers",
+  yura: "Yura, Hunter of Bloody Fingers",
+  "two fingers and finger reader enia": "Finger Reader Enia",
+  "smithing master hewg and roderika": "Smithing Master Hewg",
+  renna: "Ranni the Witch",
+};
+
+/**
+ * NPCs the world file tracks but the wiki description set has no page for
+ * (generic roles, dead traders, husks, lingering spirits). Each note is
+ * written from the in-game text and route records that do exist, and names
+ * its source so it is never mistaken for a wiki quotation.
+ */
+const NPC_LORE_NOTES: Record<string, NpcLore> = {
+  "castellan edgar": {
+    text: "Edgar is the castellan of Castle Morne, appointed by Godrick the Grafted and father to Irina of Morne. After the Misbegotten servants seize the castle he holds out at the rampart, staying on duty until the treasured Grafted Blade Greatsword is recovered and Irina's Letter reaches him.",
+    source: "Castle Morne area and Irina of Morne entries",
+  },
+  edgar: {
+    text: "Edgar is the castellan of Castle Morne, appointed by Godrick the Grafted and father to Irina of Morne. He holds out at the rampart after the Misbegotten seize the castle, staying on duty until the Grafted Blade Greatsword is recovered and Irina's Letter reaches him.",
+    source: "Castle Morne area and Irina of Morne entries",
+  },
+  "merchant kale": {
+    text: "Kalé is the nomadic merchant camped at the Church of Elleh, the first trader most Tarnished meet. He sells the Crafting Kit that unlocks crafting, reads the Mistwood howl for you, and teaches the Finger Snap. The nomadic merchants' own garb records what became of their clan: the Great Caravan was accused of heresy, buried alive far underground, and answered with a curse that summoned the flame of frenzy.",
+    source: "Nomadic Merchant's Chapeau item text and Church of Elleh route records",
+  },
+  "nomadic merchant": {
+    text: "Nomadic merchants are the hooded traders who sit under lanterns along every road of the Lands Between. Their garb records what became of their clan: the Great Caravan was accused of heretical beliefs, buried alive far underground, and answered with a curse of despair that summoned the flame of frenzy. Each one still buys and sells, and each carries finite one-stock lines worth clearing.",
+    source: "Nomadic Merchant's Chapeau item text",
+  },
+  "isolated merchant": {
+    text: "Isolated merchants are nomadic merchants posted far from any road — the Weeping Peninsula shack and Raya Lucaria are the usual two. They carry the same clan history as the rest of the Great Caravan and the same finite one-stock lines, so a single visit should clear their list.",
+    source: "Nomadic Merchant's Chapeau item text and merchant inventory records",
+  },
+  "twin maiden husks": {
+    text: "The Twin Maiden Husks are the two silent attendants behind the counter in Roundtable Hold. They hold the base twenty-one-line inventory and accept every bell bearing the Tarnished recovers, folding that merchant's or instructor's remaining stock into their own list — which is why killing a merchant early is never the way to reach their wares.",
+    source: "Roundtable Hold merchant closeout records",
+  },
+  "stranded soul": {
+    text: "Stranded Souls are the lingering dead of the Lands Between, heard rather than fought. They answer once with a single piece of buried testimony; the one in the rear chamber beyond Godrick's throne speaks beside the Shabriri Grape, and its line is missable once the room is left.",
+    source: "Stormveil Castle route and world-state records",
+  },
+  "wandering noble spirit": {
+    text: "The Wandering Noble Spirit at the Church of Pilgrimage is one of the nobles who keep walking the Lands Between after death. The Wandering Noble Ashes describe them as spirits surely in search of something once — something long since forgotten.",
+    source: "Wandering Noble Ashes item text",
+  },
+  "finger reader crone": {
+    text: "Finger Reader Crones are the blind women posted along the roads who read the Two Fingers' meaning for passing Tarnished. Enia, who keeps the Two Fingers' audience chamber in Roundtable Hold, is one of their number.",
+    source: "Finger Reader Enia entry",
+  },
+};
+
+/** Honorifics and role prefixes that never identify an NPC on their own. */
+const NPC_LORE_TITLE_PREFIXES = [
+  "bloody finger hunter",
+  "dragon communion priestess",
+  "volcano manor proprietress",
+  "swordhand of night",
+  "smithing master",
+  "finger reader",
+  "war counselor",
+  "witch hunter",
+  "needle knight",
+  "fire knight",
+  "iron fist",
+  "castellan",
+  "gatekeeper",
+  "lightseeker",
+  "blackguard",
+  "sorceress",
+  "sorcerer",
+  "preceptor",
+  "commander",
+  "general",
+  "master",
+  "knight",
+  "brother",
+  "redmane",
+  "dryleaf",
+  "lord",
+  "lady",
+  "sage",
+  "count",
+  "sir",
+];
+
+/** Role words that match far too many chapters to identify anyone. */
+const NPC_LORE_GENERIC_TERMS: Record<string, true> = {
+  "merchant": true,
+  "merchants": true,
+  "nomadic merchant": true,
+  "isolated merchant": true,
+  "finger": true,
+  "fingers": true,
+  "reader": true,
+  "husk": true,
+  "husks": true,
+  "tarnished": true,
+  "two fingers": true,
+  "spirit": true,
+  "warrior": true,
+  "hunter": true,
+  "beast": true,
+  "dragon": true,
+  "twin": true,
+};
+
+interface NpcLore {
+  text: string;
+  source: string;
+}
+
+/** Drops a region suffix so "Nomadic Merchant — Western Limgrave" still resolves. */
+function npcBaseKey(npc: string): string {
+  return normalizeContentKey(npc.split(/\s+—\s+|\s+\(/)[0]);
+}
+
+/**
+ * Resolves an NPC to its lore note. Exact keys win, then the region-stripped
+ * key (nomadic/isolated merchant variants), then the explicit alias table.
+ */
+function npcLoreFor(npc: string): NpcLore | null {
+  const fullKey = normalizeContentKey(npc);
+  const baseKey = npcBaseKey(npc);
+  const note = NPC_LORE_NOTES[fullKey] ?? NPC_LORE_NOTES[baseKey];
+  if (note) return note;
+  const aliasTarget = NPC_LORE_ALIASES[fullKey] ?? NPC_LORE_ALIASES[baseKey];
+  const keys = [fullKey, baseKey, aliasTarget ? normalizeContentKey(aliasTarget) : ""];
+  for (const key of keys) {
+    const text = key ? NPC_LORE_BY_NORMALIZED_KEY[key] : undefined;
+    if (text) {
+      return {
+        text,
+        source: NPC_LORE_SOURCE_BY_NORMALIZED_KEY[key] ?? "In-game item and dialogue text",
+      };
+    }
+  }
+  return null;
+}
+
+/** Strips region suffixes, role prefixes and "X and Y" pairings down to names. */
+function npcNameCandidates(npc: string): string[] {
+  const names: string[] = [];
+  const head = npc.split(/\s+—\s+|\s+\(/)[0];
+  const sources = [npc, head, NPC_LORE_ALIASES[normalizeContentKey(npc)] ?? ""];
+  for (const raw of sources) {
+    if (!raw) continue;
+    for (const part of raw.split(/\s+and\s+/)) {
+      const trimmed = part.split(",")[0].trim();
+      if (trimmed) names.push(trimmed);
+    }
+    const commaTail = raw.includes(",") ? raw.split(",").slice(1).join(",").replace(/^the\s+/i, "").trim() : "";
+    if (commaTail) names.push(commaTail);
+  }
+  return names;
+}
+
+/** Meaningful search terms for a name: the name plus each title-stripped tail. */
+function npcSearchTerms(npc: string): string[] {
+  const terms = new Set<string>();
+  for (const candidate of npcNameCandidates(npc)) {
+    let current = normalizeContentKey(candidate);
+    const push = (value: string) => {
+      // Single letters ("D") and two-letter fragments match too much prose to
+      // be evidence; every real NPC name is at least three characters.
+      if (value.replace(/\s/g, "").length < 3) return;
+      if (NPC_LORE_GENERIC_TERMS[value]) return;
+      terms.add(value);
+    };
+    push(current);
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const prefix of NPC_LORE_TITLE_PREFIXES) {
+        if (current.startsWith(`${prefix} `)) {
+          current = current.slice(prefix.length + 1);
+          push(current);
+          changed = true;
+          break;
+        }
+      }
+    }
+    // "Sir Gideon Ofnir" and "Boc the Seamster" both identify by their head
+    // phrase, which is what chapter prose actually writes.
+    const head = current.split(/\s+(?:of|the)\s+/)[0];
+    if (head !== current) push(head);
+  }
+  return [...terms];
+}
+
+interface LoreChapter {
+  entry: LoreEntry;
+  /** Area plus the chapter's cast list — the strongest signal of an appearance. */
+  cast: string;
+  /** Non-spoiler chapter prose, used only when the cast list is silent. */
+  body: string;
+}
+
+/**
+ * Chapter text used for NPC matching. Only non-spoiler fields are indexed —
+ * `rawLater` and the expanded `spoiler` block stay out of the haystack so a
+ * sealed chapter can never leak through an NPC cross-reference.
+ */
+const LORE_CHAPTERS: LoreChapter[] = LORE.map((entry) => {
+  const expanded = LORE_EXPANDED[entry.id];
+  const normalize = (value: string) => normalizeContentKey(value);
+  return {
+    entry,
+    cast: ` ${normalize([entry.area, entry.rawCharacters].join(" "))} `,
+    body: ` ${normalize(
+      [
+        entry.area,
+        entry.rawSummary,
+        entry.rawCharacters,
+        entry.rawEvidence,
+        entry.rawQuestions,
+        entry.rawChronicle,
+        expanded?.overview ?? "",
+        expanded?.context ?? "",
+      ].join(" "),
+    )} `,
+  };
+});
+
+/** Chapter prose names groups in the plural ("Finger Reader Crones"). */
+function chapterMentions(haystack: string, term: string): boolean {
+  return haystack.includes(` ${term} `) || haystack.includes(` ${term}s `);
+}
+
+/**
+ * Chapters this NPC appears in. The cast list is authoritative; prose is only
+ * consulted when no chapter lists them, which keeps a passing mention in an
+ * area summary from outranking a real appearance.
+ */
+function loreChaptersFor(npc: string): LoreEntry[] {
+  const terms = npcSearchTerms(npc);
+  if (!terms.length) return [];
+  const inCast = LORE_CHAPTERS.filter((chapter) =>
+    terms.some((term) => chapterMentions(chapter.cast, term)),
+  );
+  const matches = inCast.length
+    ? inCast
+    : LORE_CHAPTERS.filter((chapter) => terms.some((term) => chapterMentions(chapter.body, term)));
+  return matches.map((chapter) => chapter.entry);
+}
 
 const ROUTE_LINK_COVERAGE =
   QUESTLINE_ROUTE_MAP.coverage.steps > 0
@@ -163,18 +432,111 @@ function QuestField({ label, value, wide = false }: { label: string; value?: str
 }
 
 /**
- * Identification prose for an NPC: who they are and where they sit in the
- * world. Quest outcomes stay behind the questline cards, so this is safe to
- * show without a boss-defeat gate.
+ * Identification prose for an NPC plus the lore chapters they appear in.
+ * The one-paragraph note is safe to show: it is wiki identification, not plot
+ * outcome. Chapter text and later context stay sealed until the spoiler gate
+ * for that chapter is unlocked, exactly as on the Lore page.
  */
-function NpcLoreNote({ npc }: { npc: string }) {
-  const text = NPC_DESCRIPTIONS[npc]?.text ?? NPC_LORE_BY_NORMALIZED_KEY[normalizeContentKey(npc)];
-  if (!text) return null;
+function NpcLoreNote({ npc, collapsible = false }: { npc: string; collapsible?: boolean }) {
+  const state = useAppState();
+  const journey = useActiveJourney();
+  const lore = npcLoreFor(npc);
+  const chapters = useMemo(() => loreChaptersFor(npc), [npc]);
+  const strict = state.settings.spoilerMode === "strict";
+  if (!lore && chapters.length === 0) return null;
+  const unlockedCount = chapters.filter((entry) => loreAccess(journey, state.settings, entry).unlocked).length;
+
+  const note = lore ? (
+    <>
+      <p className="quest-text">{lore.text}</p>
+      <div className="tiny faint">Source: {lore.source}</div>
+    </>
+  ) : (
+    <p className="quest-text faint">
+      No single-item description covers this NPC; the chapters below are where they appear.
+    </p>
+  );
+
+  const chapterList = chapters.length ? (
+    <Disclosure
+      title="Lore chapters"
+      summary={`${chapters.length} chapter${chapters.length === 1 ? "" : "s"} · ${unlockedCount} unlocked`}
+      tone="muted"
+      icon="book"
+    >
+      <p className="tiny faint" style={{ marginBottom: 8 }}>
+        {strict
+          ? "Strict spoiler mode: a chapter's overview and later context stay sealed until its route section is complete or you reveal the area on the Lore page."
+          : "Reveal-all mode: chapter overviews are open for this journey."}
+      </p>
+      <div className="stack" style={{ gap: 10 }}>
+        {chapters.map((entry) => {
+          const access = loreAccess(journey, state.settings, entry);
+          const expanded = LORE_EXPANDED[entry.id];
+          return (
+            <div key={entry.id}>
+              <div className="row-between wrap" style={{ gap: 6 }}>
+                <button
+                  className="chip quest-route-chip"
+                  onClick={() =>
+                    navigate(
+                      `/lore?entry=${encodeURIComponent(entry.id)}&area=${encodeURIComponent(entry.area)}`,
+                    )
+                  }
+                  aria-label={`Open the ${entry.area} lore chapter`}
+                >
+                  <Icon name="book" size={12} /> {entry.area}
+                </button>
+                <Badge tone={access.unlocked ? "success" : "warning"}>
+                  {access.unlocked ? "Unlocked" : "Sealed"}
+                </Badge>
+              </div>
+              {access.unlocked ? (
+                <>
+                  <p className="small muted" style={{ marginTop: 4 }}>
+                    {expanded?.overview || entry.rawSummary}
+                  </p>
+                  {expanded?.context ? <p className="tiny faint">{expanded.context}</p> : null}
+                  {expanded?.spoiler ? (
+                    <Disclosure title="Later context" summary="Spoiler" tone="muted">
+                      <p className="small">{expanded.spoiler}</p>
+                    </Disclosure>
+                  ) : null}
+                </>
+              ) : (
+                <p className="tiny faint" style={{ marginTop: 4 }}>
+                  {access.reason}. The chapter text stays hidden until then.
+                </p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </Disclosure>
+  ) : null;
+
+  // Grouped by region the NPC name is only a badge on the card, so the note
+  // folds under it instead of adding a paragraph to every milestone.
+  if (collapsible) {
+    return (
+      <section className="quest-npc-lore">
+        <Disclosure
+          title={`Lore — ${npc}`}
+          summary={chapters.length ? `${chapters.length} chapter${chapters.length === 1 ? "" : "s"}` : "Note"}
+          tone="muted"
+        >
+          {note}
+          {chapterList}
+        </Disclosure>
+      </section>
+    );
+  }
+
   return (
     <section className="quest-npc-lore">
       <div className="k">In-game lore</div>
-      <p className="quest-text">{text}</p>
-      <div className="tiny faint">Source: in-game item and dialogue text</div>
+      {note}
+      {chapterList}
     </section>
   );
 }
@@ -586,7 +948,9 @@ export function QuestsPage() {
 
   const npcDone = NPC_STATES.filter((state) => journey.npcStates[state.id]).length;
   const dialogueDone = DIALOGUE_EVENTS.filter((event) => journey.dialogue[event.id]).length;
-  const resolvedDecisions = decisionsResolved(journey, META.decisions.length);
+  // Only ids that exist in the decision table count: an orphaned key from an
+  // older pack must not inflate the recorded total.
+  const resolvedDecisions = META.decisions.filter((decision) => journey.decisions[decision.id]).length;
   const questsProgress = questlineProgress(journey);
   const missableStepCount = QUESTLINE_STEPS.filter((step) => step.missable).length;
   const optionalStepCount = QUESTLINE_STEPS.filter((step) => step.optional).length;
@@ -1191,7 +1555,15 @@ export function QuestsPage() {
                     {states.length} milestone{states.length === 1 ? "" : "s"}
                   </span>
                 </div>
-                {groupMode === "npc" ? <NpcLoreNote npc={groupName} /> : null}
+                {groupMode === "npc" ? (
+                  <NpcLoreNote npc={groupName} />
+                ) : (
+                  <div className="stack" style={{ gap: 6, marginBottom: 10 }}>
+                    {[...new Set(states.map((state) => state.npc))].sort().map((npc) => (
+                      <NpcLoreNote key={npc} npc={npc} collapsible />
+                    ))}
+                  </div>
+                )}
                 <div className="stack" style={{ gap: 8 }}>
                   {states.map((state) => (
                     <NpcStateCard
@@ -1251,6 +1623,7 @@ export function QuestsPage() {
                       {events.length} trigger{events.length === 1 ? "" : "s"}
                     </span>
                   </div>
+                  <NpcLoreNote npc={npc} />
                   {events.map((event) => (
                     <DialogueCard
                       key={event.id}

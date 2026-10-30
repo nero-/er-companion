@@ -36,6 +36,7 @@ import {
 } from "../lib/selectors";
 import type { CompletionScope, Progress } from "../lib/selectors";
 import {
+  ARCHETYPES,
   ENCOUNTER_BY_ID,
   ITEM_BY_ID,
   LOADOUTS_BY_BUILD,
@@ -47,14 +48,17 @@ import {
   STEPS_BY_PHASE,
   PROFILES_BY_ARCHETYPE,
 } from "../lib/data";
-import { formatNumber, itemGroupIcon } from "../lib/format";
+import { formatNumber, itemGroupIcon, equipmentModeLabel } from "../lib/format";
 import { navigate } from "../lib/router";
 import { STAT_LABELS, STAT_ORDER, levelFromStats } from "../lib/classes";
 import { DATA_BASELINE, GAME_VERSION } from "../data/game";
-import type { PhaseGate, RouteArea, RouteStep, StepStatus } from "../lib/types";
+import type { PhaseGate, RouteArea, RouteStep, Stats, StepStatus } from "../lib/types";
 import "./dashboard.css";
 
 const PHASES = ROUTE_CHRONOLOGY.phases;
+const CERTIFIED_ARCHETYPE_COUNT = ARCHETYPES.filter(
+  (archetype) => archetype.familyRole !== "Historical Redirect",
+).length;
 
 interface MissableStats {
   total: number;
@@ -165,8 +169,6 @@ export function DashboardPage() {
   const nextAction = nextSupplemental(journey);
   const area = next?.area ?? currentAreaName(journey);
   const level = levelFromStats(character.stats);
-  const profile = character.profileId ? PROFILE_BY_ID[character.profileId] : undefined;
-  const loadout = profile ? LOADOUTS_BY_BUILD[profile.id]?.find((entry) => entry.type === "Signature") : undefined;
   const scopes = completionScopes(character, journey);
   const scopesById = Object.fromEntries(scopes.map((scope) => [scope.id, scope])) as Record<string, CompletionScope>;
   const linkedItems = next
@@ -237,14 +239,60 @@ export function DashboardPage() {
         .sort((a, b) => a.order - b.order)[0]
     : undefined;
 
-  const level150 = character.archetypeId
-    ? PROFILES_BY_ARCHETYPE[character.archetypeId]?.find((entry) => entry.level === 150)
-    : undefined;
-  const level200 = character.archetypeId
-    ? PROFILES_BY_ARCHETYPE[character.archetypeId]?.find((entry) => entry.level === 200)
-    : undefined;
-  const currentScopedProfile = profile ?? level150;
-  const showLevel200 = level > 150 && Boolean(level200);
+  // The build the player is working toward. `character.stats` / `character.equipment`
+  // are the live in-game values and are never treated as the build's values here.
+  const desiredProfileId = character.desiredBuild.profileId;
+  const desiredProfile = desiredProfileId ? PROFILE_BY_ID[desiredProfileId] : undefined;
+  const buildArchetypeId =
+    desiredProfile?.archetypeId || character.desiredBuild.archetypeId || character.archetypeId;
+  const buildProfiles = buildArchetypeId ? PROFILES_BY_ARCHETYPE[buildArchetypeId] ?? [] : [];
+  const level150 = buildProfiles.find((entry) => entry.level === 150);
+  const level200 = buildProfiles.find((entry) => entry.level === 200);
+  const targetLabel = desiredProfile?.archetype ?? level150?.archetype ?? level200?.archetype ?? "";
+  const targetBaseProfile = desiredProfile ?? level150 ?? level200;
+  const desiredStatOverrides = character.desiredBuild.stats;
+  const hasDesiredSpread = STAT_ORDER.every((key) => desiredStatOverrides[key] !== undefined);
+  const baseStats: Stats | undefined = targetBaseProfile?.stats;
+  const targetStats: Stats | undefined = hasDesiredSpread
+    ? {
+        vig: desiredStatOverrides.vig ?? 1,
+        mnd: desiredStatOverrides.mnd ?? 1,
+        end: desiredStatOverrides.end ?? 1,
+        str: desiredStatOverrides.str ?? 1,
+        dex: desiredStatOverrides.dex ?? 1,
+        int: desiredStatOverrides.int ?? 1,
+        fai: desiredStatOverrides.fai ?? 1,
+        arc: desiredStatOverrides.arc ?? 1,
+      }
+    : baseStats
+      ? { ...baseStats }
+      : undefined;
+  if (targetStats && !hasDesiredSpread) {
+    for (const key of STAT_ORDER) {
+      const value = desiredStatOverrides[key];
+      if (value !== undefined) targetStats[key] = value;
+    }
+  }
+  const targetRows = targetStats
+    ? STAT_ORDER.map((key) => ({
+        key,
+        label: STAT_LABELS[key],
+        current: character.stats[key],
+        target: targetStats[key],
+      }))
+    : [];
+  const targetLevel = targetBaseProfile?.level;
+  const targetDerived = targetStats ? levelFromStats(targetStats) : undefined;
+  const targetEquipment = character.desiredBuild.equipment;
+  const targetArmor = targetEquipment.armor.filter(Boolean).join(" · ");
+  const targetLoadout =
+    desiredProfile && LOADOUTS_BY_BUILD[desiredProfile.id]
+      ? LOADOUTS_BY_BUILD[desiredProfile.id].find((entry) => entry.type === "Signature") ??
+        LOADOUTS_BY_BUILD[desiredProfile.id][0]
+      : level150
+        ? LOADOUTS_BY_BUILD[level150.id]?.find((entry) => entry.type === "Signature") ??
+          LOADOUTS_BY_BUILD[level150.id]?.[0]
+        : undefined;
   const [resetOpen, setResetOpen] = useState(false);
 
   const completeNext = () => {
@@ -744,66 +792,99 @@ export function DashboardPage() {
       <section className="card card-pad dashboard-build-stats" style={{ marginTop: 22 }}>
         <SectionTitle
           title="Build stats"
-          note={profile ? `${profile.archetype} · level ${profile.level}` : "No certified profile selected"}
+          note={
+            targetLabel
+              ? `${targetLabel} · target level ${targetLevel ?? "custom"}`
+              : "No target build selected"
+          }
           actions={
             <Button variant="ghost" size="sm" iconRight="chevronRight" onClick={() => navigate("/builds")}>
               Builds
             </Button>
           }
         />
-        {currentScopedProfile ? (
-          <>
-            <div className="dashboard-build-stats-grid">
-              <div>
-                <div className="stat-label">Current</div>
-                <div className="pulse-value">{level}</div>
-                <div className="tiny faint">{character.name}</div>
-              </div>
-              <div>
-                <div className="stat-label">Level 150 target</div>
-                <div className="pulse-value">{level150 ? level150.level : "—"}</div>
-                <div className="tiny faint">{level150 ? level150.archetype : "No level-150 profile"}</div>
-              </div>
-              <div>
-                <div className="stat-label">Level 200 target</div>
-                <div className="pulse-value">{showLevel200 && level200 ? level200.level : "Locked"}</div>
-                <div className="tiny faint">
-                  {showLevel200 && level200 ? level200.archetype : "Unlocks above level 150"}
-                </div>
-              </div>
+        <p className="small muted" style={{ margin: "0 0 12px" }}>
+          Current is the live in-game sheet for {character.name}. The two right-hand columns are targets only — setting
+          one never rewrites your current stats.
+        </p>
+        <div className="dashboard-build-stats-grid">
+          <div>
+            <div className="stat-label">Current</div>
+            <div className="pulse-value">{level}</div>
+            <div className="tiny faint">
+              {character.name} · {STAT_ORDER.reduce((total, key) => total + character.stats[key], 0)} stat points
             </div>
-            <StatCompare
-              rows={STAT_ORDER.map((key) => ({
-                key,
-                label: STAT_LABELS[key],
-                current: character.stats[key],
-                target: currentScopedProfile.stats[key],
-              }))}
-            />
-            <div className="row wrap" style={{ marginTop: 10 }}>
-              {level150 ? (
-                <Button size="sm" variant="primary" icon="check" onClick={() => applyProfile(level150.id)}>
-                  Apply level 150
-                </Button>
-              ) : null}
-              {showLevel200 && level200 ? (
-                <Button size="sm" icon="check" onClick={() => applyProfile(level200.id)}>
-                  Apply level 200
-                </Button>
-              ) : null}
-              <Button size="sm" variant="ghost" icon="helmet" onClick={() => navigate("/character")}>
-                Open character
-              </Button>
+          </div>
+          <div className={desiredProfile?.level === 150 ? "is-target" : undefined}>
+            <div className="stat-label">Level 150 target</div>
+            <div className="pulse-value">{level150 ? level150.level : "—"}</div>
+            <div className="tiny faint">
+              {level150
+                ? desiredProfile?.level === 150
+                  ? `Current target · ${level150.archetype}`
+                  : level150.archetype
+                : "No level-150 profile"}
             </div>
-          </>
+          </div>
+          <div className={desiredProfile?.level === 200 ? "is-target" : undefined}>
+            <div className="stat-label">Level 200 target</div>
+            <div className="pulse-value">{level200 ? level200.level : "—"}</div>
+            <div className="tiny faint">
+              {desiredProfile?.level === 200
+                ? `Current target · ${level200?.archetype ?? targetLabel}`
+                : level200
+                  ? level < 150
+                    ? `${level200.archetype} · Level ${level} in game · reachable later`
+                    : level200.archetype
+                  : "No level-200 profile"}
+            </div>
+          </div>
+        </div>
+        {targetRows.length > 0 ? (
+          <StatCompare rows={targetRows} />
         ) : (
           <Callout tone="warning" icon="spark">
-            Pick a certified archetype to compare your current spread with the level 150 and 200 targets.{" "}
-            <button className="btn btn-sm btn-ghost" onClick={() => navigate("/builds")}>
-              Open builds
-            </button>
+            No archetype is set for the target build yet. Pick one to compare your current spread against its Level 150
+            and Level 200 targets.
           </Callout>
         )}
+        <div className="row wrap" style={{ marginTop: 10 }}>
+          {level150 ? (
+            <Button
+              size="sm"
+              variant={desiredProfile?.level === 150 ? "default" : "primary"}
+              icon="target"
+              onClick={() => {
+                applyProfile(level150.id);
+                toast.push(`Target build set to ${level150.archetype} · Level 150. Current stats are unchanged.`, "success");
+              }}
+            >
+              {desiredProfile?.level === 150 ? "Level 150 is the target" : "Set Level 150 as target"}
+            </Button>
+          ) : null}
+          {level200 ? (
+            <Button
+              size="sm"
+              variant={desiredProfile?.level === 200 ? "default" : "primary"}
+              icon="target"
+              aria-label={`Set ${level200.archetype} Level 200 as the target build`}
+              onClick={() => {
+                applyProfile(level200.id);
+                toast.push(`Target build set to ${level200.archetype} · Level 200. Current stats are unchanged.`, "success");
+              }}
+            >
+              {desiredProfile?.level === 200 ? "Level 200 is the target" : "Set Level 200 as target"}
+            </Button>
+          ) : null}
+          <Button size="sm" variant="ghost" icon="helmet" onClick={() => navigate("/character")}>
+            Open character
+          </Button>
+        </div>
+        {targetDerived !== undefined || targetLevel ? (
+          <p className="tiny faint" style={{ margin: "8px 0 0" }}>
+            Target spread derives Level {targetDerived ?? "—"} · your current sheet derives Level {level}.
+          </p>
+        ) : null}
       </section>
 
       <section style={{ marginTop: 22 }}>
@@ -849,44 +930,69 @@ export function DashboardPage() {
               </Button>
             }
           />
-          {profile ? (
+          {targetRows.length > 0 ? (
             <>
               <div className="row-between">
                 <div>
-                  <div className="card-title">{profile.archetype}</div>
+                  <div className="card-title">{targetLabel || "Custom target build"}</div>
                   <div className="small muted">
-                    Level {profile.level} · {profile.primaryStat} / {profile.secondaryStat}
+                    Target level {targetLevel ?? "custom"} · derives {targetDerived ?? "—"}
+                    {desiredProfile ? ` · ${desiredProfile.primaryStat} / ${desiredProfile.secondaryStat}` : ""}
                   </div>
                 </div>
-                <Badge tone="accent">{loadout?.type ?? "Certified"}</Badge>
+                <Badge tone="accent">{targetLoadout?.type ?? "Target"}</Badge>
               </div>
+              <p className="tiny faint" style={{ margin: "6px 0 0" }}>
+                These are the target build's values, not your current stats. Your live sheet derives Level {level}.
+              </p>
               <div className="stat-grid" style={{ marginTop: 14 }}>
-                {Object.entries(profile.stats).map(([key, value]) => (
-                  <div className="stat-cell" key={key}>
-                    <div className="k">{key.toUpperCase()}</div>
-                    <div className="v">{value}</div>
+                {targetRows.map((row) => (
+                  <div className="stat-cell" key={row.key}>
+                    <div className="k">{row.key.toUpperCase()}</div>
+                    <div className="v">{row.target}</div>
                   </div>
                 ))}
               </div>
               <div style={{ marginTop: 14 }}>
+                <div className="tiny faint" style={{ marginBottom: 4 }}>
+                  Target gear
+                </div>
                 <div className="gear-row">
                   <span className="gear-label">Primary</span>
-                  <span className="gear-value">{loadout?.mainWeapon || "—"}</span>
+                  <span className="gear-value">{targetEquipment.mainWeapon || targetLoadout?.mainWeapon || "—"}</span>
                 </div>
                 <div className="gear-row">
                   <span className="gear-label">Secondary</span>
-                  <span className="gear-value">{loadout?.secondaryWeapon || "—"}</span>
+                  <span className="gear-value">{targetEquipment.secondaryWeapon || targetLoadout?.secondaryWeapon || "—"}</span>
                 </div>
                 <div className="gear-row">
                   <span className="gear-label">Armor</span>
-                  <span className="gear-value">{loadout?.armor.filter(Boolean).join(" · ") || "—"}</span>
+                  <span className="gear-value">
+                    {targetArmor || targetLoadout?.armor.filter(Boolean).join(" · ") || "—"}
+                  </span>
+                </div>
+                <div className="gear-row">
+                  <span className="gear-label">Mode</span>
+                  <span className="gear-value">{equipmentModeLabel(character.desiredBuild.equipmentMode)}</span>
                 </div>
               </div>
               <div className="row" style={{ marginTop: 14 }}>
                 <Button size="sm" icon="helmet" onClick={() => navigate("/character")}>
                   Open character
                 </Button>
-                <Button size="sm" variant="ghost" icon="sword" onClick={() => navigate(`/builds?archetype=${profile.archetypeId}`)}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  icon="sword"
+                  onClick={() =>
+                    navigate(
+                      `/builds?archetype=${encodeURIComponent(buildArchetypeId)}${
+                        targetLevel ? `&level=${targetLevel}` : ""
+                      }`,
+                    )
+                  }
+                  disabled={!buildArchetypeId}
+                >
                   Build details
                 </Button>
               </div>
@@ -895,8 +1001,11 @@ export function DashboardPage() {
             <div className="empty" style={{ padding: "26px 14px" }}>
               <div>
                 <Icon name="sword" size={24} />
-                <h3>No certified build selected</h3>
-                <p className="small muted">Choose one of the 14 certified parent builds or plan a freeform character.</p>
+                <h3>No target build selected</h3>
+                <p className="small muted">
+                  Choose one of the {CERTIFIED_ARCHETYPE_COUNT} certified archetypes as a target, or copy your current
+                  spread as the target from the character page.
+                </p>
                 <div style={{ marginTop: 12 }}>
                   <Button size="sm" variant="primary" icon="sword" onClick={() => navigate("/builds")}>
                     Browse builds

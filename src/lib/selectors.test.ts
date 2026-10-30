@@ -4,7 +4,6 @@ import {
   ARCHETYPES,
   AUTO_BOSSES_BY_STEP,
   AUTO_ITEMS_BY_STEP,
-  BOSS_STRATEGIES,
   BRANCH_PLAN_DECISIONS,
   BRANCH_REWARDS,
   BRANCH_REWARD_RESOLVED_COUNT,
@@ -43,6 +42,7 @@ import {
   UPGRADE_QUANTITY_TOTALS,
   WORLD_BY_CATEGORY,
   WORLD_OBJECTS,
+  BOSS_NAMES,
 } from "./data";
 import { CLASSES, levelFromStats } from "./classes";
 import { GAME_VERSION, TARNISHED_ITEMS } from "../data/game";
@@ -66,6 +66,7 @@ import {
   ngplusProgress,
   npcWalkthroughProgress,
   questlineProgress,
+  bossStrategyCount,
   routeProgress,
   sweepProgress,
   sweepStepState,
@@ -258,7 +259,9 @@ describe("canonical content integrity", () => {
       expect(nodeIds.has(edge.from)).toBe(true);
       expect(nodeIds.has(edge.to)).toBe(true);
     }
-    for (const strategy of BOSS_STRATEGIES) expect(profileIds.has(strategy.buildId)).toBe(true);
+    // Strategy rows live in the lazily loaded reference pack; its build ids are
+    // validated by verify_release_data.py, which reads the JSON directly.
+    for (const name of BOSS_NAMES) expect(bossStrategyCount(name)).toBeGreaterThan(0);
   });
 
   it("keeps encounter route links resolvable", () => {

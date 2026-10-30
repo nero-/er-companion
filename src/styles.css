@@ -35,17 +35,21 @@
   --font-sans: var(--font-body);
   --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
   --shadow: 0 24px 70px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.025) inset;
-  --sidebar: 256px;
+  /* Driven at runtime by the shell from devicePixelRatio + viewport:
+     1 at 1080p, 1.1 at 1440p, 1.25 at 2160p. `large` pins the top step. */
   --ui-scale: 1;
+  --sidebar: calc(268px * var(--ui-scale));
 }
 
-/* Larger default type and spacing on high-density displays. */
+/* `data-scale` keeps the manual override meaningful; the shell writes the
+   resolved numeric value inline, so these only cover first paint / no-JS.
+   `large` pins the top step of the automatic range. */
 html[data-scale="large"] {
-  font-size: 17.5px;
+  --ui-scale: 1.25;
 }
 
 html[data-scale="large"] .page {
-  max-width: 1520px;
+  max-width: calc(1560px * var(--ui-scale));
 }
 
 * {
@@ -55,17 +59,25 @@ html[data-scale="large"] .page {
 html {
   color-scheme: dark;
   scrollbar-color: var(--border-strong) transparent;
+  /* Root type follows the same driver as body copy, so zooming the shell also
+     widens the rem baseline for any future rem-based spacing. */
+  font-size: calc(16px * var(--ui-scale));
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  /* The vignette lives on the canvas background rather than in a second
+     fixed pseudo-element: same look, one fewer full-viewport paint layer. */
   background:
+    radial-gradient(ellipse 120% 90% at 50% 10%, transparent 42%, rgba(0, 0, 0, 0.5) 100%),
     radial-gradient(1100px 620px at 80% -12%, rgba(201, 163, 93, 0.11), transparent 62%),
     radial-gradient(820px 560px at -10% 18%, rgba(127, 159, 190, 0.05), transparent 60%),
     radial-gradient(900px 700px at 50% 110%, rgba(138, 106, 51, 0.06), transparent 65%),
     linear-gradient(180deg, #080706 0%, #0a0907 42%, #080706 100%);
+  /* The body background propagates to the canvas, so it is painted once and
+     never scrolls; no `background-attachment: fixed` needed. */
   color: var(--fg);
   font-family: var(--font-body);
   font-size: calc(15.5px * var(--ui-scale));
@@ -74,39 +86,29 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* A faint world-map / stone texture, kept behind every surface. */
+/* A faint world-map / stone texture, kept behind every surface. The layer is
+   promoted once and painted in isolation so scrolling never re-rasterises it:
+   no filter (it would re-run per frame in WebKitGTK), just a baked-in overlay
+   gradient that reproduces the old grayscale/contrast look. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   opacity: 0.1;
-  background-image: url("/art/bg-world.jpg");
-  background-position: center 18%;
+  background-image:
+    radial-gradient(ellipse 90% 70% at 55% 20%, rgba(8, 7, 6, 0) 10%, rgba(8, 7, 6, 0.94) 78%),
+    linear-gradient(180deg, rgba(8, 7, 6, 0.3), rgba(8, 7, 6, 0.55)),
+    url("/art/bg-world.jpg");
+  background-position: center, center, center 18%;
   background-size: cover;
-  filter: grayscale(0.35) contrast(1.05) brightness(0.85);
-  mask-image: radial-gradient(ellipse 90% 70% at 55% 20%, #000 10%, transparent 78%);
-  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 55% 20%, #000 10%, transparent 78%);
   z-index: 0;
+  contain: layout paint style;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
-/* Vignette + fine stone grain; no layout or hit-testing impact. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background:
-    radial-gradient(ellipse 120% 90% at 50% 10%, transparent 42%, rgba(0, 0, 0, 0.5) 100%),
-    repeating-linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.011) 0,
-      rgba(255, 255, 255, 0.011) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-}
 
 ::selection {
   background: rgba(201, 163, 93, 0.28);
@@ -167,7 +169,7 @@ kbd {
   border-bottom-color: #17140f;
   border-radius: 5px;
   padding: 2px 6px;
-  font-size: 10px;
+  font-size: calc(11.5px * var(--ui-scale));
   color: var(--muted);
   background: rgba(255, 255, 255, 0.025);
 }
@@ -189,17 +191,20 @@ kbd {
   display: flex;
   flex-direction: column;
   padding: 22px 14px 16px;
+  /* Opaque enough to need no backdrop blur: the two gradients below already
+     end at ~0.96–0.985 alpha, which is what the blur was mostly hiding. */
   background:
     linear-gradient(180deg, rgba(201, 163, 93, 0.045), transparent 26%),
-    linear-gradient(180deg, rgba(8, 7, 6, 0.96), rgba(8, 7, 6, 0.985));
+    linear-gradient(180deg, #0b0a08 0%, #080706 68%, #0a0907 100%);
   border-right: 1px solid var(--gold-line);
   box-shadow: 1px 0 0 rgba(0, 0, 0, 0.6), 12px 0 40px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(18px);
   overflow-y: auto;
   isolation: isolate;
 }
 
-/* The official cover art, buried deep beneath the navigation. */
+/* The official cover art, buried deep beneath the navigation. A dark gradient
+   over the image replaces the old grayscale/contrast filter, so the column has
+   no offscreen raster to redo when the page underneath scrolls. */
 .sidebar::before {
   content: "";
   position: absolute;
@@ -207,11 +212,12 @@ kbd {
   height: 56%;
   z-index: -1;
   pointer-events: none;
-  background-image: url("/art/vertical-erdtree.jpg");
+  background-image:
+    linear-gradient(rgba(24, 22, 19, 0.55), rgba(10, 9, 7, 0.82)),
+    url("/art/vertical-erdtree.jpg");
   background-position: center bottom;
   background-size: cover;
   opacity: 0.11;
-  filter: grayscale(0.3) contrast(1.05);
   mask-image: linear-gradient(0deg, #000 8%, transparent 92%);
   -webkit-mask-image: linear-gradient(0deg, #000 8%, transparent 92%);
 }
@@ -260,8 +266,9 @@ kbd {
   position: relative;
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: calc(40px * var(--ui-scale));
+  height: calc(40px * var(--ui-scale));
+  flex: 0 0 auto;
   color: var(--accent);
   border: 1px solid rgba(201, 163, 93, 0.35);
   border-radius: 50%;
@@ -288,7 +295,7 @@ kbd {
 
 .brand-title {
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: calc(14px * var(--ui-scale));
   line-height: 1.1;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -297,7 +304,7 @@ kbd {
 
 .brand-sub {
   font-family: var(--font-ui);
-  font-size: 8.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   color: var(--faint);
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -310,12 +317,12 @@ kbd {
 
 .nav-label {
   font-family: var(--font-ui);
-  font-size: 8.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--accent);
-  padding: 0 12px 7px;
+  padding: 0 calc(12px * var(--ui-scale)) calc(7px * var(--ui-scale));
   opacity: 0.8;
 }
 
@@ -325,14 +332,14 @@ kbd {
   align-items: center;
   gap: 11px;
   width: 100%;
-  padding: 8px 12px;
+  padding: calc(8px * var(--ui-scale)) calc(12px * var(--ui-scale));
   margin: 1px 0;
   border: 1px solid transparent;
   border-radius: 7px;
   background: transparent;
   color: var(--muted);
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: calc(15px * var(--ui-scale));
   letter-spacing: 0.01em;
   cursor: pointer;
   text-align: left;
@@ -380,7 +387,7 @@ kbd {
 .nav-count {
   margin-left: auto;
   font-family: var(--font-ui);
-  font-size: 9px;
+  font-size: calc(12px * var(--ui-scale));
   letter-spacing: 0.04em;
   color: var(--faint);
   font-variant-numeric: tabular-nums;
@@ -412,13 +419,14 @@ kbd {
   gap: 8px;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--ui-scale));
+  line-height: 1.35;
   color: var(--fg-soft);
 }
 
 .party-meta {
   color: var(--faint);
-  font-size: 11.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   margin-top: 3px;
 }
 
@@ -445,10 +453,13 @@ kbd {
   gap: 14px;
   padding: 12px 28px;
   border-bottom: 1px solid var(--gold-line);
+  /* Near-opaque stone instead of a blur pass: the bar keeps its lifted look
+     without forcing the browser to re-blur the scrolling content beneath it. */
   background:
     linear-gradient(180deg, rgba(201, 163, 93, 0.035), transparent 80%),
-    rgba(8, 7, 6, 0.78);
-  backdrop-filter: blur(18px);
+    rgba(10, 9, 7, 0.955);
+  /* Sticky, and it draws a hairline one pixel below its own box, so it must
+     not be paint-contained. */
 }
 
 .topbar::after {
@@ -465,7 +476,7 @@ kbd {
 
 .topbar-title {
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: calc(14px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -480,15 +491,16 @@ kbd {
   display: flex;
   align-items: center;
   gap: 9px;
-  min-width: 240px;
-  height: 36px;
-  padding: 0 10px 0 12px;
+  min-width: calc(240px * var(--ui-scale));
+  height: calc(36px * var(--ui-scale));
+  min-height: 34px;
+  padding: 0 calc(10px * var(--ui-scale)) 0 calc(12px * var(--ui-scale));
   border: 1px solid var(--border);
   border-radius: 7px;
   background: rgba(0, 0, 0, 0.24);
   color: var(--faint);
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: calc(13px * var(--ui-scale));
   cursor: pointer;
   transition: border-color 140ms ease, background 140ms ease, color 140ms ease;
 }
@@ -512,7 +524,7 @@ kbd {
   align-items: center;
   gap: 6px;
   font-family: var(--font-ui);
-  font-size: 9px;
+  font-size: calc(11.5px * var(--ui-scale));
   color: var(--faint);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -531,8 +543,8 @@ kbd {
 .avatar {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: calc(32px * var(--ui-scale));
+  height: calc(32px * var(--ui-scale));
   border-radius: 50%;
   border: 1px solid var(--gold-line-strong);
   background:
@@ -540,7 +552,7 @@ kbd {
     rgba(0, 0, 0, 0.3);
   box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35);
   font-family: var(--font-display);
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-scale));
   color: var(--accent-strong);
 }
 
@@ -581,6 +593,12 @@ kbd {
   }
 }
 
+.page-loading {
+  display: grid;
+  place-items: center;
+  min-height: 40vh;
+}
+
 .page-header {
   display: flex;
   align-items: flex-end;
@@ -599,7 +617,7 @@ kbd {
   gap: 8px;
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 9px;
+  font-size: calc(11.5px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -616,7 +634,7 @@ kbd {
 
 .page-title {
   font-family: var(--font-display);
-  font-size: clamp(28px, 3.2vw, 42px);
+  font-size: clamp(28px, 3.2vw, calc(42px * var(--ui-scale)));
   font-weight: 600;
   line-height: 1.08;
   letter-spacing: 0.005em;
@@ -626,7 +644,7 @@ kbd {
 
 .page-description {
   color: var(--muted);
-  font-size: 15px;
+  font-size: calc(15px * var(--ui-scale));
   line-height: 1.55;
   max-width: 760px;
   margin-top: 9px;
@@ -697,11 +715,12 @@ kbd {
 }
 
 .small {
-  font-size: 12px;
+  font-size: calc(12.5px * var(--ui-scale));
 }
 
 .tiny {
-  font-size: 10.5px;
+  font-size: calc(11.5px * var(--ui-scale));
+  line-height: 1.45;
 }
 
 .accent {
@@ -781,13 +800,13 @@ kbd {
 
 .card-title {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: calc(16px * var(--ui-scale));
   letter-spacing: 0.03em;
 }
 
 .card-subtitle {
   color: var(--muted);
-  font-size: 13px;
+  font-size: calc(13px * var(--ui-scale));
   margin-top: 3px;
 }
 
@@ -800,13 +819,13 @@ kbd {
 }
 
 .section-title h2 {
-  font-size: 17px;
+  font-size: calc(17px * var(--ui-scale));
   letter-spacing: 0.04em;
 }
 
 .section-title .section-note {
   color: var(--faint);
-  font-size: 11px;
+  font-size: calc(11.5px * var(--ui-scale));
 }
 
 .divider {
@@ -843,7 +862,7 @@ kbd {
 
 .stat-label {
   font-family: var(--font-ui);
-  font-size: 8.5px;
+  font-size: calc(12px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -852,7 +871,7 @@ kbd {
 
 .stat-value {
   font-family: var(--font-display);
-  font-size: 26px;
+  font-size: calc(26px * var(--ui-scale));
   line-height: 1.1;
   margin-top: 6px;
   letter-spacing: 0.01em;
@@ -861,13 +880,13 @@ kbd {
 
 .stat-value small {
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-scale));
   color: var(--faint);
   font-weight: 400;
 }
 
 .stat-delta {
-  font-size: 11.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   margin-top: 4px;
   color: var(--muted);
 }
@@ -879,8 +898,9 @@ kbd {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  height: 38px;
-  padding: 0 14px;
+  height: calc(38px * var(--ui-scale));
+  min-height: 34px;
+  padding: 0 calc(14px * var(--ui-scale));
   border: 1px solid var(--border-strong);
   border-radius: 6px;
   background:
@@ -888,7 +908,7 @@ kbd {
     var(--surface-2);
   color: var(--fg-soft);
   font-family: var(--font-ui);
-  font-size: 10.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -956,14 +976,16 @@ kbd {
 }
 
 .btn-sm {
-  height: 30px;
-  padding: 0 10px;
-  font-size: 9px;
+  height: calc(30px * var(--ui-scale));
+  min-height: 28px;
+  padding: 0 calc(10px * var(--ui-scale));
+  font-size: calc(11.5px * var(--ui-scale));
   border-radius: 5px;
 }
 
 .btn-icon {
-  width: 34px;
+  width: calc(34px * var(--ui-scale));
+  min-width: 34px;
   padding: 0;
 }
 
@@ -990,14 +1012,15 @@ kbd {
 .select,
 .textarea {
   width: 100%;
-  height: 38px;
-  padding: 0 11px;
+  height: calc(38px * var(--ui-scale));
+  min-height: 36px;
+  padding: 0 calc(11px * var(--ui-scale));
   border: 1px solid var(--border);
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.26);
   color: var(--fg);
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: calc(14px * var(--ui-scale));
   outline: none;
   transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
 }
@@ -1052,7 +1075,7 @@ kbd {
 
 .field-label {
   font-family: var(--font-ui);
-  font-size: 9px;
+  font-size: calc(11.5px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1082,7 +1105,7 @@ kbd {
   align-items: center;
   gap: 9px;
   cursor: pointer;
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--ui-scale));
   color: var(--muted);
 }
 
@@ -1130,7 +1153,7 @@ kbd {
   gap: 9px;
   cursor: pointer;
   color: var(--fg-soft);
-  font-size: 13px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .check input {
@@ -1168,13 +1191,13 @@ kbd {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 7px;
+  padding: calc(3px * var(--ui-scale)) calc(7px * var(--ui-scale));
   border: 1px solid var(--border-strong);
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.02);
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 9px;
+  font-size: calc(12px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1221,7 +1244,7 @@ kbd {
   background: rgba(255, 255, 255, 0.018);
   color: var(--muted);
   font-family: var(--font-body);
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--ui-scale));
 }
 
 .chip-close {
@@ -1241,7 +1264,7 @@ kbd {
   padding: 0 7px;
   border-radius: 6px;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: calc(11.5px * var(--ui-scale));
   font-weight: 700;
   letter-spacing: 0.02em;
   border: 1px solid transparent;
@@ -1315,7 +1338,7 @@ kbd {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  font-size: 10.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   color: var(--faint);
   margin-top: 6px;
 }
@@ -1337,12 +1360,12 @@ kbd {
   display: grid;
   place-items: center;
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: calc(15px * var(--ui-scale));
   color: var(--fg);
 }
 
 .ring-sm .ring-value {
-  font-size: 11px;
+  font-size: calc(11.5px * var(--ui-scale));
 }
 
 /* ---------- Tabs ---------- */
@@ -1361,12 +1384,12 @@ kbd {
 
 .tab {
   position: relative;
-  padding: 9px 13px 10px;
+  padding: calc(9px * var(--ui-scale)) calc(13px * var(--ui-scale)) calc(10px * var(--ui-scale));
   border: 0;
   background: transparent;
   color: var(--faint);
   font-family: var(--font-ui);
-  font-size: 9.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1395,7 +1418,7 @@ kbd {
 
 .tab-count {
   margin-left: 5px;
-  font-size: 9px;
+  font-size: calc(11.5px * var(--ui-scale));
   color: var(--faint);
 }
 
@@ -1421,13 +1444,13 @@ kbd {
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--ui-scale));
 }
 
 .data-table th {
   text-align: left;
   font-family: var(--font-ui);
-  font-size: 8.5px;
+  font-size: calc(12px * var(--ui-scale));
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--faint);
@@ -1468,7 +1491,7 @@ kbd {
 
 .step-card {
   display: grid;
-  grid-template-columns: 32px minmax(0, 1fr) auto;
+  grid-template-columns: calc(32px * var(--ui-scale)) minmax(0, 1fr) auto;
   gap: 12px;
   padding: 13px 14px;
   border: 1px solid var(--border);
@@ -1496,12 +1519,12 @@ kbd {
 .step-num {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: calc(30px * var(--ui-scale));
+  height: calc(30px * var(--ui-scale));
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: calc(11.5px * var(--ui-scale));
   color: var(--faint);
   background: rgba(0, 0, 0, 0.18);
 }
@@ -1513,7 +1536,7 @@ kbd {
 }
 
 .step-instruction {
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--ui-scale));
   line-height: 1.5;
   color: var(--fg-soft);
 }
@@ -1525,7 +1548,7 @@ kbd {
   flex-wrap: wrap;
   margin-top: 6px;
   color: var(--faint);
-  font-size: 10.5px;
+  font-size: calc(11.5px * var(--ui-scale));
 }
 
 .step-warning {
@@ -1534,7 +1557,7 @@ kbd {
   border-left: 2px solid var(--warning);
   background: rgba(217, 167, 90, 0.06);
   color: #d8c19d;
-  font-size: 11.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   border-radius: 0 6px 6px 0;
 }
 
@@ -1602,8 +1625,8 @@ kbd {
 .item-glyph {
   display: grid;
   place-items: center;
-  width: 29px;
-  height: 29px;
+  width: calc(29px * var(--ui-scale));
+  height: calc(29px * var(--ui-scale));
   border-radius: 7px;
   border: 1px solid var(--border-strong);
   color: var(--faint);
@@ -1617,13 +1640,13 @@ kbd {
 }
 
 .item-name {
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--ui-scale));
   line-height: 1.3;
   color: var(--fg-soft);
 }
 
 .item-sub {
-  font-size: 11px;
+  font-size: calc(11.5px * var(--ui-scale));
   color: var(--faint);
   margin-top: 2px;
 }
@@ -1632,7 +1655,7 @@ kbd {
 
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(calc(58px * var(--ui-scale)), 1fr));
   gap: 6px;
 }
 
@@ -1645,25 +1668,25 @@ kbd {
 }
 
 .stat-cell .k {
-  font-size: 8.5px;
+  font-size: calc(12px * var(--ui-scale));
   letter-spacing: 0.12em;
   color: var(--faint);
 }
 
 .stat-cell .v {
   font-family: var(--font-display);
-  font-size: 17px;
+  font-size: calc(17px * var(--ui-scale));
   margin-top: 1px;
 }
 
 .gear-row {
   display: grid;
-  grid-template-columns: 92px minmax(0, 1fr) auto;
+  grid-template-columns: calc(92px * var(--ui-scale)) minmax(0, 1fr) auto;
   gap: 10px;
   align-items: baseline;
   padding: 6px 0;
   border-bottom: 1px solid rgba(43, 38, 28, 0.6);
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-scale));
 }
 
 .gear-row:last-child {
@@ -1671,7 +1694,7 @@ kbd {
 }
 
 .gear-label {
-  font-size: 9.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--faint);
@@ -1722,13 +1745,13 @@ kbd {
 
 .archetype-name {
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: calc(18px * var(--ui-scale));
   line-height: 1.15;
 }
 
 .archetype-fantasy {
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   line-height: 1.45;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -1742,8 +1765,9 @@ kbd {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(4, 4, 3, 0.66);
-  backdrop-filter: blur(7px);
+  /* Solid scrim instead of a blur: a full-viewport blur re-rasterises on
+     every keystroke of the palette search in WebKitGTK. */
+  background: rgba(4, 4, 3, 0.82);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -1761,7 +1785,7 @@ kbd {
 }
 
 .command {
-  width: min(720px, 100%);
+  width: min(calc(720px * var(--ui-scale)), 100%);
   max-height: 70vh;
   display: flex;
   flex-direction: column;
@@ -1791,7 +1815,7 @@ kbd {
   background: transparent;
   color: var(--fg);
   font-family: var(--font-body);
-  font-size: 18px;
+  font-size: calc(18px * var(--ui-scale));
   width: 100%;
 }
 
@@ -1806,7 +1830,7 @@ kbd {
 
 .command-group {
   padding: 8px 11px 4px;
-  font-size: 9px;
+  font-size: calc(11.5px * var(--ui-scale));
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--faint);
@@ -1817,7 +1841,7 @@ kbd {
   align-items: center;
   gap: 11px;
   width: 100%;
-  padding: 9px 11px;
+  padding: calc(9px * var(--ui-scale)) calc(11px * var(--ui-scale));
   border: 0;
   border-radius: 8px;
   background: transparent;
@@ -1836,23 +1860,23 @@ kbd {
 }
 
 .command-type {
-  width: 86px;
+  width: calc(108px * var(--ui-scale));
   flex: 0 0 auto;
-  font-size: 9px;
+  font-size: calc(11.5px * var(--ui-scale));
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--faint);
 }
 
 .command-title {
-  font-size: 13px;
+  font-size: calc(13px * var(--ui-scale));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .command-sub {
-  font-size: 10.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   color: var(--faint);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1865,7 +1889,7 @@ kbd {
   align-items: center;
   padding: 8px 14px;
   border-top: 1px solid var(--border);
-  font-size: 10px;
+  font-size: calc(11.5px * var(--ui-scale));
   color: var(--faint);
 }
 
@@ -1875,8 +1899,7 @@ kbd {
   position: fixed;
   inset: 0;
   z-index: 80;
-  background: rgba(4, 4, 3, 0.52);
-  backdrop-filter: blur(3px);
+  background: rgba(4, 4, 3, 0.72);
   animation: fade-in 120ms ease both;
 }
 
@@ -1886,7 +1909,7 @@ kbd {
   right: 0;
   bottom: 0;
   z-index: 81;
-  width: min(600px, 100vw);
+  width: min(calc(600px * var(--ui-scale)), 100vw);
   display: flex;
   flex-direction: column;
   background: #12100c;
@@ -1921,7 +1944,7 @@ kbd {
 }
 
 .modal {
-  width: min(560px, 100%);
+  width: min(calc(560px * var(--ui-scale)), 100%);
   margin: auto;
   border: 1px solid var(--border-strong);
   border-radius: 15px;
@@ -1935,6 +1958,17 @@ kbd {
   justify-content: flex-end;
   gap: 8px;
   margin-top: 18px;
+}
+
+/* Dialog headings take part in the scale driver instead of a hard-coded px
+   size, so a 4K window does not open a tiny title over a scaled body. */
+.dialog-title {
+  font-size: calc(22px * var(--ui-scale));
+  line-height: 1.25;
+}
+
+.dialog-title--drawer {
+  line-height: 1.2;
 }
 
 /* ---------- Toasts ---------- */
@@ -1959,7 +1993,7 @@ kbd {
   border-radius: 10px;
   background: #17140f;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--ui-scale));
   animation: toast-in 180ms ease both;
 }
 
@@ -1996,7 +2030,7 @@ kbd {
 
 .empty h3 {
   color: var(--muted);
-  font-size: 17px;
+  font-size: calc(17px * var(--ui-scale));
   margin-bottom: 4px;
 }
 
@@ -2010,7 +2044,7 @@ kbd {
   border-radius: 0 9px 9px 0;
   background: var(--accent-soft);
   color: var(--fg-soft);
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-scale));
 }
 
 .callout.warning {
@@ -2038,14 +2072,14 @@ kbd {
 
 .kv {
   display: grid;
-  grid-template-columns: 130px minmax(0, 1fr);
+  grid-template-columns: calc(130px * var(--ui-scale)) minmax(0, 1fr);
   gap: 8px 14px;
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--ui-scale));
 }
 
 .kv dt {
   color: var(--faint);
-  font-size: 10px;
+  font-size: calc(11.5px * var(--ui-scale));
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding-top: 2px;
@@ -2085,27 +2119,27 @@ kbd {
 
 /* ---------- Responsive ---------- */
 
+/* The shell resolves `--ui-scale` from devicePixelRatio + viewport at runtime,
+   so these queries no longer touch type — scaling twice (media query × scale)
+   is what made 4K unreadably large while 1440p stayed at 1080p sizes. They
+   only widen the reading column on big displays. */
 @media (min-width: 1900px) {
-  html[data-scale="auto"] {
-    font-size: 17px;
-  }
-
   html[data-scale="auto"] .page {
-    max-width: 1480px;
+    max-width: calc(1400px * var(--ui-scale));
   }
 }
 
 @media (min-width: 2500px) {
-  html[data-scale="auto"] {
-    font-size: 18.5px;
-  }
-
   html[data-scale="auto"] .page {
-    max-width: 1680px;
+    max-width: calc(1480px * var(--ui-scale));
   }
+}
 
-  html[data-scale="auto"] {
-    --sidebar: 296px;
+/* A 4K panel at 1.25 scale still has room for a wider ledger; keep the column
+   proportional instead of shrinking to a 1080p-looking strip. */
+@media (min-width: 3300px) {
+  html[data-scale="auto"] .page {
+    max-width: calc(1560px * var(--ui-scale));
   }
 }
 
@@ -2125,6 +2159,9 @@ kbd {
     transform: translateX(-104%);
     transition: transform 220ms cubic-bezier(0.22, 0.8, 0.3, 1);
     box-shadow: var(--shadow);
+    /* Only the sliding drawer needs its own layer; on desktop the fixed
+       column paints once and never animates. */
+    will-change: transform;
   }
 
   .sidebar.open {
@@ -2136,8 +2173,7 @@ kbd {
     position: fixed;
     inset: 0;
     z-index: 39;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(2px);
+    background: rgba(0, 0, 0, 0.6);
   }
 
   .main {
@@ -2205,7 +2241,7 @@ kbd {
   }
 
   .page-title {
-    font-size: 30px;
+    font-size: calc(30px * var(--ui-scale));
   }
 
   .drawer {
@@ -2220,6 +2256,29 @@ kbd {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+
+  /* Decorative motion gives way entirely; state changes stay instant. */
+  .card-hover:hover,
+  .archetype-card:hover,
+  .art-banner:hover .art-banner-img {
+    transform: none;
+  }
+}
+
+/* The in-app `reducedMotion` setting mirrors the OS preference. It is toggled
+   on <html>, so portalled dialogs are covered by the same rule. */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+.reduce-motion .card-hover:hover,
+.reduce-motion .archetype-card:hover,
+.reduce-motion .art-banner:hover .art-banner-img {
+  transform: none;
 }
 
 .density-compact .card-pad {
@@ -2247,7 +2306,7 @@ kbd {
 .hero-kicker {
   margin-top: 22px;
   font-family: var(--font-ui);
-  font-size: 9px;
+  font-size: calc(11.5px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -2256,7 +2315,7 @@ kbd {
 
 .hero-instruction {
   font-family: var(--font-display);
-  font-size: clamp(21px, 2.1vw, 29px);
+  font-size: clamp(21px, 2.1vw, calc(29px * var(--ui-scale)));
   line-height: 1.25;
   letter-spacing: 0.005em;
   margin-top: 8px;
@@ -2270,7 +2329,7 @@ kbd {
   gap: 16px;
   flex-wrap: wrap;
   color: var(--faint);
-  font-size: 11.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   margin-top: 12px;
 }
 
@@ -2293,7 +2352,7 @@ kbd {
 
 .pulse-value {
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: calc(24px * var(--ui-scale));
   line-height: 1.1;
   margin-top: 3px;
 }
@@ -2320,13 +2379,13 @@ kbd {
 
 .pulse-action-title {
   display: block;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-scale));
   line-height: 1.35;
 }
 
 .pulse-action-sub {
   display: block;
-  font-size: 10px;
+  font-size: calc(11.5px * var(--ui-scale));
   color: var(--faint);
   margin-top: 2px;
 }
@@ -2374,7 +2433,7 @@ kbd {
 }
 
 .area-name {
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--ui-scale));
   line-height: 1.5;
 }
 
@@ -2478,7 +2537,7 @@ kbd {
   gap: 9px;
   color: var(--accent-strong);
   font-family: var(--font-ui);
-  font-size: 9px;
+  font-size: calc(11.5px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -2496,7 +2555,7 @@ kbd {
 .art-hero-title {
   margin: 10px 0 0;
   font-family: var(--font-display);
-  font-size: clamp(27px, 4vw, 48px);
+  font-size: clamp(27px, 4vw, calc(48px * var(--ui-scale)));
   font-weight: 600;
   line-height: 1.08;
   letter-spacing: 0.005em;
@@ -2508,7 +2567,7 @@ kbd {
   max-width: 58ch;
   margin-top: 10px;
   color: var(--fg-soft);
-  font-size: 15.5px;
+  font-size: calc(15.5px * var(--ui-scale));
   line-height: 1.55;
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.8);
 }
@@ -2601,7 +2660,7 @@ kbd {
 
 .art-banner-caption {
   font-family: var(--font-ui);
-  font-size: 8px;
+  font-size: calc(11.5px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -2611,7 +2670,7 @@ kbd {
 .art-banner-title {
   margin-top: 3px;
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: calc(18px * var(--ui-scale));
   line-height: 1.2;
   color: var(--parchment);
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
@@ -2690,7 +2749,7 @@ kbd {
 .art-frame-caption {
   padding: 7px 4px 2px;
   color: var(--faint);
-  font-size: 11.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   line-height: 1.4;
 }
 
@@ -2744,7 +2803,7 @@ kbd {
   margin: 18px 0;
   color: var(--gold-line-strong);
   font-family: var(--font-ui);
-  font-size: 8.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -2790,13 +2849,11 @@ kbd {
   height: 520px;
   pointer-events: none;
   background:
+    linear-gradient(180deg, transparent 0%, var(--bg) 94%),
     radial-gradient(620px 260px at 18% 0%, rgba(201, 163, 93, 0.09), transparent 72%),
     radial-gradient(520px 240px at 90% 10%, rgba(127, 159, 190, 0.055), transparent 70%),
     url("/art/bg-world.jpg") center top / cover no-repeat;
   opacity: 0.16;
-  filter: grayscale(0.3) contrast(1.05);
-  mask-image: linear-gradient(180deg, #000 0%, transparent 94%);
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 94%);
 }
 
 /* ---------- Unofficial / provenance ---------- */
@@ -2808,7 +2865,7 @@ kbd {
   margin: 0;
   color: var(--faint);
   font-family: var(--font-body);
-  font-size: 10.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   line-height: 1.45;
   letter-spacing: 0.015em;
 }
@@ -2832,7 +2889,7 @@ kbd {
 .unofficial-strip .unofficial-note {
   justify-content: center;
   color: rgba(176, 165, 142, 0.86);
-  font-size: 10px;
+  font-size: calc(11.5px * var(--ui-scale));
   letter-spacing: 0.055em;
   text-transform: uppercase;
 }
@@ -2844,7 +2901,7 @@ kbd {
 }
 
 .sidebar-disclaimer .unofficial-note {
-  font-size: 9.5px;
+  font-size: calc(11.5px * var(--ui-scale));
   line-height: 1.5;
   color: var(--faint);
 }
@@ -2861,7 +2918,7 @@ kbd {
   background: rgba(143, 176, 207, 0.07);
   color: #aac4dc;
   font-family: var(--font-ui);
-  font-size: 8px;
+  font-size: calc(11.5px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -2929,21 +2986,9 @@ kbd {
 }
 
 @media (max-width: 760px) {
-  /* Keep phones light: no fixed world image, no blurred sidebar art. */
+  /* Keep phones light: no fixed world image, no sidebar art layer. */
   body::before {
     display: none;
-  }
-
-  body::after {
-    background:
-      radial-gradient(ellipse 130% 90% at 50% 0%, transparent 50%, rgba(0, 0, 0, 0.45) 100%),
-      repeating-linear-gradient(
-        0deg,
-        rgba(255, 255, 255, 0.009) 0,
-        rgba(255, 255, 255, 0.009) 1px,
-        transparent 1px,
-        transparent 3px
-      );
   }
 
   .sidebar::before {
@@ -2970,11 +3015,11 @@ kbd {
   }
 
   .art-hero-title {
-    font-size: 27px;
+    font-size: calc(27px * var(--ui-scale));
   }
 
   .art-hero-desc {
-    font-size: 14.5px;
+    font-size: calc(14.5px * var(--ui-scale));
   }
 
   .art-hero-actions .btn {
@@ -2990,7 +3035,7 @@ kbd {
   }
 
   .art-banner-title {
-    font-size: 16px;
+    font-size: calc(16px * var(--ui-scale));
   }
 
   .unofficial-strip {
@@ -2998,7 +3043,7 @@ kbd {
   }
 
   .unofficial-strip .unofficial-note {
-    font-size: 9px;
+    font-size: calc(11.5px * var(--ui-scale));
     letter-spacing: 0.03em;
   }
 
@@ -3041,7 +3086,7 @@ kbd {
   list-style: none;
   color: var(--fg-soft);
   font-family: var(--font-ui);
-  font-size: 10px;
+  font-size: calc(11.5px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -3066,7 +3111,7 @@ kbd {
 .disclosure-meta {
   color: var(--faint);
   font-family: var(--font-body);
-  font-size: 11px;
+  font-size: calc(11.5px * var(--ui-scale));
   font-weight: 400;
   letter-spacing: 0;
   text-transform: none;
@@ -3106,7 +3151,7 @@ kbd {
 }
 
 .collapsible-summary h2 {
-  font-size: 17px;
+  font-size: calc(17px * var(--ui-scale));
   letter-spacing: 0.04em;
 }
 
@@ -3131,12 +3176,13 @@ kbd {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--ui-scale));
 }
 
 .stat-compare-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 54px 64px 50px;
+  grid-template-columns: minmax(0, 1fr) calc(54px * var(--ui-scale)) calc(64px * var(--ui-scale))
+    calc(58px * var(--ui-scale));
   gap: 8px;
   align-items: center;
   padding: 5px 8px;
@@ -3150,7 +3196,7 @@ kbd {
 .stat-compare-head {
   color: var(--faint);
   font-family: var(--font-ui);
-  font-size: 9px;
+  font-size: calc(11.5px * var(--ui-scale));
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -3162,7 +3208,7 @@ kbd {
 /* ---------- Calmer page chrome ---------- */
 
 .page {
-  max-width: 1280px;
+  max-width: calc(1280px * var(--ui-scale));
 }
 
 .card {
@@ -3210,9 +3256,8 @@ kbd {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 3px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
-    background: rgba(10, 9, 7, 0.97);
+    background: rgba(10, 9, 7, 0.985);
     border-top: 1px solid var(--gold-line);
-    backdrop-filter: blur(14px);
   }
 
   .mobile-nav-item {
@@ -3229,7 +3274,7 @@ kbd {
     background: transparent;
     color: var(--faint);
     font-family: var(--font-ui);
-    font-size: 8px;
+    font-size: calc(11.5px * var(--ui-scale));
     line-height: 1.1;
     letter-spacing: 0.02em;
     text-transform: uppercase;
@@ -3257,4 +3302,414 @@ kbd {
   .toast-stack {
     bottom: 78px;
   }
+}
+
+/* ---------- Page chrome type scale ----------
+   The page stylesheets still declare their original 8–15px chrome sizes.
+   Rather than restitching twelve files, this block re-declares every one of
+   those selectors (a) never below an 11.5px legibility floor and (b) through
+   the same --ui-scale driver as the shell, so 2K/4K windows grow the dense
+   labels instead of leaving them at 1080p size. The `html` prefix is only a
+   specificity bump over the later page rules. */
+html .achievement-desc,
+html .achievement-foot a,
+html .atlas-auto-text,
+html .atlas-clear-tick,
+html .atlas-focus-warning,
+html .atlas-focus-warning code,
+html .atlas-footnote,
+html .atlas-gap,
+html .atlas-gap-head strong,
+html .atlas-gap-sources a,
+html .atlas-gap-sources-label,
+html .atlas-link,
+html .atlas-list-count,
+html .atlas-list-note,
+html .atlas-location,
+html .atlas-manual-text,
+html .atlas-object-desc,
+html .atlas-region,
+html .atlas-source-link,
+html .atlas-status-caveat,
+html .atlas-status-eyebrow,
+html .atlas-status-metric span,
+html .atlas-status-note,
+html .atlas-status-reason,
+html .atlas-step-tag,
+html .atlas-step-tag-title,
+html .atlas-subregion,
+html .atlas-summary-item span,
+html .atlas-untracked-lede,
+html .atlas-untracked-name,
+html .atlas-untracked-note,
+html .boss-details summary,
+html .branch-auto-note,
+html .branch-component,
+html .branch-note,
+html .branch-outcomes dd,
+html .branch-outcomes dt,
+html .branch-reward-foot,
+html .branch-reward-reason,
+html .branch-set-label,
+html .col-auto-instruction,
+html .col-desc .col-source-link,
+html .col-entry-source,
+html .col-item-acq,
+html .col-item-desc,
+html .col-item-state,
+html .col-item-tag,
+html .col-location-note,
+html .col-qty-value,
+html .content-route-count span,
+html .content-route-index,
+html .coverage-note,
+html .dashboard-gate-copy,
+html .dashboard-gate-count,
+html .dashboard-hero-meta,
+html .dashboard-hero-prereq,
+html .dashboard-hero-warning,
+html .dashboard-missables-copy,
+html .dashboard-next-missable-title,
+html .dashboard-next-missable-warning,
+html .dashboard-phase-index,
+html .dashboard-phase-meta,
+html .dashboard-phase-sections,
+html .dashboard-scope-label,
+html .dashboard-scope-meta,
+html .dashboard-scope-value,
+html .ending-order,
+html .farm-filter-note .disclosure-summary,
+html .farm-summary-scope,
+html .filter-chip,
+html .filter-count,
+html .future-order,
+html .gate-details dd,
+html .gate-details dt,
+html .gate-trigger,
+html .gear-own,
+html .journey-action-field,
+html .journey-action-meta,
+html .journey-area-missable,
+html .journey-carryover-rule,
+html .journey-counts,
+html .journey-counts strong,
+html .journey-decision-line,
+html .journey-drawer-context,
+html .journey-gate-filter-note,
+html .journey-gate-passed,
+html .journey-gate-passed-link,
+html .journey-gate-scope,
+html .journey-gate-section,
+html .journey-gate-warning,
+html .journey-level-guide dt,
+html .journey-memory-row,
+html .journey-missable-toggle,
+html .journey-missable-toggle-count,
+html .journey-npc-flag,
+html .journey-npc-note,
+html .journey-npc-step-order,
+html .journey-objective-note,
+html .journey-phase-banner .art-banner-caption,
+html .journey-phase-stats,
+html .journey-phase-tab-index,
+html .journey-phase-tab-meta,
+html .journey-phase-tab-missable,
+html .journey-phase-warning,
+html .journey-quiet-note,
+html .journey-rail-phase-label,
+html .journey-rail-phase-meta,
+html .journey-source,
+html .journey-step .step-num,
+html .journey-step-context,
+html .journey-step-note,
+html .journey-step-phase,
+html .journey-step-warning,
+html .journey-sweep-step-instruction,
+html .journey-sweep-step-link,
+html .journey-validation,
+html .library-check-cell .check,
+html .library-count,
+html .library-label,
+html .library-line,
+html .library-note,
+html .library-route-link,
+html .library-source-link,
+html .library-stepper input,
+html .library-sub,
+html .library-toolbar .field-label,
+html .lore-lockbox,
+html .lore-meta,
+html .lore-order,
+html .lore-section h3,
+html .lore-source,
+html .lore-summary-note,
+html .lore-unlock-note,
+html .mat-cat-count,
+html .mat-cat-foot,
+html .mat-cat-qty,
+html .mat-loc,
+html .mat-loc-missing,
+html .mat-loc-region,
+html .mat-material-fields dd,
+html .mat-material-fields dt,
+html .mat-material-meta,
+html .mat-material-note,
+html .mat-note,
+html .mat-page-btn,
+html .mat-source,
+html .mat-source-text,
+html .mat-step-input,
+html .mat-sub,
+html .mat-summary-label,
+html .mat-summary-note,
+html .mat-summary-pct,
+html .mat-sweep-kind,
+html .mat-sweep-link,
+html .mat-warn-note,
+html .merchant-roster-count,
+html .merchant-roster-name,
+html .ngp-link,
+html .ngp-step,
+html .own-chip,
+html .pack-item-loc,
+html .pack-stat-label,
+html .pack-stat-note,
+html .patch-list,
+html .picker-group-title,
+html .picker-pick .item-sub,
+html .plan-fields dd,
+html .plan-fields dt,
+html .preset-key,
+html .preset-value,
+html .pulse-card-detail,
+html .quest-card .callout,
+html .quest-field .k,
+html .quest-focus-label,
+html .quest-group-head .meta,
+html .quest-npc-lore .k,
+html .quest-route-summary .k,
+html .remembrance-kv,
+html .remembrance-order,
+html .remembrance-plan-index,
+html .remembrance-plan-meta,
+html .remembrance-plan-pick-label,
+html .remembrance-plan-picks,
+html .remembrance-plan-priority,
+html .remembrance-plan-summary,
+html .remembrance-plan-table,
+html .remembrance-route-link,
+html .req-group-head strong,
+html .req-items li,
+html .resources-cell-links a,
+html .resources-footnote,
+html .resources-footnote code,
+html .resources-inline-link,
+html .resources-note-cell,
+html .resources-result-row,
+html .resources-section-count,
+html .resources-source-link,
+html .resources-summary-item span,
+html .resources-table-count,
+html .resources-table-empty,
+html .resources-table-eyebrow,
+html .resources-table-legend,
+html .scope-card-head,
+html .scope-meta,
+html .scope-subtitle,
+html .slot-label,
+html .slot-name,
+html .spell-index,
+html .spell-slot-list li,
+html .stat-edit > label,
+html .tier-rank,
+html .trophy-order,
+html .upgrade-weapon,
+html .world-build-sub,
+html .world-field-label,
+html .world-level-label,
+html .world-location,
+html .world-note,
+html .world-roster-sub,
+html .world-summary-cell .d,
+html .world-summary-cell .k {
+  font-size: calc(11.5px * var(--ui-scale));
+}
+
+html .atlas-table,
+html .char-level-sub,
+html .col-summary-strip,
+html .data-table.library-table,
+html .journey-disclosure-copy,
+html .journey-level-guide dd,
+html .journey-sweep-name,
+html .library-toolbar .search-field .input,
+html .library-toolbar .select,
+html .quest-decision-actions .select,
+html .quest-field .v,
+html .resources-table,
+html .stat-input,
+html .tier-description,
+html .timeline-control label,
+html .world-build-name {
+  font-size: calc(12px * var(--ui-scale));
+}
+
+html .atlas-object-name,
+html .col-ach-name,
+html .col-desc-text,
+html .col-filter-toggles .check,
+html .col-group-name,
+html .col-step-instruction,
+html .dashboard-next-missable-copy,
+html .impact summary,
+html .journey-area-description,
+html .journey-gate-message,
+html .library-title,
+html .lore-teaser,
+html .mat-cat-label,
+html .mat-table,
+html .pack-highlight-title,
+html .pack-item-name,
+html .patch-banner .callout,
+html .quest-text,
+html .remembrance-plan-name,
+html .remembrance-plan-title,
+html .spread-name,
+html .tier-link,
+html .trophy-cue,
+html .world-roster-title,
+html .world-strategy-text {
+  font-size: calc(12.5px * var(--ui-scale));
+}
+
+html .dashboard-hero .art-hero-desc,
+html .dashboard-hero-complete,
+html .gate-area,
+html .journey-modal-copy p,
+html .lore-section p,
+html .mat-name,
+html .mat-qty,
+html .planner-heading,
+html .subheading {
+  font-size: calc(13px * var(--ui-scale));
+}
+
+html .build-summary-name,
+html .journey-action-title,
+html .ngp-head .card-title,
+html .picker-pick .item-name {
+  font-size: calc(13.5px * var(--ui-scale));
+}
+
+html .achievement-head .card-title,
+html .atlas-list-count strong,
+html .content-route-count,
+html .journey-drawer-instruction,
+html .mat-material-name,
+html .readiness-row h3,
+html .resources-result-row strong {
+  font-size: calc(14px * var(--ui-scale));
+}
+
+html .quest-card-title {
+  font-size: calc(14.5px * var(--ui-scale));
+}
+
+html .atlas-untracked-title,
+html .branch-title,
+html .journey-decision-title,
+html .journey-phase-banner .art-banner-title,
+html .journey-phase-tab-label,
+html .lore-area {
+  font-size: calc(15px * var(--ui-scale));
+}
+
+html .journey-sweep-step-title {
+  font-size: calc(15.5px * var(--ui-scale));
+}
+
+html .build-identity,
+html .loadout-name,
+html .quest-group-head h3,
+html .resources-table-title h2,
+html .scope-title,
+html .timeline-name {
+  font-size: calc(16px * var(--ui-scale));
+}
+
+html .atlas-status-metric strong,
+html .boss-name,
+html .dashboard-missables-title,
+html .mat-summary-head strong,
+html .patch-version,
+html .preset-target,
+html .quest-decision-title,
+html .quest-route-summary .v {
+  font-size: calc(17px * var(--ui-scale));
+}
+
+/* Tracked uppercase captions and the shared badge get half a step more than
+   the plain meta floor so they stay crisp at 1×. */
+html .data-table th,
+html .data-table.library-table th,
+html .resources-table th,
+html .atlas-badges .badge,
+html .journey-npc-section-item .badge,
+html .badge {
+  font-size: calc(12px * var(--ui-scale));
+}
+
+/* Mono count pill in the patch coverage table. */
+html .coverage-count {
+  font-size: calc(11.5px * var(--ui-scale));
+}
+
+/* Mobile-only text: the stacked-table row labels are generated by CSS and were
+   the smallest type in the app (8px), and the build timeline's point markers
+   collapse to a 34px box. Both live under 760px. */
+@media (max-width: 760px) {
+  html .timeline-marker,
+  html .data-table.atlas-table td::before,
+  html .data-table.library-table td::before,
+  html .data-table.resources-table td::before,
+  html .data-table.resources-table .resources-note-cell,
+  html .mat-table td::before {
+    font-size: calc(11.5px * var(--ui-scale));
+  }
+}
+
+/* ---------- Lazy rendering for long scrolling lists ----------
+   Cards and rows below the fold skip layout/paint until they scroll near the
+   viewport. Intrinsic sizes keep the scrollbar stable; nothing here is a
+   sticky header and the focused row is always forced back into view by the
+   engine, so keyboard navigation is unaffected. */
+.step-card {
+  content-visibility: auto;
+  /* Close to the real height of a collapsed route step, so the scrollbar and
+     "scroll to the selected step" stay accurate for unrendered neighbours. */
+  contain-intrinsic-size: auto 150px;
+}
+
+/* The current step is the scroll target; never let it be skipped. */
+.step-card.is-current {
+  content-visibility: visible;
+}
+
+.item-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 64px;
+}
+
+.list-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 52px;
+}
+
+/* Anything the keyboard has reached is fully rendered: skipping a focused row
+   would break tab order and the visible focus ring. */
+.step-card:focus-within,
+.item-card:focus-within,
+.list-row:focus-within,
+.card:focus-within {
+  content-visibility: visible;
 }

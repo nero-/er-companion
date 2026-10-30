@@ -561,6 +561,19 @@
   margin-bottom: 14px;
 }
 
+.dashboard-build-stats-grid > div {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.012);
+}
+
+.dashboard-build-stats-grid > div.is-target {
+  border-color: rgba(201, 163, 93, 0.45);
+  background: var(--accent-soft);
+}
+
 .dashboard-build-stats .stat-compare {
   max-width: 620px;
 }

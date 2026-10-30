@@ -4,19 +4,20 @@ import { Icon } from "./Icon";
 import { setItemCount, setItemOwned, useActiveCharacter, useActiveJourney } from "../lib/store";
 import {
   ACHIEVEMENT_BY_ID,
-  AREA_SWEEPS,
   ITEM_DESCRIPTIONS,
   REQUIREMENT_GROUPS,
   ROUTE_AREAS,
+  ROUTE_STEPS,
   STEP_BY_ID,
+  SWEEP_STEPS,
+  SWEEP_STEP_BY_ID,
   TIERS_BY_NAME,
 } from "../lib/data";
 import { PATCH_IMPACT_BY_NAME } from "../data/game";
-import { areaSweep } from "../lib/gameplay";
 import { formatNumber } from "../lib/format";
-import { stepStatusLabel, stepStatusTone } from "../lib/selectors";
+import { collectionStepFor, stepStatusLabel, stepStatusTone, sweepStepState } from "../lib/selectors";
 import { navigate } from "../lib/router";
-import type { Achievement, AreaSweep, Item, RouteStep, StepStatus } from "../lib/types";
+import type { Achievement, Item, RouteStep, StepStatus, SweepStep } from "../lib/types";
 
 interface ItemDrawerProps {
   item: Item | null;
@@ -90,29 +91,118 @@ export function itemCountStep(item: Item): number {
   return stackable ? STACK_STEP : 1;
 }
 
-const SWEEP_BY_ITEM: Map<string, AreaSweep> = new Map();
-for (const sweep of AREA_SWEEPS) {
-  const rows = [
-    ...sweep.unlinkedItems,
-    ...sweep.farmables,
-    ...sweep.merchants.flatMap((merchant) => merchant.items),
-  ];
-  for (const row of rows) {
-    if (row.itemId && !SWEEP_BY_ITEM.has(row.itemId)) SWEEP_BY_ITEM.set(row.itemId, sweep);
-  }
+const SWEEP_KIND_LABELS: Record<string, string> = {
+  merchants: "Merchant",
+  farmables: "Farm",
+  pickups: "Pickup",
+  materials: "Material",
+  cleanup: "Cleanup",
+};
+
+/** Short noun for a sweep step kind: "Merchant step", "Cleanup step", … */
+export function sweepKindLabel(kind: string | undefined): string {
+  return `${SWEEP_KIND_LABELS[kind ?? ""] ?? "Sweep"} step`;
 }
 
 /**
- * The area sweep that covers this item: the recorded region/location/section
- * lookup first, then explicit membership in a sweep's item rows. Never guesses
- * — an unrecorded location stays unrecorded and yields no badge.
+ * Sweep steps indexed by catalog item id, in route order. The catalogue is
+ * 2,325 items against 1,880 ledger rows, so resolving per card straight from
+ * the selector would rescan the whole ledger on every render.
  */
-export function itemSweep(item: Item): AreaSweep | undefined {
-  for (const candidate of [itemRegionName(item) ?? undefined, item.location, item.section]) {
-    const sweep = areaSweep(candidate?.trim());
-    if (sweep) return sweep;
+const SWEEP_STEPS_BY_ITEM: Map<string, SweepStep[]> = (() => {
+  const map = new Map<string, SweepStep[]>();
+  for (const step of [...SWEEP_STEPS].sort((a, b) => a.order - b.order)) {
+    for (const entry of step.entries) {
+      if (!entry.itemId) continue;
+      const steps = map.get(entry.itemId);
+      if (steps) {
+        if (!steps.includes(step)) steps.push(step);
+      } else {
+        map.set(entry.itemId, [step]);
+      }
+    }
   }
-  return SWEEP_BY_ITEM.get(item.id);
+  return map;
+})();
+
+/** Every sweep step whose ledger lists this catalogue item, in route order. */
+export function itemSweepSteps(itemId: string): SweepStep[] {
+  return SWEEP_STEPS_BY_ITEM.get(itemId) ?? [];
+}
+
+export interface ItemStepLink {
+  kind: "route" | "sweep";
+  stepId: string;
+  area: string;
+  /** "Route step" or a sweep kind label such as "Cleanup step". */
+  label: string;
+  /** Sweep kind for sweep links ("cleanup", "merchants", …); undefined for route links. */
+  sweepKind?: string;
+  title: string;
+  /** Journey hash path; sweep ids resolve there alongside route step ids. */
+  href: string;
+}
+
+export function stepHref(stepId: string, area: string): string {
+  return `/journey?step=${encodeURIComponent(stepId)}&area=${encodeURIComponent(area)}`;
+}
+
+const STEP_LINK_CACHE = new Map<string, ItemStepLink>();
+
+/**
+ * The actionable step for an item. Every catalogue item resolves: the route
+ * step that auto-acquires it, else the first sweep step that lists it.
+ */
+export function itemStepLink(item: Item): ItemStepLink | undefined {
+  const cached = STEP_LINK_CACHE.get(item.id);
+  if (cached) return cached;
+  const link = resolveStepLink(item);
+  if (link) STEP_LINK_CACHE.set(item.id, link);
+  return link;
+}
+
+function routeStepLink(step: RouteStep): ItemStepLink {
+  return {
+    kind: "route",
+    stepId: step.id,
+    area: step.area,
+    label: "Route step",
+    title: step.instruction,
+    href: stepHref(step.id, step.area),
+  };
+}
+
+function sweepStepLink(step: SweepStep): ItemStepLink {
+  return {
+    kind: "sweep",
+    stepId: step.id,
+    area: step.area,
+    label: sweepKindLabel(step.kind),
+    sweepKind: step.kind,
+    title: step.title,
+    href: stepHref(step.id, step.area),
+  };
+}
+
+function resolveStepLink(item: Item): ItemStepLink | undefined {
+  // Explicit route linkage wins: the item is named by a route step even when
+  // that step does not list it in `autoAcquireItemIds`.
+  const routeStep =
+    (item.autoStepId ? STEP_BY_ID[item.autoStepId] : undefined) ??
+    item.routeStepIds.map((id) => STEP_BY_ID[id]).find((step): step is RouteStep => Boolean(step));
+  if (routeStep) return routeStepLink(routeStep);
+
+  // `SWEEP_STEPS_BY_ITEM` is the same route-ordered index `sweepStepsForItem`
+  // builds per call; use it here so the catalogue does not rescan the ledger.
+  const indexed = itemSweepSteps(item.id)[0];
+  if (indexed) return sweepStepLink(indexed);
+
+  // Shared selector as the authority of last resort for anything the index misses.
+  const resolved = collectionStepFor(item.id);
+  const selectorStep = resolved?.kind === "route" ? STEP_BY_ID[resolved.stepId] : undefined;
+  if (selectorStep) return routeStepLink(selectorStep);
+  const sweep = resolved?.kind === "sweep" ? SWEEP_STEP_BY_ID[resolved.stepId] : undefined;
+  return sweep ? sweepStepLink(sweep) : undefined;
 }
 
 interface ItemQuantityProps {
@@ -202,8 +292,8 @@ function LocationValue({ item }: { item: Item }) {
   if (kind === "unrecorded") {
     return (
       <span className="col-location-note">
-        Location not recorded in this content pack — the catalogue carries only an acquisition category, not an exact
-        spot. Check the wiki source before relying on a location.
+        No location recorded in this content pack — the catalogue carries only an acquisition category. The acquisition
+        step below still tracks the item, so it stays on the checklist while you confirm it in game.
       </span>
     );
   }
@@ -211,7 +301,10 @@ function LocationValue({ item }: { item: Item }) {
     return (
       <span>
         {item.location}
-        <span className="col-location-note">Area only — the exact spot is not recorded in this pack.</span>
+        <span className="col-location-note">
+          Area only — the exact spot is not recorded in this pack. The acquisition step below covers the pickups and
+          purchases for this area.
+        </span>
       </span>
     );
   }
@@ -233,8 +326,24 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
   const owned = character.items[item.id] === true;
   const count = Math.max(0, character.itemCounts[item.id] ?? (owned ? 1 : 0));
   const description = ITEM_DESCRIPTIONS[item.id];
-  const routeLinked = isItemRouteLinked(item);
-  const sweep = routeLinked ? undefined : itemSweep(item);
+  const stepLink = itemStepLink(item);
+  const sweepRows = itemSweepSteps(item.id).map((step) => {
+    const state = sweepStepState(step.id, character, journey);
+    return {
+      step,
+      complete: state?.complete ?? false,
+      acquired: state?.acquired ?? 0,
+      total: state?.total ?? step.entries.length,
+      entries: step.entries
+        .map((entry, index) => ({ entry, acquired: state?.entries[index]?.acquired ?? false }))
+        .filter(({ entry }) => entry.itemId === item.id),
+    };
+  });
+  const sweepAreas = [...new Set(sweepRows.map((row) => row.step.area))];
+  const acquisitionAreas = stepLink
+    ? [...new Set([stepLink.area, ...sweepAreas])]
+    : sweepAreas;
+  const primarySweep = stepLink?.kind === "sweep" ? sweepRows.find((row) => row.step.id === stepLink.stepId) : undefined;
   const patchImpact = PATCH_IMPACT_BY_NAME[item.name];
   const tierEntries = Object.prototype.hasOwnProperty.call(TIERS_BY_NAME, item.name)
     ? TIERS_BY_NAME[item.name]
@@ -249,11 +358,9 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
       return a.order - b.order;
     });
   const autoStep = item.autoStepId ? STEP_BY_ID[item.autoStepId] : undefined;
-  const firstStep = autoStep ?? linkedSteps[0];
   const visibleSteps = showAllSteps ? linkedSteps : linkedSteps.slice(0, 6);
   const missable = isItemMissable(item);
   const timingSensitive = isItemTimingSensitive(item);
-  const locationKind = itemLocationKind(item);
   const region = itemRegionName(item);
   const achievementLinks = ITEM_ACHIEVEMENTS[item.id] ?? [];
   const unresolvedRouteRef = item.linkedRouteRaw.trim() && linkedSteps.length === 0 ? item.linkedRouteRaw.trim() : "";
@@ -270,8 +377,8 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
     navigate(`/journey?area=${encodeURIComponent(step.area)}&step=${encodeURIComponent(step.id)}`);
   };
 
-  const openSweepArea = (entry: AreaSweep) => {
-    navigate(`/journey?area=${encodeURIComponent(entry.area)}`);
+  const openStepLink = () => {
+    if (stepLink) navigate(stepLink.href);
   };
 
   return (
@@ -290,6 +397,7 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
             {missable ? <Badge tone="danger">MISSABLE</Badge> : null}
             {timingSensitive ? <Badge tone="warning">Timing</Badge> : null}
             {isItemRouteLinked(item) ? <Badge tone="success">Route-linked</Badge> : null}
+            {stepLink?.kind === "sweep" ? <Badge tone="info">{stepLink.label}</Badge> : null}
           </span>
           <div className="row wrap col-drawer-owned">
             <ItemQuantity item={item} count={count} />
@@ -310,8 +418,8 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
                 {item.wikiUrl ? "Wiki" : "Source"}
               </a>
             ) : null}
-            <Button icon="map" onClick={() => firstStep && openStep(firstStep)} disabled={!firstStep}>
-              Open route step
+            <Button icon="map" onClick={openStepLink} disabled={!stepLink}>
+              {stepLink?.kind === "sweep" ? `Open ${stepLink.label.toLowerCase()}` : "Open route step"}
             </Button>
           </div>
         </div>
@@ -385,10 +493,12 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
           ) : unresolvedRouteRef ? (
             <span>
               Legacy reference <code className="mono tiny">{unresolvedRouteRef}</code> — not present in the current
-              route data. Treat this as provenance only.
+              route data. Treat this as provenance only; the acquisition step below is current.
             </span>
+          ) : stepLink ? (
+            `Tracked by the ${stepLink.label.toLowerCase()} in ${stepLink.area} instead of the route step list.`
           ) : (
-            "Not linked to a route step."
+            "Tracked by a sweep step."
           )}
         </dd>
         <dt>Wiki source</dt>
@@ -462,27 +572,100 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
         </div>
       ) : null}
 
-      {sweep ? (
+      {stepLink?.kind === "route" ? (
         <div className="col-drawer-section">
-          <SectionTitle title="Sweep area" note="Covered by an area sweep" />
-          <div className="col-sweep-card">
-            <div className="row-between wrap">
-              <span className="row wrap">
-                <Icon name="map" size={14} />
-                <strong>{sweep.area}</strong>
-                <Badge>{sweep.phase}</Badge>
-                <Badge tone="info">{sweep.game}</Badge>
+          <SectionTitle title="Acquisition step" note={`${stepLink.label} · ${stepLink.area}`} />
+          <div className="col-step-list">
+            <button
+              type="button"
+              className="col-step"
+              onClick={openStepLink}
+              aria-label={`Open route step in ${stepLink.area}`}
+            >
+              <span className="row-between wrap">
+                <span className="row wrap">
+                  <Badge tone="success">{stepLink.label}</Badge>
+                  <Badge>{stepLink.area}</Badge>
+                </span>
+                <Badge tone={badgeTone(journey.steps[stepLink.stepId])}>
+                  {stepStatusLabel(journey.steps[stepLink.stepId])}
+                </Badge>
               </span>
-              <Button size="sm" variant="ghost" icon="map" onClick={() => openSweepArea(sweep)}>
-                Open in journey
-              </Button>
-            </div>
-            <p className="tiny faint">
-              {formatNumber(sweep.counts.merchantItems)} merchant items · {formatNumber(sweep.counts.farmables)}{" "}
-              farmables · {formatNumber(sweep.counts.unlinkedItems)} unlinked pickups ·{" "}
-              {formatNumber(sweep.counts.materials)} materials · confidence {sweep.confidence}
-            </p>
-            {sweep.notes.length ? <p className="small muted col-sweep-notes">{sweep.notes[0]}</p> : null}
+              <span className="col-step-instruction">{stepLink.title}</span>
+              <span className="tiny faint col-step-meta">
+                <span>Journey step</span>
+                <span>Opens at {stepLink.area}</span>
+              </span>
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {sweepRows.length ? (
+        <div className="col-drawer-section">
+          <SectionTitle
+            title="Sweep coverage"
+            note={`${sweepRows.length} ${sweepRows.length === 1 ? "step" : "steps"} · ${sweepAreas.length} ${
+              sweepAreas.length === 1 ? "area" : "areas"
+            }`}
+          />
+          {primarySweep ? (
+            <Callout tone="success" icon="check">
+              Start with the <strong>{primarySweep.step.title}</strong> step in {primarySweep.step.area} — it is the
+              first sweep step that lists this item.
+            </Callout>
+          ) : null}
+          {acquisitionAreas.length > 1 ? (
+            <Callout tone="default" icon="layers">
+              Obtainable in {acquisitionAreas.length} areas: {acquisitionAreas.join(", ")}. Ownership is character-wide —
+              acquiring it once marks it owned everywhere, so pick whichever area is on your route and skip the rest.
+            </Callout>
+          ) : null}
+          <div className="col-step-list">
+            {sweepRows.map(({ step, entries, complete, acquired, total }) => (
+              <div className="col-sweep-card" key={step.id}>
+                <div className="row-between wrap">
+                  <span className="row wrap">
+                    <Badge tone="info">{sweepKindLabel(step.kind)}</Badge>
+                    <Icon name="map" size={13} />
+                    <strong>{step.area}</strong>
+                    <Badge>{step.phase}</Badge>
+                    <Badge tone={complete ? "success" : "default"}>
+                      {complete ? "Step done" : `${formatNumber(acquired)}/${formatNumber(total)} ticked`}
+                    </Badge>
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    icon="map"
+                    onClick={() => navigate(stepHref(step.id, step.area))}
+                    aria-label={`Open ${sweepKindLabel(step.kind).toLowerCase()} in ${step.area}`}
+                  >
+                    Open step
+                  </Button>
+                </div>
+                <p className="tiny faint">{step.title}</p>
+                <ul className="col-entry-list">
+                  {entries.map(({ entry, acquired: entryAcquired }, index) => (
+                    <li className="col-entry" key={`${step.id}-${index}`}>
+                      <span className="col-entry-source">
+                        {entry.source || "Source not recorded"}
+                        {entry.dropRate ? <span> · {entry.dropRate} drop</span> : null}
+                      </span>
+                      <span className="tiny faint col-entry-meta">
+                        {entry.quantity > 1 ? <span>×{entry.quantity}</span> : null}
+                        {entry.stock ? <span>Stock {entry.stock}</span> : null}
+                        {entry.price ? <span>{formatNumber(entry.price)} runes</span> : null}
+                        <span className={entryAcquired ? "success" : undefined}>
+                          {entryAcquired ? "Acquired" : "Missing"}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {step.instruction ? <p className="tiny faint col-sweep-notes">{step.instruction}</p> : null}
+              </div>
+            ))}
           </div>
         </div>
       ) : null}
@@ -490,7 +673,13 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
       <div className="col-drawer-section">
         <SectionTitle
           title="Linked route steps"
-          note={linkedSteps.length ? `${linkedSteps.length} linked` : undefined}
+          note={
+            linkedSteps.length
+              ? `${linkedSteps.length} linked`
+              : stepLink?.kind === "sweep"
+                ? `Tracked by the ${stepLink.label.toLowerCase()} above`
+                : "Route linkage"
+          }
         />
         {autoStep ? (
           <Callout tone="success" icon="check">
@@ -546,15 +735,20 @@ export function ItemDrawer({ item, onClose }: ItemDrawerProps) {
           <Callout tone="warning" icon="alert">
             <span>
               This item still points at <code className="mono tiny">{unresolvedRouteRef}</code>, a legacy route
-              identifier that is not part of the merged {ROUTE_AREAS.length}-section route. It is shown as provenance,
-              not as a navigable step.
+              identifier that is not part of the merged {ROUTE_AREAS.length}-section route. It is shown as provenance
+              only — the acquisition step above is the one to follow.
             </span>
           </Callout>
         ) : (
           <p className="small faint">
-            No route step in the current content pack links this item, so the route-linked filter will not include it.
-            {sweep ? ` It still falls inside the ${sweep.area} area sweep above.` : ""}
-            {locationKind === "unrecorded" ? " Its location is also unrecorded — use the wiki source above." : ""}
+            The merged {formatNumber(ROUTE_STEPS.length)}-step route does not hand this item out on its own, so the
+            route-linked filter excludes it.
+            {stepLink?.kind === "sweep"
+              ? ` Use the ${stepLink.label.toLowerCase()} in ${stepLink.area} above to collect it.`
+              : ""}
+            {sweepAreas.length > 1
+              ? ` It appears in ${sweepAreas.length} areas; one acquisition clears all of them.`
+              : ""}
           </p>
         )}
       </div>

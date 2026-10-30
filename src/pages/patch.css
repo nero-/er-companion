@@ -301,6 +301,28 @@
   white-space: nowrap;
 }
 
+.coverage-count {
+  flex: 0 0 auto;
+  padding: 1px 7px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--fg-soft);
+  background: rgba(255, 255, 255, 0.03);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.coverage-meaning {
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+}
+
+.coverage-row-success .coverage-meaning {
+  color: var(--muted);
+}
+
 @media (max-width: 760px) {
   .pack-item-grid {
     grid-template-columns: 1fr;
@@ -313,5 +335,13 @@
   .coverage-row .badge {
     margin-left: 30px;
     white-space: normal;
+  }
+
+  .coverage-row .row-between {
+    gap: 4px;
+  }
+
+  .coverage-count {
+    margin-left: 0;
   }
 }

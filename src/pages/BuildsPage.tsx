@@ -22,16 +22,14 @@ import {
   applyLoadout,
   applyProfile,
   setProgressionCheck,
-  setStat,
   useActiveCharacter,
 } from "../lib/store";
 import { ALL_SOFTCAP_STATS, softCapFor } from "../lib/gameplay";
+import { useReferencePack } from "../lib/reference";
 import {
   ARCHETYPES,
-  BOSS_STRATEGIES_BY_BUILD,
-  ENCOUNTER_PRESETS_BY_BUILD,
+  LOADOUTS_BY_BUILD,
   SPELL_PACKAGE_BY_ID,
-  UPGRADES_BY_NODE,
 } from "../lib/data";
 import {
   equipmentOwnedCount,
@@ -45,7 +43,7 @@ import {
 import { STAT_LABELS, STAT_ORDER, STAT_SHORT, levelFromStats } from "../lib/classes";
 import { itemGroupIcon } from "../lib/format";
 import { navigate, useRoute } from "../lib/router";
-import type { BuildLoadout, Character } from "../lib/types";
+import type { BuildLoadout, Character, EquipmentState } from "../lib/types";
 import "./builds.css";
 
 const LEVELS = [150, 200] as const;
@@ -59,6 +57,12 @@ interface ArchetypeFamilyGroup {
   members: typeof CERTIFIED;
 }
 
+/** Plain code-point comparison so the picker order never depends on the browser locale. */
+function compareNames(a: string, b: string): number {
+  if (a === b) return 0;
+  return a < b ? -1 : 1;
+}
+
 /** Group the certified archetypes by content-pack family for the picker. */
 function archetypeFamilyGroups(): ArchetypeFamilyGroup[] {
   const grouped = new Map<string, ArchetypeFamilyGroup["members"]>();
@@ -69,12 +73,71 @@ function archetypeFamilyGroups(): ArchetypeFamilyGroup[] {
     grouped.set(family, members);
   }
   return [...grouped.entries()]
-    .map(([family, members]) => ({ family, members }))
+    .map(([family, members]) => ({
+      family,
+      members: members.slice().sort((a, b) => compareNames(a.name, b.name) || compareNames(a.id, b.id)),
+    }))
     .sort((a, b) => {
       if (a.family === FAMILY_GROUP_FALLBACK) return 1;
       if (b.family === FAMILY_GROUP_FALLBACK) return -1;
-      return a.family.localeCompare(b.family);
+      return compareNames(a.family, b.family);
     });
+}
+
+function padSlots(values: string[] | undefined, length: number): string[] {
+  const next = (values ?? []).slice(0, length);
+  while (next.length < length) next.push("");
+  return next;
+}
+
+function loadoutEquipment(loadout: BuildLoadout): EquipmentState {
+  const pkg = SPELL_PACKAGE_BY_ID[loadout.packageId];
+  return {
+    mainWeapon: loadout.mainWeapon,
+    secondaryWeapon: loadout.secondaryWeapon,
+    offhand: loadout.offhand,
+    shield: loadout.shield,
+    armor: padSlots(loadout.armor, 4),
+    talismans: padSlots(loadout.talismans, 4),
+    spells: padSlots(pkg?.slots, 10),
+    physick: padSlots(loadout.physick, 2),
+  };
+}
+
+function slotListMatches(a: string[], b: string[]): boolean {
+  return a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
+/**
+ * True when the character's live gear is this certified loadout, mode included.
+ * `applyLoadout` writes every slot, so an applied row matches exactly.
+ */
+function loadoutIsApplied(character: Character, loadout: BuildLoadout): boolean {
+  const mode = loadout.type === "Optimized" ? "optimized" : loadout.type === "Fashion" ? "fashion" : "signature";
+  if (character.equipmentMode !== mode) return false;
+  const target = loadoutEquipment(loadout);
+  const live = character.equipment;
+  const hasGear = [
+    target.mainWeapon,
+    target.secondaryWeapon,
+    target.offhand,
+    target.shield,
+    ...target.armor,
+    ...target.talismans,
+    ...target.physick,
+  ].some((name) => name && !name.toLowerCase().startsWith("empty") && name !== "—");
+  // An all-empty loadout would match an untouched planner for every row, so it never claims to be equipped.
+  if (!hasGear) return false;
+  return (
+    target.mainWeapon === live.mainWeapon &&
+    target.secondaryWeapon === live.secondaryWeapon &&
+    target.offhand === live.offhand &&
+    target.shield === live.shield &&
+    slotListMatches(target.armor, live.armor) &&
+    slotListMatches(target.talismans, live.talismans) &&
+    slotListMatches(target.spells, live.spells) &&
+    slotListMatches(target.physick, live.physick)
+  );
 }
 
 type PresetTabId = "all" | "General" | "Combat Style" | "Damage Type" | "Enemy Profile" | "Boss" | "Named Boss";
@@ -209,12 +272,12 @@ function SlotList({ character, items, icon = "talisman" }: { character: Characte
 function LoadoutCard({
   character,
   loadout,
-  active,
+  applied,
   onInspectSpellPackage,
 }: {
   character: Character;
   loadout: BuildLoadout;
-  active: boolean;
+  applied: boolean;
   onInspectSpellPackage: () => void;
 }) {
   const toast = useToast();
@@ -225,15 +288,18 @@ function LoadoutCard({
   const unindexed = listedNames.length - cataloguedNames.length;
 
   return (
-    <article className={`loadout-card ${active ? "is-active" : ""}`.trim()}>
+    <article className={`loadout-card ${applied ? "is-active" : ""}`.trim()}>
       <div className="row-between wrap">
         <div className="row" style={{ gap: 7 }}>
           <Badge tone={loadout.type === "Signature" ? "accent" : "default"}>{loadout.type}</Badge>
           <span className="tiny faint">Level {loadout.level}</span>
         </div>
-        <Badge tone={owns.owned === owns.total ? "success" : "warning"}>
-          {owns.owned}/{owns.total} owned
-        </Badge>
+        <div className="row wrap" style={{ gap: 6 }}>
+          {applied ? <Badge tone="success">Equipped</Badge> : null}
+          <Badge tone={owns.owned === owns.total ? "success" : "warning"}>
+            {owns.owned}/{owns.total} owned
+          </Badge>
+        </div>
       </div>
       <h3 className="loadout-name">{loadout.mainWeapon || "No primary weapon listed"}</h3>
       {unindexed > 0 ? (
@@ -264,17 +330,17 @@ function LoadoutCard({
       <div className="row wrap loadout-actions">
         <Button
           size="sm"
-          variant="primary"
+          variant={applied ? "default" : "primary"}
           icon="check"
           onClick={() => {
             applyLoadout(loadout.id);
             toast.push(
-              `Applied ${loadout.type === "Optimized" ? "an" : "the"} ${loadout.type} loadout. ${owns.owned}/${owns.total} indexed pieces are marked owned. Profile selection and stats are unchanged.`,
+              `Equipped the ${loadout.type} loadout on ${character.name}. ${owns.owned}/${owns.total} indexed pieces are marked owned. The target build and stats are unchanged.`,
               "success",
             );
           }}
         >
-          Apply loadout
+          {applied ? "Applied" : "Apply loadout"}
         </Button>
         <Button size="sm" icon="spark" onClick={onInspectSpellPackage} disabled={!pkg}>
           Spell package
@@ -302,8 +368,9 @@ export function BuildsPage() {
 
   const queryArchetype = route.query.get("archetype");
   const requested = CERTIFIED.find((archetype) => archetype.id === queryArchetype);
+  const targetArchetypeId = character.desiredBuild.archetypeId || character.archetypeId;
   const fallback =
-    (character.archetypeId ? CERTIFIED.find((archetype) => archetype.id === character.archetypeId) : undefined) ??
+    (targetArchetypeId ? CERTIFIED.find((archetype) => archetype.id === targetArchetypeId) : undefined) ??
     CERTIFIED[0];
   const selected = requested ?? fallback;
 
@@ -324,19 +391,27 @@ export function BuildsPage() {
     [profile],
   );
 
-  const [activeLoadoutId, setActiveLoadoutId] = useState("");
+  // Encounter presets, boss strategies and upgrade plans ship in the reference
+  // pack, which is fetched the first time this page needs it.
+  const reference = useReferencePack();
+  const [inspectedLoadoutId, setInspectedLoadoutId] = useState("");
   const [activeTab, setActiveTab] = useState("encounters");
   const [presetTab, setPresetTab] = useState<PresetTabId>("all");
   const [presetSearch, setPresetSearch] = useState("");
   const [presetLimit, setPresetLimit] = useState(12);
   const [bossLimit, setBossLimit] = useState(6);
-  const [timelineLevel, setTimelineLevel] = useState(activeLevel);
+  const [timelineOverride, setTimelineOverride] = useState<number | null>(null);
 
-  const activeLoadout =
-    loadouts.find((loadout) => loadout.id === activeLoadoutId) ??
+  const appliedLoadouts = loadouts.filter((loadout) => loadoutIsApplied(character, loadout));
+  const equippedElsewhere = profiles.flatMap((entry) =>
+    (LOADOUTS_BY_BUILD[entry.id] ?? []).filter((loadout) => loadoutIsApplied(character, loadout)),
+  );
+  const inspectedLoadout =
+    loadouts.find((loadout) => loadout.id === inspectedLoadoutId) ??
+    appliedLoadouts[0] ??
     loadouts.find((loadout) => loadout.type === "Signature") ??
     loadouts[0];
-  const activePackage = activeLoadout ? SPELL_PACKAGE_BY_ID[activeLoadout.packageId] : undefined;
+  const activePackage = inspectedLoadout ? SPELL_PACKAGE_BY_ID[inspectedLoadout.packageId] : undefined;
 
   const allGearNames = useMemo(() => (profile ? buildGearNames(loadouts) : []), [profile, loadouts]);
   const cataloguedBuildNames = cataloguedGearNames(allGearNames);
@@ -344,11 +419,11 @@ export function BuildsPage() {
   const buildUnindexed = allGearNames.length - cataloguedBuildNames.length;
 
   const buildPresets = useMemo(() => {
-    if (!profile) return [];
-    return (ENCOUNTER_PRESETS_BY_BUILD[profile.id] ?? []).filter(
+    if (!profile || !reference) return [];
+    return (reference.ENCOUNTER_PRESETS_BY_BUILD[profile.id] ?? []).filter(
       (preset) => preset.level === profile.level && preset.archetype === selected?.name,
     );
-  }, [profile, selected]);
+  }, [profile, selected, reference]);
 
   const filteredPresets = useMemo(() => {
     const tab = PRESET_TABS.find((entry) => entry.id === presetTab);
@@ -382,10 +457,14 @@ export function BuildsPage() {
   }, [buildPresets, presetTab, presetSearch]);
 
   const bossStrategies = useMemo(() => {
-    if (!profile) return [];
-    return (BOSS_STRATEGIES_BY_BUILD[profile.id] ?? []).slice().sort((a, b) => a.routeOrder - b.routeOrder);
-  }, [profile]);
+    if (!profile || !reference) return [];
+    return (reference.BOSS_STRATEGIES_BY_BUILD[profile.id] ?? [])
+      .slice()
+      .sort((a, b) => a.routeOrder - b.routeOrder);
+  }, [profile, reference]);
 
+  // The timeline follows the character's own derived level unless the slider overrides it.
+  const timelineLevel = Math.min(TIMELINE_MAX, Math.max(TIMELINE_MIN, timelineOverride ?? characterLevel));
   const progressionRows = useMemo(() => (selected ? techProgressionForArchetype(selected.id) : []), [selected]);
   const nearest = useMemo(
     () => (selected ? nearestTechNode(selected.id, timelineLevel) : undefined),
@@ -401,15 +480,7 @@ export function BuildsPage() {
   }, [profile?.id]);
 
   useEffect(() => {
-    setTimelineLevel(activeLevel);
-  }, [selected?.id, activeLevel]);
-
-  // Rows are checked by default when the target level is reached; a local set tracks
-  // explicit unticking so the default rule cannot immediately re-check the row.
-  const [clearedRows, setClearedRows] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    setClearedRows({});
+    setTimelineOverride(null);
   }, [selected?.id]);
 
   if (!selected) {
@@ -430,8 +501,8 @@ export function BuildsPage() {
     const missing = buildOwned.total - buildOwned.owned;
     applyProfile(profile.id);
     toast.push(
-      `Applied ${profile.archetype} · Level ${profile.level} to ${character.name}. Stats and certified gear updated${
-        missing > 0 ? `; ${missing} indexed pieces are still missing from your collection.` : "."
+      `Target build set to ${profile.archetype} · Level ${profile.level}. Your current stats and equipped gear on ${character.name} are untouched${
+        missing > 0 ? `; ${missing} indexed pieces are still missing from the collection.` : "."
       }`,
       "success",
     );
@@ -443,27 +514,8 @@ export function BuildsPage() {
     { id: "progression", label: "Progression", count: progressionRows.length },
   ];
 
-  // Tech nodes carry no route-step link, so the route signal is the character's own
-  // derived level (the journey's progression proxy); manual checks always win.
-  const isRowChecked = (nodeId: string, levelTarget: number) => {
-    if (clearedRows[nodeId]) return false;
-    return Boolean(character.progressionChecks[nodeId]) || levelTarget <= characterLevel;
-  };
-
   const toggleRowCheck = (nodeId: string, value: boolean) => {
-    setClearedRows((previous) => ({ ...previous, [nodeId]: !value }));
-    setProgressionCheck(selected?.id ?? character.archetypeId, nodeId, value);
-  };
-
-  const applyAllSoftcaps = () => {
-    // setStat clears the certified profile once; every stat is then written in turn.
-    for (const key of STAT_ORDER) setStat(key, ALL_SOFTCAP_STATS[key]);
-    toast.push(
-      `Reference soft-cap spread applied to ${character.name}: every stat at its first soft cap, deriving Level ${levelFromStats(
-        ALL_SOFTCAP_STATS,
-      )}. This is not a level-150 legal build and no certified profile is selected.`,
-      "success",
-    );
+    setProgressionCheck(selected.id, nodeId, value);
   };
 
   return (
@@ -473,9 +525,10 @@ export function BuildsPage() {
         title="Builds"
         description={
           <>
-            {CERTIFIED.length} certified archetypes with Level 150 and Level 200 profiles, Signature / Optimized /
-            Fashion loadouts, spell packages, encounter presets and the progression path. Pick a family in the dropdown
-            to open its detail below.
+            {CERTIFIED.length} certified archetypes with Level 150 and Level 200 target profiles, Signature /
+            Optimized / Fashion loadouts, spell packages, encounter presets and the progression path. Pick an
+            archetype to open its detail below; every control on this page writes the target build, never your live
+            character sheet.
           </>
         }
         actions={
@@ -508,26 +561,6 @@ export function BuildsPage() {
               </optgroup>
             ))}
           </Select>
-          <div className="build-picker-level">
-            <span className="field-label">Level</span>
-            <div className="btn-group" role="group" aria-label="Certified profile level">
-              {LEVELS.map((level) => {
-                const available = profilesForArchetype(selected.id).some((entry) => entry.level === level);
-                return (
-                  <Button
-                    key={level}
-                    size="sm"
-                    variant={activeLevel === level ? "primary" : "default"}
-                    onClick={() => selectArchetype(selected.id, level)}
-                    aria-pressed={activeLevel === level}
-                    disabled={!available}
-                  >
-                    {level}
-                  </Button>
-                );
-              })}
-            </div>
-          </div>
         </div>
 
         <div className="build-summary">
@@ -541,26 +574,31 @@ export function BuildsPage() {
             {profiles.length} certified {profiles.length === 1 ? "level" : "levels"} · recommended{" "}
             {selected.recommendedClass}
           </span>
+          {profile ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              icon="chevronDown"
+              onClick={() =>
+                document.getElementById("build-detail")?.scrollIntoView({ behavior: "smooth", block: "start" })
+              }
+            >
+              Jump to stats, loadouts and progression
+            </Button>
+          ) : null}
         </div>
       </section>
 
       <section className="card card-pad softcap-reference" style={{ marginBottom: 16 }}>
-        <div className="row-between wrap">
-          <div className="grow">
-            <SectionTitle
-              title="Reference ceiling — not a level-150 legal build"
-              note="All stats at their first soft cap"
-            />
-            <p className="small muted" style={{ margin: "2px 0 0", maxWidth: 720 }}>
-              Every stat pushed to its first soft cap from the bundled resource table. This is a reference ceiling for
-              comparing spreads, not a certified archetype and not a legal level-150 build: it derives{" "}
-              {levelFromStats(ALL_SOFTCAP_STATS)} levels from the stat total.
-            </p>
-          </div>
-          <Button icon="upload" onClick={applyAllSoftcaps}>
-            Apply reference stats
-          </Button>
-        </div>
+        <SectionTitle
+          title="Reference ceiling — not a level-150 legal build"
+          note="Display only · all stats at their first soft cap"
+        />
+        <p className="small muted" style={{ margin: "2px 0 0", maxWidth: 720 }}>
+          Every stat at its first soft cap from the bundled resource table. This is a reference ceiling for comparing
+          spreads, not a certified archetype and not a legal level-150 build: it derives{" "}
+          {levelFromStats(ALL_SOFTCAP_STATS)} levels from the stat total. The table never writes to your character.
+        </p>
         <div className="softcap-reference-body">
           <StatCompare
             rows={STAT_ORDER.map((key) => ({
@@ -573,11 +611,11 @@ export function BuildsPage() {
           />
           <div className="softcap-reference-meta">
             <div>
-              <div className="tiny faint">Derived level</div>
+              <div className="tiny faint">Reference derived level</div>
               <div className="char-level">{levelFromStats(ALL_SOFTCAP_STATS)}</div>
             </div>
             <div>
-              <div className="tiny faint">Certified comparison</div>
+              <div className="tiny faint">Selected certified target</div>
               <div className="char-level-sub">
                 {profile
                   ? `${selected.name} · Level ${profile.level} derives ${levelFromStats(profile.stats)}`
@@ -586,15 +624,11 @@ export function BuildsPage() {
             </div>
           </div>
         </div>
-        <p className="tiny faint" style={{ margin: "10px 0 0" }}>
-          Applying writes all eight stats to the character and clears the certified profile selection, exactly like
-          editing a stat by hand. Nothing else is changed.
-        </p>
       </section>
 
       {profile ? (
         <>
-          <section className="card card-pad card-accent build-detail">
+          <section className="card card-pad card-accent build-detail" id="build-detail">
             <div className="row-between wrap build-detail-head">
               <div className="grow">
                 <div className="row wrap" style={{ marginBottom: 8 }}>
@@ -609,7 +643,26 @@ export function BuildsPage() {
                 </p>
               </div>
               <div className="stack" style={{ alignItems: "flex-end", gap: 8 }}>
-                <Badge tone="accent">Level {profile.level} profile</Badge>
+                <div className="build-picker-level">
+                  <span className="field-label">Target level</span>
+                  <div className="btn-group" role="group" aria-label="Certified target profile level">
+                    {LEVELS.map((level) => {
+                      const available = profilesForArchetype(selected.id).some((entry) => entry.level === level);
+                      return (
+                        <Button
+                          key={level}
+                          size="sm"
+                          variant={activeLevel === level ? "primary" : "default"}
+                          onClick={() => selectArchetype(selected.id, level)}
+                          aria-pressed={activeLevel === level}
+                          disabled={!available}
+                        >
+                          {level}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
                 <span className="tiny faint">
                   {profile.calculatedLevel} certified · {levelFromStats(profile.stats)} computed
                 </span>
@@ -673,7 +726,7 @@ export function BuildsPage() {
               </div>
               <div className="row wrap">
                 <Button variant="primary" icon="check" onClick={applySelectedProfile}>
-                  Apply profile to character
+                  Set as target build
                 </Button>
                 <Button icon="users" onClick={() => navigate("/character")}>
                   Open equipment planner
@@ -686,6 +739,10 @@ export function BuildsPage() {
               detail={`${buildOwned.owned} owned · ${buildOwned.total - buildOwned.owned} indexed missing`}
               className="build-progress"
             />
+            <p className="tiny faint" style={{ margin: "4px 0 0" }}>
+              Setting the target build changes what this character is working toward: the Level {profile.level} stat
+              spread and its signature gear. Your current in-game stats and equipped gear stay exactly as they are.
+            </p>
             {buildOwned.owned < buildOwned.total ? (
               <p className="tiny faint" style={{ margin: "4px 0 0" }}>
                 Gear not in your collection is marked Missing; names without a catalogue match are marked Not indexed.
@@ -697,12 +754,12 @@ export function BuildsPage() {
           <section className="card card-pad build-section" id="ideal-stats">
             <SectionTitle
               title="Ideal stats"
-              note={`Current spread derives Level ${characterLevel}`}
+              note={`Current spread derives Level ${characterLevel} · targets are independent of level`}
             />
             <div className="ideal-stats-grid">
               <div>
                 <div className="tiny faint" style={{ marginBottom: 6 }}>
-                  Current → Level 150 certified
+                  Current → Level 150 target
                 </div>
                 {ideal150 ? (
                   <StatCompare
@@ -718,10 +775,10 @@ export function BuildsPage() {
                   <EmptyState title="No Level 150 profile" description="This archetype has no certified Level 150 profile." icon="layers" />
                 )}
               </div>
-              {ideal200 && characterLevel > 150 ? (
+              {ideal200 ? (
                 <div>
                   <div className="tiny faint" style={{ marginBottom: 6 }}>
-                    Current → Level 200 certified
+                    Current → Level 200 target
                   </div>
                   <StatCompare
                     rows={STAT_ORDER.map((key) => ({
@@ -736,37 +793,38 @@ export function BuildsPage() {
               ) : null}
             </div>
             <div className="row wrap" style={{ marginTop: 12 }}>
-              <Button
-                icon="refresh"
-                disabled={!ideal150}
-                onClick={() => {
-                  if (!ideal150) return;
-                  applyProfile(ideal150.id);
-                  toast.push(
-                    `Reset ${character.name} to the ${selected.name} Level 150 certified spread.`,
-                    "success",
-                  );
-                }}
-              >
-                Reset to Level 150
-              </Button>
-              {ideal200 && characterLevel > 150 ? (
+              {ideal150 ? (
                 <Button
-                  variant="primary"
-                  icon="check"
+                  icon="target"
                   onClick={() => {
-                    applyProfile(ideal200.id);
+                    applyProfile(ideal150.id);
                     toast.push(
-                      `Applied the ${selected.name} Level 200 certified spread to ${character.name}.`,
+                      `Target build set to ${selected.name} · Level 150. Current stats are unchanged.`,
                       "success",
                     );
                   }}
                 >
-                  Apply Level 200
+                  Set Level 150 as target
+                </Button>
+              ) : null}
+              {ideal200 ? (
+                <Button
+                  variant="primary"
+                  icon="target"
+                  onClick={() => {
+                    applyProfile(ideal200.id);
+                    toast.push(
+                      `Target build set to ${selected.name} · Level 200. Current stats are unchanged.`,
+                      "success",
+                    );
+                  }}
+                >
+                  Set Level 200 as target
                 </Button>
               ) : null}
               <span className="tiny faint grow">
-                Ideal stats come from the certified profiles; applying one also writes its signature gear.
+                Targets are certified profiles. Setting one writes the target spread and its signature gear; it never
+                overwrites the stats you have in game.
               </span>
             </div>
           </section>
@@ -774,7 +832,13 @@ export function BuildsPage() {
           <section className="build-section">
             <SectionTitle
               title="Certified loadouts"
-              note={`${loadouts.length} listed · Signature / Optimized / Fashion`}
+              note={
+                appliedLoadouts.length > 0
+                  ? `${appliedLoadouts[0].type} loadout equipped · ${loadouts.length} listed`
+                  : equippedElsewhere.length > 0
+                    ? `Equipped: ${equippedElsewhere[0].type} at Level ${equippedElsewhere[0].level} · ${loadouts.length} listed`
+                    : `${loadouts.length} listed · Signature / Optimized / Fashion`
+              }
             />
             {loadouts.length === 0 ? (
               <EmptyState title="No loadouts for this profile" description="This profile has no certified loadout rows in the content pack." icon="sword" />
@@ -785,9 +849,9 @@ export function BuildsPage() {
                     key={loadout.id}
                     character={character}
                     loadout={loadout}
-                    active={activeLoadout?.id === loadout.id}
+                    applied={appliedLoadouts.some((entry) => entry.id === loadout.id)}
                     onInspectSpellPackage={() => {
-                      setActiveLoadoutId(loadout.id);
+                      setInspectedLoadoutId(loadout.id);
                       document.getElementById("spell-package")?.scrollIntoView({ behavior: "smooth", block: "start" });
                     }}
                   />
@@ -799,7 +863,7 @@ export function BuildsPage() {
           <section className="card card-pad build-section" id="spell-package">
             <SectionTitle
               title="Spell package"
-              note={activeLoadout ? `${activeLoadout.type} loadout · ${activeLoadout.mainWeapon}` : undefined}
+              note={inspectedLoadout ? `${inspectedLoadout.type} loadout · ${inspectedLoadout.mainWeapon}` : undefined}
             />
             {activePackage ? (
               <>
@@ -850,9 +914,9 @@ export function BuildsPage() {
                       <strong>Hard-swap rule</strong>
                       <div>{activePackage.hardSwap}</div>
                     </Callout>
-                    {activeLoadout ? (
+                    {inspectedLoadout ? (
                       <p className="tiny faint" style={{ margin: 0 }}>
-                        {activePackage.name} is attached to the {activeLoadout.type} loadout. Switching loadout mode
+                        {activePackage.name} is attached to the {inspectedLoadout.type} loadout. Switching loadout mode
                         changes the package when the certified row uses a different package.
                       </p>
                     ) : null}
@@ -1087,23 +1151,37 @@ export function BuildsPage() {
                   <div>
                     <h2 className="tab-heading">Progression timeline</h2>
                     <p className="small muted" style={{ margin: "2px 0 0" }}>
-                      {progressionRows.length} tech-tree rows for {selected.name}, sorted by level target. The highlighted
-                      row is the nearest loadout-bearing node at or below the selected level. Rows default to checked
-                      when their target level is at or under your character's derived Level {characterLevel}; ticking or
-                      unticking records the checkpoint for this archetype.
+                      {progressionRows.length} tech-tree rows for {selected.name}, sorted by level target. The
+                      highlighted row is the nearest loadout-bearing node at or below{" "}
+                      {timelineOverride === null ? "your character's derived level" : "the level you picked"}. Rows
+                      start unchecked; ticking one records the checkpoint for this archetype only.
                     </p>
                   </div>
                   <div className="timeline-control">
-                    <label htmlFor="timeline-level">Level {timelineLevel}</label>
+                    <label htmlFor="timeline-level">
+                      {timelineOverride === null
+                        ? `Character level ${characterLevel}`
+                        : `Preview level ${timelineOverride}`}
+                    </label>
                     <input
                       id="timeline-level"
                       type="range"
                       min={TIMELINE_MIN}
                       max={TIMELINE_MAX}
                       value={timelineLevel}
-                      onChange={(event) => setTimelineLevel(Number(event.target.value))}
-                      aria-label="Progression level"
+                      onChange={(event) => setTimelineOverride(Number(event.target.value))}
+                      aria-label="Progression preview level"
                     />
+                    <div className="row wrap" style={{ gap: 6 }}>
+                      <span className="tiny faint">
+                        {timelineOverride === null ? "Following character" : "Manual override"}
+                      </span>
+                      {timelineOverride !== null ? (
+                        <Button size="sm" variant="ghost" icon="refresh" onClick={() => setTimelineOverride(null)}>
+                          Follow character level
+                        </Button>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
 
@@ -1124,7 +1202,7 @@ export function BuildsPage() {
                     {progressionRows.map((row) => {
                       const node = row.node;
                       const loadout = row.loadout;
-                      const upgrades = UPGRADES_BY_NODE[node.id] ?? [];
+                      const upgrades = reference?.UPGRADES_BY_NODE[node.id] ?? [];
                       const rawNames = loadout
                         ? uniqueNames([
                             loadout.primaryWeapon,
@@ -1138,7 +1216,7 @@ export function BuildsPage() {
                       const unindexed = rawNames.length - names.length;
                       const owns = equipmentOwnedCount(character, names);
                       const isNearest = nearest?.node.id === node.id;
-                      const checked = isRowChecked(node.id, node.levelTarget);
+                      const checked = character.progressionChecks[`${selected.id}:${node.id}`] === true;
                       return (
                         <article
                           className={`timeline-row ${isNearest ? "is-nearest" : ""} ${checked ? "is-reached" : ""}`.trim()}

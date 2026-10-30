@@ -548,6 +548,22 @@
 
 /* ---------- Character planner ---------- */
 
+.char-manager-grid {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.char-manager-grid .field {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
+.char-manager-actions {
+  gap: 8px;
+}
+
 .char-top {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
@@ -600,7 +616,7 @@
   margin-bottom: 10px;
 }
 
-.current-vs-planned-grid {
+.current-vs-target-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   gap: 18px;
@@ -1127,7 +1143,7 @@
     align-items: flex-start;
   }
 
-  .current-vs-planned-grid {
+  .current-vs-target-grid {
     grid-template-columns: 1fr;
   }
 

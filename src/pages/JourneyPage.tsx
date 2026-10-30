@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import {
   Badge,
   Button,
@@ -19,23 +19,27 @@ import {
   useToast,
 } from "../components/ui";
 import { Icon } from "../components/Icon";
-import { OrnamentRule } from "../components/Art";
+import { ART, ArtBanner, OrnamentRule } from "../components/Art";
+import type { ArtBannerVariant } from "../components/Art";
 import {
   resolveArea,
   setDecisionCheck,
+  setFarmable,
   setItemOwned,
   setMaterialStock,
+  setMerchant,
   setNpcWalkthroughStep,
   setSettings,
   setStepNote,
   setStepStatus,
   setSupplementalStatus,
+  setSweepDeferred,
+  setTransitionGate,
   setWorldCheck,
   useActiveCharacter,
   useActiveJourney,
   useAppState,
 } from "../lib/store";
-import { areaSweep } from "../lib/gameplay";
 import {
   areaProgress,
   currentAreaName,
@@ -45,16 +49,18 @@ import {
   stepStatusLabel,
   stepStatusTone,
   supplementalProgress,
+  sweepStepState,
+  sweepStepsAfterStep,
+  sweepStepsForArea,
 } from "../lib/selectors";
 import type { Progress } from "../lib/selectors";
 import {
+  BRANCH_PLAN_BY_DECISION,
   BRANCH_PLAN_DECISIONS,
   CHRONOLOGY_AREAS,
-  CRAFTING_MATERIALS,
   ENCOUNTER_BY_ID,
   ITEM_BY_ID,
   ITEM_BY_NORMALIZED_NAME,
-  MATERIAL_BY_ID,
   NPC_WALKTHROUGH_SECTIONS,
   NPC_WALKTHROUGH_SECTION_BY_ID,
   NPC_WALKTHROUGH_STEPS,
@@ -63,6 +69,7 @@ import {
   OBJECTIVES,
   PHASE_GATE_BY_ID,
   PHASE_GATES,
+  QUESTLINE_STEP_BY_ID,
   ROUTE_AREAS,
   ROUTE_CHRONOLOGY,
   ROUTE_STEPS,
@@ -72,16 +79,18 @@ import {
   SUPPLEMENTAL,
   SUPPLEMENTAL_BY_AREA,
   SUPPLEMENTAL_BY_ID,
+  SWEEP_STEP_BY_ID,
   WORLD_OBJECTS,
   STEP_BY_SOURCE_ID,
   normalizeContentKey,
+  remapStepId,
 } from "../lib/data";
 import { formatNumber, itemGroupIcon, titleCase } from "../lib/format";
 import { navigate, queryString, useRoute } from "../lib/router";
 import type {
-  AreaSweep,
   Encounter,
   Item,
+  JourneyState,
   NpcWalkthroughSection,
   NpcWalkthroughStep,
   Objective,
@@ -90,6 +99,8 @@ import type {
   RouteStep,
   StepStatus,
   Supplemental,
+  SweepStep,
+  SweepStepEntry,
 } from "../lib/types";
 import "./journey.css";
 
@@ -262,94 +273,44 @@ const WORLD_OBJECT_IDS_BY_STEP: Record<string, string[]> = (() => {
   return map;
 })();
 
-const MATERIAL_BY_NORMALIZED_NAME: Record<string, string> = Object.fromEntries(
-  CRAFTING_MATERIALS.map((material) => [normalizeContentKey(material.name), material.id]),
-);
-
-/** Item ids in the sweep are content-pack ids; fall back to a normalized name lookup. */
-function resolveSweepItemId(rawId: string | undefined, name: string): string | undefined {
-  if (rawId && ITEM_BY_ID[rawId]) return rawId;
-  return ITEM_BY_NORMALIZED_NAME[normalizeContentKey(name)]?.id;
+/**
+ * Resolve a `?step=` param. World objects and older links carry Redmaw source
+ * ids (`w2-1`), so try runtime ids, source ids, then the legacy remap table.
+ */
+function resolveRouteStepParam(param: string): RouteStep | undefined {
+  const direct = STEP_BY_ID[param] ?? STEP_BY_SOURCE_ID[param];
+  if (direct) return direct;
+  const remapped = remapStepId(param);
+  return remapped ? STEP_BY_ID[remapped] : undefined;
 }
 
-function resolveSweepMaterialId(rawId: string, name: string): string | undefined {
-  if (MATERIAL_BY_ID[rawId]) return rawId;
-  return MATERIAL_BY_NORMALIZED_NAME[normalizeContentKey(name)];
+function writeSweepEntry(entry: SweepStepEntry, value: boolean): void {
+  if (entry.itemId) setItemOwned(entry.itemId, value);
+  else if (entry.materialId) setMaterialStock(entry.materialId, value);
+  else if (entry.purchaseId) setMerchant(entry.purchaseId, value, entry.name);
+  else if (entry.farmId) setFarmable(entry.farmId, value ? entry.quantity : 0, entry.quantity, entry.name);
 }
 
-interface SweepRow {
-  key: string;
-  label: string;
-  note: string;
-  itemId?: string;
-  materialId?: string;
-  owned: boolean;
-}
-
-interface SweepGroup {
-  id: string;
-  title: string;
-  rows: SweepRow[];
-}
-
-function buildSweepGroups(
-  sweep: AreaSweep | undefined,
-  ownedItem: (id: string | undefined) => boolean,
-  stockedMaterial: (id: string) => boolean,
-): SweepGroup[] {
-  if (!sweep) return [];
-  const merchantRows: SweepRow[] = [];
-  for (const merchant of sweep.merchants) {
-    for (const item of merchant.items) {
-      const itemId = resolveSweepItemId(item.itemId, item.itemName);
-      merchantRows.push({
-        key: item.id,
-        label: item.itemName,
-        note: [merchant.merchant, item.price ? `${formatNumber(item.price)} runes` : "", item.stock ?? ""]
-          .filter(Boolean)
-          .join(" · "),
-        itemId,
-        owned: ownedItem(itemId),
-      });
-    }
-  }
-  const farmableRows: SweepRow[] = sweep.farmables.map((farm) => {
-    const itemId = resolveSweepItemId(farm.itemId, farm.name);
-    return {
-      key: farm.id,
-      label: farm.name,
-      note: [farm.source, farm.location, `×${formatNumber(farm.targetQuantity)}`].filter(Boolean).join(" · "),
-      itemId,
-      owned: ownedItem(itemId),
-    };
-  });
-  const unlinkedRows: SweepRow[] = sweep.unlinkedItems.map((item) => {
-    const itemId = resolveSweepItemId(item.itemId, item.name);
-    return {
-      key: item.id,
-      label: item.name,
-      note: [item.acquisitionType, item.location].filter(Boolean).join(" · "),
-      itemId,
-      owned: ownedItem(itemId),
-    };
-  });
-  const materialRows: SweepRow[] = sweep.materials.map((material) => {
-    const materialId = resolveSweepMaterialId(material.id, material.name);
-    return {
-      key: material.id,
-      label: material.name,
-      note: [material.grace, material.earlySource].filter(Boolean).join(" · "),
-      materialId,
-      owned: materialId ? stockedMaterial(materialId) : false,
-    };
-  });
+function sweepEntryNote(entry: SweepStepEntry): string {
   return [
-    { id: "merchants", title: "Merchants", rows: merchantRows },
-    { id: "farmables", title: "Farmables", rows: farmableRows },
-    { id: "unlinked", title: "Loose pickups", rows: unlinkedRows },
-    { id: "materials", title: "Materials", rows: materialRows },
-  ].filter((group) => group.rows.length > 0);
+    entry.source,
+    entry.dropRate ? `${entry.dropRate} drop` : "",
+    entry.price ? `${formatNumber(entry.price)} runes` : "",
+    entry.stock ? `stock ${entry.stock}` : "",
+    entry.quantity > 1 ? `×${formatNumber(entry.quantity)}` : "",
+    entry.renewable ? `renewable: ${entry.renewable}` : "",
+  ]
+    .filter(Boolean)
+    .join(" · ");
 }
+
+const SWEEP_KIND_LABEL: Record<string, string> = {
+  merchants: "Merchant purchases",
+  farmables: "Farming",
+  pickups: "Pickups",
+  materials: "Crafting materials",
+  cleanup: "Cleanup",
+};
 
 interface LinkedRecordView {
   id: string;
@@ -493,6 +454,17 @@ function StepNoteEditor({ savedNote, onSave }: StepNoteEditorProps) {
   );
 }
 
+interface JourneyMemory {
+  journey: JourneyState;
+  progress: Progress;
+  /** Item ids whose first acquisition is attributed to this run. */
+  itemIds: string[];
+  decisions: { id: string; title: string; choice: string }[];
+  secured: { id: string; title: string }[];
+  bossesDefeated: { id: string; name: string }[];
+  questSteps: { id: string; questline: string; order: number; text: string }[];
+}
+
 export function JourneyPage() {
   const state = useAppState();
   const character = useActiveCharacter();
@@ -511,6 +483,9 @@ export function JourneyPage() {
   const [areaSearch, setAreaSearch] = useState("");
   const [collapsedPhases, setCollapsedPhases] = useState<Record<string, boolean>>({});
   const [resolveOpen, setResolveOpen] = useState(false);
+  const [openSweeps, setOpenSweeps] = useState<Record<string, boolean>>({});
+  const [selectedPriorIndex, setSelectedPriorIndex] = useState<number | null>(null);
+  const scrollAreaRef = useRef<string | null>(null);
   // The decision ledger only stores explicit "secured" flags, so an unchecked
   // box over an owned reward needs a session-local override to stay unset.
   const [decisionOverrides, setDecisionOverrides] = useState<Record<string, boolean>>({});
@@ -586,7 +561,11 @@ export function JourneyPage() {
   const missable = route.query.get("missable") === "1";
   const dlc = route.query.get("dlc") === "1";
 
-  const linkedStep = stepParam ? STEP_BY_ID[stepParam] : undefined;
+  const linkedStep = stepParam ? resolveRouteStepParam(stepParam) : undefined;
+  const linkedSweep = stepParam ? SWEEP_STEP_BY_ID[stepParam] : undefined;
+  const linkedSweepArea = linkedSweep
+    ? allAreas.find((area) => area.name === linkedSweep.area) ?? ROUTE_AREAS.find((area) => area.name === linkedSweep.area)
+    : undefined;
   const npcLinkedStep = stepParam ? NPC_WALKTHROUGH_STEP_BY_ID[stepParam] : undefined;
   const npcLinkedSection = sectionParam ? NPC_WALKTHROUGH_SECTION_BY_ID[sectionParam] : undefined;
   const matchedArea = areaParam
@@ -599,7 +578,7 @@ export function JourneyPage() {
     npcLinkedStep ||
     (npcLinkedSection && !linkedStep && !areaParam && !phaseParam && !gateParam && tabParam !== "route")
       ? "npc"
-      : stepParam && linkedStep
+      : stepParam && (linkedStep || linkedSweep)
         ? "route"
         : tabParam === "chronology"
           ? "chronology"
@@ -609,7 +588,7 @@ export function JourneyPage() {
               ? "chronology"
               : "route";
 
-  let phaseLabel = linkedStep?.phase ?? matchedArea?.phase ?? phaseParamMeta?.label;
+  let phaseLabel = linkedStep?.phase ?? linkedSweepArea?.phase ?? matchedArea?.phase ?? phaseParamMeta?.label;
   if (!phaseLabel)
     phaseLabel = nextStep?.phase ?? ROUTE_AREAS.find((area) => area.name === currentArea)?.phase ?? PHASES[0].label;
   const phaseMeta = PHASES.find((phase) => phase.label === phaseLabel) ?? PHASES[0];
@@ -618,6 +597,23 @@ export function JourneyPage() {
   const phaseProgress = phaseStats[phaseMeta.id];
   const phaseMissable = phaseMissables[phaseMeta.id];
   const phaseGateCount = PHASE_GATES.filter((gate) => gate.phase === phaseMeta.label).length;
+  // Same art mapping as the dashboard so the three phases read as one visual system.
+  const phaseArt: { image: string; variant: ArtBannerVariant; caption: string; title: string } =
+    phaseMeta.id === "shadow-of-the-erdtree"
+      ? { image: ART.heroSote, variant: "sote", caption: "Shadow of the Erdtree", title: "Realm of Shadow" }
+      : phaseMeta.id === "base-endgame"
+        ? {
+            image: ART.erdtreeShots[4],
+            variant: "erdtree",
+            caption: "Base game · endgame",
+            title: "The Ashen Capital",
+          }
+        : {
+            image: ART.erdtreeShots[2],
+            variant: "erdtree",
+            caption: "Base game · through Maliketh",
+            title: "The Lands Between",
+          };
 
   const fallbackArea = useMemo(() => {
     const currentInPhase = phaseAreas.find((area) => area.name === currentArea);
@@ -628,6 +624,7 @@ export function JourneyPage() {
 
   const activeArea =
     (linkedStep ? phaseAreas.find((area) => area.name === linkedStep.area) : undefined) ??
+    (linkedSweepArea && linkedSweepArea.phase === phaseMeta.label ? linkedSweepArea : undefined) ??
     (matchedArea && matchedArea.phase === phaseMeta.label ? matchedArea : undefined) ??
     fallbackArea;
 
@@ -637,7 +634,7 @@ export function JourneyPage() {
     return new Set(areasForGate(activeGateFilter).map((area) => area.name));
   }, [activeGateFilter]);
 
-  const phaseMissableMode = missable && !matchedArea && !linkedStep && tab === "route";
+  const phaseMissableMode = missable && !matchedArea && !linkedStep && !linkedSweep && tab === "route";
   const areaIndex = phaseAreas.findIndex((area) => area.name === activeArea.name);
 
   const activeProgress = areaProgress(journey, activeArea.name);
@@ -656,16 +653,35 @@ export function JourneyPage() {
 
   const activeAreaMissable = useMemo(() => missableStats(areaSteps, journey.steps), [areaSteps, journey.steps]);
 
-  const activeSweep = useMemo(() => areaSweep(activeArea.name), [activeArea.name]);
-  const sweepGroups = useMemo(
-    () =>
-      buildSweepGroups(
-        activeSweep,
-        (id) => Boolean(id && character.items[id]),
-        (id) => Boolean(journey.materials[id]),
-      ),
-    [activeSweep, character.items, journey.materials],
+  // Sweep steps render inline after the route step they are anchored to, and a
+  // deferred sweep step drops out of the list entirely.
+  const deferredSweeps = useMemo(
+    () => sweepStepsForArea(activeArea.name).filter((sweep) => journey.sweepDeferred[sweep.id]),
+    [activeArea.name, journey.sweepDeferred],
   );
+
+  const activeSweepSteps = useMemo(() => sweepStepsForArea(activeArea.name), [activeArea.name]);
+
+  const areaSweepTotals = useMemo(() => {
+    let entries = 0;
+    let acquired = 0;
+    for (const sweep of activeSweepSteps) {
+      const state = sweepStepState(sweep.id, character, journey);
+      if (!state) continue;
+      entries += state.total;
+      acquired += state.acquired;
+    }
+    return { entries, acquired, steps: activeSweepSteps.length };
+  }, [activeSweepSteps, character, journey]);
+
+  const activeSupplemental = useMemo(
+    () => (SUPPLEMENTAL_BY_AREA[activeArea.name] ?? []).slice().sort((a, b) => a.sourceRow - b.sourceRow),
+    [activeArea.name],
+  );
+
+  const activeSupplementalDone = activeSupplemental.filter(
+    (action) => journey.supplemental[action.id] === "done",
+  ).length;
 
   const activeAreaDecisions = useMemo(() => {
     const stepIds = new Set(areaSteps.map((step) => step.id));
@@ -676,23 +692,44 @@ export function JourneyPage() {
     );
   }, [activeArea.name, areaSteps]);
 
-  const previousJourneys = useMemo(
+  const previousJourneys = useMemo<JourneyMemory[]>(
     () =>
       [...character.journeys]
         .filter((entry) => entry.index < journey.index)
         .sort((a, b) => a.index - b.index)
         .map((entry) => {
           const progress = routeProgress(entry);
-          const items = Object.keys(character.itemOrigins).filter(
-            (id) => character.itemOrigins[id] === entry.index,
-          );
-          return {
-            journey: entry,
-            progress,
-            decisionsRecorded: Object.keys(entry.decisions).length,
-            decisionsSecured: Object.keys(entry.decisionChecks).length,
-            items,
-          };
+          // `itemOrigins` is the character-wide record of the run that first
+          // acquired an item, so it is the only reliable "found here first" list.
+          const itemIds = Object.keys(character.itemOrigins)
+            .filter((id) => character.itemOrigins[id] === entry.index)
+            .sort((a, b) => (ITEM_BY_ID[a]?.name ?? a).localeCompare(ITEM_BY_ID[b]?.name ?? b));
+          const decisions = Object.entries(entry.decisions)
+            .map(([id, choice]) => ({
+              id,
+              title: BRANCH_PLAN_BY_DECISION[id]?.title ?? id,
+              choice,
+            }))
+            .sort((a, b) => a.title.localeCompare(b.title));
+          const secured = Object.keys(entry.decisionChecks)
+            .filter((id) => entry.decisionChecks[id])
+            .map((id) => ({
+              id,
+              title: BRANCH_PLAN_BY_DECISION[id]?.title ?? id,
+            }))
+            .sort((a, b) => a.title.localeCompare(b.title));
+          const bossesDefeated = Object.entries(entry.bosses)
+            .filter(([, status]) => status === "defeated")
+            .map(([id]) => ({ id, name: ENCOUNTER_BY_ID[id]?.name ?? id }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+          const questSteps = Object.keys(entry.questlineSteps)
+            .filter((id) => entry.questlineSteps[id] && QUESTLINE_STEP_BY_ID[id])
+            .map((id) => {
+              const step = QUESTLINE_STEP_BY_ID[id];
+              return { id, questline: step.npc, order: step.order, text: step.text };
+            })
+            .sort((a, b) => a.questline.localeCompare(b.questline) || a.order - b.order);
+          return { journey: entry, progress, itemIds, decisions, secured, bossesDefeated, questSteps };
         }),
     [character.itemOrigins, character.journeys, journey.index],
   );
@@ -729,6 +766,16 @@ export function JourneyPage() {
     state.settings.hideCompleted,
     statusFilter,
   ]);
+
+  const sweepByAnchor = useMemo(() => {
+    const map = new Map<string, SweepStep[]>();
+    if (phaseMissableMode) return map;
+    for (const step of filteredSteps) {
+      const anchored = sweepStepsAfterStep(step.id).filter((sweep) => !journey.sweepDeferred[sweep.id]);
+      if (anchored.length) map.set(step.id, anchored);
+    }
+    return map;
+  }, [filteredSteps, journey.sweepDeferred, phaseMissableMode]);
 
   const stepGroups = useMemo<StepGroup[]>(() => {
     const grouped = new Map<string, RouteStep[]>();
@@ -909,6 +956,27 @@ export function JourneyPage() {
       behavior: state.settings.reducedMotion ? "auto" : "smooth",
     });
   }, [npcLinkedSection?.id, npcLinkedStep?.id, state.settings.reducedMotion, tab]);
+
+  // A filter typed for the previous section must never blank the next one. The
+  // scroll only jumps to the top when nothing in the new section is being focused.
+  useEffect(() => {
+    if (scrollAreaRef.current === activeArea.name) return;
+    scrollAreaRef.current = activeArea.name;
+    setSearch("");
+    setStatusFilter("all");
+    setRequirementFilter("all");
+    if (linkedStep || linkedSweep) return;
+    window.scrollTo({ top: 0, behavior: state.settings.reducedMotion ? "auto" : "smooth" });
+  }, [activeArea.name, linkedStep, linkedSweep, state.settings.reducedMotion]);
+
+  useEffect(() => {
+    if (tab !== "route" || !linkedSweep) return;
+    const element = document.getElementById(`journey-sweep-${linkedSweep.id}`);
+    element?.scrollIntoView({
+      block: "center",
+      behavior: state.settings.reducedMotion ? "auto" : "smooth",
+    });
+  }, [linkedSweep?.id, state.settings.reducedMotion, tab]);
 
   const openNextStep = () => {
     if (!nextStep) return;
@@ -1119,9 +1187,17 @@ export function JourneyPage() {
   };
 
   const saveArea = () => {
-    resolveArea(activeArea.name);
+    const result = resolveArea(activeArea.name);
     setResolveOpen(false);
-    toast.push(`${activeArea.name}: all ${plural(activeProgress.total, "step")} marked done.`);
+    const extras: string[] = [];
+    if (result.acquiredItems.length) extras.push(`${plural(result.acquiredItems.length, "item")} acquired`);
+    if (result.defeatedBosses.length) {
+      extras.push(`${plural(result.defeatedBosses.length, "boss", "bosses")} recorded`);
+    }
+    toast.push(
+      [`${activeArea.name}: all ${plural(activeProgress.total, "step")} marked done.`, ...extras].join(" "),
+      "success",
+    );
   };
 
   const resetRouteFilters = () => {
@@ -1154,12 +1230,6 @@ export function JourneyPage() {
         ? PHASE_GATE_BY_ID["GATE-ASHEN-CAPITAL"]
         : undefined;
   const enterGate = PHASE_GATES.find((gate) => gate.beforeSectionId === activeArea.sectionId);
-  const leaveGate = PHASE_GATES.find((gate) => {
-    const beforeArea = ROUTE_AREAS.find((area) => area.sectionId === gate.beforeSectionId);
-    const beforeIndex = allAreas.findIndex((area) => area.name === beforeArea?.name);
-    const activeIndex = allAreas.findIndex((area) => area.name === activeArea.name);
-    return beforeIndex === activeIndex + 1;
-  });
 
   const renderFilterCard = (missableView: boolean) => (
     <div className="card card-pad journey-filter-card">
@@ -1235,62 +1305,90 @@ export function JourneyPage() {
     </div>
   );
 
+  const dismissGate = (gate: PhaseGate) => {
+    setTransitionGate(gate.id, true);
+    toast.push(`${gate.title} marked passed. It stays out of the route until you show it again.`, "success");
+  };
+
   const renderGate = (gate: PhaseGate) => {
     const gateAreas = areasForGate(gate);
     const stats = missableStats(stepsForGate(gate), journey.steps);
     const severe = gate.severity === "MISSABLE";
+    const severityLabel = severe ? "Point of no return" : "Phase gate";
+    if (journey.transitionGates[gate.id]) {
+      return (
+        <p className="journey-gate-passed" key={gate.id}>
+          <Icon name="check" size={12} />
+          <span className="grow">
+            {gate.title} · marked passed
+          </span>
+          <button type="button" className="journey-inline-link" onClick={() => setTransitionGate(gate.id, false)}>
+            Show gate
+          </button>
+        </p>
+      );
+    }
     return (
-      <section
-        key={gate.id}
-        className={`card card-pad journey-gate${severe ? " journey-gate--danger" : ""}`}
-        aria-label={gate.title}
-      >
-        <div className="eyebrow">{severe ? "Point of no return" : "Phase gate"}</div>
-        <h2 className="journey-gate-title">{gate.title}</h2>
-        <p className="journey-gate-message">{gate.message}</p>
-        <div className="journey-gate-warning">
-          <Icon name="alert" size={14} />
-          <span>{gate.warning}</span>
-        </div>
-        {gateAreas.length ? (
-          <div className="journey-gate-sections" aria-label={`${gate.title} affected sections`}>
-            {gateAreas.map((area) => {
-              const areaMisses = missableStats(STEPS_BY_AREA[area.name] ?? [], journey.steps);
-              return (
-                <button
-                  key={area.name}
-                  type="button"
-                  className="journey-gate-section"
-                  onClick={() =>
-                    navigate(
-                      journeyHref({
-                        phase: phaseIdForLabel(area.phase),
-                        area: area.name,
-                        missable: "1",
-                      }),
-                    )
-                  }
-                >
-                  <span className="grow">{area.name}</span>
-                  <span className="tiny mono">{areaMisses.remaining} left</span>
-                </button>
-              );
-            })}
+      <div className="journey-gate-block" key={gate.id}>
+        <Disclosure
+          title={gate.title}
+          summary={`${severityLabel} · ${formatNumber(stats.remaining)} missable left`}
+          icon={severe ? "alert" : "lock"}
+          tone={severe ? "accent" : "default"}
+          className={`journey-gate${severe ? " journey-gate--danger" : ""}`}
+        >
+          <p className="journey-gate-message">{gate.message}</p>
+          <div className="journey-gate-warning">
+            <Icon name="alert" size={14} />
+            <span>{gate.warning}</span>
           </div>
-        ) : (
-          <p className="journey-gate-scope">
-            Applies to every flagged step in {gate.filter.phase} ({formatNumber(stats.total)} total).
-          </p>
-        )}
-        <div className="journey-gate-actions">
-          <Button variant={severe ? "danger" : "primary"} icon="alert" onClick={() => reviewGateMissables(gate)}>
-            Review {formatNumber(stats.remaining)} missable steps
-          </Button>
-          <Button variant="ghost" icon="map" onClick={() => navigate(journeyHref({ phase: phaseIdForLabel(gate.filter.phase) }))}>
-            Open phase
-          </Button>
-        </div>
-      </section>
+          {gateAreas.length ? (
+            <div className="journey-gate-sections" aria-label={`${gate.title} affected sections`}>
+              {gateAreas.map((area) => {
+                const areaMisses = missableStats(STEPS_BY_AREA[area.name] ?? [], journey.steps);
+                return (
+                  <button
+                    key={area.name}
+                    type="button"
+                    className="journey-gate-section"
+                    onClick={() =>
+                      navigate(
+                        journeyHref({
+                          phase: phaseIdForLabel(area.phase),
+                          area: area.name,
+                          missable: "1",
+                        }),
+                      )
+                    }
+                  >
+                    <span className="grow">{area.name}</span>
+                    <span className="tiny mono">{areaMisses.remaining} left</span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="journey-gate-scope">
+              Applies to every flagged step in {gate.filter.phase} ({formatNumber(stats.total)} total).
+            </p>
+          )}
+          <div className="journey-gate-actions">
+            <Button variant={severe ? "danger" : "primary"} icon="alert" onClick={() => reviewGateMissables(gate)}>
+              Review {formatNumber(stats.remaining)} missable steps
+            </Button>
+            <Button
+              variant="ghost"
+              icon="map"
+              onClick={() => navigate(journeyHref({ phase: phaseIdForLabel(gate.filter.phase) }))}
+            >
+              Open phase
+            </Button>
+            <Button variant="ghost" icon="check" onClick={() => dismissGate(gate)}>
+              Mark gate passed
+            </Button>
+          </div>
+        </Disclosure>
+      </div>
     );
   };
 
@@ -1571,6 +1669,196 @@ export function JourneyPage() {
     );
   };
 
+  const renderActionCard = (action: Supplemental, inline = false) => {
+    const status: StepStatus | undefined = journey.supplemental[action.id];
+    return (
+      <article
+        key={action.id}
+        id={`chronology-action-${action.id}`}
+        className={`card journey-action${selectedAction?.id === action.id ? " is-selected" : ""}`}
+      >
+        <div className="journey-action-head">
+          <div className="journey-action-badges">
+            <Badge tone="accent">{titleCase(action.kind)}</Badge>
+            <Badge>{action.category}</Badge>
+            {action.missable ? <Badge tone="danger">Missable</Badge> : null}
+          </div>
+          <Badge tone={badgeToneForStatus(status)}>{stepStatusLabel(status)}</Badge>
+        </div>
+        <h4 className="journey-action-title">{action.action}</h4>
+        <div className="journey-action-meta">
+          <span>
+            <Icon name="map" size={11} /> {action.area}
+          </span>
+        </div>
+        <p className="journey-action-field">
+          <strong>Trigger:</strong> {action.trigger}
+        </p>
+        {action.coverageNote ? (
+          <p className="journey-action-field">
+            <strong>Coverage:</strong> {action.coverageNote}
+          </p>
+        ) : null}
+        {action.notes ? <p className="journey-action-field faint">{action.notes}</p> : null}
+        <div className="journey-action-foot">
+          {inline ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              icon="external"
+              onClick={() => navigate(journeyHref({ tab: "chronology", action: action.id }))}
+            >
+              Open in chronology
+            </Button>
+          ) : null}
+          <a
+            className="journey-source"
+            href={action.sourceUrl}
+            target="_blank"
+            rel="noreferrer"
+            title={action.sourceUrl}
+            aria-label={`Open source for ${action.category} in ${action.area}`}
+          >
+            Source <Icon name="external" size={11} />
+          </a>
+          <div className="journey-action-actions">
+            <Button
+              size="sm"
+              variant={status === "done" ? "primary" : "default"}
+              icon="check"
+              onClick={() => handleSupplementalStatus(action, "done")}
+            >
+              Done
+            </Button>
+            <Button
+              size="sm"
+              variant={status === "skipped" ? "default" : "ghost"}
+              icon="x"
+              onClick={() => handleSupplementalStatus(action, "skipped")}
+            >
+              Skip
+            </Button>
+            <Button
+              size="sm"
+              variant={status === "deferred" ? "default" : "ghost"}
+              icon="clock"
+              onClick={() => handleSupplementalStatus(action, "deferred")}
+            >
+              Defer
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              icon="refresh"
+              disabled={status === undefined}
+              onClick={() => handleSupplementalStatus(action, null)}
+            >
+              Undo
+            </Button>
+          </div>
+        </div>
+      </article>
+    );
+  };
+
+  const renderSweepStep = (sweep: SweepStep) => {
+    const sweepState = sweepStepState(sweep.id, character, journey);
+    if (!sweepState) return null;
+    const selected = linkedSweep?.id === sweep.id;
+    const allDone = sweepState.complete;
+    return (
+      <article
+        key={sweep.id}
+        id={`journey-sweep-${sweep.id}`}
+        className={`card journey-sweep-step${allDone ? " is-complete" : ""}${selected ? " is-selected" : ""}`}
+        aria-label={sweep.title}
+      >
+        <div className="journey-sweep-step-head">
+          <div className="grow">
+            <div className="journey-sweep-step-badges">
+              <Badge tone="accent">{SWEEP_KIND_LABEL[sweep.kind] ?? titleCase(sweep.kind)}</Badge>
+              <Badge tone={allDone ? "success" : "default"}>
+                {sweepState.acquired} / {sweepState.total} acquired
+              </Badge>
+              {sweep.dlc ? <Badge tone="info">DLC</Badge> : null}
+            </div>
+            <h3 className="journey-sweep-step-title">{sweep.title}</h3>
+            <p className="journey-sweep-step-instruction">{sweep.instruction}</p>
+          </div>
+          <button
+            type="button"
+            className="journey-sweep-defer"
+            aria-label={`Hide ${sweep.title} from the route`}
+            title="Hide this sweep step"
+            onClick={() => {
+              setSweepDeferred(sweep.id, true);
+              toast.push(`${sweep.title} hidden from the route.`, "success");
+            }}
+          >
+            <Icon name="x" size={14} />
+          </button>
+        </div>
+        <Disclosure
+          title="Items"
+          icon="bag"
+          summary={`${sweepState.acquired} / ${sweepState.total} acquired`}
+          open={selected ? openSweeps[sweep.id] !== false : Boolean(openSweeps[sweep.id])}
+          onToggle={(open) =>
+            setOpenSweeps((current) => ({ ...current, [sweep.id]: open }))
+          }
+          className="journey-sweep-step-list"
+        >
+          <ul className="journey-sweep-list">
+            {sweepState.entries.map((row) => {
+              const writable = Boolean(
+                row.entry.itemId || row.entry.materialId || row.entry.purchaseId || row.entry.farmId,
+              );
+              const note = sweepEntryNote(row.entry);
+              return (
+                <li key={row.entry.itemId || row.entry.materialId || row.entry.purchaseId || row.entry.farmId || row.entry.name} className={`journey-sweep-row${row.acquired ? " is-owned" : ""}`}>
+                  {writable ? (
+                    <Checkbox
+                      checked={row.acquired}
+                      onChange={(value) => writeSweepEntry(row.entry, value)}
+                      label={
+                        <span className="journey-sweep-label">
+                          <span className="journey-sweep-name">{row.entry.name}</span>
+                          {note ? <span className="tiny faint">{note}</span> : null}
+                        </span>
+                      }
+                    />
+                  ) : (
+                    <span className="journey-sweep-label">
+                      <span className="journey-sweep-name">{row.entry.name}</span>
+                      {note ? <span className="tiny faint">{note}</span> : null}
+                      <span className="tiny faint">
+                        No catalogue or ledger id in the pack, so this row cannot be ticked yet.
+                      </span>
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </Disclosure>
+      </article>
+    );
+  };
+
+  const anchoredSweeps = useMemo(() => {
+    const set = new Set<string>();
+    for (const list of sweepByAnchor.values()) for (const sweep of list) set.add(sweep.id);
+    return set;
+  }, [sweepByAnchor]);
+
+  /** Sweep steps whose anchor route step is filtered out still need to stay reachable. */
+  const orphanSweeps = useMemo(() => {
+    if (phaseMissableMode) return [];
+    return activeSweepSteps.filter(
+      (sweep) => !journey.sweepDeferred[sweep.id] && !anchoredSweeps.has(sweep.id),
+    );
+  }, [activeSweepSteps, anchoredSweeps, journey.sweepDeferred, phaseMissableMode]);
+
   const stepGroupsContent = stepGroups.map((group) => (
     <section className="journey-objective" key={group.objectiveId}>
       <div className="journey-objective-head">
@@ -1585,7 +1873,14 @@ export function JourneyPage() {
         </div>
         <Badge>{plural(group.steps.length, "step")}</Badge>
       </div>
-      <div className="step-list">{group.steps.map((step) => renderStepCard(step))}</div>
+      <div className="step-list">
+        {group.steps.map((step) => (
+          <Fragment key={step.id}>
+            {renderStepCard(step)}
+            {sweepByAnchor.get(step.id)?.map((sweep) => renderSweepStep(sweep))}
+          </Fragment>
+        ))}
+      </div>
     </section>
   ));
 
@@ -1897,6 +2192,13 @@ export function JourneyPage() {
                   }`}
                   aria-label={`Phase ${phaseIndex + 1}: ${phaseMeta.label}`}
                 >
+                  <ArtBanner
+                    className="journey-phase-banner"
+                    image={phaseArt.image}
+                    variant={phaseArt.variant}
+                    caption={phaseArt.caption}
+                    title={phaseArt.title}
+                  />
                   <div className="journey-phase-head-top">
                     <div className="grow">
                       <div className="eyebrow">
@@ -2137,228 +2439,358 @@ export function JourneyPage() {
                   />
                 )}
 
-                {!phaseMissableMode ? (
-                  <>
-                    <section className="card card-pad journey-sweep" aria-label={`${activeArea.name} area sweep`}>
-                      <SectionTitle
-                        title="Area sweep"
-                        note={
-                          sweepGroups.length
-                            ? `${sweepGroups.reduce((sum, group) => sum + group.rows.length, 0)} pickups and purchases`
-                            : "No sweep recorded"
-                        }
-                      />
-                      {activeSweep ? (
-                        <div className="journey-counts">
-                          <span>
-                            <strong>{activeSweep.counts.merchants}</strong> merchants
-                          </span>
-                          <span>
-                            <strong>{activeSweep.counts.merchantItems}</strong> merchant items
-                          </span>
-                          <span>
-                            <strong>{activeSweep.counts.farmables}</strong> farmables
-                          </span>
-                          <span>
-                            <strong>{activeSweep.counts.unlinkedItems}</strong> loose pickups
-                          </span>
-                          <span>
-                            <strong>{activeSweep.counts.materials}</strong> materials
-                          </span>
-                        </div>
-                      ) : null}
-                      {sweepGroups.length ? (
-                        <div className="journey-sweep-groups">
-                          {sweepGroups.map((group) => {
-                            const owned = group.rows.filter((row) => row.owned).length;
-                            return (
-                              <Disclosure
-                                key={group.id}
-                                title={group.title}
-                                icon="bag"
-                                summary={`${owned} / ${group.rows.length} owned`}
-                              >
-                                <ul className="journey-sweep-list">
-                                  {group.rows.map((row) => (
-                                    <li key={row.key} className={`journey-sweep-row${row.owned ? " is-owned" : ""}`}>
-                                      {row.materialId || row.itemId ? (
-                                        <Checkbox
-                                          checked={row.owned}
-                                          onChange={(value) => {
-                                            if (row.materialId) setMaterialStock(row.materialId, value);
-                                            else if (row.itemId) setItemOwned(row.itemId, value);
-                                          }}
-                                          label={
-                                            <span className="journey-sweep-label">
-                                              <span className="journey-sweep-name">{row.label}</span>
-                                              {row.note ? <span className="tiny faint">{row.note}</span> : null}
-                                            </span>
-                                          }
-                                        />
-                                      ) : (
-                                        <span className="journey-sweep-label">
-                                          <span className="journey-sweep-name">{row.label}</span>
-                                          {row.note ? <span className="tiny faint">{row.note}</span> : null}
-                                        </span>
-                                      )}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </Disclosure>
-                              );
-                            })}
-                          </div>
-                        ) : (
-                          <p className="journey-quiet-note">
-                            No merchant, farmable, pickup, or material sweep is recorded for this section yet.
-                          </p>
-                        )}
-                      </section>
-
-                      <section className="card card-pad journey-decisions" aria-label={`${activeArea.name} decisions`}>
-                        <SectionTitle
-                          title="Route decisions"
-                          note={
-                            activeAreaDecisions.length
-                              ? `${activeAreaDecisions.length} tied to this section`
-                              : "None tied to this section"
-                          }
-                        />
-                        {activeAreaDecisions.length ? (
-                          <div className="journey-decision-list">
-                            {activeAreaDecisions.map((decision) => {
-                              const ownedReward = decision.rewards.some(
-                                (reward) => Boolean(reward.itemId) && Boolean(character.items[reward.itemId]),
-                              );
-                              const checked =
-                                decisionOverrides[decision.decisionId] ??
-                                journey.decisionChecks[decision.decisionId] ??
-                                ownedReward;
-                              return (
-                                <article className="journey-decision" key={decision.decisionId}>
-                                  <div className="row-between wrap" style={{ gap: 8 }}>
-                                    <div className="grow">
-                                      <div className="eyebrow mono">{decision.decisionId}</div>
-                                      <h3 className="journey-decision-title">{decision.title}</h3>
-                                    </div>
-                                    <Checkbox
-                                      checked={checked}
-                                      onChange={(value) => {
-                                        setDecisionCheck(decision.decisionId, value);
-                                        setDecisionOverrides((current) => ({
-                                          ...current,
-                                          [decision.decisionId]: value,
-                                        }));
-                                      }}
-                                      label={<span className="tiny">Secured</span>}
-                                    />
-                                  </div>
-                                  <p className="journey-decision-line">
-                                    <strong>Journey 1:</strong> {decision.journey1Result || decision.journey1}
-                                  </p>
-                                  {decision.rewards.length ? (
-                                    <div className="journey-decision-rewards">
-                                      {decision.rewards.map((reward, index) => (
-                                        <span
-                                          key={`${decision.decisionId}-${reward.itemId || reward.name}-${index}`}
-                                          className={`chip${reward.itemId && character.items[reward.itemId] ? " is-owned" : ""}`}
-                                        >
-                                          {reward.itemId && character.items[reward.itemId] ? (
-                                            <Icon name="check" size={11} />
-                                          ) : null}
-                                          {reward.name}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  ) : null}
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    icon="external"
-                                    onClick={() =>
-                                      navigate(
-                                        `/completion?tab=branch&decision=${encodeURIComponent(decision.decisionId)}`,
-                                      )
-                                    }
-                                  >
-                                    Open decision
-                                  </Button>
-                                </article>
-                              );
-                            })}
-                          </div>
-                        ) : (
-                          <p className="journey-quiet-note">
-                            No branch-plan decision is anchored to this section. Open the completion branch tab for the
-                            full decision ledger.
-                          </p>
-                        )}
-                      </section>
-
-                      <Disclosure
-                        title="Previous journey carryover"
-                        icon="layers"
-                        className="journey-carryover-card"
-                        summary={
-                          previousJourneys.length
-                            ? `${plural(previousJourneys.length, "earlier journey")}`
-                            : "No earlier journeys"
-                        }
-                      >
-                        {previousJourneys.length ? (
-                          <div className="journey-carryover-list">
-                            {previousJourneys.map((entry) => {
-                              const originItems = entry.items
-                                .map((id) => ITEM_BY_ID[id]?.name ?? id)
-                                .slice(0, 8);
-                              return (
-                                <article className="journey-carryover" key={entry.journey.id}>
-                                  <div className="row-between wrap" style={{ gap: 8 }}>
-                                    <strong>{entry.journey.label}</strong>
-                                    <span className="tiny faint">
-                                      {entry.progress.resolved} / {entry.progress.total} route steps ·{" "}
-                                      {entry.progress.percent}%
-                                    </span>
-                                  </div>
-                                  <div className="journey-counts">
-                                    <span>
-                                      <strong>{entry.decisionsRecorded}</strong> decisions recorded
-                                    </span>
-                                    <span>
-                                      <strong>{entry.decisionsSecured}</strong> decisions secured
-                                    </span>
-                                    <span>
-                                      <strong>{entry.items.length}</strong> items acquired
-                                    </span>
-                                  </div>
-                                  {originItems.length ? (
-                                    <div className="tag-list">
-                                      {originItems.map((name) => (
-                                        <span className="chip" key={`${entry.journey.id}-${name}`}>
-                                          {name}
-                                        </span>
-                                      ))}
-                                      {entry.items.length > originItems.length ? (
-                                        <span className="chip">+{entry.items.length - originItems.length} more</span>
-                                      ) : null}
-                                    </div>
-                                  ) : (
-                                    <p className="tiny faint">No item is recorded as acquired in this journey.</p>
-                                  )}
-                                </article>
-                              );
-                            })}
-                          </div>
-                        ) : (
-                          <p className="journey-quiet-note">
-                            This is the first journey: there is no earlier run to carry records from.
-                          </p>
-                        )}
-                      </Disclosure>
-                  </>
+                {!phaseMissableMode && orphanSweeps.length ? (
+                  <section className="journey-orphan-sweeps" aria-label={`${activeArea.name} sweep steps outside the current filter`}>
+                    <SectionTitle
+                      title="Sweep steps in this section"
+                      note={`${orphanSweeps.length} not attached to a visible route step`}
+                    />
+                    <p className="journey-quiet-note">
+                      These sweep steps follow a route step the current filter hides. Ticking them here still writes the
+                      same item, material, merchant, and farm ledgers.
+                    </p>
+                    <div className="step-list">{orphanSweeps.map((sweep) => renderSweepStep(sweep))}</div>
+                  </section>
                 ) : null}
 
-                {!phaseMissableMode && leaveGate ? renderGate(leaveGate) : null}
+                {!phaseMissableMode ? (
+                  <>
+                    {activeSupplemental.length ? (
+                      <section className="card card-pad journey-inline-actions" aria-label={`${activeArea.name} companion actions`}>
+                        <SectionTitle
+                          title="Companion chronology"
+                          note={`${activeSupplementalDone} / ${activeSupplemental.length} done in this section`}
+                        />
+                        <Disclosure
+                          title={`${activeArea.name} actions`}
+                          icon="layers"
+                          summary={`${activeSupplementalDone}/${activeSupplemental.length} done`}
+                          defaultOpen={activeSupplementalDone < activeSupplemental.length}
+                        >
+                          <p className="journey-quiet-note">
+                            Companion beats that belong to this route section. Ticking one here writes the same
+                            chronology ledger the standalone tab uses.
+                          </p>
+                          <div className="journey-action-list">
+                            {activeSupplemental.map((action) => renderActionCard(action, true))}
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            icon="external"
+                            onClick={openChronology}
+                          >
+                            Open full chronology
+                          </Button>
+                        </Disclosure>
+                      </section>
+                    ) : null}
+
+                    {areaSweepTotals.steps ? (
+                      <section className="card card-pad journey-sweep" aria-label={`${activeArea.name} sweep summary`}>
+                        <SectionTitle
+                          title="Sweep progress"
+                          note={`${formatNumber(areaSweepTotals.acquired)} of ${formatNumber(areaSweepTotals.entries)} acquired`}
+                        />
+                        <ProgressBar
+                          value={
+                            areaSweepTotals.entries
+                              ? Math.round((areaSweepTotals.acquired / areaSweepTotals.entries) * 100)
+                              : 0
+                          }
+                          label={`${areaSweepTotals.acquired} of ${areaSweepTotals.entries} sweep rows acquired`}
+                        />
+                        <p className="journey-quiet-note">
+                          {plural(areaSweepTotals.steps, "sweep step")} for this section render inline under the route
+                          step they follow. Each tick writes the shared item, material, merchant, or farm ledger
+                          character-wide.
+                        </p>
+                        {deferredSweeps.length ? (
+                          <div className="journey-sweep-step-links">
+                            <div className="eyebrow">Hidden sweep steps</div>
+                            {deferredSweeps.map((sweep) => {
+                              const state = sweepStepState(sweep.id, character, journey);
+                              return (
+                                <span className="journey-sweep-step-link" key={sweep.id}>
+                                  <span className="grow">
+                                    <span className="journey-sweep-name">{sweep.title}</span>
+                                    <span className="tiny faint">
+                                      {state ? `${state.acquired} / ${state.total} acquired` : ""}
+                                    </span>
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="journey-inline-link"
+                                    onClick={() => setSweepDeferred(sweep.id, false)}
+                                  >
+                                    Restore
+                                  </button>
+                                </span>
+                              );
+                            })}
+                          </div>
+                        ) : null}
+                      </section>
+                    ) : null}
+
+                    <section className="card card-pad journey-decisions" aria-label={`${activeArea.name} decisions`}>
+                      <SectionTitle
+                        title="Route decisions"
+                        note={
+                          activeAreaDecisions.length
+                            ? `${activeAreaDecisions.length} tied to this section`
+                            : "None tied to this section"
+                        }
+                      />
+                      {activeAreaDecisions.length ? (
+                        <div className="journey-decision-list">
+                          {activeAreaDecisions.map((decision) => {
+                            const ownedReward = decision.rewards.some(
+                              (reward) => Boolean(reward.itemId) && Boolean(character.items[reward.itemId]),
+                            );
+                            const checked =
+                              decisionOverrides[decision.decisionId] ??
+                              journey.decisionChecks[decision.decisionId] ??
+                              ownedReward;
+                            return (
+                              <article className="journey-decision" key={decision.decisionId}>
+                                <div className="row-between wrap" style={{ gap: 8 }}>
+                                  <div className="grow">
+                                    <div className="eyebrow mono">{decision.decisionId}</div>
+                                    <h3 className="journey-decision-title">{decision.title}</h3>
+                                  </div>
+                                  <Checkbox
+                                    checked={checked}
+                                    onChange={(value) => {
+                                      setDecisionCheck(decision.decisionId, value);
+                                      setDecisionOverrides((current) => ({
+                                        ...current,
+                                        [decision.decisionId]: value,
+                                      }));
+                                    }}
+                                    label={<span className="tiny">Secured</span>}
+                                  />
+                                </div>
+                                <p className="journey-decision-line">
+                                  <strong>Journey 1:</strong> {decision.journey1Result || decision.journey1}
+                                </p>
+                                {decision.rewards.length ? (
+                                  <div className="journey-decision-rewards">
+                                    {decision.rewards.map((reward, index) => (
+                                      <span
+                                        key={`${decision.decisionId}-${reward.itemId || reward.name}-${index}`}
+                                        className={`chip${reward.itemId && character.items[reward.itemId] ? " is-owned" : ""}`}
+                                      >
+                                        {reward.itemId && character.items[reward.itemId] ? (
+                                          <Icon name="check" size={11} />
+                                        ) : null}
+                                        {reward.name}
+                                      </span>
+                                    ))}
+                                  </div>
+                                ) : null}
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  icon="external"
+                                  onClick={() =>
+                                    navigate(
+                                      `/completion?tab=branch&decision=${encodeURIComponent(decision.decisionId)}`,
+                                    )
+                                  }
+                                >
+                                  Open decision
+                                </Button>
+                              </article>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className="journey-quiet-note">
+                          No branch-plan decision is anchored to this section. Open the completion branch tab for the
+                          full decision ledger.
+                        </p>
+                      )}
+                    </section>
+
+                    <section className="card card-pad journey-carryover-card" aria-label="Previous journey memory">
+                      <SectionTitle
+                        title="Previous journey carryover"
+                        note={
+                          previousJourneys.length
+                            ? `${plural(previousJourneys.length, "earlier journey")} recorded`
+                            : "No earlier journeys"
+                        }
+                      />
+                      <div className="journey-carryover-rules">
+                        <p className="journey-carryover-rule">
+                          <Icon name="check" size={12} />
+                          <span>
+                            <strong>Carries forward:</strong> lifetime item collection, lore, achievements,
+                            endings, and the character-wide build and stats. Anything you own stays owned; item
+                            origins still record the run that found it first.
+                          </span>
+                        </p>
+                        <p className="journey-carryover-rule journey-carryover-rule--reset">
+                          <Icon name="refresh" size={12} />
+                          <span>
+                            <strong>Resets each run:</strong> route step status, notes, decisions, boss kills,
+                            questline steps, chronology actions, sweep defers, and area gates. Nothing is copied
+                            into the new journey automatically — this card is a record of the last run, not a
+                            transfer.
+                          </span>
+                        </p>
+                      </div>
+                      {previousJourneys.length ? (
+                        <>
+                          <Select
+                            label="Journey"
+                            value={String(selectedPriorIndex ?? previousJourneys[previousJourneys.length - 1].journey.index)}
+                            onChange={(event) => setSelectedPriorIndex(Number(event.target.value))}
+                          >
+                            {previousJourneys.map((entry) => (
+                              <option key={entry.journey.id} value={entry.journey.index}>
+                                {entry.journey.label} · {entry.progress.percent}% route
+                              </option>
+                            ))}
+                          </Select>
+                          {(() => {
+                            const entry =
+                              previousJourneys.find((row) => row.journey.index === selectedPriorIndex) ??
+                              previousJourneys[previousJourneys.length - 1];
+                            return (
+                              <div className="journey-carryover" key={entry.journey.id}>
+                                <div className="row-between wrap" style={{ gap: 8 }}>
+                                  <strong>{entry.journey.label}</strong>
+                                  <span className="tiny faint">
+                                    {entry.progress.resolved} / {entry.progress.total} route steps ·{" "}
+                                    {entry.progress.percent}% · created{" "}
+                                    {new Date(entry.journey.createdAt).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                <div className="journey-counts">
+                                  <span>
+                                    <strong>{entry.decisions.length}</strong> decisions recorded
+                                  </span>
+                                  <span>
+                                    <strong>{entry.secured.length}</strong> decisions secured
+                                  </span>
+                                  <span>
+                                    <strong>{entry.itemIds.length}</strong> items first acquired
+                                  </span>
+                                  <span>
+                                    <strong>{entry.bossesDefeated.length}</strong> bosses defeated
+                                  </span>
+                                  <span>
+                                    <strong>{entry.questSteps.length}</strong> questline steps done
+                                  </span>
+                                </div>
+
+                                {entry.decisions.length ? (
+                                  <Disclosure
+                                    title="Decisions recorded"
+                                    icon="scroll"
+                                    summary={`${entry.decisions.length} recorded · ${entry.secured.length} secured`}
+                                  >
+                                    <ul className="journey-memory-list">
+                                      {entry.decisions.map((decision) => (
+                                        <li key={decision.id} className="journey-memory-row">
+                                          <span className="grow">
+                                            <span className="journey-memory-name">{decision.title}</span>
+                                            <span className="tiny faint">{decision.choice}</span>
+                                          </span>
+                                          {entry.secured.some((row) => row.id === decision.id) ? (
+                                            <Badge tone="success">Secured</Badge>
+                                          ) : null}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                    {entry.secured.length ? (
+                                      <p className="tiny faint">
+                                        Secured with no recorded choice:{" "}
+                                        {entry.secured
+                                          .filter((row) => !entry.decisions.some((d) => d.id === row.id))
+                                          .map((row) => row.title)
+                                          .join(", ") || "none"}
+                                      </p>
+                                    ) : null}
+                                  </Disclosure>
+                                ) : (
+                                  <p className="tiny faint">No decision was recorded in this journey.</p>
+                                )}
+
+                                {entry.bossesDefeated.length ? (
+                                  <Disclosure title="Bosses defeated" icon="skull" summary={`${entry.bossesDefeated.length} kills`}>
+                                    <div className="tag-list">
+                                      {entry.bossesDefeated.map((boss) => (
+                                        <button
+                                          key={boss.id}
+                                          type="button"
+                                          className="chip"
+                                          onClick={() => navigate(`/bosses?encounter=${encodeURIComponent(boss.id)}`)}
+                                        >
+                                          <Icon name="skull" size={11} />
+                                          {boss.name}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </Disclosure>
+                                ) : null}
+
+                                {entry.questSteps.length ? (
+                                  <Disclosure
+                                    title="Questline steps done"
+                                    icon="book"
+                                    summary={`${entry.questSteps.length} steps`}
+                                  >
+                                    <ul className="journey-memory-list">
+                                      {entry.questSteps.map((step) => (
+                                        <li key={step.id} className="journey-memory-row">
+                                          <span className="grow">
+                                            <span className="journey-memory-name">{step.questline}</span>
+                                            <span className="tiny faint">{step.text}</span>
+                                          </span>
+                                          <span className="tiny faint mono">#{step.order}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </Disclosure>
+                                ) : null}
+
+                                {entry.itemIds.length ? (
+                                  <Disclosure
+                                    title="Items first acquired"
+                                    icon="bag"
+                                    summary={`${entry.itemIds.length} first finds`}
+                                  >
+                                    <div className="tag-list">
+                                      {entry.itemIds.map((id) => (
+                                        <button
+                                          key={id}
+                                          type="button"
+                                          className="chip"
+                                          onClick={() => navigate(`/collection?item=${encodeURIComponent(id)}`)}
+                                        >
+                                          {ITEM_BY_ID[id]?.name ?? id}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </Disclosure>
+                                ) : (
+                                  <p className="tiny faint">No item is recorded as first acquired in this journey.</p>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </>
+                      ) : (
+                        <p className="journey-quiet-note">
+                          This is the first journey: there is no earlier run to carry records from.
+                        </p>
+                      )}
+                    </section>
+                  </>
+                ) : null}
               </div>
             </div>
           </>
@@ -2691,85 +3123,7 @@ export function JourneyPage() {
                       </span>
                     </div>
                     <div className="journey-action-list">
-                      {group.actions.map((action) => {
-                        const status: StepStatus | undefined = journey.supplemental[action.id];
-                        return (
-                          <article
-                            key={action.id}
-                            id={`chronology-action-${action.id}`}
-                            className={`card journey-action${selectedAction?.id === action.id ? " is-selected" : ""}`}
-                          >
-                            <div className="journey-action-head">
-                              <div className="journey-action-badges">
-                                <Badge tone="accent">{titleCase(action.kind)}</Badge>
-                                <Badge>{action.category}</Badge>
-                                {action.missable ? <Badge tone="danger">Missable</Badge> : null}
-                              </div>
-                              <Badge tone={badgeToneForStatus(status)}>{stepStatusLabel(status)}</Badge>
-                            </div>
-                            <h4 className="journey-action-title">{action.action}</h4>
-                            <div className="journey-action-meta">
-                              <span>
-                                <Icon name="map" size={11} /> {action.area}
-                              </span>
-                            </div>
-                            <p className="journey-action-field">
-                              <strong>Trigger:</strong> {action.trigger}
-                            </p>
-                            <p className="journey-action-field">
-                              <strong>Coverage:</strong> {action.coverageNote}
-                            </p>
-                            {action.notes ? <p className="journey-action-field faint">{action.notes}</p> : null}
-                            <div className="journey-action-foot">
-                              <a
-                                className="journey-source"
-                                href={action.sourceUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                title={action.sourceUrl}
-                                aria-label={`Open source for ${action.category} in ${action.area}`}
-                              >
-                                Source <Icon name="external" size={11} />
-                              </a>
-                              <div className="journey-action-actions">
-                                <Button
-                                  size="sm"
-                                  variant={status === "done" ? "primary" : "default"}
-                                  icon="check"
-                                  onClick={() => handleSupplementalStatus(action, "done")}
-                                >
-                                  Done
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant={status === "skipped" ? "default" : "ghost"}
-                                  icon="x"
-                                  onClick={() => handleSupplementalStatus(action, "skipped")}
-                                >
-                                  Skip
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant={status === "deferred" ? "default" : "ghost"}
-                                  icon="clock"
-                                  onClick={() => handleSupplementalStatus(action, "deferred")}
-                                >
-                                  Defer
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  icon="refresh"
-                                  disabled={status === undefined}
-                                  onClick={() => handleSupplementalStatus(action, null)}
-                                >
-                                  Undo
-                                </Button>
-                              </div>
-                            </div>
-                          </article>
-                        );
-                      })}
+                      {group.actions.map((action) => renderActionCard(action))}
                     </div>
                   </section>
                 ))}
@@ -2811,8 +3165,9 @@ export function JourneyPage() {
             optional steps and any steps currently skipped or deferred.
           </p>
           <Callout tone="warning" icon="alert">
-            The area resolver only writes step status. It does not award linked items, record bosses or NPCs, collect
-            scarabs, or mark finite resources. Complete individual steps when those records need to follow the route.
+            Every step is completed the same way the individual Done action works, so linked items are awarded and
+            linked bosses recorded as defeated. It does not mark NPC walkthrough steps, collect scarabs, or set
+            finite-resource and material ledgers.
           </Callout>
           <p className="small muted">
             Individual steps can still be reset to pending afterwards; there is no bulk undo for the area.

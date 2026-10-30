@@ -40,7 +40,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 - **No accounts, telemetry, or runtime API calls.**
 - **Window sizing:** the window opens at 82% × 86% of the current monitor (clamped 1024–1920 × 700–1280 logical pixels) and recentres, so 1440p/4K displays do not open a small fixed window.
 - **Quick log:** `Ctrl+Shift+L` is a global shortcut that marks the next route step done through the same store action as the UI. It is registered with `tauri-plugin-global-shortcut` and forwarded to the renderer as `er-companion:quick-log`.
-- **Linux renderer fallback:** the Rust entrypoint sets `WEBKIT_DISABLE_DMABUF_RENDERER=1` by default on Linux. WebKitGTK 2.5x with Mesa can otherwise render a blank webview under software/remote X sessions. The variable is only a fallback; it can be overridden before launch. This was verified by isolating the blank window under Xvfb.
+- **Linux renderer:** hardware acceleration is the default, because a dense scrolling data surface on a CPU rasteriser is the difference between smooth scrolling and visible lag. The Rust entrypoint sets `WEBKIT_DISABLE_DMABUF_RENDERER=1` only when acceleration is not trustworthy — a remote X11 session with no Wayland display, or `LIBGL_ALWAYS_SOFTWARE` set to a non-zero value — which is the configuration where WebKitGTK 2.5x with Mesa can render a blank webview. Setting the variable before launch forces the software path anywhere. The earlier build forced software unconditionally, which is the reported Linux-only slowness.
 
 ## Build outputs
 

@@ -4,14 +4,18 @@ import { CLASSES, STAT_SHORT, STAT_ORDER } from "../lib/classes";
 import { formatDate, formatNumber } from "../lib/format";
 import {
   ACHIEVEMENTS,
+  BRANCH_PLAN_DECISIONS,
+  BRANCH_REWARD_UNRESOLVED_COUNT,
   CONTENT_COVERAGE,
   ENCOUNTERS,
   ITEMS,
   ITEMS_BY_NAME,
+  LEGACY_STEP_MAP,
   NGPLUS_STEPS,
   QUESTLINES,
   ROUTE_AREAS,
   ROUTE_STEPS,
+  UPGRADE_ENTRIES,
 } from "../lib/data";
 import { navigate } from "../lib/router";
 import {
@@ -47,6 +51,99 @@ const ROUTE_PHASES = [
     steps: CONTENT_COVERAGE.route.endgameSteps,
   },
 ];
+
+interface ValidationRow {
+  title: string;
+  value: string;
+  state: "success" | "warning" | "info";
+  detail: string;
+  meaning: string;
+}
+
+/**
+ * Every figure below is derived from the bundled data. The rows are written as
+ * "tracked vs labelled" rather than as outstanding work: an unresolved label
+ * is still shown in the step text, and an imprecise location still opens the
+ * right area — the companion just refuses to invent the missing detail.
+ */
+const VALIDATION_ROWS: ValidationRow[] = (() => {
+  const catalogWithoutLocation = ITEMS.filter((item) => !item.location.trim()).length;
+  const catalogWithAcquisition = ITEMS.filter(
+    (item) => !item.location.trim() && (item.acquisitionText ?? "").trim(),
+  ).length;
+  const packRecords = TARNISHED_ITEMS.length;
+  const packUnsequenced = TARNISHED_ITEMS.filter((item) => item.routeStepIds.length === 0).length;
+  const upgradeTotal = UPGRADE_ENTRIES.length;
+  const upgradeImprecise = UPGRADE_ENTRIES.filter((entry) => entry.unresolved);
+  const upgradeWithRegion = upgradeImprecise.filter((entry) => entry.region.trim()).length;
+  const legacyMapped = Object.keys(LEGACY_STEP_MAP).length;
+  const legacyTotal = CONTENT_COVERAGE.legacyMap.workbookSteps;
+  const decisionsWithUnresolvedRewards = BRANCH_PLAN_DECISIONS.filter(
+    (decision) => decision.unresolved,
+  ).length;
+  const linkUnresolved = CONTENT_COVERAGE.links.unresolved;
+
+  return [
+    {
+      title: "Route link labels",
+      value: `${formatNumber(CONTENT_COVERAGE.links.resolved)} / ${formatNumber(CONTENT_COVERAGE.links.labels)}`,
+      state: linkUnresolved > 0 ? "info" : "success",
+      detail: `${formatNumber(linkUnresolved)} labels (${formatNumber(
+        CONTENT_COVERAGE.links.unresolvedUnique,
+      )} distinct names) do not resolve to a catalog record, so they stay plain text inside the step instead of opening an item.`,
+      meaning:
+        "You still see the name where the route needs it; you just cannot click through to a catalog row that does not exist yet.",
+    },
+    {
+      title: "Catalog records without an exact location",
+      value: `${formatNumber(catalogWithoutLocation)} / ${formatNumber(ITEMS.length)}`,
+      state: "info",
+      detail: `${formatNumber(catalogWithoutLocation)} permanent records carry no single map location. ${formatNumber(
+        catalogWithAcquisition,
+      )} of those still keep the acquisition prose, so the pickup or drop instruction survives even without a place name.`,
+      meaning:
+        "These rows can be ticked as owned and are counted in collection progress; the exact spot has to be read from the acquisition text instead of opened on the route.",
+    },
+    {
+      title: "Unresolved branch rewards",
+      value: `${BRANCH_REWARD_UNRESOLVED_COUNT} / ${BRANCH_PLAN_DECISIONS.length} decisions`,
+      state: BRANCH_REWARD_UNRESOLVED_COUNT > 0 ? "warning" : "success",
+      detail: `${BRANCH_REWARD_UNRESOLVED_COUNT} branch rewards have no catalog identity, spread across ${decisionsWithUnresolvedRewards} decisions (key items and named drops the catalog does not hold).`,
+      meaning:
+        "The decision still shows the reward name and why it cannot be linked, so the outcome is never lost — only its collection counter stays out of the denominator.",
+    },
+    {
+      title: "Legacy step ids",
+      value: `${formatNumber(legacyMapped)} / ${formatNumber(legacyTotal)}`,
+      state: "info",
+      detail: `${formatNumber(legacyMapped)} older workbook step keys map onto the full route. The rest have no surviving equivalent and are dropped on load.`,
+      meaning:
+        "A save made on the older step list keeps route ticks where a mapping exists and keeps lifetime collection, lore reads, and ending records regardless.",
+    },
+    {
+      title: "Upgrade locations",
+      value: `${formatNumber(upgradeTotal - upgradeImprecise.length)} / ${formatNumber(upgradeTotal)}`,
+      state: upgradeImprecise.length > 0 ? "info" : "success",
+      detail: `${formatNumber(upgradeImprecise.length)} of ${formatNumber(
+        upgradeTotal,
+      )} smithing-stone, glovewort, and rune-scaling rows name no exact spot in the source; ${formatNumber(
+        upgradeWithRegion,
+      )} of those still name their region, and every one keeps the original pickup or drop sentence verbatim.`,
+      meaning:
+        "The entry still tells you which area — and often which enemy or corpse family — to search, and the source sentence is shown as written rather than replaced by a guessed precise point.",
+    },
+    {
+      title: "Tarnished Pack sequencing",
+      value: `${formatNumber(packRecords - packUnsequenced)} / ${formatNumber(packRecords)}`,
+      state: packUnsequenced > 0 ? "warning" : "success",
+      detail: `${formatNumber(packUnsequenced)} of ${formatNumber(
+        packRecords,
+      )} pack records are tracked in the catalog and ledgers but are not inserted as steps in the walkthrough route.`,
+      meaning:
+        "Pack gear can be owned, counted, and opened from Collection at any time; it will not appear as a numbered route step because the base route predates the pack.",
+    },
+  ];
+})();
 
 export function PatchPage() {
   const packClasses = CLASSES.filter((entry) => PACK_CLASS_IDS.includes(entry.id));
@@ -414,64 +511,31 @@ export function PatchPage() {
 
       <section className="card card-pad" style={{ marginTop: 18 }}>
         <SectionTitle
-          title="Current coverage"
-          note={`Companion state as of ${formatDate(CONTENT_COVERAGE.generatedAt)}`}
-          actions={<Badge tone="success">Current</Badge>}
+          title="Validation and coverage"
+          note={`Compiled ${formatDate(CONTENT_COVERAGE.generatedAt)} · what is tracked against what stays labelled`}
+          actions={<Badge tone="accent">{formatNumber(VALIDATION_ROWS.length)} checks</Badge>}
         />
         <p className="small muted" style={{ marginBottom: 12 }}>
-          Every ledger below is live and usable today. The labels show what each one is based on, so no row can be
-          mistaken for 1.17-validated data where it is not.
+          These are the boundaries of the bundled data, measured from it rather than asserted. Every row says how many
+          records resolve and what the remainder means when you play — a label is not a missing feature, it is the
+          companion telling you which part of the record has to be read in game.
         </p>
         <div className="coverage-rows">
-          {[
-            {
-              title: "Tarnished Pack acquisitions",
-              status: "Tracked",
-              tone: "success" as const,
-              detail: `All ${TARNISHED_ITEMS.length} pack records and ${TARNISHED_ENCOUNTERS.length} NPC invasions are tracked in the collection and boss ledger. They are not inserted as steps in the walkthrough route.`,
-            },
-            {
-              title: "Route, quests, bosses, achievements, NG+",
-              status: "Current",
-              tone: "success" as const,
-              detail: `${formatNumber(ROUTE_STEPS.length)} route steps, ${formatNumber(QUESTLINES.length)} questlines, ${formatNumber(ENCOUNTERS.length)} encounters, ${ACHIEVEMENTS.length} achievements, and ${formatNumber(NGPLUS_STEPS.length)} NG+ items cover the full game.`,
-            },
-            {
-              title: "Builds, tiers, and loadouts",
-              status: `Regulation ${DATA_BASELINE.regulation} baseline`,
-              tone: "warning" as const,
-              detail:
-                "Rankings, certified loadouts, gear recommendations, and upgrade plans were authored before the 1.17 balance pass. The 1.17 changes above can move them, so they are presented as baseline.",
-            },
-            {
-              title: "Encounter strategies",
-              status: `Regulation ${DATA_BASELINE.regulation} baseline`,
-              tone: "warning" as const,
-              detail:
-                "Boss strategies and recommended weapons predate the 1.17 buffs to skills and spells and the shield guard-boost change.",
-            },
-            {
-              title: "Route link labels",
-              status: "Labeled",
-              tone: "info" as const,
-              detail: `${formatNumber(CONTENT_COVERAGE.links.resolved)} of ${formatNumber(CONTENT_COVERAGE.links.labels)} route link labels resolve to a catalog entry, so they open the item directly. The remainder are still listed by name inside the step text but have no catalog link, and ${formatNumber(CONTENT_COVERAGE.items.unmatchedWorkbook)} older source items have no matching full-game record.`,
-            },
-            {
-              title: "Legacy saved progress",
-              status: "Migrated",
-              tone: "info" as const,
-              detail: `${formatNumber(CONTENT_COVERAGE.legacyMap.mapped)} of ${formatNumber(CONTENT_COVERAGE.legacyMap.workbookSteps)} older step keys map to the full route. Unmapped route keys are dropped on load; lifetime collection, lore, and ending records are kept.`,
-            },
-          ].map((row) => (
-            <div className="coverage-row" key={row.title}>
-              <span className={`coverage-mark coverage-mark-${row.tone}`} aria-hidden="true">
-                <Icon name={row.tone === "warning" ? "alert" : row.tone === "info" ? "eye" : "check"} size={13} />
+          {VALIDATION_ROWS.map((row) => (
+            <div className={`coverage-row coverage-row-${row.state}`} key={row.title}>
+              <span className={`coverage-mark coverage-mark-${row.state}`} aria-hidden="true">
+                <Icon name={row.state === "warning" ? "alert" : row.state === "info" ? "eye" : "check"} size={13} />
               </span>
               <div className="grow">
-                <div className="card-title" style={{ fontSize: 13.5 }}>{row.title}</div>
+                <div className="row-between wrap" style={{ gap: 6 }}>
+                  <div className="card-title" style={{ fontSize: 13.5 }}>
+                    {row.title}
+                  </div>
+                  <span className="coverage-count">{row.value}</span>
+                </div>
                 <div className="small muted">{row.detail}</div>
+                <div className="tiny faint coverage-meaning">{row.meaning}</div>
               </div>
-              <Badge tone={row.tone}>{row.status}</Badge>
             </div>
           ))}
         </div>

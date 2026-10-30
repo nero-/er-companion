@@ -14,6 +14,8 @@ import {
 } from "../components/ui";
 import {
   STEP_BY_ID,
+  STEP_BY_SOURCE_ID,
+  remapStepId,
   WORLD_BY_ID,
   WORLD_CATEGORY_STATUS,
   WORLD_GAPS,
@@ -25,7 +27,12 @@ import { formatNumber } from "../lib/format";
 import { navigate, useRoute } from "../lib/router";
 import { worldProgress } from "../lib/selectors";
 import { setWorldCheck, useActiveJourney } from "../lib/store";
-import type { WorldObject, WorldObjectGap } from "../lib/types";
+import type {
+  RouteStep,
+  WorldObject,
+  WorldObjectCategoryStatus,
+  WorldObjectGap,
+} from "../lib/types";
 import "./atlas.css";
 
 /* ---------------------------------------------------------------------------
@@ -54,8 +61,6 @@ const CATEGORY_BY_ID: Record<string, CategoryConfig> = Object.fromEntries(
   CATEGORIES.map((category) => [category.id, category]),
 );
 
-const CATEGORY_IDS = CATEGORIES.map((category) => category.id);
-
 const CATEGORY_ROWS: Record<string, WorldObject[]> = Object.fromEntries(
   CATEGORIES.map((category) => [
     category.id,
@@ -65,38 +70,84 @@ const CATEGORY_ROWS: Record<string, WorldObject[]> = Object.fromEntries(
 
 const PAGE_SIZE = 100;
 
+/**
+ * World-object rows carry the Redmaw source id (`w2-1`), journey steps use the
+ * runtime id (`RW-B-w2-1`) and old saves hold remapped ids, so every object is
+ * resolved once: step id → source id → legacy map. Unresolved ids stay empty
+ * instead of producing a link that opens nothing.
+ */
+const RESOLVED_STEPS: Record<string, RouteStep | undefined> = {};
+for (const object of WORLD_OBJECTS) {
+  const rawId = object.routeStepId;
+  if (!rawId) continue;
+  const direct = STEP_BY_ID[rawId] ?? STEP_BY_SOURCE_ID[rawId];
+  const remapped = direct ? null : remapStepId(rawId);
+  RESOLVED_STEPS[object.id] = direct ?? (remapped ? STEP_BY_ID[remapped] : undefined);
+}
+
 const DLC_OBJECT_COUNT = WORLD_OBJECTS.filter((object) => object.dlc).length;
-const ROUTE_LINKED_COUNT = WORLD_OBJECTS.filter((object) => object.routeStepId).length;
-const ZERO_LIST_CATEGORIES = CATEGORIES.filter(
+const ROUTE_LINKED_COUNT = WORLD_OBJECTS.filter((object) => RESOLVED_STEPS[object.id]).length;
+
+const UNTRACKED_CATEGORIES = CATEGORIES.filter(
   (category) => (WORLD_CATEGORY_STATUS[category.id]?.count ?? 0) === 0,
 );
 
 /* ---------------------------------------------------------------------------
- * Helpers
+ * Category state — derived from WORLD_CATEGORY_STATUS, never hard-coded counts
  * ------------------------------------------------------------------------- */
 
-type CategoryState = "resolved" | "partial" | "unresolved";
+type CategoryState = "resolved" | "partial" | "archived" | "untracked";
+
+function categoryState(entry: CategoryConfig): CategoryState {
+  const categoryStatus: WorldObjectCategoryStatus | undefined = WORLD_CATEGORY_STATUS[entry.id];
+  if (!categoryStatus || categoryStatus.count === 0) return "untracked";
+  if (categoryStatus.resolved) return "resolved";
+  return /web\.archive\.org/i.test(categoryStatus.sourceUrl) ? "archived" : "partial";
+}
 
 const CATEGORY_STATE: Record<string, CategoryState> = Object.fromEntries(
-  CATEGORIES.map((entry) => {
-    const categoryStatus = WORLD_CATEGORY_STATUS[entry.id];
-    if (!categoryStatus) return [entry.id, "unresolved"] as const;
-    if (categoryStatus.resolved) return [entry.id, "resolved"] as const;
-    return [entry.id, categoryStatus.count === 0 ? "unresolved" : "partial"] as const;
-  }),
+  CATEGORIES.map((entry) => [entry.id, categoryState(entry)] as [string, CategoryState]),
 );
 
 const STATE_LABEL: Record<CategoryState, string> = {
-  resolved: "Resolved",
-  partial: "Partial",
-  unresolved: "Unresolved",
+  resolved: "Resolved list",
+  partial: "Partial list",
+  archived: "Archived source — unresolved",
+  untracked: "Not tracked — no authoritative list exists",
 };
 
 const STATE_TONE: Record<CategoryState, "success" | "warning" | "danger"> = {
   resolved: "success",
   partial: "warning",
-  unresolved: "danger",
+  archived: "warning",
+  untracked: "danger",
 };
+
+/** Short, state-specific explanation shown next to the long category note. */
+const STATE_REASON: Record<CategoryState, string> = {
+  resolved: "Every row comes from a source that publishes a complete per-object list.",
+  partial:
+    "Lower bound: the listed rows are every row the sources publish, but no source claims the list is complete, so this category is never presented as finished.",
+  archived:
+    "Rows come from an Internet Archive snapshot because no live source publishes a per-object list; the live pages are stubs or 404s.",
+  untracked:
+    "Not tracked: no authoritative per-object list exists, so no rows are invented and this category stays out of every percentage.",
+};
+
+/** Categories that can appear as tabs and count toward percentages. */
+const TRACKED_CATEGORIES = CATEGORIES.filter(
+  (category) => (WORLD_CATEGORY_STATUS[category.id]?.count ?? 0) > 0,
+);
+
+const TRACKED_CATEGORY_IDS = TRACKED_CATEGORIES.map((category) => category.id);
+
+const RESOLVED_CATEGORY_COUNT = CATEGORIES.filter(
+  (category) => CATEGORY_STATE[category.id] === "resolved",
+).length;
+const PARTIAL_CATEGORY_COUNT = CATEGORIES.filter((category) => {
+  const state = CATEGORY_STATE[category.id];
+  return state === "partial" || state === "archived";
+}).length;
 
 function matchesSearch(query: string, object: WorldObject): boolean {
   const needle = query.trim().toLowerCase();
@@ -126,8 +177,8 @@ function categoryFromRoute(
   focusParam: string | null,
 ): string {
   const focus = focusParam ? WORLD_BY_ID[focusParam] : undefined;
-  if (focus && CATEGORY_IDS.includes(focus.category)) return focus.category;
-  return categoryParam && CATEGORY_IDS.includes(categoryParam) ? categoryParam : "grace";
+  const requested = focus?.category ?? categoryParam ?? "";
+  return TRACKED_CATEGORY_IDS.includes(requested) ? requested : TRACKED_CATEGORY_IDS[0];
 }
 
 /* ---------------------------------------------------------------------------
@@ -135,8 +186,8 @@ function categoryFromRoute(
  * ------------------------------------------------------------------------- */
 
 function WorldLinks({ object }: { object: WorldObject }) {
-  const step = object.routeStepId ? STEP_BY_ID[object.routeStepId] : undefined;
-  const area = step?.area ?? "";
+  const step = RESOLVED_STEPS[object.id];
+  const hasStepId = Boolean(object.routeStepId);
   return (
     <div className="atlas-row-links">
       {object.sourceUrl ? (
@@ -165,25 +216,98 @@ function WorldLinks({ object }: { object: WorldObject }) {
           <Icon name="external" size={11} />
         </a>
       ) : null}
-      {object.routeStepId ? (
+      {step ? (
         <button
           type="button"
           className="atlas-link atlas-link-button"
-          aria-label={`Open route step for ${object.name}`}
+          aria-label={`Open route step ${step.area} for ${object.name}`}
           onClick={() => {
             const params = new URLSearchParams();
-            params.set("step", step?.id ?? object.routeStepId ?? "");
-            if (area) params.set("area", area);
+            params.set("step", step.id);
+            params.set("area", step.area);
             navigate(`/journey?${params.toString()}`);
           }}
         >
           Open route step
           <Icon name="chevronRight" size={12} />
         </button>
+      ) : hasStepId ? (
+        <span className="atlas-link atlas-link--missing">
+          Route step unresolved
+        </span>
       ) : (
         <span className="atlas-link atlas-link--missing">No route step</span>
       )}
+      {step ? (
+        <span className="atlas-step-tag" title={step.instruction}>
+          <span className="atlas-step-tag-label">Tracked by step · {step.area}</span>
+          <span className="atlas-step-tag-title">{step.instruction}</span>
+        </span>
+      ) : null}
     </div>
+  );
+}
+
+/**
+ * The Done cell. Route-tracked objects are ticked by their journey step, so
+ * they get a status marker instead of a checkbox; only objects the route does
+ * not cover keep the manual tick, labelled so the two can never be confused.
+ */
+function DoneCell({
+  object,
+  step,
+  stepDone,
+  manualDone,
+  onManual,
+}: {
+  object: WorldObject;
+  step: RouteStep | undefined;
+  stepDone: boolean;
+  manualDone: boolean;
+  onManual: (value: boolean) => void;
+}) {
+  if (step) {
+    const strayManual = manualDone && !stepDone;
+    return (
+      <span className="atlas-auto-wrap">
+        <span
+          className={`atlas-auto ${stepDone ? "is-auto" : strayManual ? "is-manual" : ""}`.trim()}
+          role="img"
+          aria-label={
+            stepDone
+              ? `Done automatically: route step in ${step.area} is marked done`
+              : strayManual
+                ? `Tick was set by hand; the route step in ${step.area} is not done yet`
+                : `Tracked by the route step in ${step.area}; the step is not done yet`
+          }
+        >
+          <span className="atlas-auto-mark">
+            <Icon name={stepDone || strayManual ? "check" : "map"} size={11} />
+          </span>
+          <span className="atlas-auto-text">{stepDone ? "Auto" : strayManual ? "Ticked" : "Step"}</span>
+        </span>
+        {strayManual ? (
+          <button
+            type="button"
+            className="atlas-link atlas-link-button atlas-clear-tick"
+            aria-label={`Clear the manual tick on ${object.name}`}
+            onClick={() => onManual(false)}
+          >
+            Clear
+          </button>
+        ) : null}
+      </span>
+    );
+  }
+  return (
+    <span className="atlas-manual">
+      <Checkbox
+        checked={manualDone}
+        onChange={onManual}
+        label={<span className="sr-only">Mark {object.name} as visited</span>}
+      />
+      <span className="atlas-manual-text">Manual</span>
+    </span>
   );
 }
 
@@ -263,7 +387,6 @@ export function AtlasPage() {
   const state = CATEGORY_STATE[category];
   const gap = state === "resolved" ? undefined : WORLD_GAPS.find((entry) => entry.category === category);
   const rows = CATEGORY_ROWS[category] ?? [];
-  const categoryProgress = progress.byCategory[category] ?? { done: 0, total: rows.length };
 
   const regions = useMemo(
     () =>
@@ -273,26 +396,36 @@ export function AtlasPage() {
     [rows],
   );
 
+  const doneObjects = useMemo(() => {
+    const doneIds = new Set<string>();
+    for (const object of rows) {
+      const step = RESOLVED_STEPS[object.id];
+      const done = journey.worldChecks[object.id] || (step ? journey.steps[step.id] === "done" : false);
+      if (done) doneIds.add(object.id);
+    }
+    return doneIds;
+  }, [rows, journey.worldChecks, journey.steps]);
+
   const filtered = useMemo(
     () =>
       rows.filter((object) => {
         if (region !== "all" && object.region !== region) return false;
         if (game === "base" && object.dlc) return false;
         if (game === "dlc" && !object.dlc) return false;
-        const checked = Boolean(journey.worldChecks[object.id]);
+        const checked = doneObjects.has(object.id);
         if (checkFilter === "checked" && !checked) return false;
         if (checkFilter === "unchecked" && checked) return false;
-        if (routeFilter === "linked" && !object.routeStepId) return false;
-        if (routeFilter === "unlinked" && object.routeStepId) return false;
+        if (routeFilter === "linked" && !RESOLVED_STEPS[object.id]) return false;
+        if (routeFilter === "unlinked" && RESOLVED_STEPS[object.id]) return false;
         return matchesSearch(query, object);
       }),
-    [rows, region, game, checkFilter, routeFilter, query, journey.worldChecks],
+    [rows, region, game, checkFilter, routeFilter, query, doneObjects],
   );
 
   const visible = filtered.slice(0, limit);
-  const checkedInCategory = categoryProgress.done;
-  const listedCount = status?.count ?? rows.length;
-  const linkedInCategory = rows.filter((object) => object.routeStepId).length;
+  const checkedInCategory = doneObjects.size;
+  const listedCount = rows.length;
+  const linkedInCategory = rows.filter((object) => RESOLVED_STEPS[object.id]).length;
   const unlinkedInCategory = rows.length - linkedInCategory;
 
   function resetFilters() {
@@ -359,7 +492,7 @@ export function AtlasPage() {
     }
     if (appliedFocus.current === focusObject.id) return;
     appliedFocus.current = focusObject.id;
-    setCategory(focusObject.category);
+    setCategory(TRACKED_CATEGORY_IDS.includes(focusObject.category) ? focusObject.category : TRACKED_CATEGORY_IDS[0]);
     setQuery("");
     const requestedRegion = route.query.get("region") ?? "all";
     setRegion(
@@ -370,7 +503,7 @@ export function AtlasPage() {
     setGame("all");
     setCheckFilter("all");
     setRouteFilter("all");
-    const index = CATEGORY_ROWS[focusObject.category].findIndex(
+    const index = (CATEGORY_ROWS[focusObject.category] ?? []).findIndex(
       (object) => object.id === focusObject.id,
     );
     setLimit(Math.max(PAGE_SIZE, index + 1));
@@ -421,16 +554,24 @@ export function AtlasPage() {
           </strong>
           <span>Checked</span>
         </div>
-        {ZERO_LIST_CATEGORIES.length > 0 ? (
+        <div className="atlas-summary-item">
+          <strong>{formatNumber(RESOLVED_CATEGORY_COUNT)}</strong>
+          <span>Categories with a resolved list</span>
+        </div>
+        <div className="atlas-summary-item">
+          <strong>{formatNumber(PARTIAL_CATEGORY_COUNT)}</strong>
+          <span>Partial or archived lists</span>
+        </div>
+        {UNTRACKED_CATEGORIES.length > 0 ? (
           <div className="atlas-summary-item atlas-summary-item--gap">
-            <strong>{ZERO_LIST_CATEGORIES.length}</strong>
-            <span>Categories with no authoritative list</span>
+            <strong>{UNTRACKED_CATEGORIES.length}</strong>
+            <span>Categories not tracked</span>
           </div>
         ) : null}
       </div>
 
       <TabBar
-        items={CATEGORIES.map((entry) => ({
+        items={TRACKED_CATEGORIES.map((entry) => ({
           id: entry.id,
           label: entry.tab,
           count: WORLD_CATEGORY_STATUS[entry.id]?.count ?? CATEGORY_ROWS[entry.id].length,
@@ -439,22 +580,96 @@ export function AtlasPage() {
         onChange={changeCategory}
       />
 
-      {listedCount === 0 ? (
-        <section className="atlas-status atlas-status--unresolved atlas-status--compact">
-          <div className="atlas-status-head">
-            <span className="atlas-status-icon" aria-hidden="true">
-              <Icon name={config.icon} size={18} />
+      {UNTRACKED_CATEGORIES.length > 0 ? (
+        <section className="atlas-untracked" aria-label="Categories that are not tracked">
+          <div className="atlas-untracked-head">
+            <span className="atlas-untracked-icon" aria-hidden="true">
+              <Icon name="alert" size={15} />
             </span>
-            <div className="atlas-status-copy">
-              <div className="atlas-status-eyebrow">No authoritative list</div>
-              <h2 className="atlas-status-title">{config.label}</h2>
-              <p className="atlas-status-note">
-                {status?.note ??
-                  "No category metadata is recorded for this ledger."}{" "}
-                0 rows are listed because no permitted source publishes a per-object list,
-                so no locations are invented. The tab stays visible for future data.
+            <div>
+              <div className="atlas-status-eyebrow">Decision recorded</div>
+              <h2 className="atlas-untracked-title">Not tracked — no authoritative list exists</h2>
+              <p className="atlas-untracked-lede">
+                {formatNumber(UNTRACKED_CATEGORIES.length)} categories have no permitted per-object
+                list. They are deliberately omitted from the tabs and from every percentage rather
+                than filled with invented locations.
               </p>
             </div>
+          </div>
+          <ul className="atlas-untracked-list">
+            {UNTRACKED_CATEGORIES.map((entry) => {
+              const categoryStatus = WORLD_CATEGORY_STATUS[entry.id];
+              const entryGap = WORLD_GAPS.find((gapEntry) => gapEntry.category === entry.id);
+              return (
+                <li key={entry.id} className="atlas-untracked-item">
+                  <div className="atlas-untracked-item-head">
+                    <span className="atlas-untracked-name">
+                      <Icon name={entry.icon} size={13} /> {entry.label}
+                    </span>
+                    <Badge tone="danger">Not tracked</Badge>
+                  </div>
+                  <p className="atlas-untracked-note">
+                    {categoryStatus?.note ?? "No category metadata is recorded for this ledger."}
+                  </p>
+                  {entryGap ? (
+                    <div className="atlas-gap-sources">
+                      <span className="atlas-gap-sources-label">Sources attempted</span>
+                      {entryGap.sourcesTried.map((url) => (
+                        <a key={url} href={url} target="_blank" rel="noreferrer">
+                          {hostLabel(url)}
+                          <Icon name="external" size={10} />
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
+
+      <section className={`atlas-status atlas-status--${state}`}>
+        <div className="atlas-status-head">
+          <span className="atlas-status-icon" aria-hidden="true">
+            <Icon name={config.icon} size={22} />
+          </span>
+          <div className="atlas-status-copy">
+            <div className="atlas-status-eyebrow">
+              Category status · tracked category {TRACKED_CATEGORY_IDS.indexOf(category) + 1} of{" "}
+              {TRACKED_CATEGORY_IDS.length}
+            </div>
+            <h2 className="atlas-status-title">{config.label}</h2>
+            <p className="atlas-status-note">
+              {status?.note ?? "No category metadata is recorded for this ledger."}
+            </p>
+            <p className="atlas-status-reason">{STATE_REASON[state]}</p>
+          </div>
+          <div className="atlas-status-side">
+            <div className="atlas-status-badges">
+              <Badge tone={STATE_TONE[state]}>{STATE_LABEL[state]}</Badge>
+            </div>
+            <div className="atlas-status-metrics">
+              <div className="atlas-status-metric">
+                <strong>{formatNumber(listedCount)}</strong>
+                <span>listed</span>
+              </div>
+              <div className="atlas-status-metric">
+                <strong>{formatNumber(checkedInCategory)}</strong>
+                <span>checked</span>
+              </div>
+              <div className="atlas-status-metric">
+                <strong>
+                  {listedCount ? Math.round((checkedInCategory / listedCount) * 100) : 0}%
+                </strong>
+                <span>complete</span>
+              </div>
+            </div>
+            {state !== "resolved" ? (
+              <span className="atlas-status-caveat">
+                Lower bound · the true total is unknown, so this percentage only covers listed rows.
+              </span>
+            ) : null}
             {status?.sourceUrl ? (
               <a
                 className="atlas-source-link"
@@ -467,67 +682,19 @@ export function AtlasPage() {
               </a>
             ) : null}
           </div>
-          <GapDisclosure gap={gap} />
-        </section>
-      ) : (
-        <section className={`atlas-status atlas-status--${state}`}>
-          <div className="atlas-status-head">
-            <span className="atlas-status-icon" aria-hidden="true">
-              <Icon name={config.icon} size={22} />
-            </span>
-            <div className="atlas-status-copy">
-              <div className="atlas-status-eyebrow">Category status</div>
-              <h2 className="atlas-status-title">{config.label}</h2>
-              <p className="atlas-status-note">
-                {status?.note ?? "No category metadata is recorded for this ledger."}
-              </p>
-            </div>
-            <div className="atlas-status-side">
-              <div className="atlas-status-badges">
-                <Badge tone={STATE_TONE[CATEGORY_STATE[category]]}>
-                  {STATE_LABEL[CATEGORY_STATE[category]]}
-                </Badge>
-              </div>
-              <div className="atlas-status-metrics">
-                <div className="atlas-status-metric">
-                  <strong>{formatNumber(listedCount)}</strong>
-                  <span>listed</span>
-                </div>
-                <div className="atlas-status-metric">
-                  <strong>{formatNumber(checkedInCategory)}</strong>
-                  <span>checked</span>
-                </div>
-                <div className="atlas-status-metric">
-                  <strong>{Math.round((checkedInCategory / listedCount) * 100)}%</strong>
-                  <span>complete</span>
-                </div>
-              </div>
-              {status?.sourceUrl ? (
-                <a
-                  className="atlas-source-link"
-                  href={status.sourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Category source
-                  <Icon name="external" size={11} />
-                </a>
-              ) : null}
-            </div>
-          </div>
+        </div>
 
-          <ProgressBar
-            value={(checkedInCategory / listedCount) * 100}
-            tone={checkedInCategory >= listedCount ? "success" : "accent"}
-            label={`${formatNumber(checkedInCategory)} of ${formatNumber(listedCount)} checked`}
-            detail={`${formatNumber(linkedInCategory)} route-linked · ${formatNumber(
-              unlinkedInCategory,
-            )} unlinked · overall atlas ${formatNumber(progress.done)} / ${formatNumber(progress.total)}`}
-          />
+        <ProgressBar
+          value={listedCount ? (checkedInCategory / listedCount) * 100 : 0}
+          tone={listedCount > 0 && checkedInCategory >= listedCount ? "success" : "accent"}
+          label={`${formatNumber(checkedInCategory)} of ${formatNumber(listedCount)} checked`}
+          detail={`${formatNumber(linkedInCategory)} route-linked · ${formatNumber(
+            unlinkedInCategory,
+          )} unlinked · overall atlas ${formatNumber(progress.done)} / ${formatNumber(progress.total)}`}
+        />
 
-          <GapDisclosure gap={gap} />
-        </section>
-      )}
+        <GapDisclosure gap={gap} />
+      </section>
 
       {rows.length > 0 ? (
         <div className="atlas-toolbar">
@@ -577,7 +744,7 @@ export function AtlasPage() {
           >
             <option value="all">All entries</option>
             <option value="unchecked">
-              Unchecked ({formatNumber(Math.max(0, listedCount - checkedInCategory))})
+              Unchecked ({formatNumber(Math.max(0, rows.length - checkedInCategory))})
             </option>
             <option value="checked">Checked ({formatNumber(checkedInCategory)})</option>
           </Select>
@@ -645,23 +812,23 @@ export function AtlasPage() {
               </thead>
               <tbody>
                 {visible.map((object) => {
-                  const checked = Boolean(journey.worldChecks[object.id]);
+                  const checked = doneObjects.has(object.id);
+                  const step = RESOLVED_STEPS[object.id];
+                  const stepDone = Boolean(step && journey.steps[step.id] === "done");
                   const isFocus = object.id === focusId;
                   return (
                     <tr
                       key={object.id}
                       id={`atlas-row-${object.id}`}
-                      className={`${checked ? "is-checked " : ""}${isFocus ? "is-focus" : ""}`.trim() || undefined}
+                      className={`${checked ? "is-checked " : ""}${isFocus ? "is-focus " : ""}`.trim() || undefined}
                     >
-                      <td className="atlas-check-cell" data-label="Visited">
-                        <Checkbox
-                          checked={checked}
-                          onChange={(value) => setWorldCheck(object.id, value)}
-                          label={
-                            <span className="sr-only">
-                              Mark {object.name} as visited
-                            </span>
-                          }
+                      <td className="atlas-check-cell" data-label="Done">
+                        <DoneCell
+                          object={object}
+                          step={step}
+                          stepDone={stepDone}
+                          manualDone={Boolean(journey.worldChecks[object.id])}
+                          onManual={(value) => setWorldCheck(object.id, value)}
                         />
                       </td>
                       <td className="atlas-object-cell" data-label="World object">
@@ -713,9 +880,11 @@ export function AtlasPage() {
       )}
 
       <p className="atlas-footnote">
-        Counts come from the merged world ledger. Partial categories list every row the
-        sources publish but are not presented as complete; zero-row categories are explicit
-        gaps. Checked state is saved automatically.
+        Rows marked <strong>Auto</strong> are ticked by their journey step: finishing{" "}
+        <em>Tracked by step · area</em> checks them in the same write. Only rows the route
+        does not cover keep a manual tick. Counts come from the merged world ledger; partial
+        categories list every row the sources publish but are never presented as complete, and
+        categories with no authoritative list are excluded from the tabs and percentages.
       </p>
     </div>
   );

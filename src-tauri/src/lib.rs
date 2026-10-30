@@ -158,13 +158,25 @@ fn open_external(app: AppHandle, url: String) -> Result<(), String> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // Some WebKitGTK 2.5x / Mesa combinations render a blank webview when the
-    // DMABUF renderer is enabled (notably software and remote X sessions).
-    // The app is static content, so the shared-memory fallback is the safe
-    // default; advanced users can override the variable before launch.
+    // Hardware accelerated rendering is the default: the app is a scrolling,
+    // dense data surface and the shared-memory path makes every scroll repaint
+    // on a CPU rasteriser. Only fall back to software where acceleration is
+    // known to be broken (nested/remote X, software GL) or when the user asks.
     #[cfg(target_os = "linux")]
-    if std::env::var_os("WEBKIT_DISABLE_DMABUF_RENDERER").is_none() {
-        std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+    {
+        let has_display = std::env::var_os("WAYLAND_DISPLAY").is_some();
+        let has_x11 = std::env::var_os("DISPLAY").is_some();
+        let remote_x11 = has_x11 && !has_display;
+        let software_gl = std::env::var("LIBGL_ALWAYS_SOFTWARE")
+            .map(|value| value != "0")
+            .unwrap_or(false);
+        if (remote_x11 || software_gl)
+            && std::env::var_os("WEBKIT_DISABLE_DMABUF_RENDERER").is_none()
+        {
+            // Blank-webview workaround for software and remote sessions. Users
+            // can force it anywhere with the same variable.
+            std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+        }
     }
 
     let quick_log = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::SHIFT), Code::KeyL);

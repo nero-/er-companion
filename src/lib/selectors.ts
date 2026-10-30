@@ -1,11 +1,14 @@
 import {
   ACHIEVEMENTS,
   AREA_BY_NAME,
-  BOSS_STRATEGIES_BY_BOSS,
+  BOSS_STRATEGY_COUNTS,
   BRANCH_PLAN_DECISION_COUNT,
+  BRANCH_PLAN_DECISIONS,
   BRANCH_REWARDS,
   CRAFTING_MATERIALS,
   ENCOUNTERS,
+  FARMABLES,
+  FINITE_RESOURCES,
   ITEMS,
   ITEMS_BY_NAME,
   LORE,
@@ -19,6 +22,7 @@ import {
   QUESTLINE_STEPS,
   ROUTE_AREAS,
   ROUTE_STEPS,
+  SCARABS,
   SECTION_BY_NORMALIZED_TITLE,
   STEP_BY_ID,
   STEPS_BY_AREA,
@@ -256,15 +260,15 @@ export function farmSummary(character: Character, journey: JourneyState): FarmSu
   const merchants = merchantInventoryProgress(journey);
   return {
     farmablesOwned,
-    farmablesTotal: 318,
+    farmablesTotal: FARMABLES.length,
     materialsStocked: materials.done,
     materialsTotal: materials.total,
     finiteCollected: Object.values(journey.finite).filter(Boolean).length,
-    finiteTotal: 318,
+    finiteTotal: FINITE_RESOURCES.length,
     merchantsPurchased: merchants.done,
     merchantsTotal: merchants.total,
     scarabsCollected: Object.values(journey.scarabs).filter(Boolean).length,
-    scarabsTotal: 107,
+    scarabsTotal: SCARABS.length,
   };
 }
 
@@ -280,7 +284,7 @@ export function endingSummary(character: Character): EndingSummary {
   return {
     viewed: endings.filter((entry) => entry.viewed).length,
     earned: endings.filter((entry) => entry.earned).length,
-    total: 6,
+    total: META.endings.length,
     permanent: character.endings["age-of-stars"]?.viewed ? "Age of Stars" : "Pending",
   };
 }
@@ -529,7 +533,11 @@ export function completionScopes(character: Character, journey: JourneyState): C
 }
 
 export function decisionsResolved(journey: JourneyState, total: number): number {
-  return Object.values(journey.decisions).filter(Boolean).length;
+  const known = new Set(BRANCH_PLAN_DECISIONS.map((decision) => decision.decisionId));
+  const recorded = Object.entries(journey.decisions).filter(
+    ([id, value]) => Boolean(value) && known.has(id),
+  ).length;
+  return total > 0 ? Math.min(recorded, total) : recorded;
 }
 
 export interface LoreAccess {
@@ -592,8 +600,9 @@ export function tierForName(name: string): TierEntry | undefined {
   return TIERS_BY_NAME[name]?.[0];
 }
 
+/** Strategy rows ship in the lazy reference pack; the count ships here. */
 export function bossStrategyCount(boss: string): number {
-  return BOSS_STRATEGIES_BY_BOSS[boss]?.length ?? 0;
+  return BOSS_STRATEGY_COUNTS[boss] ?? 0;
 }
 
 export function archetypeForId(id: string) {

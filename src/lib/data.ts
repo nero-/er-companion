@@ -2,7 +2,8 @@ import metaJson from "../data/meta.json";
 import routeJson from "../data/route.full.json";
 import itemsJson from "../data/items.full.json";
 import worldJson from "../data/world.json";
-import buildsJson from "../data/builds.json";
+import buildsCoreJson from "../data/builds-core.json";
+import bossIndexJson from "../data/boss-index.json";
 import farmsJson from "../data/farms.json";
 import merchantsJson from "../data/merchants.full.json";
 import loreJson from "../data/lore.json";
@@ -29,7 +30,6 @@ import type {
   Achievement,
   AchievementRequirementGroup,
   Archetype,
-  BossStrategy,
   BranchPlanDecision,
   BranchReward,
   BuildLoadout,
@@ -38,7 +38,6 @@ import type {
   CraftingMaterial,
   DialogueEvent,
   Encounter,
-  EncounterPreset,
   Farmable,
   FiniteResource,
   Item,
@@ -59,7 +58,6 @@ import type {
   ProgressionLoadout,
   Questline,
   QuestlineStep,
-  ResourcePreset,
   ResourceTable,
   RouteArea,
   RouteChronology,
@@ -71,8 +69,6 @@ import type {
   TechNode,
   TierEntry,
   UpgradeEntry,
-  UpgradePlan,
-  WeaponConfig,
   WorldObject,
   WorldObjectCategoryStatus,
   WorldObjectGap,
@@ -191,18 +187,21 @@ export const REMEMBRANCE_PLAN_ORDER: Record<string, number> = Object.fromEntries
   REMEMBRANCE_PLAN_ENTRIES.map((entry) => [entry.remembranceId, entry.order]),
 );
 
-export const ARCHETYPES: Archetype[] = buildsJson.archetypes;
-export const PROFILES: BuildProfile[] = buildsJson.profiles;
-export const LOADOUTS: BuildLoadout[] = buildsJson.loadouts;
-export const TECH_NODES: TechNode[] = buildsJson.techNodes;
-export const TECH_EDGES: TechEdge[] = buildsJson.techEdges;
-export const PROGRESSION_LOADOUTS: ProgressionLoadout[] = buildsJson.progressionLoadouts;
-export const WEAPON_CONFIGS: WeaponConfig[] = buildsJson.weaponConfigs;
-export const UPGRADE_PLANS: UpgradePlan[] = buildsJson.upgradePlans;
-export const ENCOUNTER_PRESETS: EncounterPreset[] = buildsJson.encounterPresets;
-export const BOSS_STRATEGIES: BossStrategy[] = buildsJson.bossStrategies;
-export const SPELL_PACKAGES: SpellPackage[] = buildsJson.spellPackages;
-export const RESOURCE_PRESETS: ResourcePreset[] = buildsJson.resourcePresets;
+export const ARCHETYPES: Archetype[] = buildsCoreJson.archetypes;
+export const PROFILES: BuildProfile[] = buildsCoreJson.profiles;
+export const LOADOUTS: BuildLoadout[] = buildsCoreJson.loadouts;
+export const TECH_NODES: TechNode[] = buildsCoreJson.techNodes;
+export const TECH_EDGES: TechEdge[] = buildsCoreJson.techEdges;
+export const PROGRESSION_LOADOUTS: ProgressionLoadout[] = buildsCoreJson.progressionLoadouts;
+export const SPELL_PACKAGES: SpellPackage[] = buildsCoreJson.spellPackages;
+
+/**
+ * Boss names and per-boss strategy counts ship in a 1.7 KiB index. The strategy
+ * rows themselves (2.5 MiB) live in the lazily loaded reference pack, so the
+ * shell, search and remembrance links never pull them in.
+ */
+export const BOSS_NAMES: string[] = bossIndexJson.names;
+export const BOSS_STRATEGY_COUNTS: Record<string, number> = bossIndexJson.strategyCounts;
 
 function groupBy<T>(rows: T[], key: (row: T) => string): Record<string, T[]> {
   const grouped: Record<string, T[]> = {};
@@ -342,17 +341,9 @@ export const KNOWLEDGE_BY_ID: Record<string, Knowledge> = Object.fromEntries(
   KNOWLEDGE.map((entry) => [entry.id, entry]),
 );
 
-export const BOSS_STRATEGIES_BY_BOSS = groupBy(BOSS_STRATEGIES, (strategy) => strategy.boss);
-export const BOSS_STRATEGIES_BY_BUILD = groupBy(BOSS_STRATEGIES, (strategy) => strategy.buildId);
-export const BOSS_NAMES = Object.keys(BOSS_STRATEGIES_BY_BOSS).sort((a, b) => a.localeCompare(b));
-export const ENCOUNTER_PRESETS_BY_BUILD = groupBy(ENCOUNTER_PRESETS, (preset) => preset.buildId);
 export const SPELL_PACKAGES_BY_BUILD = groupBy(SPELL_PACKAGES, (pkg) => pkg.buildId);
-export const RESOURCE_PRESETS_BY_BUILD = groupBy(RESOURCE_PRESETS, (preset) => preset.buildId);
 export const SPELL_PACKAGE_BY_ID: Record<string, SpellPackage> = Object.fromEntries(
   SPELL_PACKAGES.map((pkg) => [pkg.id, pkg]),
-);
-export const RESOURCE_PRESET_BY_ID: Record<string, ResourcePreset> = Object.fromEntries(
-  RESOURCE_PRESETS.map((preset) => [preset.id, preset]),
 );
 
 export const ARCHETYPE_BY_ID: Record<string, Archetype> = Object.fromEntries(
@@ -375,10 +366,7 @@ export const PROGRESSION_BY_NODE: Record<string, ProgressionLoadout> = Object.fr
 export const PROGRESSION_BY_ID: Record<string, ProgressionLoadout> = Object.fromEntries(
   PROGRESSION_LOADOUTS.map((loadout) => [loadout.id, loadout]),
 );
-export const UPGRADES_BY_NODE = groupBy(UPGRADE_PLANS, (plan) => plan.nodeId);
-export const WEAPON_CONFIG_BY_ID: Record<string, WeaponConfig> = Object.fromEntries(
-  WEAPON_CONFIGS.map((config) => [config.id, config]),
-);
+
 
 export const TIERS_BY_LIST = groupBy(TIERS, (entry) => entry.list);
 export const TIERS_BY_NAME = groupBy(TIERS, (entry) => entry.name);

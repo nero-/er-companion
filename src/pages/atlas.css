@@ -81,10 +81,11 @@
     var(--surface);
 }
 
-.atlas-status--unresolved {
-  border-left-color: rgba(205, 112, 89, 0.85);
+.atlas-status--archived {
+  border-left-color: rgba(216, 164, 92, 0.6);
+  border-left-style: dashed;
   background:
-    linear-gradient(180deg, rgba(205, 112, 89, 0.055), transparent 70%),
+    linear-gradient(180deg, rgba(216, 164, 92, 0.035), transparent 70%),
     var(--surface);
 }
 
@@ -108,10 +109,6 @@
 
 .atlas-status--resolved .atlas-status-icon {
   color: var(--success);
-}
-
-.atlas-status--unresolved .atlas-status-icon {
-  color: var(--danger);
 }
 
 .atlas-status-copy {
@@ -200,26 +197,6 @@
 .atlas-source-link:hover {
   color: var(--accent-strong);
   text-decoration: underline;
-}
-
-.atlas-status--compact .atlas-status-head {
-  grid-template-columns: 34px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 12px;
-}
-
-.atlas-status--compact .atlas-status-icon {
-  width: 34px;
-  height: 34px;
-}
-
-.atlas-status--compact .atlas-status-title {
-  margin-bottom: 2px;
-  font-size: 17px;
-}
-
-.atlas-status--compact .atlas-status-note {
-  font-size: 11px;
 }
 
 .atlas-gap {
@@ -366,7 +343,7 @@
 }
 
 .atlas-table .atlas-check-cell {
-  width: 46px;
+  width: 64px;
   padding-right: 2px;
   text-align: center;
 }
@@ -488,6 +465,209 @@
   line-height: 1.55;
 }
 
+/* ---------- Untracked categories ---------- */
+
+.atlas-untracked {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+  padding: 13px 15px;
+  border: 1px dashed rgba(205, 112, 89, 0.38);
+  border-radius: 11px;
+  background: rgba(205, 112, 89, 0.045);
+}
+
+.atlas-untracked-head {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.atlas-untracked-icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: rgba(205, 112, 89, 0.14);
+  color: var(--danger);
+}
+
+.atlas-untracked-title {
+  margin: 2px 0 4px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--fg);
+}
+
+.atlas-untracked-lede {
+  max-width: 780px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.atlas-untracked-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.atlas-untracked-item {
+  min-width: 0;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.atlas-untracked-item-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.atlas-untracked-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--fg);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.atlas-untracked-note {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* ---------- Automatic vs manual tracking ---------- */
+
+.atlas-step-tag {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1px;
+  max-width: 100%;
+  min-width: 0;
+  padding: 2px 7px;
+  border: 1px solid rgba(143, 172, 118, 0.3);
+  border-radius: 7px;
+  background: rgba(143, 172, 118, 0.07);
+  color: var(--success);
+  font-size: 9px;
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.atlas-step-tag-label {
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.atlas-step-tag-title {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.atlas-auto-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.atlas-auto {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--faint);
+}
+
+.atlas-auto-mark {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.atlas-auto.is-auto {
+  color: var(--success);
+}
+
+.atlas-auto.is-auto .atlas-auto-mark {
+  border: 1px solid rgba(143, 172, 118, 0.65);
+  background: rgba(143, 172, 118, 0.16);
+  color: var(--success);
+}
+
+.atlas-auto.is-manual {
+  color: var(--warning);
+}
+
+.atlas-auto.is-manual .atlas-auto-mark {
+  border: 1px dashed rgba(216, 164, 92, 0.7);
+  background: rgba(216, 164, 92, 0.1);
+  color: var(--warning);
+}
+
+.atlas-clear-tick {
+  font-size: 9px;
+}
+
+.atlas-auto-text {
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.atlas-manual {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.atlas-manual-text {
+  color: var(--faint);
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.atlas-status-reason {
+  max-width: 860px;
+  margin-top: 5px;
+  color: var(--warning);
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+.atlas-status-caveat {
+  color: var(--faint);
+  font-size: 9.5px;
+  line-height: 1.45;
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 1080px) {
@@ -507,9 +687,6 @@
     grid-column: 2;
   }
 
-  .atlas-status--compact .atlas-status-head {
-    grid-template-columns: 34px minmax(0, 1fr);
-  }
 }
 
 @media (max-width: 760px) {
@@ -644,6 +821,25 @@
 
   .atlas-load-row {
     align-items: flex-start;
+  }
+
+  .atlas-untracked {
+    padding: 12px;
+  }
+
+  .atlas-untracked-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .atlas-step-tag {
+    white-space: normal;
+  }
+
+  .atlas-auto,
+  .atlas-manual {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
   }
 }
 

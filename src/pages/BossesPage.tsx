@@ -5,6 +5,7 @@ import {
   Callout,
   Drawer,
   EmptyState,
+  Modal,
   PageHeader,
   ProgressBar,
   SearchInput,
@@ -22,14 +23,21 @@ import type {
   JourneyState,
   Settings,
 } from "../lib/types";
-import { setBossReveal, setBossStatus, useActiveJourney, useAppState } from "../lib/store";
+import {
+  hideBossReveal,
+  resetBossReveals,
+  setBossReveal,
+  setBossStatus,
+  useActiveJourney,
+  useAppState,
+} from "../lib/store";
 import { bossStrategyCount } from "../lib/selectors";
+import { useReferencePack } from "../lib/reference";
 import {
   ACHIEVEMENTS,
   BOSS_DESCRIPTIONS,
   BOSS_NAMES,
-  BOSS_STRATEGIES,
-  BOSS_STRATEGIES_BY_BOSS,
+  BOSS_STRATEGY_COUNTS,
   ENCOUNTERS,
   PROFILE_BY_ID,
   ROUTE_AREAS,
@@ -54,7 +62,9 @@ interface EncounterDetailProps {
   encounter: Encounter;
   status?: BossStatus;
   hidden: boolean;
+  revealed: boolean;
   onReveal: () => void;
+  onHide: () => void;
 }
 
 interface StrategyFieldProps {
@@ -68,9 +78,14 @@ const TABS = [
   { id: "prep", label: "Major boss prep", count: BOSS_NAMES.length },
 ];
 
-const ALL_LEVELS = [
-  ...new Set(Object.values(BOSS_STRATEGIES_BY_BOSS).flatMap((rows) => rows.map((row) => row.level))),
-].sort((a, b) => a - b);
+/** The reference pack only defines the levels it actually uses. */
+const ALL_LEVELS = [150, 200];
+
+/** Row count from the startup index, so the header is right before the pack loads. */
+const STRATEGY_ROW_TOTAL = Object.values(BOSS_STRATEGY_COUNTS).reduce(
+  (total, count) => total + count,
+  0,
+);
 
 const ENCOUNTER_SECTIONS = [
   ...new Set(ENCOUNTERS.flatMap((encounter) => (encounter.section ? [encounter.section] : []))),
@@ -167,6 +182,15 @@ function isBossNameHidden(settings: Settings, journey: JourneyState, boss: strin
   if (linked.some((encounter) => journey.bosses[encounter.id] === "defeated")) return false;
   if (journey.bossReveals[boss]) return false;
   return !linked.some((encounter) => journey.bossReveals[encounter.id]);
+}
+
+/**
+ * Reveal keys currently stored for an encounter. Manual reveals can be keyed by
+ * encounter id or by boss name, so re-sealing has to clear every key that shows
+ * this fight; otherwise it would look hidden in the card and open in the drawer.
+ */
+function revealKeysFor(journey: JourneyState, encounter: Encounter): string[] {
+  return [encounter.id, encounter.name].filter((key) => Boolean(journey.bossReveals[key]));
 }
 
 function DetailRow({ label, value }: { label: string; value?: string | number }) {
@@ -344,7 +368,7 @@ function EncounterCard({ encounter, status, hidden, onOpen, onStatus, onReveal }
   );
 }
 
-function EncounterDetail({ encounter, status, hidden, onReveal }: EncounterDetailProps) {
+function EncounterDetail({ encounter, status, hidden, revealed, onReveal, onHide }: EncounterDetailProps) {
   const steps = encounter.routeStepIds.flatMap((id) => {
     const step = STEP_BY_ID[id];
     return step ? [step] : [];
@@ -391,6 +415,18 @@ function EncounterDetail({ encounter, status, hidden, onReveal }: EncounterDetai
         {isMissable(encounter) ? <Badge tone="danger">MISSABLE</Badge> : null}
         {encounter.difficulty ? <Badge tone="danger">{encounter.difficulty}</Badge> : null}
       </div>
+
+      {revealed ? (
+        <div className="row-between wrap" style={{ gap: 8 }}>
+          <span className="tiny faint">
+            <Icon name="eye" size={12} /> Manually revealed for this journey. Hiding re-seals the name, strategy and
+            lore.
+          </span>
+          <Button size="sm" variant="ghost" icon="lock" onClick={onHide} aria-label={`Hide ${encounter.name} again`}>
+            Hide again
+          </Button>
+        </div>
+      ) : null}
 
       {encounter.description ? <p className="quest-text">{encounter.description}</p> : null}
 
@@ -567,9 +603,14 @@ export function BossesPage() {
   const [buildFilter, setBuildFilter] = useState("all");
   const [levelFilter, setLevelFilter] = useState("all");
   const [strategyId, setStrategyId] = useState<string | null>(null);
+  const [confirmReseal, setConfirmReseal] = useState(false);
 
   const selectedBoss = validBoss ?? BOSS_NAMES[0];
-  const strategies = BOSS_STRATEGIES_BY_BOSS[selectedBoss] ?? [];
+  // Strategy rows live in the reference pack; the page renders its empty state
+  // until that bundle lands.
+  const reference = useReferencePack();
+  const strategies = reference?.BOSS_STRATEGIES_BY_BOSS[selectedBoss] ?? [];
+  const strategyRowTotal = reference?.BOSS_STRATEGIES.length ?? STRATEGY_ROW_TOTAL;
 
   useEffect(() => {
     if (sectionFromParam) setSectionFilter(sectionFromParam);
@@ -692,6 +733,7 @@ export function BossesPage() {
   const defeatedCount = ENCOUNTERS.filter((encounter) => journey.bosses[encounter.id] === "defeated").length;
   const deferredCount = ENCOUNTERS.filter((encounter) => journey.bosses[encounter.id] === "deferred").length;
   const sealedCount = ENCOUNTERS.filter((encounter) => isEncounterHidden(settings, journey, encounter)).length;
+  const revealedCount = Object.keys(journey.bossReveals).length;
 
   const goTab = (id: string) => {
     const next = id === "prep" ? "prep" : "encounters";
@@ -728,6 +770,45 @@ export function BossesPage() {
     toast.push(`${boss} revealed for ${journey.label}.`, "success");
   };
 
+  const hideEncounter = (encounter: Encounter) => {
+    // Clear every manual reveal key that shows this fight, then verify the
+    // policy actually seals it: a defeated boss stays visible by design.
+    for (const key of revealKeysFor(journey, encounter)) hideBossReveal(key);
+    const stillVisible = journey.bosses[encounter.id] === "defeated";
+    toast.push(
+      stillVisible
+        ? `${encounter.name} stays visible because it is marked defeated. Clear the outcome to seal it.`
+        : `${encounter.name} sealed again for ${journey.label}.`,
+      "success",
+    );
+  };
+
+  const hideBoss = (boss: string) => {
+    const linked = ENCOUNTERS.filter((encounter) => encounter.name === boss);
+    const keys = new Set<string>();
+    if (journey.bossReveals[boss]) keys.add(boss);
+    for (const encounter of linked) {
+      for (const key of revealKeysFor(journey, encounter)) keys.add(key);
+    }
+    for (const key of keys) hideBossReveal(key);
+    const defeated = linked.some((encounter) => journey.bosses[encounter.id] === "defeated");
+    toast.push(
+      defeated
+        ? `${boss} stays visible because it is marked defeated. Clear the outcome to seal it.`
+        : `${boss} sealed again for ${journey.label}.`,
+      "success",
+    );
+  };
+
+  const resealAll = () => {
+    resetBossReveals();
+    setConfirmReseal(false);
+    toast.push(
+      `All manual reveals re-sealed for ${journey.label}. Defeated encounters stay visible until their outcome is cleared.`,
+      "success",
+    );
+  };
+
   const clearEncounterFilters = () => {
     setQuery("");
     setTypeFilter("all");
@@ -742,6 +823,13 @@ export function BossesPage() {
   const linkedEncounter = ENCOUNTERS.find((encounter) => encounter.name === selectedBoss);
   const bossStatus = linkedEncounterStatus(selectedBoss, journey.bosses);
   const selectedBossHidden = isBossNameHidden(settings, journey, selectedBoss);
+  const selectedBossRevealed =
+    settings.bossSpoilerMode === "hide-until-defeated" &&
+    bossStatus !== "defeated" &&
+    (Boolean(journey.bossReveals[selectedBoss]) ||
+      ENCOUNTERS.filter((encounter) => encounter.name === selectedBoss).some(
+        (encounter) => revealKeysFor(journey, encounter).length > 0,
+      ));
 
   return (
     <div className="page">
@@ -751,7 +839,7 @@ export function BossesPage() {
         description={
           <>
             {ENCOUNTERS.length} catalogued encounters across {ENCOUNTER_SECTIONS.length} sections, with persistent
-            outcomes and wiki references. {BOSS_NAMES.length} major targets carry {BOSS_STRATEGIES.length} strategy
+            outcomes and wiki references. {BOSS_NAMES.length} major targets carry {strategyRowTotal} strategy
             rows at level {ALL_LEVELS.join(" / ")}. Names, strategy and lore stay sealed until defeated or revealed.
           </>
         }
@@ -766,6 +854,31 @@ export function BossesPage() {
             ) : (
               <Badge tone="accent">Spoilers shown</Badge>
             )}
+            {settings.bossSpoilerMode === "hide-until-defeated" && revealedCount > 0 ? (
+              <Badge tone="info">
+                {revealedCount} revealed manually
+              </Badge>
+            ) : null}
+            {settings.bossSpoilerMode === "hide-until-defeated" ? (
+              <Button
+                variant="ghost"
+                icon="lock"
+                disabled={revealedCount === 0}
+                title={
+                  revealedCount === 0
+                    ? "No manual reveals are stored for this journey."
+                    : undefined
+                }
+                onClick={() => setConfirmReseal(true)}
+                aria-label={
+                  revealedCount === 0
+                    ? "Re-seal all reveals: no manual reveals stored"
+                    : `Re-seal all ${revealedCount} revealed encounters`
+                }
+              >
+                Re-seal all reveals
+              </Button>
+            ) : null}
             <Button icon="map" onClick={() => navigate("/journey")}>
               Open journey
             </Button>
@@ -945,7 +1058,7 @@ export function BossesPage() {
           <aside className="card card-pad">
             <SectionTitle
               title="Bosses"
-              note={`${BOSS_NAMES.length} targets · ${BOSS_STRATEGIES.length} strategy rows`}
+              note={`${BOSS_NAMES.length} targets · ${strategyRowTotal} strategy rows`}
             />
             <SearchInput value={bossQuery} onChange={setBossQuery} placeholder="Search bosses…" />
             <div className="world-roster">
@@ -991,7 +1104,7 @@ export function BossesPage() {
               <div className="world-detail-head">
                 <div className="grow">
                   <div className="eyebrow" style={{ marginBottom: 4 }}>
-                    Major boss prep · {BOSS_NAMES.length} targets / {BOSS_STRATEGIES.length} rows
+                    Major boss prep · {BOSS_NAMES.length} targets / {strategyRowTotal} rows
                   </div>
                   <h2 className="world-boss-title">
                     {selectedBossHidden ? "Unknown target" : selectedBoss}
@@ -1010,6 +1123,11 @@ export function BossesPage() {
                   ) : (
                     <Badge tone="accent">{filteredStrategies.length} shown</Badge>
                   )}
+                  {selectedBossRevealed ? (
+                    <Badge tone="info">
+                      <Icon name="eye" size={11} /> Revealed manually
+                    </Badge>
+                  ) : null}
                   {linkedEncounter ? (
                     <Badge tone={statusTone(bossStatus)}>{statusLabel(bossStatus)}</Badge>
                   ) : null}
@@ -1037,23 +1155,38 @@ export function BossesPage() {
                     ) : null}
                   </div>
                 </div>
-              ) : linkedEncounter ? (
-                <div className="row wrap" style={{ marginTop: 10 }}>
-                  <Badge tone="info">{linkedEncounter.type}</Badge>
-                  <Badge>{linkedEncounter.region}</Badge>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    icon="skull"
-                    onClick={() => openEncounter(linkedEncounter.id)}
-                  >
-                    Open encounter record
-                  </Button>
-                </div>
               ) : (
-                <p className="world-note" style={{ marginTop: 8 }}>
-                  No linked encounter row shares this boss name; strategy rows still apply to the target.
-                </p>
+                <div className="row wrap" style={{ marginTop: 10 }}>
+                  {linkedEncounter ? (
+                    <>
+                      <Badge tone="info">{linkedEncounter.type}</Badge>
+                      <Badge>{linkedEncounter.region}</Badge>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        icon="skull"
+                        onClick={() => openEncounter(linkedEncounter.id)}
+                      >
+                        Open encounter record
+                      </Button>
+                    </>
+                  ) : (
+                    <p className="world-note grow">
+                      No linked encounter row shares this boss name; strategy rows still apply to the target.
+                    </p>
+                  )}
+                  {selectedBossRevealed ? (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      icon="lock"
+                      onClick={() => hideBoss(selectedBoss)}
+                      aria-label={`Hide ${selectedBoss} again`}
+                    >
+                      Hide again
+                    </Button>
+                  ) : null}
+                </div>
               )}
 
               {selectedBossHidden ? null : (
@@ -1322,10 +1455,39 @@ export function BossesPage() {
             encounter={selectedEncounter}
             status={journey.bosses[selectedEncounter.id]}
             hidden={isEncounterHidden(settings, journey, selectedEncounter)}
+            revealed={
+              settings.bossSpoilerMode === "hide-until-defeated" &&
+              journey.bosses[selectedEncounter.id] !== "defeated" &&
+              revealKeysFor(journey, selectedEncounter).length > 0
+            }
             onReveal={() => revealEncounter(selectedEncounter)}
+            onHide={() => hideEncounter(selectedEncounter)}
           />
         ) : null}
       </Drawer>
+
+      <Modal
+        open={confirmReseal}
+        title="Re-seal all reveals?"
+        onClose={() => setConfirmReseal(false)}
+        actions={
+          <>
+            <Button variant="ghost" onClick={() => setConfirmReseal(false)}>
+              Cancel
+            </Button>
+            <Button variant="danger" icon="lock" onClick={resealAll}>
+              Re-seal {revealedCount}
+            </Button>
+          </>
+        }
+      >
+        <p className="muted">
+          This clears every manual reveal in {journey.label} ({revealedCount} stored{" "}
+          {revealedCount === 1 ? "reveal" : "reveals"}). Names, locations, strategies and lore
+          return to the sealed state until you mark a fight defeated or reveal it again.
+          Encounters already marked defeated stay visible because their outcome reveals them.
+        </p>
+      </Modal>
     </div>
   );
 }

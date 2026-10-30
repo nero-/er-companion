@@ -14,6 +14,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const activeRef = useRef<HTMLButtonElement>(null);
   const results = useMemo(() => searchEntries(query, 40), [query]);
 
   useEffect(() => {
@@ -27,6 +28,12 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   useEffect(() => {
     setActiveIndex(0);
   }, [query]);
+
+  // Keep the keyboard cursor on screen: arrow keys can walk past the visible
+  // slice of the result list.
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex, results]);
 
   useEffect(() => {
     if (!open) return;
@@ -96,6 +103,8 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                 {group.entries.map(({ entry, index }) => (
                   <button
                     key={entry.id}
+                    ref={index === activeIndex ? activeRef : undefined}
+                    aria-current={index === activeIndex ? "true" : undefined}
                     className={`command-item ${index === activeIndex ? "active" : ""}`}
                     onMouseEnter={() => setActiveIndex(index)}
                     onClick={() => {
@@ -124,7 +133,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
             <kbd>↵</kbd> open
           </span>
           <span className="grow" />
-          <span>{results.length} results</span>
+          <span aria-live="polite">{results.length} results</span>
         </div>
       </div>
     </div>,

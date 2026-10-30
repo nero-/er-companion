@@ -22,10 +22,10 @@ import {
   isItemTimingSensitive,
   itemLocationKind,
   itemRegionName,
-  itemSweep,
+  itemStepLink,
 } from "../components/ItemDrawer";
-import { bulkSetItems, setItemOwned, useActiveCharacter } from "../lib/store";
-import { collectionSummary } from "../lib/selectors";
+import { bulkSetItems, setItemOwned, useActiveCharacter, useActiveJourney } from "../lib/store";
+import { collectionSummary, sweepProgress } from "../lib/selectors";
 import { ITEM_BY_ID, ITEM_DESCRIPTIONS, ITEMS, ITEMS_BY_GROUP, ROUTE_STEPS } from "../lib/data";
 import { formatNumber, itemGroupIcon } from "../lib/format";
 import { navigate, useRoute } from "../lib/router";
@@ -127,6 +127,9 @@ const CATALOG_COUNTS = (() => {
   let missableDlc = 0;
   let timing = 0;
   let lore = 0;
+  let routeSteps = 0;
+  let sweepSteps = 0;
+  let cleanupSteps = 0;
   const locations = { exact: 0, area: 0, unrecorded: 0 };
   for (const item of ITEMS) {
     if (isItemRouteLinked(item)) routeLinked += 1;
@@ -138,8 +141,20 @@ const CATALOG_COUNTS = (() => {
     }
     if (ITEM_DESCRIPTIONS[item.id]?.text) lore += 1;
     locations[itemLocationKind(item)] += 1;
+    const step = itemStepLink(item);
+    if (step?.kind === "route") routeSteps += 1;
+    else if (step?.sweepKind === "cleanup") cleanupSteps += 1;
+    else if (step) sweepSteps += 1;
   }
-  return { routeLinked, missable, missableDlc, timing, lore, locations };
+  return {
+    routeLinked,
+    missable,
+    missableDlc,
+    timing,
+    lore,
+    locations,
+    steps: { routeSteps, sweepSteps, cleanupSteps },
+  };
 })();
 
 const SORT_KEYS: Record<string, SortKey> = {
@@ -199,6 +214,7 @@ function useWideViewport(): boolean {
 export function CollectionPage() {
   const route = useRoute();
   const character = useActiveCharacter();
+  const journey = useActiveJourney();
   const toast = useToast();
   const resultsRef = useRef<HTMLElement>(null);
 
@@ -237,6 +253,7 @@ export function CollectionPage() {
   }, [qParam]);
 
   const summary = collectionSummary(character);
+  const sweepTotals = useMemo(() => sweepProgress(character, journey), [character, journey]);
 
   const collectionPath = (patch: QueryPatch) => {
     const params = new URLSearchParams();
@@ -416,6 +433,24 @@ export function CollectionPage() {
         </span>
         <span className="col-summary-sep" aria-hidden="true" />
         <span className="col-summary-item">
+          <Icon name="target" size={13} />
+          {formatNumber(CATALOG_COUNTS.locations.area + CATALOG_COUNTS.locations.unrecorded)} no recorded location
+          <span className="faint">
+            {" "}
+            · {formatNumber(CATALOG_COUNTS.steps.cleanupSteps)} on cleanup steps
+          </span>
+        </span>
+        <span className="col-summary-sep" aria-hidden="true" />
+        <span className="col-summary-item">
+          <Icon name="list" size={13} />
+          {formatNumber(sweepTotals.complete)}/{formatNumber(sweepTotals.total)} sweep steps
+          <span className="faint">
+            {" "}
+            · {formatNumber(sweepTotals.entriesAcquired)}/{formatNumber(sweepTotals.entries)} entries
+          </span>
+        </span>
+        <span className="col-summary-sep" aria-hidden="true" />
+        <span className="col-summary-item">
           <Icon name="book" size={13} />
           {formatNumber(CATALOG_COUNTS.lore)} with lore
           <span className="faint">
@@ -458,6 +493,29 @@ export function CollectionPage() {
           label="Route-linked"
           value={formatNumber(CATALOG_COUNTS.routeLinked)}
           detail="Linked to a route step"
+        />
+        <Stat
+          label="Acquisition steps"
+          value={formatNumber(
+            CATALOG_COUNTS.steps.routeSteps + CATALOG_COUNTS.steps.sweepSteps + CATALOG_COUNTS.steps.cleanupSteps,
+          )}
+          detail={`${formatNumber(CATALOG_COUNTS.steps.sweepSteps)} sweep · ${formatNumber(
+            CATALOG_COUNTS.steps.cleanupSteps,
+          )} cleanup · every item resolves`}
+        />
+        <Stat
+          label="Sweep ledger"
+          value={`${formatNumber(sweepTotals.complete)}/${formatNumber(sweepTotals.total)}`}
+          detail={`${formatNumber(sweepTotals.entriesAcquired)}/${formatNumber(
+            sweepTotals.entries,
+          )} entries · ${sweepTotals.percent}%`}
+        />
+        <Stat
+          label="No recorded location"
+          value={formatNumber(CATALOG_COUNTS.locations.area + CATALOG_COUNTS.locations.unrecorded)}
+          detail={`${formatNumber(CATALOG_COUNTS.locations.area)} area-only · ${formatNumber(
+            CATALOG_COUNTS.locations.unrecorded,
+          )} unrecorded — each has a cleanup or area step`}
         />
         <Stat
           label="Missable"
@@ -608,7 +666,9 @@ export function CollectionPage() {
           <span className="tiny faint">
             {missableOnly
               ? "Hard missables only — timing and quest notes stay visible in the cards and drawer."
-              : `Route links resolve against the merged ${formatNumber(ROUTE_STEPS.length)}-step route.`}
+              : `Route links resolve against the merged ${formatNumber(
+                  ROUTE_STEPS.length,
+                )}-step route; every other item opens its sweep step.`}
           </span>
         </div>
         <div className="col-filter-foot">
@@ -670,11 +730,9 @@ export function CollectionPage() {
                 const count = Math.max(0, character.itemCounts[item.id] ?? (owned ? 1 : 0));
                 const missable = isItemMissable(item);
                 const timing = !missable && isItemTimingSensitive(item);
-                const routeLinked = isItemRouteLinked(item);
-                const legacyRef = !routeLinked && item.linkedRouteRaw.trim().length > 0;
                 const regionName = itemRegionName(item);
                 const description = ITEM_DESCRIPTIONS[item.id]?.text;
-                const sweep = routeLinked ? undefined : itemSweep(item);
+                const step = itemStepLink(item);
                 return (
                   <div
                     className={`item-card col-item${owned ? " owned" : ""}${missable ? " is-missable" : ""}`}
@@ -727,34 +785,6 @@ export function CollectionPage() {
                                 Note
                               </span>
                             ) : null}
-                            {routeLinked ? (
-                              <span
-                                className="col-item-tag is-route"
-                                title={`Linked to ${Math.max(item.routeStepIds.length, 1)} route ${
-                                  Math.max(item.routeStepIds.length, 1) === 1 ? "step" : "steps"
-                                }`}
-                              >
-                                <Icon name="map" size={10} />
-                                {item.autoStepId ? "Auto route" : "Route"}
-                              </span>
-                            ) : legacyRef ? (
-                              <span
-                                className="col-item-tag is-legacy"
-                                title={`Legacy route reference: ${item.linkedRouteRaw}`}
-                              >
-                                <Icon name="clock" size={10} />
-                                Legacy ref
-                              </span>
-                            ) : null}
-                            {sweep ? (
-                              <span
-                                className="col-item-tag is-sweep"
-                                title={`Covered by the ${sweep.area} area sweep`}
-                              >
-                                <Icon name="target" size={10} />
-                                Area sweep
-                              </span>
-                            ) : null}
                             {count > 1 ? (
                               <span className="col-item-tag is-count" title={`${count} owned`}>
                                 ×{count}
@@ -782,6 +812,25 @@ export function CollectionPage() {
                         <Icon name={owned ? "check" : "plus"} size={14} />
                       </button>
                     </div>
+                    {step ? (
+                      <div className="col-step-row">
+                        <a
+                          className={`col-step-chip is-${
+                            step.kind === "route" ? "route" : step.sweepKind === "cleanup" ? "unlinked" : "sweep"
+                          }`}
+                          href={`#${step.href}`}
+                          title={`${step.label} · ${step.area} — ${step.title}`}
+                          aria-label={`Open ${step.label.toLowerCase()} in ${step.area} for ${item.name}`}
+                        >
+                          <Icon
+                            name={step.kind === "route" ? "map" : step.sweepKind === "cleanup" ? "scroll" : "target"}
+                            size={12}
+                          />
+                          <span className="col-step-chip-label">{step.label}</span>
+                          <span className="col-step-chip-area">{step.area}</span>
+                        </a>
+                      </div>
+                    ) : null}
                     <div className="col-item-bar">
                       <ItemQuantity item={item} count={count} />
                     </div>
