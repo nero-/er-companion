@@ -35,7 +35,12 @@ Prefix every npm command with that export or nothing works. Rust is available
 (`cargo 1.99.1`), and `pkg-config webkit2gtk-4.1` resolves to 2.54.2, so desktop builds work.
 
 The session is Wayland/KDE. `Xvfb` is **not** installed and `sudo` requires a password, so you
-cannot spin up a virtual X server. For UI verification prefer:
+cannot spin up a virtual X server.
+
+**Never export `DBUS_SESSION_BUS_ADDRESS`** (e.g. to reach the accessibility bus). The shell is
+persistent, so the override leaks into later commands and `gh` then silently fails its keyring
+lookup with `The token in default is invalid` — which looks exactly like an expired token but is
+not. If you see that, run `unset DBUS_SESSION_BUS_ADDRESS` and retry before re-authenticating. For UI verification prefer:
 - headless Chromium via the browser tool with `emulate({ viewport, deviceScaleFactor })`
 - the running dev server at `http://localhost:5173/`
 - `spectacle -b -n -o file.png` for a real desktop capture
