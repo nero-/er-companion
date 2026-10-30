@@ -207,8 +207,10 @@ pub fn run() {
                     // Do NOT cap the upper bound: clamping a 4K window back to
                     // 1920 made the renderer's resolution scaling think it was
                     // on a 1080p display, so large monitors got no scale-up.
-                    let width = (logical_width * 0.86).max(1024.0).min(logical_width);
-                    let height = (logical_height * 0.88).max(700.0).min(logical_height);
+                    // Near-fullscreen on large monitors: the shell is a dense
+                    // ledger, and leaving 14% of a 4K panel empty is wasted space.
+                    let width = (logical_width * 0.95).max(1024.0).min(logical_width);
+                    let height = (logical_height * 0.95).max(700.0).min(logical_height);
                     let _ = window.set_size(LogicalSize::new(width, height));
                     let _ = window.center();
                 }

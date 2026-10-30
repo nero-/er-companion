@@ -227,6 +227,14 @@ clipping names.
 Verified rendering: smallest text 14px @1080p, 15.3px @2K, 18px @4K, 13px @390px; zero horizontal
 overflow on all 12 routes at every size.
 
+**Layout width was a second, separate bug.** Raising type alone left the content column capped at
+`1560px * scale`, so a 4K window rendered a 1080p-wide strip with huge empty margins — "fonts are
+larger but the resolution is the same". `.page` is now `max-width: 100%` (it fills `.main`), the
+desktop window fills 95% of the monitor, and wide breakpoints at 2400px/3300px add grid columns
+(4 → 6 → 8 for `.grid-4`). Measured: page width 1631px @1080p, 2244px @2K, 3451px @4K; tables
+1568px → 3368px. If someone reports "still the same resolution", check `.page` max-width before
+touching font sizes.
+
 **Performance.** All `backdrop-filter` was removed and `body::after` deleted — they forced full
 repaints on WebKitGTK. Do not reintroduce blur on the sidebar, topbar, drawer or palette. Long
 lists use `content-visibility: auto`. The Rust shell now defaults to hardware rendering on Linux;

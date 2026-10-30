@@ -49,7 +49,7 @@ html[data-scale="large"] {
 }
 
 html[data-scale="large"] .page {
-  max-width: calc(1560px * var(--ui-scale));
+  max-width: 100%;
 }
 
 * {
@@ -576,9 +576,14 @@ kbd {
 
 .page {
   width: 100%;
-  max-width: 1320px;
+  /* Fluid reading column. The px term keeps comfortable line lengths on normal
+     displays; the vw term lets a 2K/4K window actually use its width instead of
+     rendering a 1080p-sized strip with large empty margins. Prose blocks set
+     their own measure (~58ch) so long lines stay readable. */
+  max-width: 100%;
   margin: 0 auto;
-  padding: 30px 28px 90px;
+  padding: calc(30px * var(--ui-scale)) calc(28px * var(--ui-scale))
+    calc(90px * var(--ui-scale));
   animation: fade-up 320ms ease both;
 }
 
@@ -2125,21 +2130,41 @@ kbd {
    only widen the reading column on big displays. */
 @media (min-width: 1900px) {
   html[data-scale="auto"] .page {
-    max-width: calc(1400px * var(--ui-scale));
+    max-width: 100%;
   }
 }
 
-@media (min-width: 2500px) {
+/* 2K/1440p: use the extra width for more columns, not wider empty margins. */
+@media (min-width: 2400px) {
   html[data-scale="auto"] .page {
-    max-width: calc(1480px * var(--ui-scale));
+    max-width: 100%;
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .grid-4 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }
 
-/* A 4K panel at 1.25 scale still has room for a wider ledger; keep the column
-   proportional instead of shrinking to a 1080p-looking strip. */
+/* 4K: a full-width ledger, with card grids gaining another column step. */
 @media (min-width: 3300px) {
   html[data-scale="auto"] .page {
-    max-width: calc(1560px * var(--ui-scale));
+    max-width: 100%;
+  }
+
+  .grid-2 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .grid-4 {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
   }
 }
 
