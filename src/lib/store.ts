@@ -3,6 +3,7 @@ import type {
   AppState,
   BossStatus,
   Character,
+  DesiredBuild,
   EndingState,
   EquipmentState,
   JourneyState,
@@ -17,6 +18,7 @@ import {
   ITEMS,
   ITEMS_BY_NAME,
   LOADOUTS_BY_BUILD,
+  PROFILES_BY_ARCHETYPE,
   SPELL_PACKAGE_BY_ID,
   STEP_BY_ID,
   remapStepId,
@@ -48,6 +50,26 @@ const EMPTY_EQUIPMENT: EquipmentState = {
   spells: ["", "", "", "", "", "", "", "", "", ""],
   physick: ["", ""],
 };
+
+function emptyEquipment(): EquipmentState {
+  return {
+    ...EMPTY_EQUIPMENT,
+    armor: [...EMPTY_EQUIPMENT.armor],
+    talismans: [...EMPTY_EQUIPMENT.talismans],
+    spells: [...EMPTY_EQUIPMENT.spells],
+    physick: [...EMPTY_EQUIPMENT.physick],
+  };
+}
+
+function emptyDesiredBuild(): DesiredBuild {
+  return {
+    archetypeId: "",
+    profileId: "",
+    stats: {},
+    equipment: emptyEquipment(),
+    equipmentMode: "signature",
+  };
+}
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -87,6 +109,7 @@ function emptyJourney(index: number, label?: string): JourneyState {
     npcWalkthroughSteps: {},
     bossReveals: {},
     decisionChecks: {},
+    sweepDeferred: {},
   };
 }
 
@@ -111,6 +134,7 @@ function createCharacter(name = "Tarnished"): Character {
     stats: { ...base.stats },
     archetypeId: "",
     profileId: "",
+    desiredBuild: emptyDesiredBuild(),
     journeyId: journey.id,
     journeys: [journey],
     items: owned,
@@ -118,19 +142,12 @@ function createCharacter(name = "Tarnished"): Character {
     loreRead: {},
     endings: {},
     achievements: {},
-    equipment: {
-      ...EMPTY_EQUIPMENT,
-      armor: [...EMPTY_EQUIPMENT.armor],
-      talismans: [...EMPTY_EQUIPMENT.talismans],
-      spells: [...EMPTY_EQUIPMENT.spells],
-      physick: [...EMPTY_EQUIPMENT.physick],
-    },
+    equipment: emptyEquipment(),
     equipmentMode: "signature",
     itemCounts,
     itemOrigins,
     statSnapshots: [],
     progressionChecks: {},
-    bossReveals: {},
   };
 }
 
@@ -217,6 +234,16 @@ function remapLegacySteps(value: unknown): Record<string, unknown> {
   return output;
 }
 
+function statsPartial(value: unknown): Partial<Stats> {
+  const source = asObject(value);
+  const output: Partial<Stats> = {};
+  for (const key of STAT_ORDER) {
+    const entry = source[key];
+    if (typeof entry === "number" && Number.isFinite(entry)) output[key] = entry;
+  }
+  return output;
+}
+
 function statsFrom(value: unknown, fallback: Stats): Stats {
   const source = asObject(value);
   const output = { ...fallback };
@@ -269,6 +296,7 @@ export function normalizeJourney(value: unknown, index: number): JourneyState {
     npcWalkthroughSteps: boolRecord(source.npcWalkthroughSteps),
     bossReveals: boolRecord(source.bossReveals),
     decisionChecks: boolRecord(source.decisionChecks),
+    sweepDeferred: boolRecord(source.sweepDeferred),
   };
 }
 
@@ -317,6 +345,31 @@ function normalizeCharacter(value: unknown): Character | null {
       ? source.journeyId
       : journeys[0].id;
   const equipmentSource = asObject(source.equipment);
+  const desiredSource = asObject(source.desiredBuild);
+  const desiredEquipmentSource = asObject(desiredSource.equipment);
+  const desiredMode =
+    desiredSource.equipmentMode === "optimized" ||
+    desiredSource.equipmentMode === "fashion" ||
+    desiredSource.equipmentMode === "custom"
+      ? desiredSource.equipmentMode
+      : "signature";
+  const desiredBuild: DesiredBuild = {
+    archetypeId: typeof desiredSource.archetypeId === "string" ? desiredSource.archetypeId : "",
+    profileId: typeof desiredSource.profileId === "string" ? desiredSource.profileId : "",
+    stats: statsPartial(desiredSource.stats),
+    equipment: {
+      mainWeapon: typeof desiredEquipmentSource.mainWeapon === "string" ? desiredEquipmentSource.mainWeapon : "",
+      secondaryWeapon:
+        typeof desiredEquipmentSource.secondaryWeapon === "string" ? desiredEquipmentSource.secondaryWeapon : "",
+      offhand: typeof desiredEquipmentSource.offhand === "string" ? desiredEquipmentSource.offhand : "",
+      shield: typeof desiredEquipmentSource.shield === "string" ? desiredEquipmentSource.shield : "",
+      armor: tuple(desiredEquipmentSource.armor, 4, EMPTY_EQUIPMENT.armor),
+      talismans: tuple(desiredEquipmentSource.talismans, 4, EMPTY_EQUIPMENT.talismans),
+      spells: tuple(desiredEquipmentSource.spells, 10, EMPTY_EQUIPMENT.spells),
+      physick: tuple(desiredEquipmentSource.physick, 2, EMPTY_EQUIPMENT.physick),
+    },
+    equipmentMode: desiredMode,
+  };
   return {
     id: source.id,
     name: source.name,
@@ -325,6 +378,7 @@ function normalizeCharacter(value: unknown): Character | null {
     stats: statsFrom(source.stats, base.stats),
     archetypeId: typeof source.archetypeId === "string" ? source.archetypeId : "",
     profileId: typeof source.profileId === "string" ? source.profileId : "",
+    desiredBuild,
     journeyId,
     journeys,
     items: boolRecord(source.items),
@@ -352,7 +406,6 @@ function normalizeCharacter(value: unknown): Character | null {
     itemOrigins: numberRecord(source.itemOrigins),
     statSnapshots: normalizeStatSnapshots(source.statSnapshots),
     progressionChecks: boolRecord(source.progressionChecks),
-    bossReveals: boolRecord(source.bossReveals),
   };
 }
 
@@ -852,6 +905,13 @@ export function setStat(key: keyof Stats, value: number): void {
   }));
 }
 
+/**
+ * Apply a certified profile to the character's target build.
+ *
+ * This sets what the player is working toward: level, stat spread and certified
+ * gear. It never overwrites the stats or equipment the player currently has in
+ * game, so a level-200 preview cannot destroy a live character sheet.
+ */
 export function applyProfile(profileId: string): void {
   const profile = PROFILE_BY_ID[profileId];
   if (!profile) return;
@@ -861,9 +921,62 @@ export function applyProfile(profileId: string): void {
     ...character,
     archetypeId: profile.archetypeId,
     profileId: profile.id,
-    stats: { ...profile.stats },
-    equipment: loadout ? equipmentFromLoadout(loadout) : character.equipment,
-    equipmentMode: loadout?.type === "Optimized" ? "optimized" : loadout?.type === "Fashion" ? "fashion" : "signature",
+    desiredBuild: {
+      archetypeId: profile.archetypeId,
+      profileId: profile.id,
+      stats: { ...profile.stats },
+      equipment: loadout ? equipmentFromLoadout(loadout) : character.desiredBuild.equipment,
+      equipmentMode: loadout?.type === "Optimized" ? "optimized" : loadout?.type === "Fashion" ? "fashion" : "signature",
+    },
+  }));
+}
+
+/** Point the target build at an archetype without changing any stats yet. */
+export function setDesiredArchetype(archetypeId: string): void {
+  const profile = (PROFILES_BY_ARCHETYPE[archetypeId] ?? []).find((entry) => entry.level === 150) ??
+    (PROFILES_BY_ARCHETYPE[archetypeId] ?? [])[0];
+  if (profile) {
+    applyProfile(profile.id);
+    return;
+  }
+  updateCharacter((character) => ({
+    ...character,
+    archetypeId,
+    desiredBuild: { ...character.desiredBuild, archetypeId },
+  }));
+}
+
+/** Write the full eight-stat spread in one commit (no per-keystroke churn). */
+export function setStats(stats: Stats): void {
+  const next = { ...stats };
+  for (const key of STAT_ORDER) next[key] = Math.max(1, Math.min(99, Math.floor(Number(next[key]) || 1)));
+  updateCharacter((character) => ({ ...character, stats: next, profileId: "" }));
+}
+
+/** Mark the current spread as the target build. */
+export function adoptCurrentStatsAsDesired(): void {
+  updateCharacter((character) => ({
+    ...character,
+    desiredBuild: { ...character.desiredBuild, stats: { ...character.stats } },
+  }));
+}
+
+/** Clear the target build back to "no target yet". */
+export function clearDesiredBuild(): void {
+  updateCharacter((character) => ({
+    ...character,
+    archetypeId: "",
+    profileId: "",
+    desiredBuild: emptyDesiredBuild(),
+  }));
+}
+
+/** Copy the target build's gear into the character's live loadout. */
+export function applyDesiredEquipment(): void {
+  updateCharacter((character) => ({
+    ...character,
+    equipment: { ...character.desiredBuild.equipment },
+    equipmentMode: character.desiredBuild.equipmentMode,
   }));
 }
 
@@ -974,6 +1087,25 @@ export function setBossReveal(id: string, value: boolean): void {
   });
 }
 
+/** Re-seal one boss: removes a manual reveal so spoilers hide again. */
+export function hideBossReveal(id: string): void {
+  setBossReveal(id, false);
+}
+
+/** Re-seal every manually revealed boss in the active journey. */
+export function resetBossReveals(): void {
+  updateJourney((journey) => ({ ...journey, bossReveals: {} }));
+}
+
+export function setSweepDeferred(id: string, value: boolean): void {
+  updateJourney((journey) => {
+    const sweepDeferred = { ...journey.sweepDeferred };
+    if (value) sweepDeferred[id] = true;
+    else delete sweepDeferred[id];
+    return { ...journey, sweepDeferred };
+  });
+}
+
 export function setDecisionCheck(id: string, value: boolean): void {
   updateJourney((journey) => {
     const decisionChecks = { ...journey.decisionChecks };
@@ -983,11 +1115,13 @@ export function setDecisionCheck(id: string, value: boolean): void {
   });
 }
 
-export function setProgressionCheck(id: string, value: boolean): void {
+/** Checkpoints are keyed `archetypeId:nodeId` so two builds never share ticks. */
+export function setProgressionCheck(archetypeId: string, nodeId: string, value: boolean): void {
+  const key = `${archetypeId}:${nodeId}`;
   updateCharacter((character) => {
     const progressionChecks = { ...character.progressionChecks };
-    if (value) progressionChecks[id] = true;
-    else delete progressionChecks[id];
+    if (value) progressionChecks[key] = true;
+    else delete progressionChecks[key];
     return { ...character, progressionChecks };
   });
 }
@@ -1063,18 +1197,33 @@ export function setJourneyStatus(id: string, value: boolean): void {
   updateJourney((journey) => ({ ...journey, transitionGates: { ...journey.transitionGates, [id]: value } }));
 }
 
-export function addCharacter(name: string): void {
+export function addCharacter(name: string): string {
   const character = createCharacter(name.trim() || "Tarnished");
   commit({
     ...state,
     characters: [...state.characters, character],
     activeCharacterId: character.id,
   });
+  return character.id;
 }
 
 export function switchCharacter(id: string): void {
   if (!state.characters.some((character) => character.id === id)) return;
   commit({ ...state, activeCharacterId: id });
+}
+
+/**
+ * Remove a character and every journey it owns. The last remaining character is
+ * kept so the app always has an active sheet.
+ */
+export function deleteCharacter(id: string): boolean {
+  if (state.characters.length <= 1) return false;
+  const remaining = state.characters.filter((character) => character.id !== id);
+  if (remaining.length === state.characters.length) return false;
+  const activeCharacterId =
+    state.activeCharacterId === id ? remaining[0].id : state.activeCharacterId;
+  commit({ ...state, characters: remaining, activeCharacterId });
+  return true;
 }
 
 export function exportState(): string {

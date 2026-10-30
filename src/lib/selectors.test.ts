@@ -67,9 +67,15 @@ import {
   npcWalkthroughProgress,
   questlineProgress,
   routeProgress,
+  sweepProgress,
+  sweepStepState,
+  sweepStepsForArea,
+  sweepStepsForItem,
+  collectionStepFor,
   upgradeProgress,
   worldProgress,
 } from "./selectors";
+import { SWEEP_STEPS, SWEEP_STEP_COUNTS } from "./data";
 import type { Character, JourneyState, Stats } from "./types";
 
 const STATS: Stats = { vig: 15, mnd: 10, end: 11, str: 14, dex: 13, int: 9, fai: 9, arc: 7 };
@@ -104,6 +110,7 @@ function journey(overrides: Partial<JourneyState> = {}): JourneyState {
     npcWalkthroughSteps: {},
     bossReveals: {},
     decisionChecks: {},
+    sweepDeferred: {},
     ...overrides,
   };
 }
@@ -139,7 +146,22 @@ function character(overrides: Partial<Character> = {}): Character {
     itemOrigins: {},
     statSnapshots: [],
     progressionChecks: {},
-    bossReveals: {},
+    desiredBuild: {
+      archetypeId: "",
+      profileId: "",
+      stats: {},
+      equipment: {
+        mainWeapon: "",
+        secondaryWeapon: "",
+        offhand: "",
+        shield: "",
+        armor: ["", "", "", ""],
+        talismans: ["", "", "", ""],
+        spells: ["", "", "", "", "", "", "", "", "", ""],
+        physick: ["", ""],
+      },
+      equipmentMode: "signature",
+    },
     ...overrides,
   };
 }
@@ -635,5 +657,77 @@ describe("collection selectors", () => {
     const characterWithItem = character({ items: { [item.id]: true } });
     expect(isEquipmentOwned(characterWithItem, "Greatsword +25 (Heavy affinity)")).toBe(true);
     expect(isEquipmentOwned(characterWithItem, "Ordovis's Greatsword +10")).toBe(false);
+  });
+});
+
+describe("sweep steps", () => {
+  it("gives every catalogue item an actionable step", () => {
+    expect(SWEEP_STEPS.length).toBeGreaterThan(0);
+    expect(SWEEP_STEP_COUNTS.uncovered).toBe(0);
+    const routeAuto = new Set(ROUTE_STEPS.flatMap((step) => step.autoAcquireItemIds));
+    const sweepCovered = new Set(
+      SWEEP_STEPS.flatMap((step) => step.entries.map((entry) => entry.itemId)).filter(Boolean),
+    );
+    for (const item of ITEMS) {
+      const covered = routeAuto.has(item.id) || sweepCovered.has(item.id);
+      expect(covered, `${item.name} (${item.id}) has no step`).toBe(true);
+    }
+  });
+
+  it("resolves every sweep entry to a persisted key", () => {
+    for (const step of SWEEP_STEPS) {
+      expect(step.entries.length, step.id).toBeGreaterThan(0);
+      for (const entry of step.entries) {
+        const keys = [entry.itemId, entry.materialId, entry.purchaseId, entry.farmId].filter(Boolean);
+        expect(keys.length, `${step.id} / ${entry.name}`).toBeGreaterThan(0);
+        const resolved = collectionStepFor(entry.itemId) ?? sweepStepsForItem(entry.itemId)[0];
+        if (entry.itemId) expect(resolved, `${entry.name} has no step`).toBeDefined();
+      }
+    }
+  });
+
+  it("anchors every sweep step to a real route step", () => {
+    const ids = new Set(ROUTE_STEPS.map((step) => step.id));
+    for (const step of SWEEP_STEPS) {
+      expect(ids.has(step.afterStepId), `${step.id} -> ${step.afterStepId}`).toBe(true);
+    }
+  });
+
+  it("shares one acquisition across every area that lists the item", () => {
+    const item = ITEMS.find((entry) => entry.name === "Aristocrat Boots");
+    expect(item).toBeDefined();
+    if (!item) return;
+    const step = SWEEP_STEPS.find((entry) =>
+      entry.entries.some((row) => row.itemId === item.id),
+    );
+    expect(step).toBeDefined();
+    if (!step) return;
+    const before = sweepStepState(step.id, character(), journey());
+    expect(before?.acquired).toBe(0);
+    const after = sweepStepState(step.id, character({ items: { [item.id]: true } }), journey());
+    expect(after?.entries.find((row) => row.entry.itemId === item.id)?.acquired).toBe(true);
+  });
+
+  it("counts material rows from the journey material ledger", () => {
+    const materialStep = SWEEP_STEPS.find((step) => step.kind === "materials");
+    expect(materialStep).toBeDefined();
+    if (!materialStep) return;
+    const entry = materialStep.entries.find((row) => row.materialId);
+    expect(entry).toBeDefined();
+    if (!entry?.materialId) return;
+    const state = sweepStepState(
+      materialStep.id,
+      character(),
+      journey({ materials: { [entry.materialId]: true } }),
+    );
+    expect(state?.entries.find((row) => row.entry.materialId === entry.materialId)?.acquired).toBe(true);
+  });
+
+  it("reports sweep progress against the full ledger", () => {
+    const progress = sweepProgress(character(), journey());
+    expect(progress.total).toBe(SWEEP_STEPS.length);
+    expect(progress.entries).toBe(SWEEP_STEPS.reduce((total, step) => total + step.entries.length, 0));
+    expect(progress.complete).toBe(0);
+    expect(sweepStepsForArea("West Limgrave").length).toBeGreaterThan(0);
   });
 });

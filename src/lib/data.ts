@@ -24,6 +24,7 @@ import areaSweepsJson from "../data/area-sweeps.json";
 import loreExpandedJson from "../data/lore.expanded.json";
 import questlineRouteMapJson from "../data/questline-route-map.json";
 import remembrancePlanJson from "../data/remembrance-plan.json";
+import sweepStepsJson from "../data/sweep-steps.json";
 import type {
   Achievement,
   AchievementRequirementGroup,
@@ -77,6 +78,7 @@ import type {
   WorldObjectGap,
   AreaSweep,
   AreaSweepFile,
+  SweepStep,
   DescriptionFile,
   DescriptionEntry,
   LoreExpandedEntry,
@@ -152,6 +154,28 @@ export const ITEM_DESCRIPTIONS: Record<string, DescriptionEntry> = DESCRIPTIONS.
 export const BOSS_DESCRIPTIONS: Record<string, DescriptionEntry> = DESCRIPTIONS.bosses;
 export const NPC_DESCRIPTIONS: Record<string, DescriptionEntry> = DESCRIPTIONS.npcs;
 export const AREA_DESCRIPTIONS: Record<string, DescriptionEntry> = DESCRIPTIONS.areas;
+export const SWEEP_STEPS: SweepStep[] = sweepStepsJson.steps;
+export const SWEEP_STEP_BY_ID: Record<string, SweepStep> = Object.fromEntries(
+  SWEEP_STEPS.map((step) => [step.id, step]),
+);
+export const SWEEP_STEPS_BY_AREA: Record<string, SweepStep[]> = (() => {
+  const grouped: Record<string, SweepStep[]> = {};
+  for (const step of SWEEP_STEPS) {
+    (grouped[step.area] ??= []).push(step);
+  }
+  for (const steps of Object.values(grouped)) steps.sort((a, b) => a.order - b.order);
+  return grouped;
+})();
+/** Sweep steps keyed by the route step they render after. */
+export const SWEEP_STEPS_AFTER_STEP: Record<string, SweepStep[]> = (() => {
+  const grouped: Record<string, SweepStep[]> = {};
+  for (const step of SWEEP_STEPS) {
+    (grouped[step.afterStepId] ??= []).push(step);
+  }
+  for (const steps of Object.values(grouped)) steps.sort((a, b) => a.order - b.order);
+  return grouped;
+})();
+export const SWEEP_STEP_COUNTS = sweepStepsJson.counts;
 export const AREA_SWEEPS: AreaSweep[] = (areaSweepsJson as AreaSweepFile).areas;
 export const AREA_SWEEP_FILE: AreaSweepFile = areaSweepsJson as AreaSweepFile;
 export const AREA_SWEEP_BY_AREA: Record<string, AreaSweep> = Object.fromEntries(

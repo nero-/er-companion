@@ -452,7 +452,7 @@ export function BuildsPage() {
 
   const toggleRowCheck = (nodeId: string, value: boolean) => {
     setClearedRows((previous) => ({ ...previous, [nodeId]: !value }));
-    setProgressionCheck(nodeId, value);
+    setProgressionCheck(selected?.id ?? character.archetypeId, nodeId, value);
   };
 
   const applyAllSoftcaps = () => {

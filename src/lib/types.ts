@@ -136,6 +136,57 @@ export interface RouteStep {
   objectiveName: string;
 }
 
+/**
+ * An area sweep step: one checklist entry per area and acquisition mode that
+ * carries every item the main route does not hand out on its own. It is a real
+ * step in the journey list but counts toward the collection scope, never the
+ * 4,521-step route denominator.
+ */
+export interface SweepStepEntry {
+  /** Catalog item id, empty when the row does not resolve to a catalog record. */
+  itemId: string;
+  /** Crafting-material id when the row tracks a material instead of a catalog item. */
+  materialId?: string;
+  /** Merchant inventory row id, used when the purchase has no catalog record (ammo, consumables). */
+  purchaseId?: string;
+  /** Farmable ledger id, used when the drop has no catalog record. */
+  farmId?: string;
+  name: string;
+  /**
+   * Where the item comes from inside this area: merchant name for purchases,
+   * enemy or location for drops, pickup location for loose pickups.
+   */
+  source: string;
+  /** Drop chance for random drops; empty for deterministic acquisitions. */
+  dropRate: string;
+  /** Needed quantity for stackable or duplicate pickups. */
+  quantity: number;
+  /** Merchant stock marker ("infinite", "3", …); empty for non-merchant rows. */
+  stock?: string;
+  /** Rune cost when the row is a purchase. */
+  price?: number;
+  /** Renewability note for materials from vendors or respawning nodes. */
+  renewable?: string;
+}
+
+export interface SweepStep {
+  id: string;
+  /** Anchor: the sweep step renders after this route step id. */
+  afterStepId: string;
+  order: number;
+  area: string;
+  sectionId: string;
+  phase: string;
+  game: string;
+  dlc: boolean;
+  /** "merchants" | "farmables" | "pickups" */
+  kind: string;
+  title: string;
+  instruction: string;
+  entries: SweepStepEntry[];
+  sourceUrl: string;
+}
+
 export interface PhaseGateFilter {
   phase: string;
   sections: string[];
@@ -1245,6 +1296,8 @@ export interface JourneyState {
   bossReveals: Record<string, boolean>;
   /** Manual overrides for auto-completed branch decisions. */
   decisionChecks: Record<string, boolean>;
+  /** Sweep step ids the player has explicitly deferred; keeps them out of view. */
+  sweepDeferred: Record<string, boolean>;
 }
 
 export interface EquipmentState {
@@ -1258,14 +1311,31 @@ export interface EquipmentState {
   physick: string[];
 }
 
+export interface DesiredBuild {
+  archetypeId: string;
+  /** Target certified profile (level 150 / 200) or "" when custom. */
+  profileId: string;
+  /** Target stats; empty record means "inherit the profile's stats". */
+  stats: Partial<Stats>;
+  /** Target equipment per slot; empty string means unset. */
+  equipment: EquipmentState;
+  equipmentMode: "signature" | "optimized" | "fashion" | "custom";
+}
+
 export interface Character {
   id: string;
   name: string;
   createdAt: string;
   classId: string;
+  /** The stats the player has in game right now. */
   stats: Stats;
   archetypeId: string;
   profileId: string;
+  /**
+   * The build the player is working toward. Applying a certified profile write
+   * this, never `stats`; `stats` only changes when the player edits it.
+   */
+  desiredBuild: DesiredBuild;
   journeyId: string;
   journeys: JourneyState[];
   items: Record<string, boolean>;
@@ -1281,10 +1351,8 @@ export interface Character {
   itemOrigins: Record<string, number>;
   /** Saved stat spreads and build experiments. */
   statSnapshots: StatSnapshot[];
-  /** Progression timeline checkpoints marked complete. */
+  /** Progression timeline checkpoints marked complete, keyed `archetypeId:nodeId`. */
   progressionChecks: Record<string, boolean>;
-  /** Spoiler reveals for boss and NPC lore. */
-  bossReveals: Record<string, boolean>;
 }
 
 export interface Settings {

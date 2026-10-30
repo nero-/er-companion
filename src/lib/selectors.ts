@@ -34,6 +34,9 @@ import {
   LOADOUTS_BY_BUILD,
   LOADOUT_BY_ID,
   SPELL_PACKAGE_BY_ID,
+  SWEEP_STEPS,
+  SWEEP_STEPS_AFTER_STEP,
+  SWEEP_STEP_BY_ID,
   normalizeContentKey,
 } from "./data";
 import type {
@@ -43,6 +46,8 @@ import type {
   ProgressionLoadout,
   RouteArea,
   RouteStep,
+  SweepStep,
+  SweepStepEntry,
   Settings,
   StepStatus,
   Supplemental,
@@ -696,4 +701,133 @@ export function stepById(id: string): RouteStep | undefined {
 
 export function allBossNamesFromEncounters(): string[] {
   return [...new Set(ENCOUNTERS.map((encounter) => encounter.name))].sort((a, b) => a.localeCompare(b));
+}
+
+/* ---------------------------------------------------------------------------
+ * Sweep steps: the per-area merchant, farm and pickup checklists that give
+ * every catalogue item an actionable step.
+ * ------------------------------------------------------------------------- */
+
+export interface SweepEntryState {
+  entry: SweepStepEntry;
+  /** True once the character owns the item (itemId) or it is otherwise covered. */
+  acquired: boolean;
+}
+
+export interface SweepStepState {
+  step: SweepStep;
+  entries: SweepEntryState[];
+  acquired: number;
+  total: number;
+  complete: boolean;
+  /** Items this step covers that the character already owned before the sweep. */
+  ownedElsewhere: boolean;
+}
+
+export function sweepEntryAcquired(
+  entry: SweepStepEntry,
+  character: Character,
+  journey: JourneyState,
+): boolean {
+  // Catalogue ownership wins whenever the row resolves to a record, so buying
+  // or farming it in one area clears every other area that lists it. The
+  // ledger keys are fallbacks for rows with no catalogue record (ammo,
+  // consumables, a few DLC drops).
+  if (entry.itemId) return Boolean(character.items[entry.itemId]);
+  if (entry.materialId) return Boolean(journey.materials[entry.materialId]);
+  if (entry.purchaseId) return Boolean(journey.merchants[entry.purchaseId]);
+  if (entry.farmId) return (journey.farmables[entry.farmId] ?? 0) > 0;
+  return false;
+  // Unresolved merchant rows still resolve by name to a catalog record that a
+  // different area already tracks, so one purchase clears every copy.
+  const matches = ITEMS_BY_NAME[entry.name] ?? [];
+  return matches.some((item) => Boolean(character.items[item.id]));
+}
+
+export function sweepStepState(
+  stepId: string,
+  character: Character,
+  journey: JourneyState,
+): SweepStepState | undefined {
+  const step = SWEEP_STEP_BY_ID[stepId];
+  if (!step) return undefined;
+  const entries = step.entries.map((entry) => ({
+    entry,
+    acquired: sweepEntryAcquired(entry, character, journey),
+  }));
+  const acquired = entries.filter((row) => row.acquired).length;
+  return {
+    step,
+    entries,
+    acquired,
+    total: entries.length,
+    complete: entries.length > 0 && acquired === entries.length,
+    ownedElsewhere: acquired > 0 && !journey.steps[stepId],
+  };
+}
+
+export function sweepStepsForArea(area: string): SweepStep[] {
+  return SWEEP_STEPS.filter((step) => step.area === area).sort((a, b) => a.order - b.order);
+}
+
+export function sweepStepsAfterStep(stepId: string): SweepStep[] {
+  return SWEEP_STEPS_AFTER_STEP[stepId] ?? [];
+}
+
+export function sweepStepsForPhase(phase: string): SweepStep[] {
+  return SWEEP_STEPS.filter((step) => step.phase === phase).sort((a, b) => a.order - b.order);
+}
+
+export interface SweepProgress {
+  total: number;
+  complete: number;
+  entries: number;
+  entriesAcquired: number;
+  percent: number;
+}
+
+export function sweepProgress(character: Character, journey: JourneyState): SweepProgress {
+  let complete = 0;
+  let entries = 0;
+  let entriesAcquired = 0;
+  for (const step of SWEEP_STEPS) {
+    const state = sweepStepState(step.id, character, journey);
+    if (!state) continue;
+    entries += state.total;
+    entriesAcquired += state.acquired;
+    if (state.complete) complete += 1;
+  }
+  return {
+    total: SWEEP_STEPS.length,
+    complete,
+    entries,
+    entriesAcquired,
+    percent: entries ? Math.round((entriesAcquired / entries) * 100) : 0,
+  };
+}
+
+/** Sweep steps that cover this item, in route order. */
+export function sweepStepsForItem(itemId: string): SweepStep[] {
+  return SWEEP_STEPS.filter((step) =>
+    step.entries.some((entry) => entry.itemId === itemId),
+  ).sort((a, b) => a.order - b.order);
+}
+
+/**
+ * The actionable step a player should open to obtain an item: its first route
+ * step when one exists, else the first sweep step that lists it.
+ */
+export function collectionStepFor(
+  itemId: string,
+): { kind: "route" | "sweep"; stepId: string; label: string } | undefined {
+  const item = ITEMS.find((entry) => entry.id === itemId);
+  if (item) {
+    const auto = ROUTE_STEPS.find((step) => step.autoAcquireItemIds.includes(itemId));
+    if (auto) {
+      return { kind: "route", stepId: auto.id, label: auto.area };
+    }
+  }
+  const sweep = sweepStepsForItem(itemId)[0];
+  if (sweep) return { kind: "sweep", stepId: sweep.id, label: sweep.title };
+  return undefined;
 }

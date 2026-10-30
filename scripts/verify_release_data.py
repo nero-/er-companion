@@ -47,6 +47,7 @@ lore_expanded = load("lore.expanded.json")
 quest_map = load("questline-route-map.json")
 remembrance = load("remembrance-plan.json")
 lore = load("lore.json")
+sweep_steps = load("sweep-steps.json")
 
 if errors:
     print("\n".join(errors))
@@ -242,6 +243,69 @@ for key, entry in expanded.items():
     if len(entry.get("overview", "")) < 40:
         warnings.append(f"lore.expanded: {key} overview shorter than 40 chars")
 
+# --- Sweep steps: every item and material has an actionable step ---------
+material_ids = {row["id"] for row in materials.get("entries", [])}
+material_by_id = {row["id"]: row for row in materials.get("entries", [])}
+covered_items: set[str] = set()
+covered_materials: set[str] = set()
+route_auto_items: set[str] = set()
+for step in route["steps"]:
+    route_auto_items.update(step.get("autoAcquireItemIds") or [])
+sweep_ids: set[str] = set()
+sweep_by_area: dict[str, int] = {}
+for step in sweep_steps.get("steps", []):
+    if step["id"] in sweep_ids:
+        errors.append(f"sweep-steps: duplicate id {step['id']}")
+    sweep_ids.add(step["id"])
+    if step["afterStepId"] not in route_steps:
+        errors.append(
+            f"sweep-steps: {step['id']} anchors on unknown route step {step['afterStepId']}"
+        )
+    if step["area"] not in route_areas:
+        errors.append(f"sweep-steps: {step['id']} names unknown area {step['area']}")
+    sweep_by_area[step["area"]] = sweep_by_area.get(step["area"], 0) + 1
+    if not step.get("entries"):
+        errors.append(f"sweep-steps: {step['id']} has no entries")
+    for entry in step["entries"]:
+        item_id = entry.get("itemId") or ""
+        material_id = entry.get("materialId") or ""
+        if not any(entry.get(key) for key in ("itemId", "materialId", "purchaseId", "farmId")):
+            errors.append(f"sweep-steps: {step['id']} entry {entry['name']!r} resolves to nothing")
+        if item_id:
+            if item_id not in item_ids:
+                errors.append(f"sweep-steps: {step['id']} unknown item {item_id}")
+            covered_items.add(item_id)
+        if material_id:
+            if material_id not in material_ids:
+                errors.append(f"sweep-steps: {step['id']} unknown material {material_id}")
+            covered_materials.add(material_id)
+
+uncovered_items = item_ids - route_auto_items - covered_items
+if uncovered_items:
+    errors.append(
+        f"sweep-steps: {len(uncovered_items)} catalogue items have no step "
+        f"(e.g. {sorted(uncovered_items)[:3]})"
+    )
+obtainable_materials = {
+    material_id
+    for material_id, row in material_by_id.items()
+    if row.get("obtainable") is not False
+}
+missing_materials = obtainable_materials - covered_materials
+if missing_materials:
+    errors.append(
+        f"sweep-steps: {len(missing_materials)} obtainable materials have no step "
+        f"(e.g. {sorted(missing_materials)[:3]})"
+    )
+
+declared = sweep_steps.get("counts", {})
+if declared.get("steps") != len(sweep_steps.get("steps", [])):
+    errors.append("sweep-steps: counts.steps does not match the ledger")
+if declared.get("catalogue") != len(items["items"]):
+    errors.append("sweep-steps: counts.catalogue does not match items.full.json")
+if declared.get("materials") != len(materials.get("entries", [])):
+    errors.append("sweep-steps: counts.materials does not match materials.full.json")
+
 # --- Summary -------------------------------------------------------------
 print("release-data validation")
 print(f"  descriptions: {counts}")
@@ -250,6 +314,10 @@ print(f"  quest links : {len(links)} / {len(quest_steps)} steps ({confidence})")
 print(f"  remembrance : {len(plan)} entries")
 print(f"  expanded    : {len(expanded)} lore entries")
 print(f"  tiers       : {len(tier_rows)} entries")
+print(
+    f"  sweep steps : {len(sweep_ids)} steps / {len(covered_items)} items + "
+    f"{len(covered_materials)} materials across {len(sweep_by_area)} areas"
+)
 print(f"  warnings    : {len(warnings)}")
 for warning in warnings[:25]:
     print(f"    ! {warning}")
