@@ -195,10 +195,37 @@ progress counters on every page. `builds.json` was split: 0.85 MiB core stays ea
 6.9 MiB reference pack is lazy, and `boss-index.json` (1.7 KiB) gives boss names + strategy counts
 to the shell/search. Don't add another eager import to `data.ts`.
 
-**Scaling.** `resolveUiScale` in `Shell.tsx` uses the **logical viewport**, not
-`innerWidth * devicePixelRatio`. A 4K panel at 200% OS scaling reports 1920×1080 and must get
-scale 1.0; multiplying by DPR double-scales and was a real bug. Thresholds: ≥2000 short edge or
-≥3400 long edge → 1.25; ≥1300/2400 → 1.1. `interfaceScale: "large"` pins 1.25.
+**Scaling — read this before touching font sizes.**
+
+The type ramp is `calc(Npx * var(--ui-scale))`. `--ui-scale` comes from `resolveUiScale` in
+`Shell.tsx`, which uses the **logical viewport long edge only** — never multiply by
+`devicePixelRatio`, because a 4K panel at 200% OS scaling already reports 1920×1080 and DPR 2;
+multiplying compounds the two and the UI becomes enormous (this was shipped once, then reverted).
+
+Thresholds on `max(innerWidth, innerHeight)`:
+
+| Long edge | Scale | Typical display |
+| --- | --- | --- |
+| ≥ 3200 | 1.45 | unscaled 4K windowed or full |
+| ≥ 2050 | 1.18 | 2K/1440p, windowed or full |
+| ≥ 1400 | 1.08 | 1080p, or OS-scaled 4K |
+| ≥ 1100 wide | 1.04 | laptop windows |
+| below | 1.0 | phone / narrow split |
+
+**The desktop window cap was the real 4K bug.** `src-tauri/src/lib.rs` clamped the window to
+1920×1280, so on a 2K or 4K monitor the renderer saw a 1080p-sized viewport and always resolved to
+scale 1.0. The clamp is gone; the window now fills 86%/88% of the monitor with a 1024×700 minimum.
+If large displays look unscaled again, check the Rust sizing first, not the CSS.
+
+**Type floor is 13px.** Every `font-size` in `src/styles.css` *and* all eleven `src/pages/*.css`
+files was raised to a 13px floor expressed as `calc(13px * var(--ui-scale))` (271 declarations in
+page CSS). Base sizes: 17px body, 16.5px nav, 14px `.small`, 13px `.tiny`. Do not add a sub-13px
+`font-size`; it will be illegible on the displays this was fixed for. Fixed-width grid tracks in
+`collection.css` are themselves multiplied by `--ui-scale` so cards grow with the text instead of
+clipping names.
+
+Verified rendering: smallest text 14px @1080p, 15.3px @2K, 18px @4K, 13px @390px; zero horizontal
+overflow on all 12 routes at every size.
 
 **Performance.** All `backdrop-filter` was removed and `body::after` deleted — they forced full
 repaints on WebKitGTK. Do not reintroduce blur on the sidebar, topbar, drawer or palette. Long
@@ -237,7 +264,9 @@ Verified by actually running it (not just tests):
   Collection / Materials / Farms.
 - Workbook merchant tick makes the inventory row tick and vice versa (one canonical key).
 - `/journey?step=w2-1` opens Step 15.
-- Scale reads 1.0 / 1.1 / 1.25 at 1080p / 1440p / 4K; 4K@200% stays 1.0.
+- Scale reads 1.08 / 1.18 / 1.45 at 1080p / 1440p / 4K; OS-scaled 4K reads 1.08. Smallest
+  rendered text is 14px / 15.3px / 18px respectively, and 13px at 390px. No horizontal overflow on
+  any of the 12 routes at any size.
 - 20 scroll steps over 3,921 px: 0 long tasks; computed `backdrop-filter` none.
 - Production build: all 12 routes render, service worker precaches 62 entries, offline reload works.
 - v1.2.0 release carries Windows x64 NSIS `.exe`, Linux `.deb`/`.rpm`/`.AppImage`, macOS universal

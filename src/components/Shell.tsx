@@ -25,11 +25,22 @@ interface NavGroup {
   items: NavItem[];
 }
 
-/* The manual "large" override always pins the top step; "auto" resolves from
-   the logical viewport, which is what the user's desktop scaling already
-   normalises. A 4K panel at 200% reports 1920x1080 CSS pixels and keeps 1080p
-   sizing; an unscaled 4K panel reports 3840x2160 and gets the top step. */
-const TOP_SCALE = 1.25;
+/* Resolution scaling.
+ *
+ * The scale multiplies the whole type ramp, so the thresholds have to track what
+ * a display *is*, not just whether it is enormous. Two things made the previous
+ * version fail on real desktops:
+ *
+ *   1. The desktop window used to be clamped to 1920x1280, so a 2K or 4K monitor
+ *      reported a 1080p-sized viewport and always resolved to scale 1.0. That cap
+ *      is gone (see src-tauri/src/lib.rs); the window now fills the monitor.
+ *   2. Thresholds that only fired above 2000px left 1440p at 1.0 and gave 1080p
+ *      nothing at all, which is why the dense chrome stayed hard to read.
+ *
+ * Base sizes are deliberately generous (16px body, 15px nav) and the steps are
+ * larger than before, because "readable at a glance while playing" beats density.
+ */
+const TOP_SCALE = 1.45;
 
 function resolveUiScale(mode: "auto" | "large"): number {
   if (mode === "large") return TOP_SCALE;
@@ -38,21 +49,26 @@ function resolveUiScale(mode: "auto" | "large"): number {
   const width = window.innerWidth || 1280;
   const height = window.innerHeight || 800;
 
-  // Phones and narrow split windows keep their natural size whatever the DPR.
-  if (width < 1024) return 1;
+  // Phones and narrow split windows keep their natural size.
+  if (width < 900) return 1;
 
-  // The browser already reports CSS pixels, so a 4K panel running at 200% OS
-  // scaling is a 1920x1080 viewport. Only add scale when the *logical* viewport
-  // is genuinely large, otherwise the operating system's scaling and this app's
-  // scaling compound and the interface becomes enormous.
-  const shortEdge = Math.min(width, height);
+  // CSS pixels only — deliberately NOT multiplied by devicePixelRatio.
+  //
+  // When the desktop already scales (4K panel at 200% reports 1920x1080 with
+  // DPR 2), the operating system has applied its own 2x. Multiplying by DPR here
+  // as well compounds the two and the interface becomes enormous. An unscaled 4K
+  // panel reports 3840x2160 at DPR 1 and is genuinely that large, so the long
+  // edge alone is a reliable signal.
   const longEdge = Math.max(width, height);
 
-  // 2160p logical viewport.
-  if (shortEdge >= 2000 || longEdge >= 3400) return TOP_SCALE;
-  // 1440p / 1600p logical viewport.
-  if (shortEdge >= 1300 || longEdge >= 2400) return 1.1;
-  return 1;
+  // Unscaled 4K / 2160-class desktop.
+  if (longEdge >= 3200) return TOP_SCALE;
+  // Unscaled 1440p / 1600p desktop.
+  if (longEdge >= 2050) return 1.18;
+  // 1080p desktop, or an OS-scaled 4K panel where scaling already happened.
+  if (longEdge >= 1400) return 1.08;
+  // Narrower desktop windows still get a small lift so 11.5px chrome is legible.
+  return width >= 1100 ? 1.04 : 1;
 }
 
 const PAGE_TITLES: Record<string, string> = {

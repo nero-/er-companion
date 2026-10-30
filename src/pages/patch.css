@@ -3,7 +3,7 @@
 }
 
 .patch-banner .callout {
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .pack-stat-grid {
@@ -20,7 +20,7 @@
 }
 
 .pack-stat-label {
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -37,7 +37,7 @@
 
 .pack-stat-note {
   margin-top: 2px;
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
   color: var(--muted);
 }
@@ -68,7 +68,7 @@
   flex: 0 0 auto;
   border: 1px solid rgba(212, 176, 106, 0.35);
   border-radius: 50%;
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--accent);
 }
 
@@ -90,7 +90,7 @@
 
 .content-route-count span {
   font-family: var(--font-ui);
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -120,7 +120,7 @@
 }
 
 .pack-highlight-title {
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   color: var(--fg-soft);
 }
@@ -162,12 +162,12 @@
 }
 
 .pack-item-name {
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--fg-soft);
 }
 
 .pack-item-loc {
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--faint);
 }
 
@@ -199,7 +199,7 @@
   margin: 0;
   padding-left: 17px;
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.55;
 }
 
@@ -226,7 +226,7 @@
   justify-content: space-between;
   gap: 10px;
   cursor: pointer;
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--fg-soft);
   list-style: none;
 }
@@ -309,7 +309,7 @@
   color: var(--fg-soft);
   background: rgba(255, 255, 255, 0.03);
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }

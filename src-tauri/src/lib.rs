@@ -203,8 +203,12 @@ pub fn run() {
                     let scale = monitor.scale_factor();
                     let logical_width = size.width as f64 / scale;
                     let logical_height = size.height as f64 / scale;
-                    let width = (logical_width * 0.82).clamp(1024.0, 1920.0);
-                    let height = (logical_height * 0.86).clamp(700.0, 1280.0);
+                    // Fill most of the monitor but never below a usable minimum.
+                    // Do NOT cap the upper bound: clamping a 4K window back to
+                    // 1920 made the renderer's resolution scaling think it was
+                    // on a 1080p display, so large monitors got no scale-up.
+                    let width = (logical_width * 0.86).max(1024.0).min(logical_width);
+                    let height = (logical_height * 0.88).max(700.0).min(logical_height);
                     let _ = window.set_size(LogicalSize::new(width, height));
                     let _ = window.center();
                 }

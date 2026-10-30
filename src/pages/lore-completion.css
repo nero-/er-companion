@@ -35,7 +35,7 @@
   min-width: 250px;
   padding: 12px 16px;
   color: var(--faint);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.5;
 }
 
@@ -102,7 +102,7 @@
   background: rgba(0, 0, 0, 0.18);
   color: var(--faint);
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .lore-area {
@@ -117,7 +117,7 @@
   gap: 6px;
   margin-top: 3px;
   color: var(--faint);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .lore-badges {
@@ -130,7 +130,7 @@
   display: -webkit-box;
   overflow: hidden;
   color: var(--muted);
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.55;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
@@ -138,7 +138,7 @@
 
 .lore-unlock-note {
   color: var(--faint);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .lore-card-footer {
@@ -160,7 +160,7 @@
   border-radius: 9px;
   background: rgba(0, 0, 0, 0.16);
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.5;
 }
 
@@ -193,7 +193,7 @@
   gap: 7px;
   margin-bottom: 5px;
   color: var(--accent);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -221,7 +221,7 @@
   margin-top: 20px;
   padding-top: 14px;
   border-top: 1px solid var(--border);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .lore-source dd {
@@ -303,7 +303,7 @@
 
 .pulse-card-detail {
   color: var(--muted);
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
 }
 
@@ -342,7 +342,7 @@
 
 .plan-fields dt {
   color: var(--faint);
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -352,7 +352,7 @@
   margin: 3px 0 0;
   overflow-wrap: anywhere;
   color: var(--fg-soft);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.5;
 }
 
@@ -392,13 +392,13 @@
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   color: var(--faint);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .trophy-cue {
   margin-top: 6px;
   color: var(--fg-soft);
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.5;
 }
 
@@ -444,7 +444,7 @@
 .gate-trigger {
   margin-top: 6px;
   color: var(--fg-soft);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
@@ -464,7 +464,7 @@
 
 .gate-details dt {
   color: var(--faint);
-  font-size: 8.5px;
+  font-size: calc(13px * var(--ui-scale));
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -472,7 +472,7 @@
 .gate-details dd {
   margin: 0;
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
   overflow-wrap: anywhere;
 }
@@ -502,7 +502,7 @@
   align-items: flex-start;
   gap: 9px;
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.55;
 }
 
@@ -551,7 +551,7 @@
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   color: var(--faint);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .ending-badges {
@@ -634,7 +634,7 @@
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   color: var(--faint);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .future-after {
@@ -693,7 +693,7 @@
 
 .remembrance-kv {
   grid-template-columns: 98px minmax(0, 1fr);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .remembrance-kv dd {
@@ -838,7 +838,7 @@
 .scope-subtitle {
   margin-top: 3px;
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .scope-grid {
@@ -880,7 +880,7 @@
   gap: 7px;
   min-width: 0;
   color: var(--fg-soft);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -921,7 +921,7 @@
   justify-content: space-between;
   gap: 8px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .scope-track {
@@ -1018,7 +1018,7 @@
 
 .achievement-desc {
   color: var(--fg-soft);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.55;
 }
 
@@ -1048,7 +1048,7 @@
 
 .req-group-head strong {
   color: var(--accent);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1069,7 +1069,7 @@
   gap: 4px;
   min-width: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.5;
 }
 
@@ -1112,7 +1112,7 @@
   align-items: center;
   gap: 4px;
   color: var(--accent);
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 /* ---------- Completion: NG+ checklist ---------- */
@@ -1167,7 +1167,7 @@
   padding: 6px 0;
   border-top: 1px solid var(--border);
   color: var(--fg-soft);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
 }
 
@@ -1201,7 +1201,7 @@
   align-items: center;
   gap: 3px;
   color: var(--accent);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 /* ---------- Completion: journey plan ---------- */
@@ -1318,7 +1318,7 @@
 
 .branch-outcomes dt {
   color: var(--faint);
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1328,7 +1328,7 @@
   margin: 0;
   overflow-wrap: anywhere;
   color: var(--fg-soft);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.5;
 }
 
@@ -1387,7 +1387,7 @@
 .branch-reward-reason {
   margin: 0;
   color: var(--warning);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
 }
 
@@ -1401,7 +1401,7 @@
 
 .branch-set-label {
   color: var(--faint);
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1423,7 +1423,7 @@
   background: rgba(255, 255, 255, 0.02);
   color: var(--muted);
   font: inherit;
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   text-align: left;
   cursor: pointer;
 }
@@ -1445,13 +1445,13 @@
   justify-content: space-between;
   gap: 4px 10px;
   color: var(--faint);
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .branch-note {
   margin: 0;
   color: var(--faint);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.5;
 }
 
@@ -1482,7 +1482,7 @@
 
 .branch-auto-note {
   color: var(--success);
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 600;
 }
 
@@ -1557,7 +1557,7 @@
   background: none;
   color: var(--fg-soft);
   font: inherit;
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   text-align: left;
   overflow-wrap: anywhere;
 }

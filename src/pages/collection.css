@@ -2,7 +2,7 @@
 
 .col-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(calc(178px * var(--ui-scale)), 1fr));
   gap: 12px;
   margin-bottom: 16px;
 }
@@ -17,7 +17,7 @@
   border: 1px solid var(--border);
   border-radius: 9px;
   background: rgba(255, 255, 255, 0.015);
-  font-size: 12px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--muted);
 }
 
@@ -65,7 +65,7 @@
 
 .col-group-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(205px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(calc(228px * var(--ui-scale)), 1fr));
   gap: 8px;
 }
 
@@ -103,7 +103,7 @@
   align-items: center;
   gap: 6px;
   min-width: 0;
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .col-group-name svg {
@@ -142,7 +142,7 @@
 
 .col-filter-grid {
   display: grid;
-  grid-template-columns: minmax(220px, 1.6fr) repeat(5, minmax(132px, 1fr));
+  grid-template-columns: minmax(calc(220px * var(--ui-scale)), 1.6fr) repeat(5, minmax(calc(150px * var(--ui-scale)), 1fr));
   gap: 10px;
   align-items: end;
 }
@@ -166,7 +166,7 @@
 }
 
 .col-filter-toggles .check {
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .col-filter-toggles > .tiny {
@@ -206,7 +206,7 @@
 }
 
 .item-grid.col-item-grid {
-  grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(calc(255px * var(--ui-scale)), 1fr));
 }
 
 .item-card.col-item {
@@ -348,7 +348,7 @@
 .col-qty-value {
   min-width: 38px;
   text-align: center;
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
   font-variant-numeric: tabular-nums;
   color: var(--faint);
 }
@@ -363,7 +363,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-style: italic;
   line-height: 1.4;
   color: var(--faint);
@@ -399,10 +399,12 @@
 
 .col-item .item-name,
 .col-item .item-sub {
-  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .col-item-tags {
@@ -420,7 +422,7 @@
   padding: 1px 5px;
   border: 1px solid var(--border);
   border-radius: 4px;
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.5;
   letter-spacing: 0.02em;
   color: var(--muted);
@@ -481,13 +483,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 9.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--faint);
 }
 
 .col-item-state {
   flex: 0 0 auto;
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--faint);
@@ -574,7 +576,7 @@
 
 .col-desc-text {
   margin: 8px 0 0;
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.6;
   color: var(--fg-soft);
   white-space: pre-wrap;
@@ -582,7 +584,7 @@
 
 .col-desc .col-source-link {
   margin-top: 8px;
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--faint);
 }
 
@@ -638,7 +640,7 @@
   flex: 1 1 auto;
   min-width: 0;
   overflow-wrap: anywhere;
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--fg-soft);
 }
 
@@ -689,7 +691,7 @@
 .col-location-note {
   display: block;
   margin-top: 4px;
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
   color: var(--faint);
 }
@@ -716,7 +718,7 @@
   background: transparent;
   color: var(--accent);
   font: inherit;
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
   text-align: left;
   cursor: pointer;
 }
@@ -773,7 +775,7 @@
   display: block;
   margin-top: 6px;
   color: var(--faint);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
 }
 
@@ -811,7 +813,7 @@
 }
 
 .col-step-instruction {
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
   color: var(--fg-soft);
 }

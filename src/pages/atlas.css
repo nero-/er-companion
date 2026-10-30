@@ -29,7 +29,7 @@
 .atlas-summary-item span {
   overflow: hidden;
   color: var(--faint);
-  font-size: 8.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.11em;
   text-overflow: ellipsis;
@@ -117,7 +117,7 @@
 
 .atlas-status-eyebrow {
   color: var(--faint);
-  font-size: 8.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -134,7 +134,7 @@
 .atlas-status-note {
   max-width: 860px;
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.55;
 }
 
@@ -179,7 +179,7 @@
 
 .atlas-status-metric span {
   color: var(--faint);
-  font-size: 8.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -190,7 +190,7 @@
   align-items: center;
   gap: 4px;
   color: var(--accent);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   text-decoration: none;
 }
 
@@ -205,7 +205,7 @@
   border-radius: 9px;
   background: rgba(216, 164, 92, 0.04);
   color: var(--muted);
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.55;
 }
 
@@ -218,7 +218,7 @@
 }
 
 .atlas-gap-head strong {
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -234,7 +234,7 @@
 
 .atlas-gap-sources-label {
   color: var(--faint);
-  font-size: 8.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -245,7 +245,7 @@
   align-items: center;
   gap: 3px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   text-decoration: none;
 }
 
@@ -287,12 +287,12 @@
   gap: 6px;
   margin-top: 10px;
   color: var(--warning);
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .atlas-focus-warning code {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .atlas-list-head {
@@ -306,7 +306,7 @@
 
 .atlas-list-count {
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .atlas-list-count strong {
@@ -318,7 +318,7 @@
 
 .atlas-list-note {
   color: var(--faint);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 /* ---------- Object table ---------- */
@@ -331,7 +331,7 @@
 
 .atlas-table {
   min-width: 860px;
-  font-size: 12px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .atlas-table th {
@@ -366,7 +366,7 @@
 
 .atlas-object-name {
   color: var(--fg);
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 600;
   line-height: 1.35;
   overflow-wrap: anywhere;
@@ -384,31 +384,31 @@
 }
 
 .atlas-badges .badge {
-  font-size: 8px;
+  font-size: calc(13px * var(--ui-scale));
   padding: 2px 5px;
 }
 
 .atlas-object-desc {
   margin-top: 4px;
   color: var(--faint);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
   overflow-wrap: anywhere;
 }
 
 .atlas-region {
   color: var(--fg-soft);
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .atlas-subregion {
   color: var(--faint);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .atlas-location {
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   overflow-wrap: anywhere;
 }
 
@@ -428,7 +428,7 @@
   background: none;
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.3;
   text-decoration: none;
   cursor: pointer;
@@ -461,7 +461,7 @@
 .atlas-footnote {
   margin-top: 16px;
   color: var(--faint);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.55;
 }
 
@@ -507,7 +507,7 @@
 .atlas-untracked-lede {
   max-width: 780px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.55;
 }
 
@@ -541,14 +541,14 @@
   align-items: center;
   gap: 5px;
   color: var(--fg);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 600;
 }
 
 .atlas-untracked-note {
   margin-top: 4px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.5;
 }
 
@@ -565,7 +565,7 @@
   border-radius: 7px;
   background: rgba(143, 172, 118, 0.07);
   color: var(--success);
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.4;
   white-space: normal;
 }
@@ -578,7 +578,7 @@
 .atlas-step-tag-title {
   overflow: hidden;
   color: var(--muted);
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -629,11 +629,11 @@
 }
 
 .atlas-clear-tick {
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .atlas-auto-text {
-  font-size: 8px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -648,7 +648,7 @@
 
 .atlas-manual-text {
   color: var(--faint);
-  font-size: 8px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -658,13 +658,13 @@
   max-width: 860px;
   margin-top: 5px;
   color: var(--warning);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.5;
 }
 
 .atlas-status-caveat {
   color: var(--faint);
-  font-size: 9.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
 }
 
@@ -773,7 +773,7 @@
     content: attr(data-label);
     margin-bottom: 3px;
     color: var(--faint);
-    font-size: 8px;
+    font-size: calc(13px * var(--ui-scale));
     font-weight: 650;
     letter-spacing: 0.1em;
     text-transform: uppercase;

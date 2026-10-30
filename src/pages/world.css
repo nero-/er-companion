@@ -53,7 +53,7 @@
 }
 
 .world-summary-cell .k {
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--faint);
@@ -67,7 +67,7 @@
 }
 
 .world-summary-cell .d {
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--faint);
   margin-top: 1px;
 }
@@ -171,7 +171,7 @@
   display: flex;
   align-items: flex-start;
   gap: 5px;
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--muted);
   overflow-wrap: anywhere;
 }
@@ -244,13 +244,13 @@
 }
 
 .world-roster-title {
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
 
 .world-roster-sub {
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--faint);
   margin-top: 1px;
 }
@@ -279,7 +279,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 7px;
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent);
@@ -323,13 +323,13 @@
 }
 
 .world-build-name {
-  font-size: 12px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.3;
   overflow-wrap: anywhere;
 }
 
 .world-build-sub {
-  font-size: 9.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--faint);
   letter-spacing: 0.02em;
 }
@@ -354,7 +354,7 @@
 }
 
 .world-field-label {
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--faint);
@@ -362,7 +362,7 @@
 }
 
 .world-strategy-text {
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.6;
   color: var(--fg-soft);
   overflow-wrap: anywhere;
@@ -377,7 +377,7 @@
 }
 
 .world-note {
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--faint);
   line-height: 1.55;
   overflow-wrap: anywhere;
@@ -419,7 +419,7 @@
 }
 
 .quest-group-head .meta {
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--faint);
   white-space: nowrap;
 }
@@ -474,7 +474,7 @@
 }
 
 .quest-text {
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.6;
   color: var(--fg-soft);
   white-space: pre-line;
@@ -482,7 +482,7 @@
 }
 
 .quest-card .callout {
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .quest-field-grid {
@@ -504,7 +504,7 @@
 }
 
 .quest-field .k {
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--faint);
@@ -512,7 +512,7 @@
 }
 
 .quest-field .v {
-  font-size: 12px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.55;
   color: var(--fg-soft);
   overflow-wrap: anywhere;
@@ -536,7 +536,7 @@
 }
 
 .quest-npc-lore .k {
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--faint);
@@ -557,7 +557,7 @@
 }
 
 .quest-route-summary .k {
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--faint);
@@ -615,7 +615,7 @@
 }
 
 .quest-decision-actions .select {
-  font-size: 12px;
+  font-size: calc(13px * var(--ui-scale));
   height: auto;
   min-height: 38px;
   padding-top: 8px;
@@ -631,7 +631,7 @@
 }
 
 .quest-focus-label {
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--muted);
   overflow-wrap: anywhere;
 }

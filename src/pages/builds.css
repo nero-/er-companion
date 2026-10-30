@@ -184,7 +184,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 9.5px;
+  font-size: calc(13px * var(--ui-scale));
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--faint);
@@ -213,7 +213,7 @@
   border-radius: 7px;
   background: rgba(255, 255, 255, 0.018);
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
@@ -271,7 +271,7 @@
   border: 1px solid var(--border);
   border-radius: 7px;
   background: rgba(0, 0, 0, 0.14);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--fg-soft);
   overflow-wrap: anywhere;
 }
@@ -286,7 +286,7 @@
   background: var(--accent-soft);
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .tab-heading {
@@ -320,7 +320,7 @@
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.018);
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   cursor: pointer;
   transition: border-color 140ms ease, background 140ms ease, color 140ms ease;
 }
@@ -338,7 +338,7 @@
 
 .filter-count {
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--faint);
 }
 
@@ -379,7 +379,7 @@
 
 .preset-key {
   color: var(--faint);
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding-top: 2px;
@@ -387,7 +387,7 @@
 
 .preset-value {
   color: var(--fg-soft);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
   overflow-wrap: anywhere;
 }
@@ -419,7 +419,7 @@
 
 .boss-details summary {
   color: var(--accent);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   cursor: pointer;
 }
 
@@ -443,7 +443,7 @@
 }
 
 .timeline-control label {
-  font-size: 12px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
@@ -541,7 +541,7 @@
 }
 
 .upgrade-weapon {
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--fg-soft);
   font-weight: 600;
 }
@@ -596,7 +596,7 @@
 }
 
 .spread-name {
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--fg-soft);
   overflow-wrap: anywhere;
 }
@@ -663,7 +663,7 @@
 }
 
 .char-level-sub {
-  font-size: 12px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--fg-soft);
   overflow-wrap: anywhere;
 }
@@ -687,7 +687,7 @@
 }
 
 .stat-edit > label {
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--muted);
   min-width: 0;
   overflow: hidden;
@@ -729,7 +729,7 @@
   background: rgba(0, 0, 0, 0.22);
   color: var(--fg);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: calc(13px * var(--ui-scale));
   text-align: center;
   appearance: textfield;
 }
@@ -793,7 +793,7 @@
 
 .slot-label {
   color: var(--faint);
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -819,7 +819,7 @@
 
 .slot-name {
   min-width: 0;
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.4;
   color: var(--fg-soft);
   overflow-wrap: anywhere;
@@ -987,7 +987,7 @@
   gap: 8px;
   margin: 0 0 2px;
   padding: 0 2px;
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1051,7 +1051,7 @@
 
 .picker-pick .item-sub {
   display: block;
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.4;
   margin-top: 0;
   overflow: hidden;
@@ -1155,7 +1155,7 @@
   .timeline-marker {
     width: 34px;
     height: 34px;
-    font-size: 11px;
+    font-size: calc(13px * var(--ui-scale));
   }
 
   .timeline-body {

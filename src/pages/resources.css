@@ -29,7 +29,7 @@
 .resources-summary-item span {
   overflow: hidden;
   color: var(--faint);
-  font-size: 8.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.11em;
   text-overflow: ellipsis;
@@ -103,7 +103,7 @@
   gap: 8px;
   margin-bottom: 14px;
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .resources-result-row strong {
@@ -139,7 +139,7 @@
 
 .resources-section-count {
   color: var(--faint);
-  font-size: 9.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -175,7 +175,7 @@
 
 .resources-table-eyebrow {
   color: var(--faint);
-  font-size: 8px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -198,7 +198,7 @@
 
 .resources-table-count {
   color: var(--faint);
-  font-size: 9.5px;
+  font-size: calc(13px * var(--ui-scale));
   letter-spacing: 0.06em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -209,7 +209,7 @@
   align-items: center;
   gap: 3px;
   color: var(--accent);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   text-decoration: none;
   white-space: nowrap;
 }
@@ -229,11 +229,11 @@
 
 .resources-table {
   min-width: 720px;
-  font-size: 12px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .resources-table th {
-  font-size: 8.5px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .resources-table td {
@@ -259,7 +259,7 @@
   align-items: center;
   gap: 2px;
   color: var(--accent);
-  font-size: 9px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 600;
   letter-spacing: 0.05em;
   text-decoration: none;
@@ -283,7 +283,7 @@
   align-items: center;
   gap: 2px;
   color: var(--accent);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   text-decoration: none;
   white-space: nowrap;
 }
@@ -296,7 +296,7 @@
 .resources-note-cell {
   min-width: 280px;
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.5;
 }
 
@@ -309,7 +309,7 @@
 .resources-table-empty {
   margin-top: 8px;
   color: var(--faint);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.5;
 }
 
@@ -323,13 +323,13 @@
 .resources-footnote {
   margin-top: 18px;
   color: var(--faint);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.55;
 }
 
 .resources-footnote code {
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--muted);
 }
 
@@ -416,7 +416,7 @@
     content: attr(data-label);
     margin-bottom: 3px;
     color: var(--faint);
-    font-size: 8px;
+    font-size: calc(13px * var(--ui-scale));
     font-weight: 650;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -433,7 +433,7 @@
 
   .data-table.resources-table .resources-note-cell {
     min-width: 0;
-    font-size: 10.5px;
+    font-size: calc(13px * var(--ui-scale));
   }
 
   .data-table.resources-table tr:hover td {

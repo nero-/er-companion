@@ -29,7 +29,7 @@
   flex: 1 1 auto;
   overflow: hidden;
   color: var(--faint);
-  font-size: 8.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-weight: 650;
   letter-spacing: 0.12em;
   text-overflow: ellipsis;
@@ -48,13 +48,13 @@
 .mat-summary-pct {
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .mat-summary-note {
   margin: 0;
   color: var(--faint);
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
 }
 
@@ -126,7 +126,7 @@
 
 .mat-cat-label {
   font-family: var(--font-display);
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.25;
   color: var(--fg);
   overflow-wrap: anywhere;
@@ -134,14 +134,14 @@
 
 .mat-cat-count {
   flex: none;
-  font-size: 9.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--faint);
   white-space: nowrap;
 }
 
 .mat-cat-qty {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--fg-soft);
 }
 
@@ -209,7 +209,7 @@
 
 .mat-table {
   min-width: 840px;
-  font-size: 12.5px;
+  font-size: calc(13px * var(--ui-scale));
 }
 
 .mat-table th:nth-child(2) {
@@ -273,7 +273,7 @@
 .mat-sub {
   display: block;
   margin-top: 2px;
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--faint);
 }
 
@@ -288,21 +288,21 @@
   align-items: center;
   gap: 4px;
   margin-top: 2px;
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.4;
   color: var(--faint);
 }
 
 .mat-loc-region {
   display: block;
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--fg-soft);
 }
 
 .mat-loc {
   display: block;
   margin-top: 2px;
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
   color: var(--muted);
   overflow-wrap: anywhere;
@@ -311,7 +311,7 @@
 .mat-warn-note {
   display: block;
   margin-top: 4px;
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.4;
   color: var(--warning);
 }
@@ -322,7 +322,7 @@
   gap: 4px;
   max-width: 100%;
   color: var(--accent);
-  font-size: 11px;
+  font-size: calc(13px * var(--ui-scale));
   text-decoration: none;
 }
 
@@ -336,7 +336,7 @@
   margin-top: 3px;
   max-width: 36ch;
   overflow: hidden;
-  font-size: 10px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
   color: var(--faint);
   overflow-wrap: anywhere;
@@ -370,7 +370,7 @@
   background: rgba(255, 255, 255, 0.02);
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 9.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.6;
   text-align: left;
   cursor: pointer;
@@ -383,14 +383,14 @@
 
 .mat-sweep-kind {
   color: var(--faint);
-  font-size: 8.5px;
+  font-size: calc(13px * var(--ui-scale));
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .mat-loc-missing {
   color: var(--faint);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   font-style: italic;
 }
 
@@ -458,7 +458,7 @@
   background: transparent;
   color: var(--fg);
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   text-align: center;
   -moz-appearance: textfield;
 }
@@ -506,7 +506,7 @@
   background: transparent;
   color: var(--muted);
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   cursor: pointer;
 }
 
@@ -574,7 +574,7 @@
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   color: var(--faint);
 }
 
@@ -601,7 +601,7 @@
 
 .mat-material-fields dt {
   font-family: var(--font-ui);
-  font-size: 8.5px;
+  font-size: calc(13px * var(--ui-scale));
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--faint);
@@ -609,7 +609,7 @@
 
 .mat-material-fields dd {
   margin: 0;
-  font-size: 11.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
   color: var(--muted);
   overflow-wrap: anywhere;
@@ -628,7 +628,7 @@
 
 .mat-material-note {
   margin: 0;
-  font-size: 10.5px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.45;
   color: var(--faint);
 }
@@ -719,7 +719,7 @@
     content: attr(data-label);
     padding-top: 2px;
     font-family: var(--font-ui);
-    font-size: 8px;
+    font-size: calc(13px * var(--ui-scale));
     letter-spacing: 0.13em;
     text-transform: uppercase;
     color: var(--faint);
