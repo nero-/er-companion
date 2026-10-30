@@ -313,10 +313,14 @@ gh release create v1.2.0 --title "…" --notes-file notes.md \
   "src-tauri/target/release/bundle/rpm/…rpm" SHA256SUMS.txt
 ```
 
-macOS and Windows installers are **built by CI, not here** — this host has only the
-`x86_64-unknown-linux-gnu` Rust target, and a Tauri NSIS `.exe` needs a Windows toolchain. The v1.1.0
-release got its `.exe` and `.dmg` by `gh run download <run-id>` + manual upload (see
-`/tmp/ci-1.1.0/` for that layout). As of v1.2.0 the workflow's `publish` job does this itself.
+The Windows installer is **built by CI, not here** — this host has only the
+`x86_64-unknown-linux-gnu` Rust target, and a Tauri NSIS `.exe` needs a Windows toolchain. Get it with
+`gh run download <run-id> -n er-companion-windows-x86_64` and upload it, or let the workflow's
+`publish` job do it.
+
+**Targets are Linux + Windows only.** macOS was removed from the matrix on 2026-10-30: the user does
+not use it, and `macos-14` runner images are being retired (brownout caused a 1-second "cancelled"
+job that then blocked the publish job). Do not re-add macOS without being asked.
 
 **Every release must carry Linux *and* Windows.** A Linux-only release is incomplete. If you are
 assembling by hand because CI is unavailable:
@@ -325,7 +329,7 @@ assembling by hand because CI is unavailable:
 gh run list --workflow=desktop.yml --limit 1
 gh run watch <run-id> --exit-status            # wait for windows + macos jobs
 mkdir -p /tmp/ci && cd /tmp/ci && gh run download <run-id>
-# then upload the .exe / .dmg / .deb / .rpm / .AppImage alongside SHA256SUMS.txt
+# then upload the .exe / .deb / .rpm / .AppImage alongside SHA256SUMS.txt
 ```
 
 Do not describe "this machine cannot build Windows" as the reason a release lacks a `.exe` — it is
