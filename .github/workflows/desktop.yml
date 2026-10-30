@@ -97,6 +97,10 @@ jobs:
       contents: write
 
     steps:
+      # gh release needs a repository context; without a checkout it fails with
+      # "fatal: not a git repository".
+      - uses: actions/checkout@v4
+
       - name: Download every platform bundle
         uses: actions/download-artifact@v4
         with:
