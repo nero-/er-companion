@@ -4,8 +4,8 @@
 work sessions: what the product is, how the data is generated, what is verified, what is broken,
 and the environment quirks that will otherwise cost you an hour.
 
-Last verified against `master` @ `db40fc1` + the 1.2.0 version bump. Update the "Verified state"
-table at the bottom when you finish a session.
+Last verified 2026-10-30 against `master` at the v1.2.0 release. Update the "Verified state"
+section whenever you finish a session.
 
 ---
 
@@ -36,6 +36,29 @@ Prefix every npm command with that export or nothing works. Rust is available
 
 The session is Wayland/KDE. `Xvfb` is **not** installed and `sudo` requires a password, so you
 cannot spin up a virtual X server.
+
+**Git identity — get this right or commits look anonymous on GitHub.**
+
+```bash
+git config --global user.name "Jonathan Gutierrez"
+git config --global user.email "phialpha0@gmail.com"
+```
+
+`phialpha0@gmail.com` is the address on the `nero-` GitHub account. It must be the **only** address
+used. History before this fix used `john.gtz98@gmail.com` (unlinked) and `omp@local` (not an
+account), which is why the user's commits did not appear under their name. All history through
+v1.2.0 was rewritten with `git filter-branch --env-filter` and force-pushed; tags were re-pointed.
+
+Verify actual GitHub linkage, not just the local config:
+
+```bash
+gh api repos/nero-/er-companion/commits/HEAD --jq '.author.login'   # must print "nero-"
+```
+
+`null` means GitHub did not match the email to an account — check the email, do not re-auth. Do not
+set a repo-local `user.email`; the global value is authoritative. If a rewrite is ever needed again,
+`git stash` first (filter-branch refuses with unstaged changes), and re-verify the tree hash before
+and after (`git rev-parse HEAD^{tree}`) so you can prove content did not change.
 
 **Never export `DBUS_SESSION_BUS_ADDRESS`** (e.g. to reach the accessibility bus). The shell is
 persistent, so the override leaks into later commands and `gh` then silently fails its keyring
@@ -217,6 +240,10 @@ Verified by actually running it (not just tests):
 - Scale reads 1.0 / 1.1 / 1.25 at 1080p / 1440p / 4K; 4K@200% stays 1.0.
 - 20 scroll steps over 3,921 px: 0 long tasks; computed `backdrop-filter` none.
 - Production build: all 12 routes render, service worker precaches 62 entries, offline reload works.
+- v1.2.0 release carries Windows x64 NSIS `.exe`, Linux `.deb`/`.rpm`/`.AppImage`, macOS universal
+  `.dmg` and a `SHA256SUMS.txt` covering all five, each hash verified against the published asset.
+- All 27 commits and all three tags are authored `Jonathan Gutierrez <phialpha0@gmail.com>` and link
+  to the `nero-` account.
 - Desktop: `.deb`, `.rpm`, `.AppImage` build. The AppImage runs: `WebKitWebProcess` spawns under
   the app and reaches ~406 MB RSS, which means the 12 MB bundle parsed and React mounted (a blank
   webview sits near 60 MB). **No screenshot of the desktop window was captured** — X11 auth is
@@ -299,6 +326,36 @@ them.** A tag alone ships nothing.
   of what tripped the 500.
 
 ---
+
+## 8b. Lessons that cost time — read before debugging anything
+
+These are all real failures from one session. Each one looked like something else at first.
+
+1. **`gh` reporting "token invalid" is usually the shell, not the token.** Exporting
+   `DBUS_SESSION_BUS_ADDRESS` for at-spi breaks the keyring lookup. `unset` it and retry before
+   sending the user to re-authenticate. The user was logged in the entire time.
+2. **A Linux-only release is a bug, not a limitation.** CI already builds Windows and macOS; the
+   workflow's old last step only uploaded expiring artifacts, so every release had to be
+   hand-assembled with `gh run download`. If a release lacks an `.exe`, you skipped a step.
+3. **`gh release create` / `PATCH /releases` can return HTTP 500** on this repo. Workaround:
+   `POST /releases` with `tag_name` + `body` and no assets, then `gh release upload` one asset at a
+   time. `--clobber` makes re-runs safe.
+4. **GitHub rewrites spaces in asset names to dots.** `SHA256SUMS.txt` will not match the download
+   filenames unless you generate it *from the uploaded assets*, which is what was finally done.
+5. **Public release URLs 404 because the repo is private.** Verify with the API asset endpoint and
+   compare `sha256sum`. A 9-byte download is the literal text `Not Found`.
+6. **A blank desktop window is not proof of failure.** No X11 auth and no KWin screenshot interface
+   here, so `spectacle` captures black. Use process evidence: `WebKitWebProcess` at ~400 MB RSS
+   means the 12 MB bundle parsed and React mounted; ~60 MB means it did not.
+7. **Vite serves stale module graphs after `src/data/*.json` or `data.ts` export changes.** You get
+   bogus `does not provide an export named X`. Restart the dev server; `rm -rf node_modules/.vite`
+   if needed. This once looked like a total app failure.
+8. **One unhandled page error used to blank the whole app.** `PageBoundary` in `App.tsx` exists for
+   that reason; keep it.
+9. **`gh auth refresh -s user` is needed to read `/user/emails`.** Without the `user` scope it 404s,
+   which is not an auth failure.
+10. **Verify fixes in a running build.** Three real bugs this session (level-200 lane stuck on
+    "Locked", merchant double-state, source-id step links) passed tests and failed in the UI.
 
 ## 9. Working style the user expects
 
